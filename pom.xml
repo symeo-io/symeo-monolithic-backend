@@ -21,7 +21,7 @@
     <packaging>pom</packaging>
     <description>App to collect and process delivery metrics</description>
     <properties>
-        <java.version>18</java.version>
+        <java.version>17</java.version>
         <spring-boot-starter-web.version>2.7.0</spring-boot-starter-web.version>
         <start-class>fr.catlean.delivery.processor.bootstrap.CatleanDeliveryProcessorApplication</start-class>
     </properties>
