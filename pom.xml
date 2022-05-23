@@ -7,6 +7,7 @@
         <module>application</module>
         <module>domain</module>
         <module>infrastructure</module>
+        <module>catlean-http-client</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -23,6 +24,7 @@
     <properties>
         <java.version>17</java.version>
         <spring-boot-starter-web.version>2.7.0</spring-boot-starter-web.version>
+        <jackson.version>2.12.4</jackson.version>
         <start-class>fr.catlean.delivery.processor.bootstrap.CatleanDeliveryProcessorApplication</start-class>
         <assertj-core.version>3.22.0</assertj-core.version>
         <javafaker.version>1.0.2</javafaker.version>
@@ -33,6 +35,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>${spring-boot-starter-web.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
 
             <!-- Test -->

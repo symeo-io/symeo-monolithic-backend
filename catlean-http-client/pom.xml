@@ -8,12 +8,8 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <modules>
-        <module>github-adapter</module>
-    </modules>
-    <groupId>fr.catlean.delivery.processor</groupId>
-    <artifactId>infrastructure</artifactId>
+
+    <artifactId>catlean-http-client</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -23,9 +19,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>fr.catlean.delivery.processor</groupId>
-            <artifactId>domain</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
     </dependencies>
 

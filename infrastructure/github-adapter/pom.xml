@@ -3,17 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>catlean-delivery-processor</artifactId>
-        <groupId>fr.catlean</groupId>
+        <artifactId>infrastructure</artifactId>
+        <groupId>fr.catlean.delivery.processor</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <modules>
-        <module>github-adapter</module>
-    </modules>
-    <groupId>fr.catlean.delivery.processor</groupId>
-    <artifactId>infrastructure</artifactId>
+
+    <artifactId>github-adapter</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -23,10 +19,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>fr.catlean.delivery.processor</groupId>
-            <artifactId>domain</artifactId>
+            <groupId>fr.catlean</groupId>
+            <artifactId>catlean-http-client</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
 </project>
