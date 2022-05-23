@@ -24,7 +24,8 @@ public class GithubHttpClient {
 
   public GithubRepositoryDTO[] getRepositoriesForOrganisationName(
       String organisationName, Integer page, Integer size) {
-    final String uri = githubApiBaseUrl
+    final String uri =
+        githubApiBaseUrl
             + "orgs/"
             + organisationName
             + "/repos?sort=name&per_page="
@@ -32,7 +33,7 @@ public class GithubHttpClient {
             + "&page="
             + page.toString();
     return this.catleanHttpClient.get(
-            uri,
+        uri,
         GithubRepositoryDTO[].class,
         objectMapper,
         Map.of(authorizationHeaderKey, authorizationHeaderTokenValue + token));

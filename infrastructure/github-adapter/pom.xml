@@ -11,21 +11,10 @@
     <packaging>jar</packaging>
     <artifactId>github-adapter</artifactId>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
         <dependency>
-            <groupId>fr.catlean</groupId>
-            <artifactId>catlean-http-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>fr.catlean.delivery.processor</groupId>
-            <artifactId>domain</artifactId>
+            <artifactId>catlean-http-client</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

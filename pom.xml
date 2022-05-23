@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <modules>
         <module>bootstrap</module>
         <module>application</module>
@@ -9,18 +10,21 @@
         <module>infrastructure</module>
         <module>catlean-http-client</module>
     </modules>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>fr.catlean</groupId>
+
+    <groupId>fr.catlean.delivery.processor</groupId>
     <artifactId>catlean-delivery-processor</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>catlean-delivery-processor</name>
     <packaging>pom</packaging>
     <description>App to collect and process delivery metrics</description>
+
     <properties>
         <java.version>17</java.version>
         <spring-boot-starter-web.version>2.7.0</spring-boot-starter-web.version>
@@ -29,6 +33,7 @@
         <assertj-core.version>3.22.0</assertj-core.version>
         <javafaker.version>1.0.2</javafaker.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
