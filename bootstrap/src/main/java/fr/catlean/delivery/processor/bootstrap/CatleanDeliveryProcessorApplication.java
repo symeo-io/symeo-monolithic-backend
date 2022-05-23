@@ -1,4 +1,4 @@
-package fr.catlean.delivery.processor;
+package fr.catlean.delivery.processor.bootstrap;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
