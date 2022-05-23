@@ -23,7 +23,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
   @Override
   public List<Repository> getRepositoriesForOrganisationName(String organisationName) {
-    Integer page = 1;
+    int page = 1;
     GithubRepositoryDTO[] githubRepositoryDTOS =
         this.githubHttpClient.getRepositoriesForOrganisationName(organisationName, page, size);
     if (isNull(githubRepositoryDTOS) || githubRepositoryDTOS.length == 0) {
