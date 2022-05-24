@@ -49,4 +49,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
   public String getName() {
     return "github";
   }
+
+  
 }
