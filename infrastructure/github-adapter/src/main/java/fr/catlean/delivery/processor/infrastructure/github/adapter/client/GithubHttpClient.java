@@ -1,6 +1,7 @@
 package fr.catlean.delivery.processor.infrastructure.github.adapter.client;
 
 import catlean.http.cient.CatleanHttpClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubRepositoryDTO;
 
@@ -37,5 +38,9 @@ public class GithubHttpClient {
         GithubRepositoryDTO[].class,
         objectMapper,
         Map.of(authorizationHeaderKey, authorizationHeaderTokenValue + token));
+  }
+
+  public <T> byte[] dtoToBytes(T t) throws JsonProcessingException {
+    return objectMapper.writeValueAsBytes(t);
   }
 }

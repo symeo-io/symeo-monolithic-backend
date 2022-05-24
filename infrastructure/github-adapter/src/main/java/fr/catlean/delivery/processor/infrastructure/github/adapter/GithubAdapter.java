@@ -1,12 +1,9 @@
 package fr.catlean.delivery.processor.infrastructure.github.adapter;
 
-import fr.catlean.delivery.processor.domain.model.IRepositoryCommitMetrics;
-import fr.catlean.delivery.processor.domain.model.Repository;
-import fr.catlean.delivery.processor.domain.model.RepositoryCommitMetrics;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubRepositoryDTO;
-import fr.catlean.delivery.processor.infrastructure.github.adapter.mapper.GithubMapper;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
@@ -20,39 +17,34 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
   private GithubHttpClient githubHttpClient;
   private Integer size;
+  private String adapterName;
 
   @Override
-  public List<Repository> getRepositoriesForOrganisationName(String organisationName) {
+  public byte[] getRawRepositories(String organisation) {
     int page = 1;
     GithubRepositoryDTO[] githubRepositoryDTOS =
-        this.githubHttpClient.getRepositoriesForOrganisationName(organisationName, page, size);
+        this.githubHttpClient.getRepositoriesForOrganisationName(organisation, page, size);
     if (isNull(githubRepositoryDTOS) || githubRepositoryDTOS.length == 0) {
-      return List.of();
+      return new byte[0];
     }
-    final List<Repository> repositories =
-        new ArrayList<>(
-            Arrays.stream(githubRepositoryDTOS)
-                .map(GithubMapper::mapGithubRepositoryDtoToDomain)
-                .toList());
+    final List<GithubRepositoryDTO> githubRepositoryDTOList =
+        new ArrayList<>(List.of(githubRepositoryDTOS));
     while (githubRepositoryDTOS.length == size) {
       page += 1;
       githubRepositoryDTOS =
-          this.githubHttpClient.getRepositoriesForOrganisationName(organisationName, page, size);
-      repositories.addAll(
-          Arrays.stream(githubRepositoryDTOS)
-              .map(GithubMapper::mapGithubRepositoryDtoToDomain)
-              .toList());
+          this.githubHttpClient.getRepositoriesForOrganisationName(organisation, page, size);
+      githubRepositoryDTOList.addAll(Arrays.stream(githubRepositoryDTOS).toList());
     }
-    return repositories;
+
+    try {
+      return githubHttpClient.dtoToBytes(githubRepositoryDTOList.toArray());
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
-  public IRepositoryCommitMetrics getCommitMetricsForRepository(String repositoryName) {
-    return null;
-  }
-
-  @Override
-  public RepositoryCommitMetrics mapToDomain(IRepositoryCommitMetrics IRepositoryCommitMetrics1) {
-    return null;
+  public String getName() {
+    return this.adapterName;
   }
 }
