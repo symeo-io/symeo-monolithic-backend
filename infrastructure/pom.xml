@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>github-adapter</module>
+        <module>json-local-storage</module>
     </modules>
     <artifactId>infrastructure</artifactId>
 

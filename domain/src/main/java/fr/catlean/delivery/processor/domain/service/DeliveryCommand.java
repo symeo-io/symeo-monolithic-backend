@@ -8,8 +8,8 @@ import java.util.Date;
 
 public class DeliveryCommand {
 
-  private RawStorageAdapter rawStorageAdapter;
-  private VersionControlSystemAdapter versionControlSystemAdapter;
+  private final RawStorageAdapter rawStorageAdapter;
+  private final VersionControlSystemAdapter versionControlSystemAdapter;
   private static final SimpleDateFormat SDF = new SimpleDateFormat("dd-MM-yyyy");
 
   public DeliveryCommand(
@@ -25,6 +25,7 @@ public class DeliveryCommand {
         organisation,
         SDF.format(new Date()),
         versionControlSystemAdapter.getName(),
+        "get_repositories",
         rawRepositories);
   }
 }

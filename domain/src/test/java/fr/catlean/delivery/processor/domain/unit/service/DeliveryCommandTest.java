@@ -21,6 +21,7 @@ public class DeliveryCommandTest {
         // Given
         final String organisation = faker.pokemon().name();
         final String vcsAdapterName = faker.animal().name();
+        final String contentName = "get_repositories";
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
         final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter,versionControlSystemAdapter);
@@ -33,6 +34,6 @@ public class DeliveryCommandTest {
         deliveryCommand.collectRepositoriesForOrganisation(organisation);
 
         // Then
-        verify(rawStorageAdapter, times(1)).save(organisation,today,vcsAdapterName, bytes);
+        verify(rawStorageAdapter, times(1)).save(organisation,today,vcsAdapterName,contentName, bytes);
     }
 }
