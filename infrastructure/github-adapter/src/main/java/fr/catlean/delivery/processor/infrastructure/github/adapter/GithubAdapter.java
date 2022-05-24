@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubRepositoryDTO;
+import fr.catlean.delivery.processor.infrastructure.github.adapter.properties.GithubProperties;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
@@ -16,23 +17,24 @@ import static java.util.Objects.isNull;
 public class GithubAdapter implements VersionControlSystemAdapter {
 
   private GithubHttpClient githubHttpClient;
-  private Integer size;
-  private String adapterName;
+  private GithubProperties properties;
 
   @Override
   public byte[] getRawRepositories(String organisation) {
     int page = 1;
     GithubRepositoryDTO[] githubRepositoryDTOS =
-        this.githubHttpClient.getRepositoriesForOrganisationName(organisation, page, size);
+        this.githubHttpClient.getRepositoriesForOrganisationName(
+            organisation, page, properties.getSize(), properties.getToken());
     if (isNull(githubRepositoryDTOS) || githubRepositoryDTOS.length == 0) {
       return new byte[0];
     }
     final List<GithubRepositoryDTO> githubRepositoryDTOList =
         new ArrayList<>(List.of(githubRepositoryDTOS));
-    while (githubRepositoryDTOS.length == size) {
+    while (githubRepositoryDTOS.length == properties.getSize()) {
       page += 1;
       githubRepositoryDTOS =
-          this.githubHttpClient.getRepositoriesForOrganisationName(organisation, page, size);
+          this.githubHttpClient.getRepositoriesForOrganisationName(
+              organisation, page, properties.getSize(), properties.getToken());
       githubRepositoryDTOList.addAll(Arrays.stream(githubRepositoryDTOS).toList());
     }
 
@@ -45,6 +47,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
   @Override
   public String getName() {
-    return this.adapterName;
+    return "github";
   }
 }

@@ -2,6 +2,7 @@ package fr.catlean.delivery.processor.infrastructure.json.local.storage.unit;
 
 import com.github.javafaker.Faker;
 import fr.catlean.delivery.processor.infrastructure.json.local.storage.JsonLocalStorageAdapter;
+import fr.catlean.delivery.processor.infrastructure.json.local.storage.properties.JsonStorageProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,9 @@ public class JsonLocalStorageAdapterTest {
     @Test
     void should_save_bytes_as_json_file() throws IOException {
         // Given
-        final JsonLocalStorageAdapter jsonLocalStorageAdapter = new JsonLocalStorageAdapter(tmpDir);
+        final JsonStorageProperties jsonStorageProperties = new JsonStorageProperties();
+        jsonStorageProperties.setRootDirectory(tmpDir);
+        final JsonLocalStorageAdapter jsonLocalStorageAdapter = new JsonLocalStorageAdapter(jsonStorageProperties);
         final String organisation = faker.animal().name();
         final String date = faker.pokemon().name();
         final String adapterName = faker.animal().name();

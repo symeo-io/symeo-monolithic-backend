@@ -7,6 +7,7 @@ import com.github.javafaker.Faker;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.GithubAdapter;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubRepositoryDTO;
+import fr.catlean.delivery.processor.infrastructure.github.adapter.properties.GithubProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,8 +30,11 @@ public class GithubAdapterTest {
         // Given
         final String organisationName = faker.animal().name();
         final String token = faker.pokemon().name();
+        final GithubProperties githubProperties = new GithubProperties();
+        githubProperties.setSize(3);
+        githubProperties.setToken(token);
         final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper, token),3, "github");
+        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper),githubProperties);
 
         final GithubRepositoryDTO[] githubRepositoryStubs1 = getGithubRepositoryStubs("get_repo_for_org_page_1_size_3.json");
         Mockito.when(catleanHttpClient.get(

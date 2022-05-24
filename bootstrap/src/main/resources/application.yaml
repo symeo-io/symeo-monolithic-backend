@@ -1,0 +1,6 @@
+json-local-storage:
+    root-directory: /Users/ilysse/Workspace/CATLEAN/catlean-delivery-processor/json_local_storage
+
+github:
+    size: 100
+    token: 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

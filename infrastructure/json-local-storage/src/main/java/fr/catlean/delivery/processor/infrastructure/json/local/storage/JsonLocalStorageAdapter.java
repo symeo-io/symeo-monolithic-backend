@@ -1,6 +1,7 @@
 package fr.catlean.delivery.processor.infrastructure.json.local.storage;
 
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
+import fr.catlean.delivery.processor.infrastructure.json.local.storage.properties.JsonStorageProperties;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,10 +9,10 @@ import java.nio.file.Path;
 
 public class JsonLocalStorageAdapter implements RawStorageAdapter {
 
-  private final String rootDirectory;
+  private final JsonStorageProperties jsonStorageProperties;
 
-  public JsonLocalStorageAdapter(String rootDirectory) {
-    this.rootDirectory = rootDirectory;
+  public JsonLocalStorageAdapter(final JsonStorageProperties jsonStorageProperties) {
+    this.jsonStorageProperties = jsonStorageProperties;
   }
 
   @Override
@@ -19,7 +20,7 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
       String organisation, String date, String adapterName, String contentName, byte[] bytes) {
     final Path jsonPath =
         Path.of(
-            rootDirectory
+            jsonStorageProperties.getRootDirectory()
                 + "/"
                 + organisation
                 + "/"
