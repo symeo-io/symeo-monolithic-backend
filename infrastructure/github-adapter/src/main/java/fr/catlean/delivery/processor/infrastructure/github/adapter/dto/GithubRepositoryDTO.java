@@ -9,7 +9,7 @@ import lombok.Data;
 public class GithubRepositoryDTO {
   Long id;
 
-  @JsonProperty("nodeId")
+  @JsonProperty("node_id")
   String nodeId;
 
   String name;

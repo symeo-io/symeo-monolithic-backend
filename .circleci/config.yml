@@ -8,10 +8,10 @@ jobs:
       - checkout
       - run:
           name: Build
-          command: mvn -B -DskipTests clean package
+          command: mvn -B -DskipTests clean package -T 4
       - run:
           name: Test
-          command: mvn test
+          command: mvn test -T 4
 
 workflows:
   build-test:

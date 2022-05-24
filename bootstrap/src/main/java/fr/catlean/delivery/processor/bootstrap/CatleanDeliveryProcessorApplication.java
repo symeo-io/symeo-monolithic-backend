@@ -26,5 +26,6 @@ public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
     deliveryCommand.collectRepositoriesForOrganisation("armis-paris");
+    System.exit(0);
   }
 }
