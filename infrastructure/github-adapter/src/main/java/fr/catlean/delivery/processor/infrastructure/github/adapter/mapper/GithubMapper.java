@@ -1,6 +1,8 @@
 package fr.catlean.delivery.processor.infrastructure.github.adapter.mapper;
 
+import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
+import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubPullRequestDTO;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubRepositoryDTO;
 
 public interface GithubMapper {
@@ -9,6 +11,12 @@ public interface GithubMapper {
         return Repository.builder()
                 .name(githubRepositoryDTO.getName())
                 .organisationName(githubRepositoryDTO.getOwner().getLogin())
+                .build();
+    }
+
+    static PullRequest mapPullRequestDtoToDomain(final GithubPullRequestDTO githubPullRequestDTO) {
+        return PullRequest.builder()
+                .id(githubPullRequestDTO.getId())
                 .build();
     }
 

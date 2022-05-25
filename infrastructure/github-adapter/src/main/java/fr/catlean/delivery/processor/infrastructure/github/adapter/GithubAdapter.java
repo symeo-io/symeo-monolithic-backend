@@ -87,8 +87,12 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                             properties.getToken());
             githubRepositoryDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
         }
+        final List<GithubPullRequestDTO> githubDetailedPullRequests =
+                githubRepositoryDTOList.stream().parallel()
+                        .map(githubPullRequestDTO -> githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(), repository.getName(), githubPullRequestDTO.getNumber(), properties.getToken()))
+                        .toList();
         try {
-            return githubHttpClient.dtoToBytes(githubRepositoryDTOList.toArray());
+            return githubHttpClient.dtoToBytes(githubDetailedPullRequests.toArray());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -96,6 +100,12 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     @Override
     public List<PullRequest> pullRequestsBytesToDomain(byte[] bytes) {
-        return null;
+        try {
+            final GithubPullRequestDTO[] githubPullRequestDTOS = githubHttpClient.bytesToDto(bytes,
+                    GithubPullRequestDTO[].class);
+            return Arrays.stream(githubPullRequestDTOS).map(GithubMapper::mapPullRequestDtoToDomain).toList();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -23,7 +23,9 @@ public class CatleanDeliveryProcessorConfiguration {
             "execution(* fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient" +
                     ".getRepositoriesForOrganisationName(..)) || execution(* fr.catlean.delivery.processor" +
                     ".infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getPullRequestsForRepositoryAndOrganisation(..))")
+                    ".getPullRequestsForRepositoryAndOrganisation(..)) || execution(* fr.catlean.delivery.processor" +
+                    ".infrastructure.github.adapter.client.GithubHttpClient.getPullRequestDetailsForPullRequestNumber" +
+                    "(..))")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         final StopWatch stopWatch = new StopWatch("aop-stopwatch");
         stopWatch.start();

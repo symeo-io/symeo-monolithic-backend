@@ -66,4 +66,23 @@ public class GithubHttpClient {
                 objectMapper,
                 Map.of(authorizationHeaderKey, authorizationHeaderTokenValue + token));
     }
+
+    public GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(final String organisationName,
+                                                                          final String repositoryName,
+                                                                          final Integer number, final String token) {
+        final String uri =
+                githubApiBaseUrl
+                        + "repos/"
+                        + organisationName
+                        + "/" +
+                        repositoryName
+                        + "/pulls/"
+                        + number;
+        return this.catleanHttpClient.get(
+                uri,
+                GithubPullRequestDTO.class,
+                objectMapper,
+                Map.of(authorizationHeaderKey, authorizationHeaderTokenValue + token)
+        );
+    }
 }

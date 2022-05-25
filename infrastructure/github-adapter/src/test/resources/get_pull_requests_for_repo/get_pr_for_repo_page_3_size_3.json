@@ -7,7 +7,7 @@
     "diff_url": "https://github.com/armis-paris/bi-aggregator/pull/76.diff",
     "patch_url": "https://github.com/armis-paris/bi-aggregator/pull/76.patch",
     "issue_url": "https://api.github.com/repos/armis-paris/bi-aggregator/issues/76",
-    "number": 76,
+    "number": 80,
     "state": "closed",
     "locked": false,
     "title": "Production/datadog_modification",
