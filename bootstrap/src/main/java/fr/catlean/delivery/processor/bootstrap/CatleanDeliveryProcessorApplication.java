@@ -4,9 +4,8 @@ import fr.catlean.delivery.processor.bootstrap.configuration.CatleanDeliveryProc
 import fr.catlean.delivery.processor.bootstrap.configuration.DomainConfiguration;
 import fr.catlean.delivery.processor.bootstrap.configuration.GithubConfiguration;
 import fr.catlean.delivery.processor.bootstrap.configuration.JsonLocalStorageConfiguration;
-import fr.catlean.delivery.processor.domain.model.Repository;
-import fr.catlean.delivery.processor.domain.service.DeliveryCommand;
-import fr.catlean.delivery.processor.domain.service.DeliveryQuery;
+import fr.catlean.delivery.processor.domain.model.PullRequest;
+import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,12 +22,10 @@ import java.util.List;
 @Slf4j
 public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
 
-    private final DeliveryCommand deliveryCommand;
-    private final DeliveryQuery deliveryQuery;
+    private final DeliveryProcessorService deliveryProcessorService;
 
-    public CatleanDeliveryProcessorApplication(DeliveryCommand deliveryCommand, DeliveryQuery deliveryQuery) {
-        this.deliveryCommand = deliveryCommand;
-        this.deliveryQuery = deliveryQuery;
+    public CatleanDeliveryProcessorApplication(DeliveryProcessorService deliveryProcessorService) {
+        this.deliveryProcessorService = deliveryProcessorService;
     }
 
     public static void main(String[] args) {
@@ -36,12 +33,11 @@ public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         final String organisation = "armis-paris";
-        deliveryCommand.collectRepositoriesForOrganisation(organisation);
-        final List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisation);
-        deliveryCommand.collectPullRequestsForRepository(repositories.get(5));
-        LOGGER.info(repositories.toString());
+        final List<PullRequest> pullRequestList =
+                deliveryProcessorService.collectPullRequestsForOrganisation(organisation);
+        LOGGER.info("{} PRs were collected", pullRequestList.size());
         System.exit(0);
     }
 }

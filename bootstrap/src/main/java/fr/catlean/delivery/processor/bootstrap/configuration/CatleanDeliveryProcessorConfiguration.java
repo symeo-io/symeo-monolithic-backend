@@ -21,16 +21,17 @@ public class CatleanDeliveryProcessorConfiguration {
 
     @Around(
             "execution(* fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getRepositoriesForOrganisationName(..))")
+                    ".getRepositoriesForOrganisationName(..)) || execution(* fr.catlean.delivery.processor" +
+                    ".infrastructure.github.adapter.client.GithubHttpClient" +
+                    ".getPullRequestsForRepositoryAndOrganisation(..))")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         final StopWatch stopWatch = new StopWatch("aop-stopwatch");
         stopWatch.start();
         Object result = point.proceed();
         stopWatch.stop();
         LOGGER.info(
-                "Method {}.{} with arguments {} executed in {} s.",
-                point.getSignature().getDeclaringTypeName(),
-                ((MethodSignature) point.getSignature()).getMethod().getName(),
+                "Method {} with arguments {} executed in {} s.",
+                point.getSignature().getName(),
                 Arrays.stream(point.getArgs())
                         .filter(Objects::nonNull)
                         .map(Object::toString)

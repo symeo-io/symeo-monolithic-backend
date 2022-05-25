@@ -1,4 +1,4 @@
-package fr.catlean.delivery.processor.domain.service;
+package fr.catlean.delivery.processor.domain.query;
 
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;

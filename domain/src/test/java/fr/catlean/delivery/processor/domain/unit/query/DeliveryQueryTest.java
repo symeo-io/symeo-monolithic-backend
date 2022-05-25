@@ -1,11 +1,11 @@
-package fr.catlean.delivery.processor.domain.unit.service;
+package fr.catlean.delivery.processor.domain.unit.query;
 
 import com.github.javafaker.Faker;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
-import fr.catlean.delivery.processor.domain.service.DeliveryQuery;
+import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
 import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
