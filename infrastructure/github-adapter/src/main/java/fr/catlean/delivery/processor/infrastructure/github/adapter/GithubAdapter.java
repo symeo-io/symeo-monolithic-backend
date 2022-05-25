@@ -1,6 +1,7 @@
 package fr.catlean.delivery.processor.infrastructure.github.adapter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient;
@@ -63,5 +64,15 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public byte[] getRawPullRequestsForRepository(Repository repository) {
+        return new byte[0];
+    }
+
+    @Override
+    public List<PullRequest> pullRequestsBytesToDomain(byte[] bytes) {
+        return null;
     }
 }
