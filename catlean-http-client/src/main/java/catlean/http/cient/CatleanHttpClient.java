@@ -7,22 +7,22 @@ import java.util.Optional;
 
 public interface CatleanHttpClient {
 
-  <RequestBody, ResponseBody> ResponseBody post(
-      String uri,
-      Optional<RequestBody> requestBody,
-      Class<ResponseBody> responseClass,
-      ObjectMapper objectMapper);
+    <RequestBody, ResponseBody> ResponseBody post(
+            String uri,
+            Optional<RequestBody> requestBody,
+            Class<ResponseBody> responseClass,
+            ObjectMapper objectMapper);
 
-  <RequestBody, ResponseBody> ResponseBody post(
-      String uri,
-      Optional<RequestBody> requestBody,
-      Class<ResponseBody> responseClass,
-      ObjectMapper objectMapper,
-      Map<String, String> headers);
+    <RequestBody, ResponseBody> ResponseBody post(
+            String uri,
+            Optional<RequestBody> requestBody,
+            Class<ResponseBody> responseClass,
+            ObjectMapper objectMapper,
+            Map<String, String> headers);
 
-  <ResponseBody> ResponseBody get(
-      final String uri,
-      Class<ResponseBody> responseClass,
-      ObjectMapper objectMapper,
-      final Map<String, String> headers);
+    <ResponseBody> ResponseBody get(
+            final String uri,
+            Class<ResponseBody> responseClass,
+            ObjectMapper objectMapper,
+            final Map<String, String> headers);
 }

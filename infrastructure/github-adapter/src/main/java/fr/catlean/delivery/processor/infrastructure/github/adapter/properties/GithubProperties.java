@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class GithubProperties {
 
-  private int size;
-  private String token;
+    private int size;
+    private String token;
 }

@@ -16,7 +16,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
-public class DefaultCatleanHttpClient implements CatleanHttpClient{
+public class DefaultCatleanHttpClient implements CatleanHttpClient {
 
     private final HttpClient httpClient;
 
@@ -26,16 +26,18 @@ public class DefaultCatleanHttpClient implements CatleanHttpClient{
 
     @Override
     public <RequestBody, ResponseBody> ResponseBody post(final String uri, final Optional<RequestBody> requestBody,
-                                                         final Class<ResponseBody> responseClass, final ObjectMapper objectMapper) {
+                                                         final Class<ResponseBody> responseClass,
+                                                         final ObjectMapper objectMapper) {
         return post(uri, requestBody, responseClass, objectMapper, new HashMap<>());
     }
 
     @Override
     public <RequestBody, ResponseBody> ResponseBody post(String uri, Optional<RequestBody> requestBody,
-                                                         Class<ResponseBody> responseClass, ObjectMapper objectMapper, Map<String, String> headers)
-             {
+                                                         Class<ResponseBody> responseClass, ObjectMapper objectMapper
+            , Map<String, String> headers) {
         try {
-            return sendRequest(getHttpPostRequest(uri, requestBody, objectMapper, headers), objectMapper, responseClass);
+            return sendRequest(getHttpPostRequest(uri, requestBody, objectMapper, headers), objectMapper,
+                    responseClass);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Unexpected error while building HttpRequest", e);
         }
@@ -43,7 +45,7 @@ public class DefaultCatleanHttpClient implements CatleanHttpClient{
 
     @Override
     public <ResponseBody> ResponseBody get(String uri, Class<ResponseBody> responseClass,
-                                           ObjectMapper objectMapper, Map<String, String> headers)  {
+                                           ObjectMapper objectMapper, Map<String, String> headers) {
         final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(uri))
                 .GET();
         if (nonNull(headers) && !headers.isEmpty()) {
@@ -55,16 +57,17 @@ public class DefaultCatleanHttpClient implements CatleanHttpClient{
 
     @SuppressWarnings("java:S2142") // TODO define if we want to deal with this here
     private <ResponseBody> ResponseBody sendRequest(final HttpRequest httpRequest, final ObjectMapper objectMapper,
-                                                    Class<ResponseBody> responseClass)
-             {
+                                                    Class<ResponseBody> responseClass) {
         try {
-            final HttpResponse<byte[]> httpResponse = this.httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+            final HttpResponse<byte[]> httpResponse = this.httpClient.send(httpRequest,
+                    HttpResponse.BodyHandlers.ofByteArray());
             if (httpResponse.statusCode() == 200) {
                 return objectMapper.readValue(httpResponse.body(), responseClass);
             }
             // TODO : finalize unit test with new error code
             throw new RuntimeException(
-                    "Error while calling " + httpRequest + " : response " + httpResponse); // TODO Change this when proper exception
+                    "Error while calling " + httpRequest + " : response " + httpResponse); // TODO Change this when
+            // proper exception
         } catch (final JsonProcessingException e) {
             throw new RuntimeException("Unexpected error while processing HTTP request Body", e);
         } catch (final InterruptedException | IOException e) {

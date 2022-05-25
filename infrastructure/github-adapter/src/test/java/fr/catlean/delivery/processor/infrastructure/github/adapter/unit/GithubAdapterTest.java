@@ -36,17 +36,21 @@ public class GithubAdapterTest {
         githubProperties.setSize(3);
         githubProperties.setToken(token);
         final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper), githubProperties);
+        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper),
+                githubProperties);
 
-        final GithubRepositoryDTO[] githubRepositoryStubs1 = getGithubRepositoryStubs("get_repo_for_org_page_1_size_3.json");
+        final GithubRepositoryDTO[] githubRepositoryStubs1 = getGithubRepositoryStubs("get_repo_for_org_page_1_size_3" +
+                ".json");
         Mockito.when(catleanHttpClient.get(
                 "https://api.github.com/orgs/" + organisationName + "/repos?sort=name&per_page=3&page=1",
                 GithubRepositoryDTO[].class, objectMapper, Map.of("Authorization", "token " + token))).thenReturn(githubRepositoryStubs1);
-        final GithubRepositoryDTO[] githubRepositoryStubs2 = getGithubRepositoryStubs("get_repo_for_org_page_2_size_3.json");
+        final GithubRepositoryDTO[] githubRepositoryStubs2 = getGithubRepositoryStubs("get_repo_for_org_page_2_size_3" +
+                ".json");
         Mockito.when(catleanHttpClient.get(
                 "https://api.github.com/orgs/" + organisationName + "/repos?sort=name&per_page=3&page=2",
                 GithubRepositoryDTO[].class, objectMapper, Map.of("Authorization", "token " + token))).thenReturn(githubRepositoryStubs2);
-        final GithubRepositoryDTO[] githubRepositoryStubs3 = getGithubRepositoryStubs("get_repo_for_org_page_3_size_3.json");
+        final GithubRepositoryDTO[] githubRepositoryStubs3 = getGithubRepositoryStubs("get_repo_for_org_page_3_size_3" +
+                ".json");
         Mockito.when(catleanHttpClient.get(
                 "https://api.github.com/orgs/" + organisationName + "/repos?sort=name&per_page=3&page=3",
                 GithubRepositoryDTO[].class, objectMapper, Map.of("Authorization", "token " + token))).thenReturn(githubRepositoryStubs3);
@@ -57,7 +61,8 @@ public class GithubAdapterTest {
 
         // Then
         assertThat(rawRepositories).isNotEmpty();
-        assertThat(rawRepositories).isEqualTo(dtoStubsToBytes(githubRepositoryStubs1, githubRepositoryStubs2, githubRepositoryStubs3));
+        assertThat(rawRepositories).isEqualTo(dtoStubsToBytes(githubRepositoryStubs1, githubRepositoryStubs2,
+                githubRepositoryStubs3));
 
     }
 
@@ -69,11 +74,14 @@ public class GithubAdapterTest {
         githubProperties.setSize(3);
         githubProperties.setToken(token);
         final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper), githubProperties);
-        final GithubRepositoryDTO[] githubRepositoryStubs1 = getGithubRepositoryStubs("get_repo_for_org_page_1_size_3.json");
+        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper),
+                githubProperties);
+        final GithubRepositoryDTO[] githubRepositoryStubs1 = getGithubRepositoryStubs("get_repo_for_org_page_1_size_3" +
+                ".json");
 
         // When
-        final List<Repository> repositories = githubAdapter.repositoriesBytesToDomain(objectMapper.writeValueAsBytes(githubRepositoryStubs1));
+        final List<Repository> repositories =
+                githubAdapter.repositoriesBytesToDomain(objectMapper.writeValueAsBytes(githubRepositoryStubs1));
 
         // Then
         assertThat(repositories).hasSize(3);

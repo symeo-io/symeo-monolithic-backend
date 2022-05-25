@@ -7,16 +7,16 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GithubRepositoryDTO {
-  Long id;
+    Long id;
 
-  @JsonProperty("node_id")
-  String nodeId;
+    @JsonProperty("node_id")
+    String nodeId;
 
-  String name;
+    String name;
 
-  @JsonProperty("full_name")
-  String fullName;
+    @JsonProperty("full_name")
+    String fullName;
 
-  @JsonProperty("private")
-  Boolean isPrivate;
+    @JsonProperty("private")
+    Boolean isPrivate;
 }

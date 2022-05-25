@@ -1,10 +1,12 @@
 package fr.catlean.delivery.processor.domain.model;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class Repository {
-  private String name;
+    public static final String ALL = "repositories";
+    String name;
+    String organisationName;
 }

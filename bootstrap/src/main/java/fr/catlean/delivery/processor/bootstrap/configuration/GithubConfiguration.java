@@ -14,25 +14,25 @@ import java.net.http.HttpClient;
 @Configuration
 public class GithubConfiguration {
 
-  @Bean
-  @ConfigurationProperties("github")
-  public GithubProperties githubProperties() {
-    return new GithubProperties();
-  }
+    @Bean
+    @ConfigurationProperties("github")
+    public GithubProperties githubProperties() {
+        return new GithubProperties();
+    }
 
-  @Bean
-  public HttpClient httpClient() {
-    return HttpClient.newHttpClient();
-  }
+    @Bean
+    public HttpClient httpClient() {
+        return HttpClient.newHttpClient();
+    }
 
-  @Bean
-  public GithubHttpClient githubHttpClient(HttpClient httpClient) {
-    return new GithubHttpClient(new DefaultCatleanHttpClient(httpClient), new ObjectMapper());
-  }
+    @Bean
+    public GithubHttpClient githubHttpClient(HttpClient httpClient) {
+        return new GithubHttpClient(new DefaultCatleanHttpClient(httpClient), new ObjectMapper());
+    }
 
-  @Bean
-  public GithubAdapter githubAdapter(
-      GithubHttpClient githubHttpClient, GithubProperties githubProperties) {
-    return new GithubAdapter(githubHttpClient, githubProperties);
-  }
+    @Bean
+    public GithubAdapter githubAdapter(
+            GithubHttpClient githubHttpClient, GithubProperties githubProperties) {
+        return new GithubAdapter(githubHttpClient, githubProperties);
+    }
 }

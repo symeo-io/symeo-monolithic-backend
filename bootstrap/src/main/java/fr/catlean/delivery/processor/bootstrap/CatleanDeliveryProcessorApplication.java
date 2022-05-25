@@ -18,7 +18,8 @@ import java.util.List;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class, JsonLocalStorageConfiguration.class})
+@Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class,
+        JsonLocalStorageConfiguration.class})
 @Slf4j
 public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
 

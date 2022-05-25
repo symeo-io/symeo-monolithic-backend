@@ -57,7 +57,8 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     @Override
     public List<Repository> repositoriesBytesToDomain(byte[] repositoriesBytes) {
         try {
-            GithubRepositoryDTO[] githubRepositoryDTOS = githubHttpClient.bytesToDto(repositoriesBytes, GithubRepositoryDTO[].class);
+            GithubRepositoryDTO[] githubRepositoryDTOS = githubHttpClient.bytesToDto(repositoriesBytes,
+                    GithubRepositoryDTO[].class);
             return Arrays.stream(githubRepositoryDTOS).map(GithubMapper::mapRepositoryDtoToDomain).toList();
         } catch (IOException e) {
             throw new RuntimeException(e);

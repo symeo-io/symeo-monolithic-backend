@@ -1,6 +1,8 @@
 package fr.catlean.delivery.processor.domain.unit.service;
 
 import com.github.javafaker.Faker;
+import fr.catlean.delivery.processor.domain.model.PullRequest;
+import fr.catlean.delivery.processor.domain.model.Repository;
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.domain.service.DeliveryCommand;
@@ -14,6 +16,7 @@ import static org.mockito.Mockito.*;
 public class DeliveryCommandTest {
 
     private final Faker faker = Faker.instance();
+    final String today = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
 
     @Test
@@ -21,11 +24,9 @@ public class DeliveryCommandTest {
         // Given
         final String organisation = faker.pokemon().name();
         final String vcsAdapterName = faker.animal().name();
-        final String contentName = "get_repositories";
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
-        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter,versionControlSystemAdapter);
-        final String today = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
         final byte[] bytes = new byte[0];
 
         // When
@@ -34,6 +35,26 @@ public class DeliveryCommandTest {
         deliveryCommand.collectRepositoriesForOrganisation(organisation);
 
         // Then
-        verify(rawStorageAdapter, times(1)).save(organisation,today,vcsAdapterName,contentName, bytes);
+        verify(rawStorageAdapter, times(1)).save(organisation, today, vcsAdapterName, Repository.ALL, bytes);
+    }
+
+
+    @Test
+    void should_collect_all_pull_requests_given_a_repository() {
+        // Given
+        final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
+        final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
+        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
+        final Repository repository =
+                Repository.builder().name(faker.pokemon().name()).organisationName(faker.name().firstName()).build();
+        final byte[] bytes = new byte[0];
+
+        // When
+        when(versionControlSystemAdapter.getRawPullRequestsForRepository(repository)).thenReturn(bytes);
+        deliveryCommand.collectPullRequestsForRepository(repository);
+
+        // Then
+        verify(rawStorageAdapter, times(1)).save(repository.getOrganisationName(), today,
+                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()), bytes);
     }
 }

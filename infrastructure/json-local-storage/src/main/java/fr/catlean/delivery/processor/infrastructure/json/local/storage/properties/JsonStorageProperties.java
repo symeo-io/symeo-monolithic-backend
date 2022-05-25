@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class JsonStorageProperties {
 
-  private String rootDirectory;
+    private String rootDirectory;
 }

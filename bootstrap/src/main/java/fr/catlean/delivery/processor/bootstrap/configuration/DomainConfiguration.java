@@ -18,7 +18,8 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public DeliveryQuery deliveryQuery(RawStorageAdapter rawStorageAdapter, VersionControlSystemAdapter versionControlSystemAdapter) {
+    public DeliveryQuery deliveryQuery(RawStorageAdapter rawStorageAdapter,
+                                       VersionControlSystemAdapter versionControlSystemAdapter) {
         return new DeliveryQuery(rawStorageAdapter, versionControlSystemAdapter);
     }
 }

@@ -9,15 +9,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JsonLocalStorageConfiguration {
 
-  @Bean
-  @ConfigurationProperties("json-local-storage")
-  public JsonStorageProperties jsonStorageProperties() {
-    return new JsonStorageProperties();
-  }
+    @Bean
+    @ConfigurationProperties("json-local-storage")
+    public JsonStorageProperties jsonStorageProperties() {
+        return new JsonStorageProperties();
+    }
 
-  @Bean
-  public JsonLocalStorageAdapter jsonLocalStorageAdapter(
-      JsonStorageProperties jsonStorageProperties) {
-    return new JsonLocalStorageAdapter(jsonStorageProperties);
-  }
+    @Bean
+    public JsonLocalStorageAdapter jsonLocalStorageAdapter(
+            JsonStorageProperties jsonStorageProperties) {
+        return new JsonLocalStorageAdapter(jsonStorageProperties);
+    }
 }
