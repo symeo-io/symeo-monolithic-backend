@@ -5,6 +5,7 @@ import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient;
+import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubPullRequestDTO;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubRepositoryDTO;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.mapper.GithubMapper;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.properties.GithubProperties;
@@ -68,7 +69,29 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     @Override
     public byte[] getRawPullRequestsForRepository(Repository repository) {
-        return new byte[0];
+        int page = 1;
+        GithubPullRequestDTO[] githubPullRequestDTOS =
+                this.githubHttpClient.getPullRequestsForRepositoryAndOrganisation(
+                        repository.getOrganisationName(), repository.getName(), page, properties.getSize(),
+                        properties.getToken());
+        if (isNull(githubPullRequestDTOS) || githubPullRequestDTOS.length == 0) {
+            return new byte[0];
+        }
+        final List<GithubPullRequestDTO> githubRepositoryDTOList =
+                new ArrayList<>(List.of(githubPullRequestDTOS));
+        while (githubPullRequestDTOS.length == properties.getSize()) {
+            page += 1;
+            githubPullRequestDTOS =
+                    this.githubHttpClient.getPullRequestsForRepositoryAndOrganisation(
+                            repository.getOrganisationName(), repository.getName(), page, properties.getSize(),
+                            properties.getToken());
+            githubRepositoryDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
+        }
+        try {
+            return githubHttpClient.dtoToBytes(githubRepositoryDTOList.toArray());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

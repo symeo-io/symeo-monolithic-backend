@@ -40,6 +40,7 @@ public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
         final String organisation = "armis-paris";
         deliveryCommand.collectRepositoriesForOrganisation(organisation);
         final List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisation);
+        deliveryCommand.collectPullRequestsForRepository(repositories.get(5));
         LOGGER.info(repositories.toString());
         System.exit(0);
     }

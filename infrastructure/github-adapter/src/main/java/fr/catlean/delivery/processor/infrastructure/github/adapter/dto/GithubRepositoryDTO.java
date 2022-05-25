@@ -19,4 +19,6 @@ public class GithubRepositoryDTO {
 
     @JsonProperty("private")
     Boolean isPrivate;
+
+    GithubOwnerDTO owner;
 }

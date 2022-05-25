@@ -5,6 +5,7 @@ import fr.catlean.delivery.processor.domain.model.Repository;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.GithubAdapter;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubRepositoryDTO;
+import fr.catlean.delivery.processor.infrastructure.github.adapter.mapper.GithubMapper;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.properties.GithubProperties;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -86,4 +87,20 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
     }
 
 
+    @Test
+    void should_map_dto_to_domain() throws IOException {
+        // Given
+        final GithubRepositoryDTO[] githubRepositoryStubs1 = getStubsFromClassT("get_repositories_for_org",
+                "get_repo_for_org_page_1_size_3" +
+                        ".json", GithubRepositoryDTO[].class);
+        final GithubRepositoryDTO githubRepositoryDTO = githubRepositoryStubs1[0];
+
+
+        // When
+        final Repository repository = GithubMapper.mapRepositoryDtoToDomain(githubRepositoryDTO);
+
+        // Then
+        assertThat(repository.getName()).isEqualTo(githubRepositoryDTO.getName());
+        assertThat(repository.getOrganisationName()).isEqualTo(githubRepositoryDTO.getOwner().getLogin());
+    }
 }
