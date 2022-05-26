@@ -1,9 +1,6 @@
 package fr.catlean.delivery.processor.bootstrap;
 
-import fr.catlean.delivery.processor.bootstrap.configuration.CatleanDeliveryProcessorConfiguration;
-import fr.catlean.delivery.processor.bootstrap.configuration.DomainConfiguration;
-import fr.catlean.delivery.processor.bootstrap.configuration.GithubConfiguration;
-import fr.catlean.delivery.processor.bootstrap.configuration.JsonLocalStorageConfiguration;
+import fr.catlean.delivery.processor.bootstrap.configuration.*;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +15,7 @@ import java.util.List;
 @SpringBootApplication
 @EnableConfigurationProperties
 @Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class,
-        JsonLocalStorageConfiguration.class})
+        JsonLocalStorageConfiguration.class, PostgresConfiguration.class})
 @Slf4j
 public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
 
@@ -34,7 +31,6 @@ public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "4");
         final String organisation = "armis-paris";
         final List<PullRequest> pullRequestList =
                 deliveryProcessorService.collectPullRequestsForOrganisation(organisation);

@@ -12,6 +12,7 @@
     <modules>
         <module>github-adapter</module>
         <module>json-local-storage</module>
+        <module>postgres-adapter</module>
     </modules>
     <artifactId>infrastructure</artifactId>
 

@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import fr.catlean.delivery.processor.domain.command.DeliveryCommand;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
+import fr.catlean.delivery.processor.domain.port.out.ExpositionStorage;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
 import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
 import org.assertj.core.api.Assertions;
@@ -11,8 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class DeliveryProcessorServiceTest {
 
@@ -23,8 +23,9 @@ public class DeliveryProcessorServiceTest {
         // Given
         final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
         final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
+        final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
         final DeliveryProcessorService deliveryProcessorService = new DeliveryProcessorService(deliveryCommand,
-                deliveryQuery);
+                deliveryQuery, expositionStorage);
         final String organisation = faker.name().name();
 
         // When
@@ -62,8 +63,9 @@ public class DeliveryProcessorServiceTest {
         // Given
         final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
         final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
+        final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
         final DeliveryProcessorService deliveryProcessorService = new DeliveryProcessorService(deliveryCommand,
-                deliveryQuery);
+                deliveryQuery, expositionStorage);
         final String organisation = faker.name().name();
 
         // When
@@ -113,5 +115,6 @@ public class DeliveryProcessorServiceTest {
 
         // Then
         Assertions.assertThat(pullRequestList).containsAll(List.of(pr11, pr12, pr21, pr22, pr31, pr32));
+        verify(expositionStorage, times(1)).savePullRequestDetails(pullRequestList);
     }
 }

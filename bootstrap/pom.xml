@@ -35,6 +35,11 @@
             <artifactId>json-local-storage</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>fr.catlean.delivery.processor</groupId>
+            <artifactId>postgres-adapter</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>

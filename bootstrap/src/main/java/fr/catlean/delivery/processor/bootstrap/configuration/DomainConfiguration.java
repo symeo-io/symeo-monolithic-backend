@@ -1,6 +1,7 @@
 package fr.catlean.delivery.processor.bootstrap.configuration;
 
 import fr.catlean.delivery.processor.domain.command.DeliveryCommand;
+import fr.catlean.delivery.processor.domain.port.out.ExpositionStorage;
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
@@ -26,7 +27,8 @@ public class DomainConfiguration {
 
     @Bean
     public DeliveryProcessorService deliveryProcessorService(DeliveryCommand deliveryCommand,
-                                                             DeliveryQuery deliveryQuery) {
-        return new DeliveryProcessorService(deliveryCommand, deliveryQuery);
+                                                             DeliveryQuery deliveryQuery,
+                                                             ExpositionStorage expositionStorage) {
+        return new DeliveryProcessorService(deliveryCommand, deliveryQuery, expositionStorage);
     }
 }
