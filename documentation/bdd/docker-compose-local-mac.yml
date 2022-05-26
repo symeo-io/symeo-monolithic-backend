@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  database:
+    image: "postgres:13"
+    container_name: "postgres-catlean-delivery-processor"
+    network_mode: bridge
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=P@ssw0rd
+      - POSTGRES_DB=catlean-delivery-processor
+    ports:
+      - "5432:5432"
