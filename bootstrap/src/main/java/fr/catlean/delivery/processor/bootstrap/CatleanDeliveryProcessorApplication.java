@@ -34,6 +34,7 @@ public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "4");
         final String organisation = "armis-paris";
         final List<PullRequest> pullRequestList =
                 deliveryProcessorService.collectPullRequestsForOrganisation(organisation);

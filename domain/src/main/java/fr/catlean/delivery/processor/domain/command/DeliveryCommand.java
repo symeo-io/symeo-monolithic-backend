@@ -22,21 +22,30 @@ public class DeliveryCommand {
     }
 
     public void collectRepositoriesForOrganisation(String organisation) {
+        final String today = SDF.format(new Date());
+        if (rawStorageAdapter.exists(organisation, today, versionControlSystemAdapter.getName(), Repository.ALL)) {
+            return;
+        }
         final byte[] rawRepositories = versionControlSystemAdapter.getRawRepositories(organisation);
         rawStorageAdapter.save(
                 organisation,
-                SDF.format(new Date()),
+                today,
                 versionControlSystemAdapter.getName(),
                 Repository.ALL,
                 rawRepositories);
     }
 
     public void collectPullRequestsForRepository(Repository repository) {
+        final String today = SDF.format(new Date());
+        if (rawStorageAdapter.exists(repository.getOrganisationName(), today, versionControlSystemAdapter.getName(),
+                PullRequest.getNameFromRepository(repository.getName()))) {
+            return;
+        }
         final byte[] rawPullRequestsForRepository =
                 versionControlSystemAdapter.getRawPullRequestsForRepository(repository);
         rawStorageAdapter.save(
                 repository.getOrganisationName(),
-                SDF.format(new Date()),
+                today,
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()),
                 rawPullRequestsForRepository);

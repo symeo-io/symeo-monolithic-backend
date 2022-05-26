@@ -19,7 +19,7 @@ public class DeliveryProcessorService {
 
     public List<PullRequest> collectPullRequestsForOrganisation(String organisation) {
         deliveryCommand.collectRepositoriesForOrganisation(organisation);
-        return deliveryQuery.readRepositoriesForOrganisation(organisation).stream().parallel().map(
+        return deliveryQuery.readRepositoriesForOrganisation(organisation).stream().map(
                 this::collectPullRequestForRepository
         ).flatMap(Collection::stream).toList();
     }

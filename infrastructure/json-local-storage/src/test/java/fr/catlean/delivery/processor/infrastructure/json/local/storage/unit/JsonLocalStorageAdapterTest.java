@@ -68,6 +68,30 @@ public class JsonLocalStorageAdapterTest {
         assertThat(read).isEqualTo(bytesAsString.getBytes());
     }
 
+    @Test
+    void should_return_if_a_json_file_exists() {
+        // Given
+        final JsonStorageProperties jsonStorageProperties = new JsonStorageProperties();
+        jsonStorageProperties.setRootDirectory(tmpDir);
+        final JsonLocalStorageAdapter jsonLocalStorageAdapter = new JsonLocalStorageAdapter(jsonStorageProperties);
+        final String organisation = faker.animal().name();
+        final String date = faker.pokemon().name();
+        final String adapterName = faker.animal().name();
+        final String contentName = faker.beer().name();
+        final String bytesAsString = "{\"test\": 1111}";
+        jsonLocalStorageAdapter.save(organisation, date, adapterName, contentName, bytesAsString.getBytes());
+
+        // When
+        final boolean existingFile = jsonLocalStorageAdapter.exists(organisation, date, adapterName, contentName);
+        final boolean notExistingFile = jsonLocalStorageAdapter.exists(faker.name().lastName(),
+                faker.name().firstName(),
+                faker.name().username(), faker.pokemon().name());
+
+        // Then
+        assertThat(existingFile).isTrue();
+        assertThat(notExistingFile).isFalse();
+    }
+
     @AfterEach
     void tearDown() {
         new File(tmpDir).delete();

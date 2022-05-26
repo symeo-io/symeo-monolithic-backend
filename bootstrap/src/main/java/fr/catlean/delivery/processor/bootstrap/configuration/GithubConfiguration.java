@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.net.http.HttpClient;
 
+import static com.fasterxml.jackson.core.JsonParser.Feature.AUTO_CLOSE_SOURCE;
+
 @Configuration
 public class GithubConfiguration {
 
@@ -25,9 +27,17 @@ public class GithubConfiguration {
         return HttpClient.newHttpClient();
     }
 
+
     @Bean
-    public GithubHttpClient githubHttpClient(HttpClient httpClient) {
-        return new GithubHttpClient(new DefaultCatleanHttpClient(httpClient), new ObjectMapper());
+    public ObjectMapper objectMapper() {
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(AUTO_CLOSE_SOURCE, true);
+        return objectMapper;
+    }
+
+    @Bean
+    public GithubHttpClient githubHttpClient(HttpClient httpClient, ObjectMapper objectMapper) {
+        return new GithubHttpClient(new DefaultCatleanHttpClient(httpClient), objectMapper);
     }
 
     @Bean

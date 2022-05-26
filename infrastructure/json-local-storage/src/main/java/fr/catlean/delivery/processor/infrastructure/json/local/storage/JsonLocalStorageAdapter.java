@@ -39,6 +39,12 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
         }
     }
 
+    @Override
+    public boolean exists(String organisation, String date, String adapterName, String contentName) {
+        final Path jsonPath = buildJsonPath(organisation, date, adapterName, contentName);
+        return Files.exists(jsonPath);
+    }
+
     private Path buildJsonPath(String organisation, String date, String adapterName, String contentName) {
         return Path.of(
                 jsonStorageProperties.getRootDirectory()

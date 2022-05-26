@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 import static java.util.Objects.isNull;
 
@@ -87,13 +89,15 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                             properties.getToken());
             githubRepositoryDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
         }
-        final List<GithubPullRequestDTO> githubDetailedPullRequests =
-                githubRepositoryDTOList.stream().parallel()
-                        .map(githubPullRequestDTO -> githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(), repository.getName(), githubPullRequestDTO.getNumber(), properties.getToken()))
-                        .toList();
+
         try {
+            ForkJoinPool customThreadPool = new ForkJoinPool(2);
+            final List<GithubPullRequestDTO> githubDetailedPullRequests =
+                    customThreadPool.submit(() -> githubRepositoryDTOList.parallelStream()
+                            .map(githubPullRequestDTO -> githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
+                                    repository.getName(), githubPullRequestDTO.getNumber(), properties.getToken())).toList()).get();
             return githubHttpClient.dtoToBytes(githubDetailedPullRequests.toArray());
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
@@ -101,6 +105,9 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     @Override
     public List<PullRequest> pullRequestsBytesToDomain(byte[] bytes) {
         try {
+            if (bytes.length == 0) {
+                return List.of();
+            }
             final GithubPullRequestDTO[] githubPullRequestDTOS = githubHttpClient.bytesToDto(bytes,
                     GithubPullRequestDTO[].class);
             return Arrays.stream(githubPullRequestDTOS).map(GithubMapper::mapPullRequestDtoToDomain).toList();

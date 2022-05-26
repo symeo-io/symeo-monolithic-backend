@@ -106,4 +106,22 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
     }
 
 
+    @Test
+    void should_return_empty_pull_requests_list_given_an_empty_byte_array_to_map_to_domain() {
+        // Given
+        final byte[] emptyBytes = new byte[0];
+        final String token = faker.pokemon().name();
+        final GithubProperties githubProperties = new GithubProperties();
+        githubProperties.setSize(3);
+        githubProperties.setToken(token);
+        final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
+        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper),
+                githubProperties);
+
+        // When
+        final List<PullRequest> pullRequestList = githubAdapter.pullRequestsBytesToDomain(emptyBytes);
+
+        // Then
+        Assertions.assertThat(pullRequestList).isEmpty();
+    }
 }
