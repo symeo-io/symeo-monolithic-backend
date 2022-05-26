@@ -3,6 +3,7 @@ package fr.catlean.delivery.processor.bootstrap;
 import fr.catlean.delivery.processor.bootstrap.configuration.*;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
+import fr.catlean.delivery.processor.infrastructure.postgres.configuration.PostgresConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

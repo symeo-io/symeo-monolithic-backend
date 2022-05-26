@@ -6,3 +6,41 @@ github:
   token: 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
 
 
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/catlean-delivery-processor?rewriteBatchedStatements=true
+    username: postgres
+    password: P@ssw0rd
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connectionTimeout: 10000
+      idleTimeout: 30000
+      maxLifetime: 60000
+      maximumPoolSize: 10
+      initial-size: 1
+      minimumIdle: 1
+  liquibase:
+    enabled: true
+    default-schema: public
+    clear-checksums: false
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    properties:
+      hibernate:
+        query:
+          in_clause_parameter_padding: true
+        event:
+          merge:
+            entity_copy_observer: allow
+        format_sql: false
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+        jdbc:
+          time_zone: Europe/Paris
+          batch_size: 10000
+        temp:
+          use_jdbc_metadata_defaults: false
+    generate-ddl: false
+    open-in-view: false
+    show-sql: true

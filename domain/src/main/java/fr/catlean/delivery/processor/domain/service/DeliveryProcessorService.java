@@ -22,9 +22,11 @@ public class DeliveryProcessorService {
     public List<PullRequest> collectPullRequestsForOrganisation(String organisation) {
         deliveryCommand.collectRepositoriesForOrganisation(organisation);
         final List<PullRequest> pullRequests =
-                deliveryQuery.readRepositoriesForOrganisation(organisation).stream().map(
-                        this::collectPullRequestForRepository
-                ).flatMap(Collection::stream).toList();
+                deliveryQuery.readRepositoriesForOrganisation(organisation).stream()
+                        .filter(repository -> !repository.getName().equals("saas-frontend"))
+                        .map(
+                                this::collectPullRequestForRepository
+                        ).flatMap(Collection::stream).toList();
         expositionStorage.savePullRequestDetails(pullRequests);
         return pullRequests;
 
