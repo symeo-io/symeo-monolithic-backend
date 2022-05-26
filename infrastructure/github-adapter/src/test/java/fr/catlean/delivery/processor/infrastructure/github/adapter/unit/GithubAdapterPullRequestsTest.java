@@ -8,7 +8,6 @@ import fr.catlean.delivery.processor.infrastructure.github.adapter.client.Github
 import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.mapper.GithubMapper;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.properties.GithubProperties;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
@@ -102,7 +102,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
                 pr76, pr77,
                 pr78, pr79, pr80).map(GithubMapper::mapPullRequestDtoToDomain).toList();
         final List<PullRequest> pullRequestList = githubAdapter.pullRequestsBytesToDomain(rawPullRequestsForRepository);
-        Assertions.assertThat(pullRequestList).containsAll(expectedResults);
+        assertThat(pullRequestList).containsAll(expectedResults);
     }
 
 
@@ -122,6 +122,35 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         final List<PullRequest> pullRequestList = githubAdapter.pullRequestsBytesToDomain(emptyBytes);
 
         // Then
-        Assertions.assertThat(pullRequestList).isEmpty();
+        assertThat(pullRequestList).isEmpty();
+    }
+
+
+    @Test
+    void should_map_github_pr_dto_to_pull_request_domain() throws IOException {
+        // Given
+        final GithubPullRequestDTO pr80 = getStubsFromClassT(
+                "get_pull_request_details_for_pr_id", "get_pr_80.json",
+                GithubPullRequestDTO.class);
+
+        // When
+        final PullRequest pullRequest = GithubMapper.mapPullRequestDtoToDomain(pr80);
+
+        // Then
+        assertThat(pullRequest.getId()).isEqualTo(pr80.getId());
+        assertThat(pullRequest.getCommitNumber()).isEqualTo(pr80.getCommits());
+        assertThat(pullRequest.getDeletedLineNumber()).isEqualTo(pr80.getDeletions());
+        assertThat(pullRequest.getAddedLineNumber()).isEqualTo(pr80.getAdditions());
+        assertThat(pullRequest.getCreationDate()).isEqualTo(pr80.getCreatedAt());
+        assertThat(pullRequest.getLastUpdateDate()).isEqualTo(pr80.getUpdatedAt());
+        assertThat(pullRequest.getMergeDate()).isEqualTo(pr80.getMergedAt());
+        assertThat(pullRequest.getIsMerged()).isEqualTo(pr80.getMerged());
+        assertThat(pullRequest.getIsDraft()).isEqualTo(pr80.getDraft());
+        assertThat(pullRequest.getState()).isEqualTo(pr80.getState());
+        assertThat(pullRequest.getNumber()).isEqualTo(pr80.getNumber());
+        assertThat(pullRequest.getVcsUrl()).isEqualTo(pr80.getHtmlUrl());
+        assertThat(pullRequest.getTitle()).isEqualTo(pr80.getTitle());
+        assertThat(pullRequest.getAuthorLogin()).isEqualTo(pr80.getUser().getLogin());
+
     }
 }

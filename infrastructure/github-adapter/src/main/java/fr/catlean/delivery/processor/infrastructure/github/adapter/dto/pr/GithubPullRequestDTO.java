@@ -1,10 +1,7 @@
 
 package fr.catlean.delivery.processor.infrastructure.github.adapter.dto.pr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.processing.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -94,13 +91,13 @@ public class GithubPullRequestDTO {
     @JsonProperty("body")
     private Object body;
     @JsonProperty("created_at")
-    private String createdAt;
+    private Date createdAt;
     @JsonProperty("updated_at")
-    private String updatedAt;
+    private Date updatedAt;
     @JsonProperty("closed_at")
-    private Object closedAt;
+    private Date closedAt;
     @JsonProperty("merged_at")
-    private Object mergedAt;
+    private Date mergedAt;
     @JsonProperty("merge_commit_sha")
     private String mergeCommitSha;
     @JsonProperty("assignee")
@@ -362,31 +359,31 @@ public class GithubPullRequestDTO {
     }
 
     @JsonProperty("created_at")
-    public String getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
     @JsonProperty("created_at")
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public GithubPullRequestDTO withCreatedAt(String createdAt) {
+    public GithubPullRequestDTO withCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
         return this;
     }
 
     @JsonProperty("updated_at")
-    public String getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
     @JsonProperty("updated_at")
-    public void setUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public GithubPullRequestDTO withUpdatedAt(String updatedAt) {
+    public GithubPullRequestDTO withUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
@@ -397,26 +394,26 @@ public class GithubPullRequestDTO {
     }
 
     @JsonProperty("closed_at")
-    public void setClosedAt(Object closedAt) {
+    public void setClosedAt(Date closedAt) {
         this.closedAt = closedAt;
     }
 
-    public GithubPullRequestDTO withClosedAt(Object closedAt) {
+    public GithubPullRequestDTO withClosedAt(Date closedAt) {
         this.closedAt = closedAt;
         return this;
     }
 
     @JsonProperty("merged_at")
-    public Object getMergedAt() {
+    public Date getMergedAt() {
         return mergedAt;
     }
 
     @JsonProperty("merged_at")
-    public void setMergedAt(Object mergedAt) {
+    public void setMergedAt(Date mergedAt) {
         this.mergedAt = mergedAt;
     }
 
-    public GithubPullRequestDTO withMergedAt(Object mergedAt) {
+    public GithubPullRequestDTO withMergedAt(Date mergedAt) {
         this.mergedAt = mergedAt;
         return this;
     }

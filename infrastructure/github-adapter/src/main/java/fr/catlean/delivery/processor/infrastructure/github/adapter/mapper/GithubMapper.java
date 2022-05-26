@@ -17,6 +17,19 @@ public interface GithubMapper {
     static PullRequest mapPullRequestDtoToDomain(final GithubPullRequestDTO githubPullRequestDTO) {
         return PullRequest.builder()
                 .id(githubPullRequestDTO.getId())
+                .title(githubPullRequestDTO.getTitle())
+                .number(githubPullRequestDTO.getNumber())
+                .isDraft(githubPullRequestDTO.getDraft())
+                .isMerged(githubPullRequestDTO.getMerged())
+                .addedLineNumber(githubPullRequestDTO.getAdditions())
+                .deletedLineNumber(githubPullRequestDTO.getDeletions())
+                .commitNumber(githubPullRequestDTO.getCommits())
+                .creationDate(githubPullRequestDTO.getCreatedAt())
+                .mergeDate(githubPullRequestDTO.getMergedAt())
+                .lastUpdateDate(githubPullRequestDTO.getUpdatedAt())
+                .state(githubPullRequestDTO.getState())
+                .vcsUrl(githubPullRequestDTO.getHtmlUrl())
+                .authorLogin(githubPullRequestDTO.getUser().getLogin())
                 .build();
     }
 
