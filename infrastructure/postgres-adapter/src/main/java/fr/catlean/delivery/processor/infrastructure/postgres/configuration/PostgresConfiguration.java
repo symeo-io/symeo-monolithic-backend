@@ -1,4 +1,4 @@
-package fr.catlean.delivery.processor.infrastructure.postgres.configuration;
+package fr.catlean.delivery.processor.bootstrap.configuration;
 
 import fr.catlean.delivery.processor.infrastructure.postgres.PostgresAdapter;
 import fr.catlean.delivery.processor.infrastructure.postgres.repository.PullRequestRepository;

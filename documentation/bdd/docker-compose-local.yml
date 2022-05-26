@@ -1,13 +1,33 @@
 version: '3'
 
 services:
-  database:
+  metabase-database:
     image: "postgres:13"
-    container_name: "postgres-catlean-delivery-processor"
-    network_mode: host
+    container_name: "postgres-metabase"
+    hostname: postgres_host
     environment:
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=metabase
       - POSTGRES_PASSWORD=P@ssw0rd
-      - POSTGRES_DB=catlean-delivery-processor
+      - POSTGRES_DB=metabase
     ports:
-      - "5432:5432"
+      - "5432:5434"
+    networks:
+      - metabase-network
+
+  metabase:
+    image: "metabase/metabase:latest"
+    environment:
+      - MB_DB_TYPE=postgres
+      - MB_DB_DBNAME=metabase
+      - MB_DB_PORT=5434
+      - MB_DB_USER=metabase
+      - MB_DB_PASS=P@ssw0rd
+      - MB_DB_HOST=postgres_host
+    ports:
+      - "3000:3000"
+    networks:
+      - metabase-network
+
+networks:
+  metabase-network:
+    driver: bridge
