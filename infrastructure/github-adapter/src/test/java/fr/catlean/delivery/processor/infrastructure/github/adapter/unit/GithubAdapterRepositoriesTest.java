@@ -4,7 +4,7 @@ import catlean.http.cient.CatleanHttpClient;
 import fr.catlean.delivery.processor.domain.model.Repository;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.GithubAdapter;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient;
-import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubRepositoryDTO;
+import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.mapper.GithubMapper;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.properties.GithubProperties;
 import org.junit.jupiter.api.Test;
@@ -73,7 +73,7 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
                 githubProperties);
         final GithubRepositoryDTO[] githubRepositoryStubs1 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_1_size_3" +
-                ".json", GithubRepositoryDTO[].class);
+                        ".json", GithubRepositoryDTO[].class);
 
         // When
         final List<Repository> repositories =

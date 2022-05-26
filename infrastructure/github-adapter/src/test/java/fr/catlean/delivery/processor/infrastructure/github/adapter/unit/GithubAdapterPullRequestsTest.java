@@ -5,7 +5,7 @@ import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.GithubAdapter;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient;
-import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.GithubPullRequestDTO;
+import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.mapper.GithubMapper;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.properties.GithubProperties;
 import org.assertj.core.api.Assertions;

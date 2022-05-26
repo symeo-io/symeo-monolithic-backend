@@ -9,6 +9,7 @@
         <module>domain</module>
         <module>infrastructure</module>
         <module>catlean-http-client</module>
+        <module>catlean-json-to-pojo-generator</module>
     </modules>
 
     <parent>
