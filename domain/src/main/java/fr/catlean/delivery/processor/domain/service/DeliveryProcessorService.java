@@ -21,8 +21,10 @@ public class DeliveryProcessorService {
 
     public List<PullRequest> collectPullRequestsForOrganisation(String organisation) {
         deliveryCommand.collectRepositoriesForOrganisation(organisation);
+        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisation);
+//        repositories = repositories.subList(0,5);
         final List<PullRequest> pullRequests =
-                deliveryQuery.readRepositoriesForOrganisation(organisation).stream()
+                repositories.stream()
                         .filter(repository -> !repository.getName().equals("saas-frontend"))
                         .map(
                                 this::collectPullRequestForRepository

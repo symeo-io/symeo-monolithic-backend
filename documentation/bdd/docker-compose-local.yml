@@ -1,16 +1,29 @@
 version: '3'
 
 services:
+  exposition-database:
+    image: "postgres:13"
+    container_name: "exposition-database"
+    hostname: exposition_database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=P@ssw0rd
+      - POSTGRES_DB=catlean-delivery-processor
+    ports:
+      - "5432:5432"
+    networks:
+      - metabase-network
+
   metabase-database:
     image: "postgres:13"
     container_name: "postgres-metabase"
-    hostname: postgres_host
+    hostname: postgres_metabase_host
     environment:
       - POSTGRES_USER=metabase
       - POSTGRES_PASSWORD=P@ssw0rd
       - POSTGRES_DB=metabase
     ports:
-      - "5432:5434"
+      - "5433:5432"
     networks:
       - metabase-network
 
@@ -19,10 +32,10 @@ services:
     environment:
       - MB_DB_TYPE=postgres
       - MB_DB_DBNAME=metabase
-      - MB_DB_PORT=5434
+      - MB_DB_PORT=5432
       - MB_DB_USER=metabase
       - MB_DB_PASS=P@ssw0rd
-      - MB_DB_HOST=postgres_host
+      - MB_DB_HOST=postgres_metabase_host
     ports:
       - "3000:3000"
     networks:

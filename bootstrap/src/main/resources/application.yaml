@@ -7,6 +7,8 @@ github:
 
 
 spring:
+  liquibase:
+    enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5432/catlean-delivery-processor?rewriteBatchedStatements=true
     username: postgres
@@ -19,10 +21,6 @@ spring:
       maximumPoolSize: 10
       initial-size: 1
       minimumIdle: 1
-  liquibase:
-    enabled: true
-    default-schema: public
-    clear-checksums: false
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
     properties:
@@ -43,4 +41,4 @@ spring:
           use_jdbc_metadata_defaults: false
     generate-ddl: false
     open-in-view: false
-    show-sql: true
+    show-sql: false

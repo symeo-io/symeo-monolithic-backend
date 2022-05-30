@@ -4,9 +4,7 @@ databaseChangeLog:
       author: poucif
       changes:
         - createSequence:
-            sequenceName: pull_request
-
-
+            sequenceName: pull_request_sequence
         - createTable:
             tableName: pull_request
             columns:

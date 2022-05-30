@@ -18,8 +18,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.mock;
-
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
 public class PostgresAdapterTestIT {
