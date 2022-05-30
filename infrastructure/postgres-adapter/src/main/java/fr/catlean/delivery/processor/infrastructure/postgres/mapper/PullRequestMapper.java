@@ -27,7 +27,7 @@ public interface PullRequestMapper {
                 .vcsUrl(pullRequest.getVcsUrl())
                 .state(pullRequest.getState())
                 .authorLogin(pullRequest.getAuthorLogin())
-                .number(pullRequest.getNumber())
+                .vcsId(pullRequest.getNumber())
                 .build();
     }
 }

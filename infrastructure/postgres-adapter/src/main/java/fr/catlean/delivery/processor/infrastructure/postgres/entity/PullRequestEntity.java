@@ -15,19 +15,19 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "pull_request")
+@Table(name = "pull_request",schema = "exposition_storage")
 @EntityListeners(AuditingEntityListener.class)
 public class PullRequestEntity {
 
     @Id
     @Column(name = "pk")
-    @GeneratedValue(generator = "pull_request_sequence", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "pull_request_sequence", sequenceName = "pull_request_sequence", allocationSize = 1)
+    @GeneratedValue(generator = "exposition_storage.pull_request_sequence", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "exposition_storage.pull_request_sequence", sequenceName = "exposition_storage.pull_request_sequence", allocationSize = 1)
     Long pk;
 
-    @Column(name = "number", nullable = false)
+    @Column(name = "vcs_id", nullable = false)
     @NotNull
-    int number;
+    int vcsId;
     @Column(name = "commit_number")
     int commitNumber;
     @Column(name = "deleted_line_number")
