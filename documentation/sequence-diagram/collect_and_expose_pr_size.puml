@@ -1,0 +1,40 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+participant cronjob order 10
+participant "catlean-processor" as cp order 20
+participant github order 30
+database "raw-storage" order 40
+database "exposition-storage" order 50
+collections "google-sheet" order 60
+actor User order 70
+
+
+
+alt collect data
+cronjob -> cp : trigger data collection
+cronjob <-- cp
+"catlean-processor" -> github: get all repositories
+"catlean-processor" <-- github
+"catlean-processor" -> "raw-storage": save repositories
+"catlean-processor" <-- "raw-storage"
+"catlean-processor" -> github: get all pull requests for repository
+"catlean-processor" <-- github
+"catlean-processor" -> github: get pull request details
+"catlean-processor" <-- github
+"catlean-processor" -> "raw-storage": save pull requests
+"catlean-processor" <-- "raw-storage"
+end
+
+alt aggregate data
+"catlean-processor" -> "raw-storage": read pull requests
+"catlean-processor" <-- "raw-storage": pull requests
+"catlean-processor" -> "catlean-processor": compute pull requests insights
+"catlean-processor" -> "exposition-storage": save pull requests insights
+end
+
+alt expose data
+User -> "google-sheet": read insights
+"google-sheet" -> "exposition-storage": read insights
+end
+
+@enduml
