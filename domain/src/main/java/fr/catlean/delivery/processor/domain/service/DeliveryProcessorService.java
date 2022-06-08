@@ -25,13 +25,19 @@ public class DeliveryProcessorService {
         List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisationAccount);
         final List<PullRequest> pullRequests =
                 repositories.stream()
-                        .filter(repository -> !repository.getName().equals("saas-frontend"))
+                        .filter(repository -> filterRepositoryForOrganisationAccount(organisationAccount, repository))
                         .map(
                                 this::collectPullRequestForRepository
                         ).flatMap(Collection::stream).toList();
         expositionStorage.savePullRequestDetails(pullRequests);
         return pullRequests;
+    }
 
+    private static boolean filterRepositoryForOrganisationAccount(OrganisationAccount organisationAccount,
+                                                                  Repository repository) {
+        final List<String> allTeamsRepositories =
+                organisationAccount.getVcsConfiguration().getAllTeamsRepositories();
+        return allTeamsRepositories.isEmpty() || allTeamsRepositories.contains(repository.getName());
     }
 
     private List<PullRequest> collectPullRequestForRepository(Repository repository) {

@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
 import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
+import fr.catlean.delivery.processor.domain.model.account.VcsConfiguration;
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
@@ -26,7 +27,8 @@ public class DeliveryQueryTest {
     void should_read_repositories_given_an_organisation() {
         // Given
         final String organisationName = faker.pokemon().name();
-        final OrganisationAccount organisationAccount = OrganisationAccount.builder().name(organisationName).build();
+        final OrganisationAccount organisationAccount =
+                OrganisationAccount.builder().name(organisationName).vcsConfiguration(VcsConfiguration.builder().build()).build();
         final String contentName = faker.animal().name();
 
         final VersionControlSystemAdapter versionControlSystemAdapter =
