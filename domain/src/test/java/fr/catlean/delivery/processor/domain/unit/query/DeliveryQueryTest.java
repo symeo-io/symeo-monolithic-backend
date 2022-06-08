@@ -27,8 +27,11 @@ public class DeliveryQueryTest {
     void should_read_repositories_given_an_organisation() {
         // Given
         final String organisationName = faker.pokemon().name();
+        final String vcsOrganisationName = faker.harryPotter().book();
         final OrganisationAccount organisationAccount =
-                OrganisationAccount.builder().name(organisationName).vcsConfiguration(VcsConfiguration.builder().build()).build();
+                OrganisationAccount.builder().name(organisationName).vcsConfiguration(
+                        VcsConfiguration.builder().organisationName(vcsOrganisationName).build()
+                ).build();
         final String contentName = faker.animal().name();
 
         final VersionControlSystemAdapter versionControlSystemAdapter =
@@ -43,7 +46,7 @@ public class DeliveryQueryTest {
 
         // When
         when(versionControlSystemAdapter.getName()).thenReturn(contentName);
-        when(rawStorageAdapter.read(organisationName, dateAsString, contentName, Repository.ALL))
+        when(rawStorageAdapter.read(vcsOrganisationName, dateAsString, contentName, Repository.ALL))
                 .thenReturn(dummyBytes);
         when(versionControlSystemAdapter.repositoriesBytesToDomain(dummyBytes)).thenReturn(
                 repositoriesStub

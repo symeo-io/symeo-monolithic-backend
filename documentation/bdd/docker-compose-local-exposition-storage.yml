@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  exposition-database-standalone:
+    image: "postgres:13"
+    container_name: "exposition-database-standalone"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=P@ssw0rd
+      - POSTGRES_DB=catlean-delivery-processor
+    ports:
+      - "5432:5432"

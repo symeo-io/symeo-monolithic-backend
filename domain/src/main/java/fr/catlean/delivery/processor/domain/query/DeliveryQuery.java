@@ -23,7 +23,7 @@ public class DeliveryQuery {
     }
 
     public List<Repository> readRepositoriesForOrganisation(OrganisationAccount organisationAccount) {
-        final byte[] repositoriesBytes = rawStorageAdapter.read(organisationAccount.getName(),
+        final byte[] repositoriesBytes = rawStorageAdapter.read(organisationAccount.getVcsConfiguration().getOrganisationName(),
                 SDF.format(new Date()), versionControlSystemAdapter.getName(), Repository.ALL);
         return versionControlSystemAdapter.repositoriesBytesToDomain(repositoriesBytes);
     }
