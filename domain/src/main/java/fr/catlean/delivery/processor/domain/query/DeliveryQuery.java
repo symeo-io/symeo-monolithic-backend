@@ -2,6 +2,7 @@ package fr.catlean.delivery.processor.domain.query;
 
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
+import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 
@@ -21,8 +22,8 @@ public class DeliveryQuery {
         this.versionControlSystemAdapter = versionControlSystemAdapter;
     }
 
-    public List<Repository> readRepositoriesForOrganisation(String organisation) {
-        final byte[] repositoriesBytes = rawStorageAdapter.read(organisation,
+    public List<Repository> readRepositoriesForOrganisation(OrganisationAccount organisationAccount) {
+        final byte[] repositoriesBytes = rawStorageAdapter.read(organisationAccount.getName(),
                 SDF.format(new Date()), versionControlSystemAdapter.getName(), Repository.ALL);
         return versionControlSystemAdapter.repositoriesBytesToDomain(repositoriesBytes);
     }

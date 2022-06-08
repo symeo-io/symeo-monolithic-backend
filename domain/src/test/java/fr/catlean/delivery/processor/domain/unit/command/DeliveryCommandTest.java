@@ -4,6 +4,8 @@ import com.github.javafaker.Faker;
 import fr.catlean.delivery.processor.domain.command.DeliveryCommand;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
+import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
+import fr.catlean.delivery.processor.domain.model.account.VcsConfiguration;
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,12 @@ public class DeliveryCommandTest {
     @Test
     void should_collect_all_repositories_given_an_organisation() {
         // Given
-        final String organisation = faker.pokemon().name();
+        final String organisationName = faker.pokemon().name();
+        final String vcsOrganisationName = faker.pokemon().location();
+        final OrganisationAccount organisationAccount = OrganisationAccount.builder()
+                .name(organisationName)
+                .vcsConfiguration(VcsConfiguration.builder().organisationName(vcsOrganisationName).build())
+                .build();
         final String vcsAdapterName = faker.animal().name();
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
@@ -30,19 +37,24 @@ public class DeliveryCommandTest {
         final byte[] bytes = new byte[0];
 
         // When
-        when(rawStorageAdapter.exists(organisation, today, vcsAdapterName, Repository.ALL)).thenReturn(false);
-        when(versionControlSystemAdapter.getRawRepositories(organisation)).thenReturn(bytes);
+        when(rawStorageAdapter.exists(vcsOrganisationName, today, vcsAdapterName, Repository.ALL)).thenReturn(false);
+        when(versionControlSystemAdapter.getRawRepositories(vcsOrganisationName)).thenReturn(bytes);
         when(versionControlSystemAdapter.getName()).thenReturn(vcsAdapterName);
-        deliveryCommand.collectRepositoriesForOrganisation(organisation);
+        deliveryCommand.collectRepositoriesForOrganisation(organisationAccount);
 
         // Then
-        verify(rawStorageAdapter, times(1)).save(organisation, today, vcsAdapterName, Repository.ALL, bytes);
+        verify(rawStorageAdapter, times(1)).save(vcsOrganisationName, today, vcsAdapterName, Repository.ALL, bytes);
     }
 
     @Test
     void should_not_collect_all_repositories_given_an_organisation_with_repositories_already_collected() {
         // Given
-        final String organisation = faker.pokemon().name();
+        final String organisationName = faker.pokemon().name();
+        final String vcsOrganisationName = faker.pokemon().location();
+        final OrganisationAccount organisationAccount =
+                OrganisationAccount.builder().name(organisationName)
+                        .vcsConfiguration(VcsConfiguration.builder().organisationName(vcsOrganisationName).build()).
+                        build();
         final String vcsAdapterName = faker.animal().name();
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
@@ -51,12 +63,12 @@ public class DeliveryCommandTest {
 
         // When
         when(versionControlSystemAdapter.getName()).thenReturn(vcsAdapterName);
-        when(rawStorageAdapter.exists(organisation, today, vcsAdapterName, Repository.ALL)).thenReturn(true);
-        deliveryCommand.collectRepositoriesForOrganisation(organisation);
+        when(rawStorageAdapter.exists(vcsOrganisationName, today, vcsAdapterName, Repository.ALL)).thenReturn(true);
+        deliveryCommand.collectRepositoriesForOrganisation(organisationAccount);
 
         // Then
-        verify(rawStorageAdapter, times(1)).exists(organisation, today, vcsAdapterName, Repository.ALL);
-        verify(rawStorageAdapter, times(0)).save(organisation, today, vcsAdapterName, Repository.ALL, bytes);
+        verify(rawStorageAdapter, times(1)).exists(vcsOrganisationName, today, vcsAdapterName, Repository.ALL);
+        verify(rawStorageAdapter, times(0)).save(vcsOrganisationName, today, vcsAdapterName, Repository.ALL, bytes);
     }
 
 
@@ -104,8 +116,6 @@ public class DeliveryCommandTest {
         verify(rawStorageAdapter, times(1)).exists(repository.getOrganisationName(), today,
                 versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()));
     }
-
-
 
 
 }

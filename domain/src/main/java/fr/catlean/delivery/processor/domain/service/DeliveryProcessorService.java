@@ -3,6 +3,7 @@ package fr.catlean.delivery.processor.domain.service;
 import fr.catlean.delivery.processor.domain.command.DeliveryCommand;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
+import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
 import fr.catlean.delivery.processor.domain.port.out.ExpositionStorage;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
 import lombok.AllArgsConstructor;
@@ -19,10 +20,9 @@ public class DeliveryProcessorService {
     private final DeliveryQuery deliveryQuery;
     private final ExpositionStorage expositionStorage;
 
-    public List<PullRequest> collectPullRequestsForOrganisation(String organisation) {
-        deliveryCommand.collectRepositoriesForOrganisation(organisation);
-        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisation);
-//        repositories = repositories.subList(0,5);
+    public List<PullRequest> collectPullRequestsForOrganisation(OrganisationAccount organisationAccount) {
+        deliveryCommand.collectRepositoriesForOrganisation(organisationAccount);
+        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisationAccount);
         final List<PullRequest> pullRequests =
                 repositories.stream()
                         .filter(repository -> !repository.getName().equals("saas-frontend"))

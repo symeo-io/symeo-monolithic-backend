@@ -3,6 +3,7 @@ package fr.catlean.delivery.processor.domain.unit.query;
 import com.github.javafaker.Faker;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
+import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
@@ -24,7 +25,8 @@ public class DeliveryQueryTest {
     @Test
     void should_read_repositories_given_an_organisation() {
         // Given
-        final String organisation = faker.pokemon().name();
+        final String organisationName = faker.pokemon().name();
+        final OrganisationAccount organisationAccount = OrganisationAccount.builder().name(organisationName).build();
         final String contentName = faker.animal().name();
 
         final VersionControlSystemAdapter versionControlSystemAdapter =
@@ -39,12 +41,12 @@ public class DeliveryQueryTest {
 
         // When
         when(versionControlSystemAdapter.getName()).thenReturn(contentName);
-        when(rawStorageAdapter.read(organisation, dateAsString, contentName, Repository.ALL))
+        when(rawStorageAdapter.read(organisationName, dateAsString, contentName, Repository.ALL))
                 .thenReturn(dummyBytes);
         when(versionControlSystemAdapter.repositoriesBytesToDomain(dummyBytes)).thenReturn(
                 repositoriesStub
         );
-        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisation);
+        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisationAccount);
 
         // Then
         assertThat(repositories).isEqualTo(repositoriesStub);

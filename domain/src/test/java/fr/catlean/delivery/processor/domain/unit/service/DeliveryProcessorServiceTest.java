@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import fr.catlean.delivery.processor.domain.command.DeliveryCommand;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
+import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
 import fr.catlean.delivery.processor.domain.port.out.ExpositionStorage;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
 import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
@@ -26,14 +27,15 @@ public class DeliveryProcessorServiceTest {
         final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
         final DeliveryProcessorService deliveryProcessorService = new DeliveryProcessorService(deliveryCommand,
                 deliveryQuery, expositionStorage);
-        final String organisation = faker.name().name();
+        final String organisationName = faker.name().name();
+        final OrganisationAccount organisationAccount = OrganisationAccount.builder().name(organisationName).build();
 
         // When
         final Repository repo1 =
-                Repository.builder().name(faker.pokemon().name() + "1").organisationName(organisation).build();
+                Repository.builder().name(faker.pokemon().name() + "1").organisationName(organisationName).build();
         final Repository repo2 =
-                Repository.builder().name(faker.pokemon().name() + "2").organisationName(organisation).build();
-        when(deliveryQuery.readRepositoriesForOrganisation(organisation))
+                Repository.builder().name(faker.pokemon().name() + "2").organisationName(organisationName).build();
+        when(deliveryQuery.readRepositoriesForOrganisation(organisationAccount))
                 .thenReturn(
                         List.of(
                                 repo1,
@@ -52,7 +54,7 @@ public class DeliveryProcessorServiceTest {
         when(deliveryQuery.readPullRequestsForRepository(repo2))
                 .thenReturn(List.of());
         final List<PullRequest> pullRequestList =
-                deliveryProcessorService.collectPullRequestsForOrganisation(organisation);
+                deliveryProcessorService.collectPullRequestsForOrganisation(organisationAccount);
 
         // Then
         Assertions.assertThat(pullRequestList).containsAll(List.of(pr11, pr12));
@@ -66,17 +68,19 @@ public class DeliveryProcessorServiceTest {
         final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
         final DeliveryProcessorService deliveryProcessorService = new DeliveryProcessorService(deliveryCommand,
                 deliveryQuery, expositionStorage);
-        final String organisation = faker.name().name();
+        final String vcsOrganisationName = faker.name().name();
+        final String organisationName = faker.name().lastName();
+        final OrganisationAccount organisationAccount = OrganisationAccount.builder().name(organisationName).build();
 
         // When
         final Repository repo1 =
-                Repository.builder().name(faker.pokemon().name() + "1").organisationName(organisation).build();
+                Repository.builder().name(faker.pokemon().name() + "1").organisationName(vcsOrganisationName).build();
         final Repository repo2 =
-                Repository.builder().name(faker.pokemon().name() + "2").organisationName(organisation).build();
+                Repository.builder().name(faker.pokemon().name() + "2").organisationName(vcsOrganisationName).build();
         final Repository repo3 =
-                Repository.builder().name(faker.pokemon().name() + "3").organisationName(organisation).build();
+                Repository.builder().name(faker.pokemon().name() + "3").organisationName(vcsOrganisationName).build();
 
-        when(deliveryQuery.readRepositoriesForOrganisation(organisation))
+        when(deliveryQuery.readRepositoriesForOrganisation(organisationAccount))
                 .thenReturn(
                         List.of(
                                 repo1,
@@ -111,7 +115,7 @@ public class DeliveryProcessorServiceTest {
                                 pr32
                         )
                 );
-        List<PullRequest> pullRequestList = deliveryProcessorService.collectPullRequestsForOrganisation(organisation);
+        List<PullRequest> pullRequestList = deliveryProcessorService.collectPullRequestsForOrganisation(organisationAccount);
 
         // Then
         Assertions.assertThat(pullRequestList).containsAll(List.of(pr11, pr12, pr21, pr22, pr31, pr32));

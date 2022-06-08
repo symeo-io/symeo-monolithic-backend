@@ -2,6 +2,7 @@ package fr.catlean.delivery.processor.domain.command;
 
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
+import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 
@@ -21,14 +22,16 @@ public class DeliveryCommand {
         this.versionControlSystemAdapter = versionControlSystemAdapter;
     }
 
-    public void collectRepositoriesForOrganisation(String organisation) {
+    public void collectRepositoriesForOrganisation(OrganisationAccount organisationAccount) {
         final String today = SDF.format(new Date());
-        if (rawStorageAdapter.exists(organisation, today, versionControlSystemAdapter.getName(), Repository.ALL)) {
+        if (rawStorageAdapter.exists(organisationAccount.getVcsConfiguration().getOrganisationName(), today,
+                versionControlSystemAdapter.getName(), Repository.ALL)) {
             return;
         }
-        final byte[] rawRepositories = versionControlSystemAdapter.getRawRepositories(organisation);
+        final byte[] rawRepositories =
+                versionControlSystemAdapter.getRawRepositories(organisationAccount.getVcsConfiguration().getOrganisationName());
         rawStorageAdapter.save(
-                organisation,
+                organisationAccount.getVcsConfiguration().getOrganisationName(),
                 today,
                 versionControlSystemAdapter.getName(),
                 Repository.ALL,
