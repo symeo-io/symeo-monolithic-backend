@@ -17,10 +17,18 @@ public class OrganisationAccount {
     @Builder.Default
     List<TeamAccount> teamAccounts = new ArrayList<>();
 
-    public OrganisationAccount addTeam(String teamName, List<String> teamVcsRepositoryNames) {
+    public OrganisationAccount addTeam(final String teamName, final List<String> teamVcsRepositoryNames,
+                                       final Integer pullRequestLineNumberLimit,
+                                       final Integer pullRequestDayNumberLimit) {
         final List<VcsTeam> vcsTeams = this.vcsConfiguration.getVcsTeams();
         final List<TeamAccount> teamAccounts = this.getTeamAccounts();
-        vcsTeams.add(VcsTeam.builder().name(teamName).vcsRepositoryNames(teamVcsRepositoryNames).build());
+        vcsTeams.add(
+                VcsTeam.builder()
+                        .name(teamName)
+                        .vcsRepositoryNames(teamVcsRepositoryNames)
+                        .pullRequestLineNumberLimit(pullRequestLineNumberLimit)
+                        .pullRequestDayNumberLimit(pullRequestDayNumberLimit)
+                        .build());
         teamAccounts.add(TeamAccount.builder().name(teamName).build());
         return this.toBuilder()
                 .teamAccounts(teamAccounts)

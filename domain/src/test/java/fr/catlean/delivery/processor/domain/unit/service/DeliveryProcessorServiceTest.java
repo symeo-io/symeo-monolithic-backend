@@ -85,8 +85,8 @@ public class DeliveryProcessorServiceTest {
                 .build();
         final String team1Name = faker.pokemon().name() + "team1";
         final String team2Name = faker.pokemon().name() + "team2";
-        organisationAccount.addTeam(team1Name, List.of(repo1Name, repo3Name));
-        organisationAccount.addTeam(team2Name, List.of(repo4Name));
+        organisationAccount.addTeam(team1Name, List.of(repo1Name, repo3Name), 1000,5);
+        organisationAccount.addTeam(team2Name, List.of(repo4Name), 500, 7);
 
         // When
         final Repository repo1 =
