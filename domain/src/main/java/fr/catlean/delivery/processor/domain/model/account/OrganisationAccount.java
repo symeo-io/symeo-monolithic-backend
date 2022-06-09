@@ -5,8 +5,10 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 @Builder(toBuilder = true)
 @Value
@@ -16,6 +18,8 @@ public class OrganisationAccount {
     VcsConfiguration vcsConfiguration;
     @Builder.Default
     List<TeamAccount> teamAccounts = new ArrayList<>();
+    @Builder.Default
+    TimeZone timeZone = TimeZone.getTimeZone(ZoneId.systemDefault());
 
     public OrganisationAccount addTeam(final String teamName, final List<String> teamVcsRepositoryNames,
                                        final Integer pullRequestLineNumberLimit,

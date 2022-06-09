@@ -23,6 +23,7 @@ public class PullRequest {
     String vcsUrl;
     String title;
     String authorLogin;
+    String repository;
 
     public static String getNameFromRepository(String repositoryName) {
         return ALL + "_" + repositoryName;
