@@ -5,9 +5,8 @@ create sequence if not exists exposition_storage.pull_request_sequence;
 -- auto-generated definition
 create table exposition_storage.pull_request
 (
-    pk                          bigint                     not null
-        constraint pull_request_pk
-            primary key,
+    id                          varchar(100)               not null
+        constraint pull_request_id primary key,
     vcs_id                      bigint                     not null,
     commit_number               bigint,
     deleted_line_number         bigint,

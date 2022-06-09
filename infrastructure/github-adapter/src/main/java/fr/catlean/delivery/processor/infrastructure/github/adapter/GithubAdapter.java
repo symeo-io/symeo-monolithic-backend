@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static fr.catlean.delivery.processor.infrastructure.github.adapter.mapper.GithubMapper.mapPullRequestDtoToDomain;
 import static java.util.Objects.isNull;
 
 @AllArgsConstructor
@@ -151,7 +152,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                 return List.of();
             }
             final GithubPullRequestDTO[] githubPullRequestDTOS = getGithubPullRequestDTOSFromBytes(bytes);
-            return Arrays.stream(githubPullRequestDTOS).map(GithubMapper::mapPullRequestDtoToDomain).toList();
+            return Arrays.stream(githubPullRequestDTOS).map(githubPullRequestDTO -> mapPullRequestDtoToDomain(githubPullRequestDTO, this.getName())).toList();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

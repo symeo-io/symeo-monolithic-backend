@@ -14,9 +14,10 @@ public interface GithubMapper {
                 .build();
     }
 
-    static PullRequest mapPullRequestDtoToDomain(final GithubPullRequestDTO githubPullRequestDTO) {
+    static PullRequest mapPullRequestDtoToDomain(final GithubPullRequestDTO githubPullRequestDTO,
+                                                 final String githubPlatformName) {
         return PullRequest.builder()
-                .id(githubPullRequestDTO.getId())
+                .id(githubPlatformName + "-" + githubPullRequestDTO.getId().toString())
                 .title(githubPullRequestDTO.getTitle())
                 .number(githubPullRequestDTO.getNumber())
                 .isDraft(githubPullRequestDTO.getDraft())

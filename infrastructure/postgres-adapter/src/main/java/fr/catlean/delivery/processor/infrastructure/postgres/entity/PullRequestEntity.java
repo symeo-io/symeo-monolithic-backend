@@ -3,6 +3,7 @@ package fr.catlean.delivery.processor.infrastructure.postgres.entity;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,16 +16,14 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "pull_request",schema = "exposition_storage")
+@Table(name = "pull_request", schema = "exposition_storage")
 @EntityListeners(AuditingEntityListener.class)
 public class PullRequestEntity {
 
     @Id
-    @Column(name = "pk")
-    @GeneratedValue(generator = "exposition_storage.pull_request_sequence", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "exposition_storage.pull_request_sequence", sequenceName = "exposition_storage.pull_request_sequence", allocationSize = 1)
-    Long pk;
-
+    @Column(name = "id", nullable = false)
+    @NaturalId
+    String id;
     @Column(name = "vcs_id", nullable = false)
     @NotNull
     int vcsId;

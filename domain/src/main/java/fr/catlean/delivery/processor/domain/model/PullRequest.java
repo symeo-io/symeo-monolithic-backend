@@ -9,7 +9,7 @@ import java.util.Date;
 @Builder
 public class PullRequest {
     private static final String ALL = "pull_requests";
-    int id;
+    String id;
     Integer commitNumber;
     Integer deletedLineNumber;
     Integer addedLineNumber;

@@ -12,6 +12,7 @@ public interface PullRequestMapper {
 
     static PullRequestEntity domainToEntity(final PullRequest pullRequest) {
         return PullRequestEntity.builder()
+                .id(pullRequest.getId())
                 .isDraft(pullRequest.getIsDraft())
                 .isMerged(pullRequest.getIsMerged())
                 .commitNumber(pullRequest.getCommitNumber())

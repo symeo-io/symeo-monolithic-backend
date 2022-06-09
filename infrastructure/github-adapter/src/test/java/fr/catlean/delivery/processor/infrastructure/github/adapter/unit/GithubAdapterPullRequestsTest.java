@@ -6,7 +6,6 @@ import fr.catlean.delivery.processor.domain.model.Repository;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.GithubAdapter;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
-import fr.catlean.delivery.processor.infrastructure.github.adapter.mapper.GithubMapper;
 import fr.catlean.delivery.processor.infrastructure.github.adapter.properties.GithubProperties;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static fr.catlean.delivery.processor.infrastructure.github.adapter.mapper.GithubMapper.mapPullRequestDtoToDomain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -100,7 +100,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         verify(catleanHttpClient, times(10)).get(anyString(), any(), any(), any());
         final List<PullRequest> expectedResults = Stream.of(pr74, pr75,
                 pr76, pr77,
-                pr78, pr79, pr80).map(GithubMapper::mapPullRequestDtoToDomain).toList();
+                pr78, pr79, pr80).map(pr -> mapPullRequestDtoToDomain(pr, githubAdapter.getName())).toList();
         final List<PullRequest> pullRequestList = githubAdapter.pullRequestsBytesToDomain(rawPullRequestsForRepository);
         assertThat(pullRequestList).containsAll(expectedResults);
     }
@@ -163,7 +163,8 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         // Then
         verify(catleanHttpClient, times(5)).get(anyString(), any(), any(), any());
         final List<PullRequest> expectedResults =
-                Stream.of(pr74, pr75, pr76, pr77, pr78, pr79).map(GithubMapper::mapPullRequestDtoToDomain).toList();
+                Stream.of(pr74, pr75, pr76, pr77, pr78, pr79).map(pr -> mapPullRequestDtoToDomain(pr,
+                        githubAdapter.getName())).toList();
         final List<PullRequest> pullRequestList = githubAdapter.pullRequestsBytesToDomain(rawPullRequestsForRepository);
         assertThat(pullRequestList).containsAll(expectedResults);
     }
@@ -195,12 +196,13 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         final GithubPullRequestDTO pr80 = getStubsFromClassT(
                 "get_pull_request_details_for_pr_id", "get_pr_80.json",
                 GithubPullRequestDTO.class);
+        final String githubPlatformName = "github";
 
         // When
-        final PullRequest pullRequest = GithubMapper.mapPullRequestDtoToDomain(pr80);
+        final PullRequest pullRequest = mapPullRequestDtoToDomain(pr80, githubPlatformName);
 
         // Then
-        assertThat(pullRequest.getId()).isEqualTo(pr80.getId());
+        assertThat(pullRequest.getId()).isEqualTo(githubPlatformName + "-" + pr80.getId());
         assertThat(pullRequest.getCommitNumber()).isEqualTo(pr80.getCommits());
         assertThat(pullRequest.getDeletedLineNumber()).isEqualTo(pr80.getDeletions());
         assertThat(pullRequest.getAddedLineNumber()).isEqualTo(pr80.getAdditions());

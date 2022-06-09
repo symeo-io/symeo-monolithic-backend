@@ -7,6 +7,8 @@ github:
 
 
 spring:
+  application:
+    name: catlean-delivery-processor
   liquibase:
     enabled: true
   datasource:

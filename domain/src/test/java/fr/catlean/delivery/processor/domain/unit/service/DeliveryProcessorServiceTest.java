@@ -44,8 +44,8 @@ public class DeliveryProcessorServiceTest {
                                 repo2
                         )
                 );
-        final PullRequest pr11 = PullRequest.builder().id(11).build();
-        final PullRequest pr12 = PullRequest.builder().id(12).build();
+        final PullRequest pr11 = PullRequest.builder().id("github-11").build();
+        final PullRequest pr12 = PullRequest.builder().id("github-12").build();
         when(deliveryQuery.readPullRequestsForRepository(repo1))
                 .thenReturn(
                         List.of(
@@ -107,8 +107,8 @@ public class DeliveryProcessorServiceTest {
                                 repo4
                         )
                 );
-        final PullRequest pr11 = PullRequest.builder().id(11).build();
-        final PullRequest pr12 = PullRequest.builder().id(12).build();
+        final PullRequest pr11 = PullRequest.builder().id("github-11").build();
+        final PullRequest pr12 = PullRequest.builder().id("github-12").build();
         when(deliveryQuery.readPullRequestsForRepository(repo1))
                 .thenReturn(
                         List.of(
@@ -116,8 +116,8 @@ public class DeliveryProcessorServiceTest {
                                 pr12
                         )
                 );
-        final PullRequest pr21 = PullRequest.builder().id(21).build();
-        final PullRequest pr22 = PullRequest.builder().id(22).build();
+        final PullRequest pr21 = PullRequest.builder().id("github-21").build();
+        final PullRequest pr22 = PullRequest.builder().id("github-22").build();
         when(deliveryQuery.readPullRequestsForRepository(repo2))
                 .thenReturn(
                         List.of(
@@ -125,8 +125,8 @@ public class DeliveryProcessorServiceTest {
                                 pr22
                         )
                 );
-        final PullRequest pr31 = PullRequest.builder().id(31).build();
-        final PullRequest pr32 = PullRequest.builder().id(32).build();
+        final PullRequest pr31 = PullRequest.builder().id("github-31").build();
+        final PullRequest pr32 = PullRequest.builder().id("github-32").build();
         when(deliveryQuery.readPullRequestsForRepository(repo3))
                 .thenReturn(
                         List.of(
@@ -134,8 +134,8 @@ public class DeliveryProcessorServiceTest {
                                 pr32
                         )
                 );
-        final PullRequest pr41 = PullRequest.builder().id(41).build();
-        final PullRequest pr42 = PullRequest.builder().id(42).build();
+        final PullRequest pr41 = PullRequest.builder().id("github-41").build();
+        final PullRequest pr42 = PullRequest.builder().id("github-42").build();
         when(deliveryQuery.readPullRequestsForRepository(repo4))
                 .thenReturn(
                         List.of(

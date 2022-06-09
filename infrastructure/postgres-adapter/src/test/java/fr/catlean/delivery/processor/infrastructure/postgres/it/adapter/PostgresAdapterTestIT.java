@@ -6,7 +6,6 @@ import fr.catlean.delivery.processor.infrastructure.postgres.PostgresAdapter;
 import fr.catlean.delivery.processor.infrastructure.postgres.entity.PullRequestEntity;
 import fr.catlean.delivery.processor.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.delivery.processor.infrastructure.postgres.repository.PullRequestRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,8 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
@@ -43,13 +44,13 @@ public class PostgresAdapterTestIT {
 
         // Then
         final List<PullRequestEntity> all = pullRequestRepository.findAll();
-        Assertions.assertThat(all).hasSize(pullRequestsToSave.size());
+        assertThat(all).hasSize(pullRequestsToSave.size());
     }
 
 
     private PullRequest buildPullRequest(int id) {
         return PullRequest.builder()
-                .id(id)
+                .id("fake-platform-name-" + id)
                 .number(id)
                 .title(faker.name().title())
                 .lastUpdateDate(faker.date().past(1, TimeUnit.DAYS))
