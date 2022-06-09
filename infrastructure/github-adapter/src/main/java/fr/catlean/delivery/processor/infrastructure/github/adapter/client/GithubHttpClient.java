@@ -16,14 +16,16 @@ public class GithubHttpClient {
     private final String githubApiBaseUrl = "https://api.github.com/";
     private final String authorizationHeaderKey = "Authorization";
     private final String authorizationHeaderTokenValue = "token ";
+    private final String token;
 
-    public GithubHttpClient(CatleanHttpClient catleanHttpClient, ObjectMapper objectMapper) {
+    public GithubHttpClient(CatleanHttpClient catleanHttpClient, ObjectMapper objectMapper, String token) {
         this.catleanHttpClient = catleanHttpClient;
         this.objectMapper = objectMapper;
+        this.token = token;
     }
 
     public GithubRepositoryDTO[] getRepositoriesForOrganisationName(
-            String organisationName, Integer page, Integer size, String token) {
+            String organisationName, Integer page, Integer size) {
         final String uri =
                 githubApiBaseUrl
                         + "orgs/"
@@ -49,7 +51,7 @@ public class GithubHttpClient {
 
     public GithubPullRequestDTO[] getPullRequestsForRepositoryAndOrganisation(String organisationName,
                                                                               String repositoryName, Integer page,
-                                                                              Integer size, String token) {
+                                                                              Integer size) {
         final String uri =
                 githubApiBaseUrl
                         + "repos/"
@@ -69,7 +71,7 @@ public class GithubHttpClient {
 
     public GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(final String organisationName,
                                                                           final String repositoryName,
-                                                                          final Integer number, final String token) {
+                                                                          final Integer number) {
         final String uri =
                 githubApiBaseUrl
                         + "repos/"

@@ -28,7 +28,7 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
         githubProperties.setSize(3);
         githubProperties.setToken(token);
         final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper),
+        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper, token),
                 githubProperties);
 
         final GithubRepositoryDTO[] githubRepositoryStubs1 = getStubsFromClassT("get_repositories_for_org",
@@ -69,7 +69,7 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
         githubProperties.setSize(3);
         githubProperties.setToken(token);
         final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper),
+        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper, token),
                 githubProperties);
         final GithubRepositoryDTO[] githubRepositoryStubs1 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_1_size_3" +

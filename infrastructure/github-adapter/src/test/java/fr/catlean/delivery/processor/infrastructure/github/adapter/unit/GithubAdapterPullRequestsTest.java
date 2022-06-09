@@ -30,7 +30,8 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         githubProperties.setSize(3);
         githubProperties.setToken(token);
         final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper),
+        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper,
+                token),
                 githubProperties);
         final Repository repository =
                 Repository.builder().organisationName(faker.name().lastName()).name(faker.name().firstName()).build();
@@ -113,7 +114,8 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         githubProperties.setSize(10);
         githubProperties.setToken(token);
         final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper),
+        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper,
+                token),
                 githubProperties);
         final Repository repository =
                 Repository.builder().organisationName(faker.name().lastName()).name(faker.name().firstName()).build();
@@ -179,7 +181,8 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         githubProperties.setSize(3);
         githubProperties.setToken(token);
         final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper),
+        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper,
+                token),
                 githubProperties);
 
         // When

@@ -31,7 +31,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         int page = 1;
         GithubRepositoryDTO[] githubRepositoryDTOS =
                 this.githubHttpClient.getRepositoriesForOrganisationName(
-                        organisation, page, properties.getSize(), properties.getToken());
+                        organisation, page, properties.getSize());
         if (isNull(githubRepositoryDTOS) || githubRepositoryDTOS.length == 0) {
             return new byte[0];
         }
@@ -41,7 +41,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             page += 1;
             githubRepositoryDTOS =
                     this.githubHttpClient.getRepositoriesForOrganisationName(
-                            organisation, page, properties.getSize(), properties.getToken());
+                            organisation, page, properties.getSize());
             githubRepositoryDTOList.addAll(Arrays.stream(githubRepositoryDTOS).toList());
         }
 
@@ -75,8 +75,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
                 this.githubHttpClient.getPullRequestsForRepositoryAndOrganisation(
-                        repository.getOrganisationName(), repository.getName(), page, properties.getSize(),
-                        properties.getToken());
+                        repository.getOrganisationName(), repository.getName(), page, properties.getSize());
         if (isNull(githubPullRequestDTOS) || githubPullRequestDTOS.length == 0) {
             return new byte[0];
         }
@@ -86,8 +85,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             page += 1;
             githubPullRequestDTOS =
                     this.githubHttpClient.getPullRequestsForRepositoryAndOrganisation(
-                            repository.getOrganisationName(), repository.getName(), page, properties.getSize(),
-                            properties.getToken());
+                            repository.getOrganisationName(), repository.getName(), page, properties.getSize());
             githubPullRequestDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
         }
 
@@ -96,7 +94,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             if (alreadyRawCollectedPullRequests == null || alreadyRawCollectedPullRequests.length == 0) {
                 githubDetailedPullRequests = githubPullRequestDTOList.stream().map(githubPullRequestDTO ->
                         githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
-                                repository.getName(), githubPullRequestDTO.getNumber(), properties.getToken())
+                                repository.getName(), githubPullRequestDTO.getNumber())
                 ).toList();
             } else {
                 githubDetailedPullRequests = getIncrementalGithubPullRequests(repository,
@@ -127,8 +125,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                 if (optionalAlreadyCollectedPR.get().getUpdatedAt().before(currentGithubPullRequestDTO.getUpdatedAt())) {
                     githubDetailedPullRequests.add(
                             githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
-                                    repository.getName(), currentGithubPullRequestDTO.getNumber(),
-                                    properties.getToken())
+                                    repository.getName(), currentGithubPullRequestDTO.getNumber())
                     );
                 } else {
                     githubDetailedPullRequests.add(optionalAlreadyCollectedPR.get());
@@ -136,8 +133,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             } else {
                 githubDetailedPullRequests.add(
                         githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
-                                repository.getName(), currentGithubPullRequestDTO.getNumber(),
-                                properties.getToken())
+                                repository.getName(), currentGithubPullRequestDTO.getNumber())
                 );
             }
         }

@@ -36,8 +36,10 @@ public class GithubConfiguration {
     }
 
     @Bean
-    public GithubHttpClient githubHttpClient(HttpClient httpClient, ObjectMapper objectMapper) {
-        return new GithubHttpClient(new DefaultCatleanHttpClient(httpClient), objectMapper);
+    public GithubHttpClient githubHttpClient(HttpClient httpClient, ObjectMapper objectMapper,
+                                             GithubProperties githubProperties) {
+        return new GithubHttpClient(new DefaultCatleanHttpClient(httpClient), objectMapper,
+                githubProperties.getToken());
     }
 
     @Bean
