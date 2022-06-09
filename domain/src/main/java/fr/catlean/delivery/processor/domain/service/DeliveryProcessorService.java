@@ -24,7 +24,7 @@ public class DeliveryProcessorService {
         deliveryCommand.collectRepositoriesForOrganisation(organisationAccount);
         List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisationAccount);
         final List<PullRequest> pullRequests =
-                repositories.stream()
+                repositories.parallelStream()
                         .filter(repository -> filterRepositoryForOrganisationAccount(organisationAccount, repository))
                         .map(
                                 this::collectPullRequestForRepository
