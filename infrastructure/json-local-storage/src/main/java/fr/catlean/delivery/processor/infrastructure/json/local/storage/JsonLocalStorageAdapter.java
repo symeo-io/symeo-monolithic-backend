@@ -17,8 +17,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
 
     @Override
     public void save(
-            String organisation, String date, String adapterName, String contentName, byte[] bytes) {
-        final Path jsonPath = buildJsonPath(organisation, date, adapterName, contentName);
+            String organisation, String adapterName, String contentName, byte[] bytes) {
+        final Path jsonPath = buildJsonPath(organisation, adapterName, contentName);
         if (!Files.exists(jsonPath)) {
             try {
                 Files.createDirectories(jsonPath.getParent());
@@ -30,8 +30,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public byte[] read(String organisation, String date, String adapterName, String contentName) {
-        final Path jsonPath = buildJsonPath(organisation, date, adapterName, contentName);
+    public byte[] read(String organisation, String adapterName, String contentName) {
+        final Path jsonPath = buildJsonPath(organisation, adapterName, contentName);
         try {
             return Files.readAllBytes(jsonPath);
         } catch (IOException e) {
@@ -40,18 +40,16 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public boolean exists(String organisation, String date, String adapterName, String contentName) {
-        final Path jsonPath = buildJsonPath(organisation, date, adapterName, contentName);
+    public boolean exists(String organisation, String adapterName, String contentName) {
+        final Path jsonPath = buildJsonPath(organisation, adapterName, contentName);
         return Files.exists(jsonPath);
     }
 
-    private Path buildJsonPath(String organisation, String date, String adapterName, String contentName) {
+    private Path buildJsonPath(String organisation, String adapterName, String contentName) {
         return Path.of(
                 jsonStorageProperties.getRootDirectory()
                         + "/"
                         + organisation
-                        + "/"
-                        + date
                         + "/"
                         + adapterName
                         + "/"

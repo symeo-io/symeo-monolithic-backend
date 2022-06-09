@@ -10,8 +10,6 @@ import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
 import org.junit.jupiter.api.Test;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +19,6 @@ import static org.mockito.Mockito.when;
 public class DeliveryQueryTest {
 
     private final Faker faker = Faker.instance();
-    final String dateAsString = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
     @Test
     void should_read_repositories_given_an_organisation() {
@@ -46,7 +43,7 @@ public class DeliveryQueryTest {
 
         // When
         when(versionControlSystemAdapter.getName()).thenReturn(contentName);
-        when(rawStorageAdapter.read(vcsOrganisationName, dateAsString, contentName, Repository.ALL))
+        when(rawStorageAdapter.read(vcsOrganisationName, contentName, Repository.ALL))
                 .thenReturn(dummyBytes);
         when(versionControlSystemAdapter.repositoriesBytesToDomain(dummyBytes)).thenReturn(
                 repositoriesStub
@@ -78,7 +75,7 @@ public class DeliveryQueryTest {
 
         // When
         when(versionControlSystemAdapter.getName()).thenReturn(faker.name().username());
-        when(rawStorageAdapter.read(organisationName, dateAsString,
+        when(rawStorageAdapter.read(organisationName,
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repositoryName))).thenReturn(dummyBytes);
         when(versionControlSystemAdapter.pullRequestsBytesToDomain(dummyBytes)).thenReturn(pullRequestsStub);

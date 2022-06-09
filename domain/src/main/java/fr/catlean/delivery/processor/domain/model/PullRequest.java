@@ -10,9 +10,9 @@ import java.util.Date;
 public class PullRequest {
     private static final String ALL = "pull_requests";
     int id;
-    int commitNumber;
-    int deletedLineNumber;
-    int addedLineNumber;
+    Integer commitNumber;
+    Integer deletedLineNumber;
+    Integer addedLineNumber;
     Date creationDate;
     Date lastUpdateDate;
     Date mergeDate;

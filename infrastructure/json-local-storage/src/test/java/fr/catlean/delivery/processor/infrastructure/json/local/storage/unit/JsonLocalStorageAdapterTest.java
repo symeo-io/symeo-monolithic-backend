@@ -31,17 +31,17 @@ public class JsonLocalStorageAdapterTest {
         jsonStorageProperties.setRootDirectory(tmpDir);
         final JsonLocalStorageAdapter jsonLocalStorageAdapter = new JsonLocalStorageAdapter(jsonStorageProperties);
         final String organisation = faker.animal().name();
-        final String date = faker.pokemon().name();
         final String adapterName = faker.animal().name();
         final String contentName = faker.beer().name();
         final String bytesAsString = "{\"test\": 1111}";
 
         // When
-        jsonLocalStorageAdapter.save(organisation, date, adapterName, contentName, bytesAsString.getBytes());
+        jsonLocalStorageAdapter.save(organisation, adapterName, contentName, bytesAsString.getBytes());
 
         // Then
         final String string =
-                Files.readString(Path.of(tmpDir + "/" + organisation + "/" + date + "/" + adapterName + "/" + contentName + ".json"));
+                Files.readString(Path.of(tmpDir + "/" + organisation + "/" + adapterName + "/" + contentName + ".json"
+                ));
         assertThat(string).isEqualTo(bytesAsString);
     }
 
@@ -52,17 +52,16 @@ public class JsonLocalStorageAdapterTest {
         jsonStorageProperties.setRootDirectory(tmpDir);
         final JsonLocalStorageAdapter jsonLocalStorageAdapter = new JsonLocalStorageAdapter(jsonStorageProperties);
         final String organisation = faker.animal().name();
-        final String date = faker.pokemon().name();
         final String adapterName = faker.animal().name();
         final String contentName = faker.beer().name();
         final String bytesAsString = "{\"test\": 1111}";
         final Path jsonPath =
-                Path.of(tmpDir + "/" + organisation + "/" + date + "/" + adapterName + "/" + contentName + ".json");
+                Path.of(tmpDir + "/" + organisation + "/" + adapterName + "/" + contentName + ".json");
         Files.createDirectories(jsonPath.getParent());
         Files.write(jsonPath, bytesAsString.getBytes());
 
         // When
-        final byte[] read = jsonLocalStorageAdapter.read(organisation, date, adapterName, contentName);
+        final byte[] read = jsonLocalStorageAdapter.read(organisation, adapterName, contentName);
 
         // Then
         assertThat(read).isEqualTo(bytesAsString.getBytes());
@@ -75,16 +74,14 @@ public class JsonLocalStorageAdapterTest {
         jsonStorageProperties.setRootDirectory(tmpDir);
         final JsonLocalStorageAdapter jsonLocalStorageAdapter = new JsonLocalStorageAdapter(jsonStorageProperties);
         final String organisation = faker.animal().name();
-        final String date = faker.pokemon().name();
         final String adapterName = faker.animal().name();
         final String contentName = faker.beer().name();
         final String bytesAsString = "{\"test\": 1111}";
-        jsonLocalStorageAdapter.save(organisation, date, adapterName, contentName, bytesAsString.getBytes());
+        jsonLocalStorageAdapter.save(organisation, adapterName, contentName, bytesAsString.getBytes());
 
         // When
-        final boolean existingFile = jsonLocalStorageAdapter.exists(organisation, date, adapterName, contentName);
+        final boolean existingFile = jsonLocalStorageAdapter.exists(organisation, adapterName, contentName);
         final boolean notExistingFile = jsonLocalStorageAdapter.exists(faker.name().lastName(),
-                faker.name().firstName(),
                 faker.name().username(), faker.pokemon().name());
 
         // Then

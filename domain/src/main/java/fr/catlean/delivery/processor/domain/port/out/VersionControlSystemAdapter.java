@@ -4,6 +4,7 @@ import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface VersionControlSystemAdapter {
     byte[] getRawRepositories(String organisation);
@@ -12,7 +13,7 @@ public interface VersionControlSystemAdapter {
 
     List<Repository> repositoriesBytesToDomain(byte[] repositoriesBytes);
 
-    byte[] getRawPullRequestsForRepository(Repository repository);
+    byte[] getRawPullRequestsForRepository(Repository repository, byte[] alreadyCollectedPullRequests);
 
     List<PullRequest> pullRequestsBytesToDomain(byte[] bytes);
 }

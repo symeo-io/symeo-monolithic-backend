@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -27,7 +26,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     private GithubProperties properties;
 
     @Override
-    public byte[] getRawRepositories(String organisation) {
+    public byte[] getRawRepositories(final String organisation) {
         int page = 1;
         GithubRepositoryDTO[] githubRepositoryDTOS =
                 this.githubHttpClient.getRepositoriesForOrganisationName(
@@ -59,7 +58,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
 
     @Override
-    public List<Repository> repositoriesBytesToDomain(byte[] repositoriesBytes) {
+    public List<Repository> repositoriesBytesToDomain(final byte[] repositoriesBytes) {
         try {
             GithubRepositoryDTO[] githubRepositoryDTOS = githubHttpClient.bytesToDto(repositoriesBytes,
                     GithubRepositoryDTO[].class);
@@ -70,7 +69,8 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     }
 
     @Override
-    public byte[] getRawPullRequestsForRepository(Repository repository) {
+    public byte[] getRawPullRequestsForRepository(final Repository repository,
+                                                  final byte[] alreadyRawCollectedPullRequests) {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
                 this.githubHttpClient.getPullRequestsForRepositoryAndOrganisation(
@@ -79,7 +79,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         if (isNull(githubPullRequestDTOS) || githubPullRequestDTOS.length == 0) {
             return new byte[0];
         }
-        final List<GithubPullRequestDTO> githubRepositoryDTOList =
+        final List<GithubPullRequestDTO> githubPullRequestDTOList =
                 new ArrayList<>(List.of(githubPullRequestDTOS));
         while (githubPullRequestDTOS.length == properties.getSize()) {
             page += 1;
@@ -87,32 +87,78 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                     this.githubHttpClient.getPullRequestsForRepositoryAndOrganisation(
                             repository.getOrganisationName(), repository.getName(), page, properties.getSize(),
                             properties.getToken());
-            githubRepositoryDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
+            githubPullRequestDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
         }
 
         try {
-            ForkJoinPool customThreadPool = new ForkJoinPool(2);
-            final List<GithubPullRequestDTO> githubDetailedPullRequests =
-                    customThreadPool.submit(() -> githubRepositoryDTOList.parallelStream()
-                            .map(githubPullRequestDTO -> githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
-                                    repository.getName(), githubPullRequestDTO.getNumber(), properties.getToken())).toList()).get();
+            List<GithubPullRequestDTO> githubDetailedPullRequests = null;
+            if (alreadyRawCollectedPullRequests == null || alreadyRawCollectedPullRequests.length == 0) {
+                githubDetailedPullRequests = githubPullRequestDTOList.stream().map(githubPullRequestDTO ->
+                        githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
+                                repository.getName(), githubPullRequestDTO.getNumber(), properties.getToken())
+                ).toList();
+            } else {
+                githubDetailedPullRequests = getIncrementalGithubPullRequests(repository,
+                        alreadyRawCollectedPullRequests,
+                        githubPullRequestDTOList);
+            }
+
             return githubHttpClient.dtoToBytes(githubDetailedPullRequests.toArray());
-        } catch (JsonProcessingException | InterruptedException | ExecutionException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private List<GithubPullRequestDTO> getIncrementalGithubPullRequests(Repository repository,
+                                                                        byte[] alreadyRawCollectedPullRequests,
+                                                                        List<GithubPullRequestDTO> githubPullRequestDTOList) throws IOException {
+        List<GithubPullRequestDTO> githubDetailedPullRequests;
+        final GithubPullRequestDTO[] alreadyCollectedGithubPullRequestDTOS =
+                getGithubPullRequestDTOSFromBytes(alreadyRawCollectedPullRequests);
+        githubDetailedPullRequests = new ArrayList<>();
+
+        for (GithubPullRequestDTO currentGithubPullRequestDTO : githubPullRequestDTOList) {
+            final Optional<GithubPullRequestDTO> optionalAlreadyCollectedPR =
+                    Arrays.stream(alreadyCollectedGithubPullRequestDTOS).filter(
+                            alreadyCollectedGithubPullRequestDTO -> alreadyCollectedGithubPullRequestDTO.getId().equals(currentGithubPullRequestDTO.getId())
+                    ).findFirst();
+            if (optionalAlreadyCollectedPR.isPresent()) {
+                if (optionalAlreadyCollectedPR.get().getUpdatedAt().before(currentGithubPullRequestDTO.getUpdatedAt())) {
+                    githubDetailedPullRequests.add(
+                            githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
+                                    repository.getName(), currentGithubPullRequestDTO.getNumber(),
+                                    properties.getToken())
+                    );
+                } else {
+                    githubDetailedPullRequests.add(optionalAlreadyCollectedPR.get());
+                }
+            } else {
+                githubDetailedPullRequests.add(
+                        githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
+                                repository.getName(), currentGithubPullRequestDTO.getNumber(),
+                                properties.getToken())
+                );
+            }
+        }
+        return githubDetailedPullRequests;
+    }
+
+
     @Override
-    public List<PullRequest> pullRequestsBytesToDomain(byte[] bytes) {
+    public List<PullRequest> pullRequestsBytesToDomain(final byte[] bytes) {
         try {
             if (bytes.length == 0) {
                 return List.of();
             }
-            final GithubPullRequestDTO[] githubPullRequestDTOS = githubHttpClient.bytesToDto(bytes,
-                    GithubPullRequestDTO[].class);
+            final GithubPullRequestDTO[] githubPullRequestDTOS = getGithubPullRequestDTOSFromBytes(bytes);
             return Arrays.stream(githubPullRequestDTOS).map(GithubMapper::mapPullRequestDtoToDomain).toList();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private GithubPullRequestDTO[] getGithubPullRequestDTOSFromBytes(byte[] bytes) throws IOException {
+        return githubHttpClient.bytesToDto(bytes,
+                GithubPullRequestDTO[].class);
     }
 }

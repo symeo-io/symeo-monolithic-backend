@@ -7,7 +7,6 @@ import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class DeliveryCommand {
 
@@ -23,32 +22,27 @@ public class DeliveryCommand {
     }
 
     public void collectRepositoriesForOrganisation(OrganisationAccount organisationAccount) {
-        final String today = SDF.format(new Date());
-        if (rawStorageAdapter.exists(organisationAccount.getVcsConfiguration().getOrganisationName(), today,
-                versionControlSystemAdapter.getName(), Repository.ALL)) {
-            return;
-        }
         final byte[] rawRepositories =
                 versionControlSystemAdapter.getRawRepositories(organisationAccount.getVcsConfiguration().getOrganisationName());
         rawStorageAdapter.save(
                 organisationAccount.getVcsConfiguration().getOrganisationName(),
-                today,
                 versionControlSystemAdapter.getName(),
                 Repository.ALL,
                 rawRepositories);
     }
 
     public void collectPullRequestsForRepository(Repository repository) {
-        final String today = SDF.format(new Date());
-        if (rawStorageAdapter.exists(repository.getOrganisationName(), today, versionControlSystemAdapter.getName(),
+        byte[] alreadyRawPullRequestsCollected = null;
+        if (rawStorageAdapter.exists(repository.getOrganisationName(), versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()))) {
-            return;
+            alreadyRawPullRequestsCollected = rawStorageAdapter.read(repository.getOrganisationName(),
+                    versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()));
         }
         final byte[] rawPullRequestsForRepository =
-                versionControlSystemAdapter.getRawPullRequestsForRepository(repository);
+                versionControlSystemAdapter.getRawPullRequestsForRepository(repository,
+                        alreadyRawPullRequestsCollected);
         rawStorageAdapter.save(
                 repository.getOrganisationName(),
-                today,
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()),
                 rawPullRequestsForRepository);
