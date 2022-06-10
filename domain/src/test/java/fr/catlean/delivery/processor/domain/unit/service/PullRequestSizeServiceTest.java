@@ -85,8 +85,6 @@ public class PullRequestSizeServiceTest {
         );
 
 
-
-
         // When
         pullRequestSizeService.computeAndSavePullRequestSizeHistogram(pullRequests, organisationAccount);
 
@@ -109,6 +107,18 @@ public class PullRequestSizeServiceTest {
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .build();
+        final PullRequest pr1Draft = PullRequest.builder()
+                .id("pr1-draft")
+                .repository(repositoryName)
+                .isDraft(true)
+                .creationDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(25, ChronoUnit.DAYS)))
+                .addedLineNumber(halfCodeSize)
+                .deletedLineNumber(halfCodeSize)
+                .build();
+
         final PullRequest pr2 = PullRequest.builder()
                 .id("pr2")
                 .repository(repositoryName)
@@ -116,9 +126,6 @@ public class PullRequestSizeServiceTest {
                         Date.valueOf(weekStartDate.toInstant()
                                 .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(15, ChronoUnit.DAYS)))
-//                .mergeDate(Date.valueOf(weekStartDate.toInstant()
-//                        .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
-//                        .minus(10, ChronoUnit.DAYS)))
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .build();
@@ -142,6 +149,17 @@ public class PullRequestSizeServiceTest {
                                 .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(6, ChronoUnit.DAYS)))
                 .build();
+        final PullRequest pr4Draft = PullRequest.builder()
+                .id("pr4-draft")
+                .addedLineNumber(halfCodeSize)
+                .isDraft(true)
+                .deletedLineNumber(halfCodeSize)
+                .repository(repositoryName)
+                .creationDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(6, ChronoUnit.DAYS)))
+                .build();
         final PullRequest pr5 = PullRequest.builder()
                 .id("pr5")
                 .addedLineNumber(halfCodeSize)
@@ -151,10 +169,6 @@ public class PullRequestSizeServiceTest {
                         Date.valueOf(weekStartDate.toInstant()
                                 .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(12, ChronoUnit.DAYS)))
-//                .mergeDate(
-//                        Date.valueOf(weekStartDate.toInstant()
-//                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
-//                                .minus(10, ChronoUnit.DAYS)))
                 .build();
 
         final PullRequest pr6 = PullRequest.builder()
@@ -166,11 +180,7 @@ public class PullRequestSizeServiceTest {
                         Date.valueOf(weekStartDate.toInstant()
                                 .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(4, ChronoUnit.DAYS)))
-//                .mergeDate(
-//                        Date.valueOf(weekStartDate.toInstant()
-//                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
-//                                .minus(4, ChronoUnit.DAYS)))
                 .build();
-        return new ArrayList<>(List.of(pr1, pr2, pr3, pr4, pr5, pr6));
+        return new ArrayList<>(List.of(pr1, pr1Draft, pr2, pr3, pr4, pr4Draft, pr5, pr6));
     }
 }

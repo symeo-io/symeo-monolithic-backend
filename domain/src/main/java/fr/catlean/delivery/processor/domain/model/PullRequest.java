@@ -16,8 +16,10 @@ public class PullRequest {
     Date creationDate;
     Date lastUpdateDate;
     Date mergeDate;
-    Boolean isMerged;
-    Boolean isDraft;
+    @Builder.Default
+    Boolean isMerged = false;
+    @Builder.Default
+    Boolean isDraft = false;
     String state;
     int number;
     String vcsUrl;

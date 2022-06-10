@@ -45,6 +45,7 @@ public class PullRequestSizeService {
                         .filter(pullRequest -> vcsTeam.getVcsRepositoryNames().stream()
                                 .anyMatch(repositoryName -> pullRequest.getRepository().equals(repositoryName))
                         ).toList();
+        pullRequests = pullRequests.stream().filter(pullRequest -> !pullRequest.getIsDraft()).toList();
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
         for (Date weekStartDate : getWeekStartDateForTheLastWeekNumber(3 * 4,
                 organisationAccount.getTimeZone())) {
