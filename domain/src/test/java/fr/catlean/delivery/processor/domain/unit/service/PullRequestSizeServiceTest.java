@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class PullRequestSizeServiceTest {
 
 
     @Test
-    void should_compute_and_save_pull_request_size_histogram_given_simple_pull_request_case() {
+    void should_compute_and_save_pull_request_size_histogram_given_simple_pull_request_cases() {
         // Given
         final OrganisationAccount organisationAccount = OrganisationAccount.builder()
                 .name("fake-orga-account")
@@ -72,13 +73,13 @@ public class PullRequestSizeServiceTest {
                 0, 0, SDF.format(weekStartDates.get(7))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                1, 0, SDF.format(weekStartDates.get(8))
+                2, 0, SDF.format(weekStartDates.get(8))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                3, 0, SDF.format(weekStartDates.get(9))
+                6, 0, SDF.format(weekStartDates.get(9))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                4, 0, SDF.format(weekStartDates.get(10))
+                5, 0, SDF.format(weekStartDates.get(10))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
                 6, 0, SDF.format(weekStartDates.get(11))
@@ -107,6 +108,20 @@ public class PullRequestSizeServiceTest {
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .build();
+        final PullRequest pr1Merged = PullRequest.builder()
+                .id("pr1-merged")
+                .repository(repositoryName)
+                .creationDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(25, ChronoUnit.DAYS)))
+                .mergeDate(Date.valueOf(weekStartDate.toInstant()
+                        .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                        .minus(10, ChronoUnit.DAYS)))
+                .addedLineNumber(halfCodeSize)
+                .deletedLineNumber(halfCodeSize)
+                .build();
+
         final PullRequest pr1Draft = PullRequest.builder()
                 .id("pr1-draft")
                 .repository(repositoryName)
@@ -139,6 +154,22 @@ public class PullRequestSizeServiceTest {
                                 .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(15, ChronoUnit.DAYS)))
                 .build();
+        final PullRequest pr3WeekStart = PullRequest.builder()
+                .id("pr3-week-start")
+                .addedLineNumber(halfCodeSize)
+                .deletedLineNumber(halfCodeSize)
+                .repository(repositoryName)
+                .creationDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(14, ChronoUnit.DAYS)))
+                .mergeDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(13, ChronoUnit.DAYS))
+                )
+                .build();
+
         final PullRequest pr4 = PullRequest.builder()
                 .id("pr4")
                 .addedLineNumber(halfCodeSize)
@@ -171,6 +202,23 @@ public class PullRequestSizeServiceTest {
                                 .minus(12, ChronoUnit.DAYS)))
                 .build();
 
+        java.util.Date mergeDateFewHoursLater = Date.valueOf(weekStartDate.toInstant()
+                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                .minus(9, ChronoUnit.DAYS));
+        mergeDateFewHoursLater= Date.from(Instant.ofEpochMilli(mergeDateFewHoursLater.getTime()+1000*60*60*6));
+
+        final PullRequest pr5OneDay = PullRequest.builder()
+                .id("pr5-one-day")
+                .addedLineNumber(halfCodeSize)
+                .deletedLineNumber(halfCodeSize)
+                .repository(repositoryName)
+                .creationDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(9, ChronoUnit.DAYS)))
+                .mergeDate(
+                        mergeDateFewHoursLater)
+                .build();
         final PullRequest pr6 = PullRequest.builder()
                 .id("pr6")
                 .addedLineNumber(halfCodeSize)
@@ -181,6 +229,23 @@ public class PullRequestSizeServiceTest {
                                 .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(4, ChronoUnit.DAYS)))
                 .build();
-        return new ArrayList<>(List.of(pr1, pr1Draft, pr2, pr3, pr4, pr4Draft, pr5, pr6));
+        final PullRequest pr7 = PullRequest.builder()
+                .id("pr7")
+                .addedLineNumber(halfCodeSize)
+                .deletedLineNumber(halfCodeSize)
+                .repository(repositoryName)
+                .creationDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(3, ChronoUnit.DAYS)))
+                .mergeDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(3, ChronoUnit.DAYS)))
+                .build();
+
+
+        return new ArrayList<>(List.of(pr1, pr1Draft, pr1Merged, pr2, pr3, pr3WeekStart, pr4, pr4Draft, pr5,
+                pr5OneDay, pr6, pr7));
     }
 }

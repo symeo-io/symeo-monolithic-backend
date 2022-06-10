@@ -12,9 +12,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static fr.catlean.delivery.processor.domain.helper.DateHelper.getWeekStartDateForTheLastWeekNumber;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @AllArgsConstructor
 public class PullRequestSizeService {
@@ -76,8 +78,22 @@ public class PullRequestSizeService {
         final Date creationDate = pullRequest.getCreationDate();
         final Date mergeDate = pullRequest.getMergeDate();
         if (creationDate.before(weekStartDate)) {
-            if (isNull(mergeDate)) {
+            if (isNull(mergeDate) || mergeDate.after(weekStartDate)) {
                 return true;
+            }
+        } else {
+            if (creationDate.equals(weekStartDate)) {
+                return true;
+            } else if (nonNull(mergeDate)) {
+                long daysBetweenMergeAndWeekStart =
+                        TimeUnit.DAYS.convert(mergeDate.getTime() - weekStartDate.getTime(),
+                                TimeUnit.MILLISECONDS);
+                long daysBetweenCreationAndWeekStart =
+                        TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
+                                TimeUnit.MILLISECONDS);
+                if (daysBetweenCreationAndWeekStart <= 7 && daysBetweenMergeAndWeekStart <= 7) {
+                    return true;
+                }
             }
         }
         return false;
