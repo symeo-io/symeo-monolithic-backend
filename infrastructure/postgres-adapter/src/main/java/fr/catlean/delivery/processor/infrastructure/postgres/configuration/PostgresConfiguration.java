@@ -1,6 +1,7 @@
 package fr.catlean.delivery.processor.infrastructure.postgres.configuration;
 
 import fr.catlean.delivery.processor.infrastructure.postgres.PostgresAdapter;
+import fr.catlean.delivery.processor.infrastructure.postgres.repository.PullRequestHistogramRepository;
 import fr.catlean.delivery.processor.infrastructure.postgres.repository.PullRequestRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -23,8 +24,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class PostgresConfiguration {
 
     @Bean
-    public PostgresAdapter postgresAdapter(PullRequestRepository pullRequestRepository) {
-        return new PostgresAdapter(pullRequestRepository);
+    public PostgresAdapter postgresAdapter(final PullRequestRepository pullRequestRepository,
+                                           final PullRequestHistogramRepository pullRequestHistogramRepository) {
+        return new PostgresAdapter(pullRequestRepository, pullRequestHistogramRepository);
     }
 
 }

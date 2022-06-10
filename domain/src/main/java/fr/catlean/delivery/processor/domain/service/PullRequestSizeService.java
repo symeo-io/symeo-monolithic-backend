@@ -42,29 +42,13 @@ public class PullRequestSizeService {
                                                                    OrganisationAccount organisationAccount,
                                                                    VcsTeam vcsTeam) {
         final int pullRequestLineNumberLimit = vcsTeam.getPullRequestLineNumberLimit();
-        pullRequests =
-                pullRequests.stream()
-                        .filter(pullRequest -> vcsTeam.getVcsRepositoryNames().stream()
-                                .anyMatch(repositoryName -> pullRequest.getRepository().equals(repositoryName))
-                        ).toList();
-        pullRequests = pullRequests.stream().filter(pullRequest -> !pullRequest.getIsDraft()).toList();
+        pullRequests = filterPullRequests(pullRequests, vcsTeam);
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
         for (Date weekStartDate : getWeekStartDateForTheLastWeekNumber(3 * 4,
                 organisationAccount.getTimeZone())) {
             final String weekStart = SDF.format(weekStartDate);
-            DataCompareToLimit dataCompareToLimit =
-                    DataCompareToLimit.builder().dateAsString(weekStart).build();
-
-            for (PullRequest pullRequest : pullRequests) {
-                if (pullRequestIsConsideredAsOpenDuringWeek(pullRequest, weekStartDate)) {
-                    if (pullRequest.getAddedLineNumber() + pullRequest.getDeletedLineNumber() >= pullRequestLineNumberLimit) {
-                        dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
-                    } else {
-                        dataCompareToLimit = dataCompareToLimit.incrementDataBelowLimit();
-                    }
-                }
-            }
-            dataCompareToLimits.add(dataCompareToLimit);
+            dataCompareToLimits.add(getDataCompareToLimit(pullRequests, pullRequestLineNumberLimit,
+                    weekStartDate, weekStart));
         }
         return PullRequestHistogram.builder()
                 .type(PullRequestHistogram.SIZE_LIMIT)
@@ -74,13 +58,38 @@ public class PullRequestSizeService {
                 .build();
     }
 
+    private static List<PullRequest> filterPullRequests(List<PullRequest> pullRequests, VcsTeam vcsTeam) {
+        pullRequests =
+                pullRequests.stream()
+                        .filter(pullRequest -> vcsTeam.getVcsRepositoryNames().stream()
+                                .anyMatch(repositoryName -> pullRequest.getRepository().equals(repositoryName))
+                        ).toList();
+        pullRequests = pullRequests.stream().filter(pullRequest -> !pullRequest.getIsDraft()).toList();
+        return pullRequests;
+    }
+
+    private DataCompareToLimit getDataCompareToLimit(List<PullRequest> pullRequests, int pullRequestLineNumberLimit,
+                                                     Date weekStartDate, String weekStart) {
+        DataCompareToLimit dataCompareToLimit =
+                DataCompareToLimit.builder().dateAsString(weekStart).build();
+
+        for (PullRequest pullRequest : pullRequests) {
+            if (pullRequestIsConsideredAsOpenDuringWeek(pullRequest, weekStartDate)) {
+                if (pullRequest.getAddedLineNumber() + pullRequest.getDeletedLineNumber() >= pullRequestLineNumberLimit) {
+                    dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
+                } else {
+                    dataCompareToLimit = dataCompareToLimit.incrementDataBelowLimit();
+                }
+            }
+        }
+        return dataCompareToLimit;
+    }
+
     private boolean pullRequestIsConsideredAsOpenDuringWeek(final PullRequest pullRequest, final Date weekStartDate) {
         final Date creationDate = pullRequest.getCreationDate();
         final Date mergeDate = pullRequest.getMergeDate();
         if (creationDate.before(weekStartDate)) {
-            if (isNull(mergeDate) || mergeDate.after(weekStartDate)) {
-                return true;
-            }
+            return isNull(mergeDate) || mergeDate.after(weekStartDate);
         } else {
             if (creationDate.equals(weekStartDate)) {
                 return true;
@@ -91,9 +100,7 @@ public class PullRequestSizeService {
                 long daysBetweenCreationAndWeekStart =
                         TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
                                 TimeUnit.MILLISECONDS);
-                if (daysBetweenCreationAndWeekStart <= 7 && daysBetweenMergeAndWeekStart <= 7) {
-                    return true;
-                }
+                return daysBetweenCreationAndWeekStart <= 7 && daysBetweenMergeAndWeekStart <= 7;
             }
         }
         return false;
