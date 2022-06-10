@@ -21,16 +21,19 @@ public class DeliveryProcessorService {
     private final ExpositionStorage expositionStorage;
 
     public List<PullRequest> collectPullRequestsForOrganisation(OrganisationAccount organisationAccount) {
-        deliveryCommand.collectRepositoriesForOrganisation(organisationAccount);
-        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisationAccount);
-        final List<PullRequest> pullRequests =
-                repositories.stream()
-                        .filter(repository -> filterRepositoryForOrganisationAccount(organisationAccount, repository))
-                        .map(
-                                this::collectPullRequestForRepository
-                        ).flatMap(Collection::stream).toList();
+        final List<PullRequest> pullRequests = getPullRequestsForOrganizationAccount(organisationAccount);
         expositionStorage.savePullRequestDetails(pullRequests);
         return pullRequests;
+    }
+
+    private List<PullRequest> getPullRequestsForOrganizationAccount(OrganisationAccount organisationAccount) {
+        deliveryCommand.collectRepositoriesForOrganisation(organisationAccount);
+        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisationAccount);
+        return repositories.stream()
+                .filter(repository -> filterRepositoryForOrganisationAccount(organisationAccount, repository))
+                .map(
+                        this::collectPullRequestForRepository
+                ).flatMap(Collection::stream).toList();
     }
 
     private static boolean filterRepositoryForOrganisationAccount(OrganisationAccount organisationAccount,

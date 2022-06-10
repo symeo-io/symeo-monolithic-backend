@@ -53,6 +53,7 @@ public class PullRequestSizeService {
         return PullRequestHistogram.builder()
                 .type(PullRequestHistogram.SIZE_LIMIT)
                 .organisationAccount(organisationAccount.getName())
+                .team(vcsTeam.getName())
                 .dataByWeek(dataCompareToLimits)
                 .limit(organisationAccount.getVcsConfiguration().getVcsTeams().get(0).getPullRequestLineNumberLimit())
                 .build();

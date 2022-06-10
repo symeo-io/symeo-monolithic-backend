@@ -44,6 +44,7 @@ public class PullRequestSizeServiceTest {
                         type(PullRequestHistogram.SIZE_LIMIT)
                         .limit(500)
                         .organisationAccount(organisationAccount.getName())
+                        .team(organisationAccount.getVcsConfiguration().getVcsTeams().get(0).getName())
                         .build();
 
         final List<java.util.Date> weekStartDates =
