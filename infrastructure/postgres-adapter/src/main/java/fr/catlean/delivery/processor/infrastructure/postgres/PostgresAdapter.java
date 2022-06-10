@@ -1,6 +1,7 @@
 package fr.catlean.delivery.processor.infrastructure.postgres;
 
 import fr.catlean.delivery.processor.domain.model.PullRequest;
+import fr.catlean.delivery.processor.domain.model.insight.PullRequestHistogram;
 import fr.catlean.delivery.processor.domain.port.out.ExpositionStorage;
 import fr.catlean.delivery.processor.infrastructure.postgres.entity.PullRequestEntity;
 import fr.catlean.delivery.processor.infrastructure.postgres.mapper.PullRequestMapper;
@@ -19,5 +20,10 @@ public class PostgresAdapter implements ExpositionStorage {
         final List<PullRequestEntity> pullRequestEntities = pullRequests.stream().map(PullRequestMapper::domainToEntity)
                 .toList();
         pullRequestRepository.saveAll(pullRequestEntities);
+    }
+
+    @Override
+    public void savePullRequestHistograms(List<PullRequestHistogram> pullRequestHistograms) {
+
     }
 }

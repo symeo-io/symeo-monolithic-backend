@@ -73,16 +73,16 @@ public class PullRequestSizeServiceTest {
                 0, 0, SDF.format(weekStartDates.get(7))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                2, 0, SDF.format(weekStartDates.get(8))
+                2, 1, SDF.format(weekStartDates.get(8))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                6, 0, SDF.format(weekStartDates.get(9))
+                6, 1, SDF.format(weekStartDates.get(9))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                5, 0, SDF.format(weekStartDates.get(10))
+                5, 2, SDF.format(weekStartDates.get(10))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                6, 0, SDF.format(weekStartDates.get(11))
+                6, 1, SDF.format(weekStartDates.get(11))
         );
 
 
@@ -97,6 +97,18 @@ public class PullRequestSizeServiceTest {
                                                                                       final OrganisationAccount organisationAccount,
                                                                                       final Integer halfCodeSize) {
         final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organisationAccount.getTimeZone());
+
+
+        final PullRequest pr1Above = PullRequest.builder()
+                .id("pr1-above")
+                .repository(repositoryName)
+                .creationDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(25, ChronoUnit.DAYS)))
+                .addedLineNumber(halfCodeSize * 1000)
+                .deletedLineNumber(halfCodeSize * 1000)
+                .build();
 
         final PullRequest pr1 = PullRequest.builder()
                 .id("pr1")
@@ -205,7 +217,7 @@ public class PullRequestSizeServiceTest {
         java.util.Date mergeDateFewHoursLater = Date.valueOf(weekStartDate.toInstant()
                 .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
                 .minus(9, ChronoUnit.DAYS));
-        mergeDateFewHoursLater= Date.from(Instant.ofEpochMilli(mergeDateFewHoursLater.getTime()+1000*60*60*6));
+        mergeDateFewHoursLater = Date.from(Instant.ofEpochMilli(mergeDateFewHoursLater.getTime() + 1000 * 60 * 60 * 6));
 
         final PullRequest pr5OneDay = PullRequest.builder()
                 .id("pr5-one-day")
@@ -243,9 +255,23 @@ public class PullRequestSizeServiceTest {
                                 .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(3, ChronoUnit.DAYS)))
                 .build();
+        final PullRequest pr7Above = PullRequest.builder()
+                .id("pr7-above")
+                .addedLineNumber(halfCodeSize * 100)
+                .deletedLineNumber(halfCodeSize * 100)
+                .repository(repositoryName)
+                .creationDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(3, ChronoUnit.DAYS)))
+                .mergeDate(
+                        Date.valueOf(weekStartDate.toInstant()
+                                .atZone(organisationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .minus(3, ChronoUnit.DAYS)))
+                .build();
 
 
-        return new ArrayList<>(List.of(pr1, pr1Draft, pr1Merged, pr2, pr3, pr3WeekStart, pr4, pr4Draft, pr5,
-                pr5OneDay, pr6, pr7));
+        return new ArrayList<>(List.of(pr1, pr1Above, pr1Draft, pr1Merged, pr2, pr3, pr3WeekStart, pr4, pr4Draft, pr5,
+                pr5OneDay, pr6, pr7, pr7Above));
     }
 }
