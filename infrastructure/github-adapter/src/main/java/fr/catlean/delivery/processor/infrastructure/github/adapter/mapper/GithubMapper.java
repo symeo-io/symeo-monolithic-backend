@@ -18,6 +18,7 @@ public interface GithubMapper {
                                                  final String githubPlatformName) {
         return PullRequest.builder()
                 .id(githubPlatformName + "-" + githubPullRequestDTO.getId().toString())
+                .repository(githubPullRequestDTO.getBase().getRepo().getName())
                 .title(githubPullRequestDTO.getTitle())
                 .number(githubPullRequestDTO.getNumber())
                 .isDraft(githubPullRequestDTO.getDraft())

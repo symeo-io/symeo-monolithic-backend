@@ -5,7 +5,9 @@ import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
 import fr.catlean.delivery.processor.domain.port.out.OrganisationAccountAdapter;
 import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
+import fr.catlean.delivery.processor.domain.service.PullRequestSizeService;
 import fr.catlean.delivery.processor.infrastructure.postgres.configuration.PostgresConfiguration;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,16 +22,12 @@ import java.util.List;
 @Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class,
         JsonLocalStorageConfiguration.class, PostgresConfiguration.class, AccountConfiguration.class})
 @Slf4j
+@AllArgsConstructor
 public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
 
     private final DeliveryProcessorService deliveryProcessorService;
     private final OrganisationAccountAdapter organisationAccountAdapter;
-
-    public CatleanDeliveryProcessorApplication(DeliveryProcessorService deliveryProcessorService,
-                                               OrganisationAccountAdapter organisationAccountAdapter) {
-        this.deliveryProcessorService = deliveryProcessorService;
-        this.organisationAccountAdapter = organisationAccountAdapter;
-    }
+    private final PullRequestSizeService pullRequestSizeService;
 
     public static void main(String[] args) {
         SpringApplication.run(CatleanDeliveryProcessorApplication.class, args);
@@ -43,6 +41,7 @@ public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
         final List<PullRequest> pullRequestList =
                 deliveryProcessorService.collectPullRequestsForOrganisation(organisationAccount);
         LOGGER.info("{} PRs were collected", pullRequestList.size());
+        pullRequestSizeService.computeAndSavePullRequestSizeHistogram(pullRequestList, organisationAccount);
         System.exit(0);
     }
 }

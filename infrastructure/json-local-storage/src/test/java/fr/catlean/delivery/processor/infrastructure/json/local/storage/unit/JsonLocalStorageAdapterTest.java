@@ -46,6 +46,29 @@ public class JsonLocalStorageAdapterTest {
     }
 
     @Test
+    void should_override_bytes_as_json_file() throws IOException {
+        // Given
+        final JsonStorageProperties jsonStorageProperties = new JsonStorageProperties();
+        jsonStorageProperties.setRootDirectory(tmpDir);
+        final JsonLocalStorageAdapter jsonLocalStorageAdapter = new JsonLocalStorageAdapter(jsonStorageProperties);
+        final String organisation = faker.animal().name();
+        final String adapterName = faker.animal().name();
+        final String contentName = faker.beer().name();
+        final String bytesAsString = "{\"test\": 1111}";
+        final String bytesAsStringOverride = "{\"test\": 2222}";
+
+        // When
+        jsonLocalStorageAdapter.save(organisation, adapterName, contentName, bytesAsString.getBytes());
+        jsonLocalStorageAdapter.save(organisation, adapterName, contentName, bytesAsStringOverride.getBytes());
+
+        // Then
+        final String string =
+                Files.readString(Path.of(tmpDir + "/" + organisation + "/" + adapterName + "/" + contentName + ".json"
+                ));
+        assertThat(string).isEqualTo(bytesAsStringOverride);
+    }
+
+    @Test
     void should_read_bytes_from_json_file() throws IOException {
         // Given
         final JsonStorageProperties jsonStorageProperties = new JsonStorageProperties();

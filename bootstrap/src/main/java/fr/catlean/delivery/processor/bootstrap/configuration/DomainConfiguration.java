@@ -6,6 +6,7 @@ import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
 import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
+import fr.catlean.delivery.processor.domain.service.PullRequestSizeService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,21 +15,26 @@ public class DomainConfiguration {
 
     @Bean
     public DeliveryCommand deliveryCommand(
-            RawStorageAdapter rawStorageAdapter,
-            VersionControlSystemAdapter versionControlSystemAdapter) {
+            final RawStorageAdapter rawStorageAdapter,
+            final VersionControlSystemAdapter versionControlSystemAdapter) {
         return new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
     }
 
     @Bean
-    public DeliveryQuery deliveryQuery(RawStorageAdapter rawStorageAdapter,
-                                       VersionControlSystemAdapter versionControlSystemAdapter) {
+    public DeliveryQuery deliveryQuery(final RawStorageAdapter rawStorageAdapter,
+                                       final VersionControlSystemAdapter versionControlSystemAdapter) {
         return new DeliveryQuery(rawStorageAdapter, versionControlSystemAdapter);
     }
 
     @Bean
-    public DeliveryProcessorService deliveryProcessorService(DeliveryCommand deliveryCommand,
-                                                             DeliveryQuery deliveryQuery,
-                                                             ExpositionStorage expositionStorage) {
+    public DeliveryProcessorService deliveryProcessorService(final DeliveryCommand deliveryCommand,
+                                                             final DeliveryQuery deliveryQuery,
+                                                             final ExpositionStorage expositionStorage) {
         return new DeliveryProcessorService(deliveryCommand, deliveryQuery, expositionStorage);
+    }
+
+    @Bean
+    public PullRequestSizeService pullRequestSizeService(final ExpositionStorage expositionStorage) {
+        return new PullRequestSizeService(expositionStorage);
     }
 }

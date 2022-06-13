@@ -19,13 +19,13 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
     public void save(
             String organisation, String adapterName, String contentName, byte[] bytes) {
         final Path jsonPath = buildJsonPath(organisation, adapterName, contentName);
-        if (!Files.exists(jsonPath)) {
-            try {
+        try {
+            if (!Files.exists(jsonPath)) {
                 Files.createDirectories(jsonPath.getParent());
-                Files.write(jsonPath, bytes);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
+            Files.write(jsonPath, bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
