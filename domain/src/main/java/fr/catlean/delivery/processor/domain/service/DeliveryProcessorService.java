@@ -20,10 +20,23 @@ public class DeliveryProcessorService {
     private final DeliveryQuery deliveryQuery;
     private final ExpositionStorage expositionStorage;
 
-    public List<PullRequest> collectPullRequestsForOrganisation(OrganisationAccount organisationAccount) {
-        final List<PullRequest> pullRequests = getPullRequestsForOrganizationAccount(organisationAccount);
+    public List<PullRequest> collectPullRequestsForOrganisation(final OrganisationAccount organisationAccount) {
+        final List<PullRequest> pullRequests = getPullRequestsForOrganizationAccount(organisationAccount).stream()
+                .map(pullRequest -> populateWithOrganisationAccount(pullRequest, organisationAccount)).toList();
         expositionStorage.savePullRequestDetails(pullRequests);
         return pullRequests;
+    }
+
+    private PullRequest populateWithOrganisationAccount(PullRequest pullRequest,
+                                                        OrganisationAccount organisationAccount) {
+        return organisationAccount.getVcsConfiguration().getVcsTeams().stream()
+                .filter(vcsTeam -> vcsTeam.getVcsRepositoryNames().contains(pullRequest.getRepository()))
+                .findFirst()
+                .map(vcsTeam -> pullRequest.toBuilder()
+                        .team(vcsTeam.getName())
+                        .vcsOrganization(organisationAccount.getName())
+                        .build()
+                ).orElse(pullRequest);
     }
 
     private List<PullRequest> getPullRequestsForOrganizationAccount(OrganisationAccount organisationAccount) {

@@ -29,7 +29,6 @@ public interface GithubMapper {
                 .creationDate(githubPullRequestDTO.getCreatedAt())
                 .mergeDate(githubPullRequestDTO.getMergedAt())
                 .lastUpdateDate(githubPullRequestDTO.getUpdatedAt())
-                .state(githubPullRequestDTO.getState())
                 .vcsUrl(githubPullRequestDTO.getHtmlUrl())
                 .authorLogin(githubPullRequestDTO.getUser().getLogin())
                 .build();

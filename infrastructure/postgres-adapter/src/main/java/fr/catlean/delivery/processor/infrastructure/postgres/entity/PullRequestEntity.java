@@ -33,6 +33,12 @@ public class PullRequestEntity {
     int deletedLineNumber;
     @Column(name = "added_line_number")
     int addedLineNumber;
+    @Column(name = "size")
+    int size;
+    @Column(name = "days_opened")
+    long daysOpened;
+    @Column(name = "start_date_range")
+    String startDateRange;
     @Column(name = "creation_date", nullable = false)
     ZonedDateTime creationDate;
     @Column(name = "last_update_date", nullable = false)
@@ -51,6 +57,12 @@ public class PullRequestEntity {
     String title;
     @Column(name = "author_login", nullable = false)
     String authorLogin;
+    @Column(name = "team")
+    String team;
+    @Column(name = "vcs_repository")
+    String vcsRepository;
+    @Column(name = "vcs_organization")
+    String vcsOrganization;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

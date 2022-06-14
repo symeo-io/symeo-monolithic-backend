@@ -12,6 +12,7 @@ import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -107,8 +108,8 @@ public class DeliveryProcessorServiceTest {
                                 repo4
                         )
                 );
-        final PullRequest pr11 = PullRequest.builder().id("github-11").build();
-        final PullRequest pr12 = PullRequest.builder().id("github-12").build();
+        final PullRequest pr11 = PullRequest.builder().id("github-11").repository(repo1Name).build();
+        final PullRequest pr12 = PullRequest.builder().id("github-12").repository(repo1Name).build();
         when(deliveryQuery.readPullRequestsForRepository(repo1))
                 .thenReturn(
                         List.of(
@@ -116,8 +117,8 @@ public class DeliveryProcessorServiceTest {
                                 pr12
                         )
                 );
-        final PullRequest pr21 = PullRequest.builder().id("github-21").build();
-        final PullRequest pr22 = PullRequest.builder().id("github-22").build();
+        final PullRequest pr21 = PullRequest.builder().id("github-21").repository(repo2Name).build();
+        final PullRequest pr22 = PullRequest.builder().id("github-22").repository(repo2Name).build();
         when(deliveryQuery.readPullRequestsForRepository(repo2))
                 .thenReturn(
                         List.of(
@@ -125,8 +126,8 @@ public class DeliveryProcessorServiceTest {
                                 pr22
                         )
                 );
-        final PullRequest pr31 = PullRequest.builder().id("github-31").build();
-        final PullRequest pr32 = PullRequest.builder().id("github-32").build();
+        final PullRequest pr31 = PullRequest.builder().id("github-31").repository(repo3Name).build();
+        final PullRequest pr32 = PullRequest.builder().id("github-32").repository(repo3Name).build();
         when(deliveryQuery.readPullRequestsForRepository(repo3))
                 .thenReturn(
                         List.of(
@@ -134,8 +135,8 @@ public class DeliveryProcessorServiceTest {
                                 pr32
                         )
                 );
-        final PullRequest pr41 = PullRequest.builder().id("github-41").build();
-        final PullRequest pr42 = PullRequest.builder().id("github-42").build();
+        final PullRequest pr41 = PullRequest.builder().id("github-41").repository(repo4Name).build();
+        final PullRequest pr42 = PullRequest.builder().id("github-42").repository(repo4Name).build();
         when(deliveryQuery.readPullRequestsForRepository(repo4))
                 .thenReturn(
                         List.of(
@@ -147,8 +148,13 @@ public class DeliveryProcessorServiceTest {
                 deliveryProcessorService.collectPullRequestsForOrganisation(organisationAccount);
 
         // Then
-        assertThat(pullRequestList).containsAll(List.of(pr11, pr12, pr31, pr32, pr41, pr42));
-        assertThat(pullRequestList).doesNotContain(pr21, pr22);
+        assertThat(pullRequestList.stream().map(PullRequest::getId)).containsAll(
+                Stream.of(pr11, pr12, pr31, pr32, pr41, pr42).map(PullRequest::getId).toList());
+        assertThat(pullRequestList.stream().map(PullRequest::getId)).doesNotContain(pr21.getId(), pr22.getId());
+        for (PullRequest pullRequest : pullRequestList) {
+            assertThat(pullRequest.getTeam()).isNotNull();
+            assertThat(pullRequest.getVcsOrganization()).isNotNull();
+        }
         verify(expositionStorage, times(1)).savePullRequestDetails(pullRequestList);
     }
 }

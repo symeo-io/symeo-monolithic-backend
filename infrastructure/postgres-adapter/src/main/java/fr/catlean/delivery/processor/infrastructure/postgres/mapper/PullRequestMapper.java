@@ -29,6 +29,12 @@ public interface PullRequestMapper {
                 .state(pullRequest.getState())
                 .authorLogin(pullRequest.getAuthorLogin())
                 .vcsId(pullRequest.getNumber())
+                .vcsRepository(pullRequest.getRepository())
+                .team(pullRequest.getTeam())
+                .vcsOrganization(pullRequest.getVcsOrganization())
+                .size(pullRequest.getSize())
+                .daysOpened(pullRequest.getDaysOpened())
+                .startDateRange(pullRequest.getStartDateRange())
                 .build();
     }
 }
