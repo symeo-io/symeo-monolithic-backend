@@ -117,7 +117,6 @@ public class PostgresAdapterTestIT {
                 .creationDate(faker.date().past(7, TimeUnit.DAYS))
                 .mergeDate(new Date())
                 .vcsUrl(faker.pokemon().name())
-                .state(faker.pokemon().location())
                 .deletedLineNumber(faker.number().numberBetween(0, 20000))
                 .authorLogin(faker.name().firstName())
                 .commitNumber(faker.number().randomDigit())
