@@ -6,7 +6,7 @@ import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
 import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
-import fr.catlean.delivery.processor.domain.service.PullRequestSizeService;
+import fr.catlean.delivery.processor.domain.service.PullRequestService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,7 +34,7 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public PullRequestSizeService pullRequestSizeService(final ExpositionStorage expositionStorage) {
-        return new PullRequestSizeService(expositionStorage);
+    public PullRequestService pullRequestSizeService(final ExpositionStorage expositionStorage) {
+        return new PullRequestService(expositionStorage);
     }
 }

@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 public class PullRequestHistogram {
     public static final String SIZE_LIMIT = "size-limit";
+    public static final String TIME_LIMIT = "time-limit";
     String type;
     int limit;
     @NonNull
