@@ -10,7 +10,7 @@ import java.util.List;
 @Value
 @Builder(toBuilder = true)
 public class VcsConfiguration {
-    String organisationName;
+    String organizationName;
     @Builder.Default
     List<VcsTeam> vcsTeams = new ArrayList<>();
 

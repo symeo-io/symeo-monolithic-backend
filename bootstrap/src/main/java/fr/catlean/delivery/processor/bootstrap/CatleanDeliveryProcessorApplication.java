@@ -2,8 +2,8 @@ package fr.catlean.delivery.processor.bootstrap;
 
 import fr.catlean.delivery.processor.bootstrap.configuration.*;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
-import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
-import fr.catlean.delivery.processor.domain.port.out.OrganisationAccountAdapter;
+import fr.catlean.delivery.processor.domain.model.account.OrganizationAccount;
+import fr.catlean.delivery.processor.domain.port.out.OrganizationAccountAdapter;
 import fr.catlean.delivery.processor.domain.service.DeliveryProcessorService;
 import fr.catlean.delivery.processor.domain.service.PullRequestService;
 import fr.catlean.delivery.processor.infrastructure.postgres.configuration.PostgresConfiguration;
@@ -26,7 +26,7 @@ import java.util.List;
 public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
 
     private final DeliveryProcessorService deliveryProcessorService;
-    private final OrganisationAccountAdapter organisationAccountAdapter;
+    private final OrganizationAccountAdapter organizationAccountAdapter;
     private final PullRequestService pullRequestService;
 
     public static void main(String[] args) {
@@ -35,14 +35,14 @@ public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        final String organisation = "armis";
-        final OrganisationAccount organisationAccount =
-                organisationAccountAdapter.findOrganisationForName(organisation);
+        final String organization = "armis";
+        final OrganizationAccount organizationAccount =
+                organizationAccountAdapter.findOrganizationForName(organization);
         final List<PullRequest> pullRequestList =
-                deliveryProcessorService.collectPullRequestsForOrganisation(organisationAccount);
+                deliveryProcessorService.collectPullRequestsForOrganization(organizationAccount);
         LOGGER.info("{} PRs were collected", pullRequestList.size());
-        pullRequestService.computeAndSavePullRequestSizeHistogram(pullRequestList, organisationAccount);
-        pullRequestService.computeAndSavePullRequestTimeHistogram(pullRequestList, organisationAccount);
+        pullRequestService.computeAndSavePullRequestSizeHistogram(pullRequestList, organizationAccount);
+        pullRequestService.computeAndSavePullRequestTimeHistogram(pullRequestList, organizationAccount);
         System.exit(0);
     }
 }

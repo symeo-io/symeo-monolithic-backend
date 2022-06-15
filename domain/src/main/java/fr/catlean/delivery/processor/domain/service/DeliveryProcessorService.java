@@ -3,7 +3,7 @@ package fr.catlean.delivery.processor.domain.service;
 import fr.catlean.delivery.processor.domain.command.DeliveryCommand;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
-import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
+import fr.catlean.delivery.processor.domain.model.account.OrganizationAccount;
 import fr.catlean.delivery.processor.domain.port.out.ExpositionStorage;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
 import lombok.AllArgsConstructor;
@@ -20,43 +20,44 @@ public class DeliveryProcessorService {
     private final DeliveryQuery deliveryQuery;
     private final ExpositionStorage expositionStorage;
 
-    public List<PullRequest> collectPullRequestsForOrganisation(final OrganisationAccount organisationAccount) {
-        final List<PullRequest> pullRequests = getPullRequestsForOrganizationAccount(organisationAccount).stream()
-                .map(pullRequest -> populateWithOrganisationAccount(pullRequest, organisationAccount)).toList();
+    public List<PullRequest> collectPullRequestsForOrganization(final OrganizationAccount organizationAccount) {
+        final List<PullRequest> pullRequests = getPullRequestsForOrganizationAccount(organizationAccount).stream()
+                .map(pullRequest -> populateWithOrganizationAccount(pullRequest, organizationAccount)).toList();
         expositionStorage.savePullRequestDetails(pullRequests);
         return pullRequests;
     }
 
-    private PullRequest populateWithOrganisationAccount(PullRequest pullRequest,
-                                                        OrganisationAccount organisationAccount) {
-        return organisationAccount.getVcsConfiguration().getVcsTeams().stream()
+    private PullRequest populateWithOrganizationAccount(final PullRequest pullRequest,
+                                                        final OrganizationAccount organizationAccount) {
+        return organizationAccount.getVcsConfiguration().getVcsTeams().stream()
                 .filter(vcsTeam -> vcsTeam.getVcsRepositoryNames().contains(pullRequest.getRepository()))
                 .findFirst()
                 .map(vcsTeam -> pullRequest.toBuilder()
                         .team(vcsTeam.getName())
-                        .vcsOrganization(organisationAccount.getName())
+                        .vcsOrganization(organizationAccount.getName())
+                        .organization(organizationAccount.getName())
                         .build()
                 ).orElse(pullRequest);
     }
 
-    private List<PullRequest> getPullRequestsForOrganizationAccount(OrganisationAccount organisationAccount) {
-        deliveryCommand.collectRepositoriesForOrganisation(organisationAccount);
-        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganisation(organisationAccount);
+    private List<PullRequest> getPullRequestsForOrganizationAccount(final OrganizationAccount organizationAccount) {
+        deliveryCommand.collectRepositoriesForOrganization(organizationAccount);
+        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganization(organizationAccount);
         return repositories.parallelStream()
-                .filter(repository -> filterRepositoryForOrganisationAccount(organisationAccount, repository))
+                .filter(repository -> filterRepositoryForOrganizationAccount(organizationAccount, repository))
                 .map(
                         this::collectPullRequestForRepository
                 ).flatMap(Collection::stream).toList();
     }
 
-    private static boolean filterRepositoryForOrganisationAccount(OrganisationAccount organisationAccount,
-                                                                  Repository repository) {
+    private static boolean filterRepositoryForOrganizationAccount(final OrganizationAccount organizationAccount,
+                                                                  final Repository repository) {
         final List<String> allTeamsRepositories =
-                organisationAccount.getVcsConfiguration().getAllTeamsRepositories();
+                organizationAccount.getVcsConfiguration().getAllTeamsRepositories();
         return allTeamsRepositories.isEmpty() || allTeamsRepositories.contains(repository.getName());
     }
 
-    private List<PullRequest> collectPullRequestForRepository(Repository repository) {
+    private List<PullRequest> collectPullRequestForRepository(final Repository repository) {
         deliveryCommand.collectPullRequestsForRepository(repository);
         final List<PullRequest> pullRequestList = deliveryQuery.readPullRequestsForRepository(repository);
         return isNull(pullRequestList) ? List.of() : pullRequestList;

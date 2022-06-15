@@ -27,11 +27,11 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     private GithubProperties properties;
 
     @Override
-    public byte[] getRawRepositories(final String organisation) {
+    public byte[] getRawRepositories(final String organization) {
         int page = 1;
         GithubRepositoryDTO[] githubRepositoryDTOS =
-                this.githubHttpClient.getRepositoriesForOrganisationName(
-                        organisation, page, properties.getSize());
+                this.githubHttpClient.getRepositoriesForOrganizationName(
+                        organization, page, properties.getSize());
         if (isNull(githubRepositoryDTOS) || githubRepositoryDTOS.length == 0) {
             return new byte[0];
         }
@@ -40,8 +40,8 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         while (githubRepositoryDTOS.length == properties.getSize()) {
             page += 1;
             githubRepositoryDTOS =
-                    this.githubHttpClient.getRepositoriesForOrganisationName(
-                            organisation, page, properties.getSize());
+                    this.githubHttpClient.getRepositoriesForOrganizationName(
+                            organization, page, properties.getSize());
             githubRepositoryDTOList.addAll(Arrays.stream(githubRepositoryDTOS).toList());
         }
 
@@ -74,8 +74,8 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                                                   final byte[] alreadyRawCollectedPullRequests) {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
-                this.githubHttpClient.getPullRequestsForRepositoryAndOrganisation(
-                        repository.getOrganisationName(), repository.getName(), page, properties.getSize());
+                this.githubHttpClient.getPullRequestsForRepositoryAndOrganization(
+                        repository.getOrganizationName(), repository.getName(), page, properties.getSize());
         if (isNull(githubPullRequestDTOS) || githubPullRequestDTOS.length == 0) {
             return new byte[0];
         }
@@ -84,8 +84,8 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         while (githubPullRequestDTOS.length == properties.getSize()) {
             page += 1;
             githubPullRequestDTOS =
-                    this.githubHttpClient.getPullRequestsForRepositoryAndOrganisation(
-                            repository.getOrganisationName(), repository.getName(), page, properties.getSize());
+                    this.githubHttpClient.getPullRequestsForRepositoryAndOrganization(
+                            repository.getOrganizationName(), repository.getName(), page, properties.getSize());
             githubPullRequestDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
         }
 
@@ -93,7 +93,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             List<GithubPullRequestDTO> githubDetailedPullRequests = null;
             if (alreadyRawCollectedPullRequests == null || alreadyRawCollectedPullRequests.length == 0) {
                 githubDetailedPullRequests = githubPullRequestDTOList.stream().map(githubPullRequestDTO ->
-                        githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
+                        githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
                                 repository.getName(), githubPullRequestDTO.getNumber())
                 ).toList();
             } else {
@@ -124,7 +124,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             if (optionalAlreadyCollectedPR.isPresent()) {
                 if (optionalAlreadyCollectedPR.get().getUpdatedAt().before(currentGithubPullRequestDTO.getUpdatedAt())) {
                     githubDetailedPullRequests.add(
-                            githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
+                            githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
                                     repository.getName(), currentGithubPullRequestDTO.getNumber())
                     );
                 } else {
@@ -132,7 +132,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                 }
             } else {
                 githubDetailedPullRequests.add(
-                        githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganisationName(),
+                        githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
                                 repository.getName(), currentGithubPullRequestDTO.getNumber())
                 );
             }

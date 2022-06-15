@@ -1,7 +1,7 @@
 package fr.catlean.delivery.processor.domain.service;
 
 import fr.catlean.delivery.processor.domain.model.PullRequest;
-import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
+import fr.catlean.delivery.processor.domain.model.account.OrganizationAccount;
 import fr.catlean.delivery.processor.domain.model.account.VcsTeam;
 import fr.catlean.delivery.processor.domain.model.insight.DataCompareToLimit;
 import fr.catlean.delivery.processor.domain.model.insight.PullRequestHistogram;
@@ -27,13 +27,13 @@ public class PullRequestService {
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
     public void computeAndSavePullRequestSizeHistogram(List<PullRequest> pullRequests,
-                                                       OrganisationAccount organisationAccount) {
+                                                       OrganizationAccount organizationAccount) {
         final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
-        for (VcsTeam vcsTeam : organisationAccount.getVcsConfiguration().getVcsTeams()) {
+        for (VcsTeam vcsTeam : organizationAccount.getVcsConfiguration().getVcsTeams()) {
 
             final PullRequestHistogram pullRequestHistogram =
                     getPullRequestHistogramForVcsTeam(SIZE_LIMIT, pullRequests,
-                            organisationAccount, vcsTeam);
+                            organizationAccount, vcsTeam);
             pullRequestHistograms.add(pullRequestHistogram);
 
         }
@@ -41,13 +41,13 @@ public class PullRequestService {
     }
 
     public void computeAndSavePullRequestTimeHistogram(List<PullRequest> pullRequests,
-                                                       OrganisationAccount organisationAccount) {
+                                                       OrganizationAccount organizationAccount) {
         final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
-        for (VcsTeam vcsTeam : organisationAccount.getVcsConfiguration().getVcsTeams()) {
+        for (VcsTeam vcsTeam : organizationAccount.getVcsConfiguration().getVcsTeams()) {
 
             final PullRequestHistogram pullRequestHistogram =
                     getPullRequestHistogramForVcsTeam(TIME_LIMIT, pullRequests,
-                            organisationAccount, vcsTeam);
+                            organizationAccount, vcsTeam);
             pullRequestHistograms.add(pullRequestHistogram);
 
         }
@@ -57,7 +57,7 @@ public class PullRequestService {
 
     private PullRequestHistogram getPullRequestHistogramForVcsTeam(final String pullRequestHistogramType,
                                                                    List<PullRequest> pullRequests,
-                                                                   final OrganisationAccount organisationAccount,
+                                                                   final OrganizationAccount organizationAccount,
                                                                    final VcsTeam vcsTeam) {
         int pullRequestLimit;
         if (pullRequestHistogramType.equals(SIZE_LIMIT)) {
@@ -69,14 +69,14 @@ public class PullRequestService {
         pullRequests = filterPullRequests(pullRequests, vcsTeam);
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
         for (Date weekStartDate : getWeekStartDateForTheLastWeekNumber(3 * 4,
-                organisationAccount.getTimeZone())) {
+                organizationAccount.getTimeZone())) {
             final String weekStart = SDF.format(weekStartDate);
             dataCompareToLimits.add(getDataCompareToLimit(pullRequestHistogramType, pullRequests, pullRequestLimit,
                     weekStartDate, weekStart));
         }
         return PullRequestHistogram.builder()
                 .type(pullRequestHistogramType)
-                .organisationAccount(organisationAccount.getName())
+                .organizationAccount(organizationAccount.getName())
                 .team(vcsTeam.getName())
                 .dataByWeek(dataCompareToLimits)
                 .limit(pullRequestLimit)
@@ -90,7 +90,9 @@ public class PullRequestService {
                         .filter(pullRequest -> vcsTeam.getVcsRepositoryNames().stream()
                                 .anyMatch(repositoryName -> pullRequest.getRepository().equals(repositoryName))
                         ).toList();
-        pullRequests = pullRequests.stream().filter(pullRequest -> !pullRequest.getIsDraft()).toList();
+        pullRequests =
+                // TODO: remove the filter on the date and add condition on business rules
+                pullRequests.stream().filter(pullRequest -> !pullRequest.getIsDraft() && !(isNull(pullRequest.getMergeDate()) && nonNull(pullRequest.getCloseDate()))).toList();
         return pullRequests;
     }
 
@@ -129,7 +131,7 @@ public class PullRequestService {
                                                                 PullRequest pullRequest) {
         final Date creationDate = pullRequest.getCreationDate();
         final Date mergeDate = pullRequest.getMergeDate();
-        if (isNull(mergeDate) || mergeDate.after(weekStartDate)) {
+        if (isNull(mergeDate) || (mergeDate.after(weekStartDate))) {
             long daysBetweenCreationAndWeekStart =
                     TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
                             TimeUnit.MILLISECONDS);
@@ -166,7 +168,7 @@ public class PullRequestService {
                 long daysBetweenCreationAndWeekStart =
                         TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
                                 TimeUnit.MILLISECONDS);
-                return daysBetweenCreationAndWeekStart <= 7 && daysBetweenMergeAndWeekStart <= 7;
+                return daysBetweenCreationAndWeekStart < 7 && daysBetweenMergeAndWeekStart < 7;
             }
         }
         return false;

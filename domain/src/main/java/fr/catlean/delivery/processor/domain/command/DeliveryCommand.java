@@ -2,7 +2,7 @@ package fr.catlean.delivery.processor.domain.command;
 
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
-import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
+import fr.catlean.delivery.processor.domain.model.account.OrganizationAccount;
 import fr.catlean.delivery.processor.domain.port.out.RawStorageAdapter;
 import fr.catlean.delivery.processor.domain.port.out.VersionControlSystemAdapter;
 
@@ -21,11 +21,11 @@ public class DeliveryCommand {
         this.versionControlSystemAdapter = versionControlSystemAdapter;
     }
 
-    public void collectRepositoriesForOrganisation(OrganisationAccount organisationAccount) {
+    public void collectRepositoriesForOrganization(OrganizationAccount organizationAccount) {
         final byte[] rawRepositories =
-                versionControlSystemAdapter.getRawRepositories(organisationAccount.getVcsConfiguration().getOrganisationName());
+                versionControlSystemAdapter.getRawRepositories(organizationAccount.getVcsConfiguration().getOrganizationName());
         rawStorageAdapter.save(
-                organisationAccount.getVcsConfiguration().getOrganisationName(),
+                organizationAccount.getVcsConfiguration().getOrganizationName(),
                 versionControlSystemAdapter.getName(),
                 Repository.ALL,
                 rawRepositories);
@@ -33,16 +33,16 @@ public class DeliveryCommand {
 
     public void collectPullRequestsForRepository(Repository repository) {
         byte[] alreadyRawPullRequestsCollected = null;
-        if (rawStorageAdapter.exists(repository.getOrganisationName(), versionControlSystemAdapter.getName(),
+        if (rawStorageAdapter.exists(repository.getOrganizationName(), versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()))) {
-            alreadyRawPullRequestsCollected = rawStorageAdapter.read(repository.getOrganisationName(),
+            alreadyRawPullRequestsCollected = rawStorageAdapter.read(repository.getOrganizationName(),
                     versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()));
         }
         final byte[] rawPullRequestsForRepository =
                 versionControlSystemAdapter.getRawPullRequestsForRepository(repository,
                         alreadyRawPullRequestsCollected);
         rawStorageAdapter.save(
-                repository.getOrganisationName(),
+                repository.getOrganizationName(),
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()),
                 rawPullRequestsForRepository);

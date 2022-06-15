@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VersionControlSystemAdapter {
-    byte[] getRawRepositories(String organisation);
+    byte[] getRawRepositories(String organization);
 
     String getName();
 

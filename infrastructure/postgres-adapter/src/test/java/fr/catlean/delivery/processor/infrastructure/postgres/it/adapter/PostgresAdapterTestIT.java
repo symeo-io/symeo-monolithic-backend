@@ -84,7 +84,7 @@ public class PostgresAdapterTestIT {
 
     }
 
-    private PullRequestHistogram buildPullRequestHistogram(String organisationName) {
+    private PullRequestHistogram buildPullRequestHistogram(String organizationName) {
 
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
         DateHelper.getWeekStartDateForTheLastWeekNumber(5, TimeZone.getTimeZone(ZoneId.systemDefault()))
@@ -92,7 +92,7 @@ public class PostgresAdapterTestIT {
                 .forEach(dateAsString -> dataCompareToLimits.add(buildDataCompareToLimit(dateAsString)));
 
         return PullRequestHistogram.builder()
-                .organisationAccount(faker.name().lastName())
+                .organizationAccount(faker.name().lastName())
                 .team(faker.name().firstName())
                 .limit(faker.number().randomDigit())
                 .type(PullRequestHistogram.SIZE_LIMIT)

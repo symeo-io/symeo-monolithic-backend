@@ -12,7 +12,7 @@ import java.util.TimeZone;
 
 @Builder(toBuilder = true)
 @Value
-public class OrganisationAccount {
+public class OrganizationAccount {
     String name;
     @NonNull
     VcsConfiguration vcsConfiguration;
@@ -21,7 +21,7 @@ public class OrganisationAccount {
     @Builder.Default
     TimeZone timeZone = TimeZone.getTimeZone(ZoneId.systemDefault());
 
-    public OrganisationAccount addTeam(final String teamName, final List<String> teamVcsRepositoryNames,
+    public OrganizationAccount addTeam(final String teamName, final List<String> teamVcsRepositoryNames,
                                        final Integer pullRequestLineNumberLimit,
                                        final Integer pullRequestDayNumberLimit) {
         final List<VcsTeam> vcsTeams = this.vcsConfiguration.getVcsTeams();

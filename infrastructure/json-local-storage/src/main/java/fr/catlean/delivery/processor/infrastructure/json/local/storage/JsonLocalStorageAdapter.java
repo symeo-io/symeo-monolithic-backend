@@ -17,8 +17,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
 
     @Override
     public void save(
-            String organisation, String adapterName, String contentName, byte[] bytes) {
-        final Path jsonPath = buildJsonPath(organisation, adapterName, contentName);
+            String organization, String adapterName, String contentName, byte[] bytes) {
+        final Path jsonPath = buildJsonPath(organization, adapterName, contentName);
         try {
             if (!Files.exists(jsonPath)) {
                 Files.createDirectories(jsonPath.getParent());
@@ -30,8 +30,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public byte[] read(String organisation, String adapterName, String contentName) {
-        final Path jsonPath = buildJsonPath(organisation, adapterName, contentName);
+    public byte[] read(String organization, String adapterName, String contentName) {
+        final Path jsonPath = buildJsonPath(organization, adapterName, contentName);
         try {
             return Files.readAllBytes(jsonPath);
         } catch (IOException e) {
@@ -40,16 +40,16 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public boolean exists(String organisation, String adapterName, String contentName) {
-        final Path jsonPath = buildJsonPath(organisation, adapterName, contentName);
+    public boolean exists(String organization, String adapterName, String contentName) {
+        final Path jsonPath = buildJsonPath(organization, adapterName, contentName);
         return Files.exists(jsonPath);
     }
 
-    private Path buildJsonPath(String organisation, String adapterName, String contentName) {
+    private Path buildJsonPath(String organization, String adapterName, String contentName) {
         return Path.of(
                 jsonStorageProperties.getRootDirectory()
                         + "/"
-                        + organisation
+                        + organization
                         + "/"
                         + adapterName
                         + "/"

@@ -23,9 +23,10 @@ create table exposition_storage.pull_request
     vcs_url                     varchar(200),
     title                       varchar(300),
     author_login                varchar(100),
-    team                        varchar(100),
     vcs_repository              varchar(100),
     vcs_organization            varchar(100),
+    organization                varchar(100),
+    team                        varchar(100),
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null
 );
@@ -33,13 +34,13 @@ create table exposition_storage.pull_request
 create table exposition_storage.pull_request_histogram
 (
     start_date_range            varchar(50)                not null,
-    organisation           varchar(100)               not null,
-    team                   varchar(100)               not null,
+    organization                varchar(100)               not null,
+    team                        varchar(100)               not null,
     histogram_type              varchar(100)               not null,
     data_below_limit            bigint                     not null,
     data_above_limit            bigint                     not null,
 
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null,
-    primary key (start_date_range, organisation, team, histogram_type)
+    primary key (start_date_range, organization, team, histogram_type)
 )

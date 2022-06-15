@@ -34,7 +34,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
                 token),
                 githubProperties);
         final Repository repository =
-                Repository.builder().organisationName(faker.name().lastName()).name(faker.name().firstName()).build();
+                Repository.builder().organizationName(faker.name().lastName()).name(faker.name().firstName()).build();
         final Map<String, String> authorization = Map.of("Authorization", "token " + token);
         final GithubPullRequestDTO[] githubPullRequestStubs1 = getStubsFromClassT("get_pull_requests_for_repo",
                 "get_pr_for_repo_page_1_size_3.json", GithubPullRequestDTO[].class);
@@ -67,31 +67,31 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         // When
         // All PRs by repo
         when(catleanHttpClient.get(
-                "https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() +
+                "https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() +
                         "/pulls?sort=updated&direction=desc&state=all&per_page=3&page=1",
                 GithubPullRequestDTO[].class, objectMapper, authorization)).thenReturn(githubPullRequestStubs1);
         when(catleanHttpClient.get(
-                "https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() +
+                "https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() +
                         "/pulls?sort=updated&direction=desc&state=all&per_page=3&page=2",
                 GithubPullRequestDTO[].class, objectMapper, authorization)).thenReturn(githubPullRequestStubs2);
         when(catleanHttpClient.get(
-                "https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() +
+                "https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() +
                         "/pulls?sort=updated&direction=desc&state=all&per_page=3&page=3",
                 GithubPullRequestDTO[].class, objectMapper, authorization)).thenReturn(githubPullRequestStubs3);
         // PR details by PR
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/74", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/74", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr74);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/75", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/75", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr75);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/76", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/76", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr76);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/77", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/77", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr77);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/78", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/78", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr78);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/79", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/79", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr79);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/80", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/80", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr80);
 
 
@@ -118,7 +118,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
                 token),
                 githubProperties);
         final Repository repository =
-                Repository.builder().organisationName(faker.name().lastName()).name(faker.name().firstName()).build();
+                Repository.builder().organizationName(faker.name().lastName()).name(faker.name().firstName()).build();
         final Map<String, String> authorization = Map.of("Authorization", "token " + token);
         final GithubPullRequestDTO[] githubPullRequestStubs1 = getStubsFromClassT("get_pull_requests_for_repo",
                 "incremental_get_pr_for_repo_page_1_size_10.json", GithubPullRequestDTO[].class);
@@ -146,17 +146,17 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         // When
         // All PRs by repo
         when(catleanHttpClient.get(
-                "https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() +
+                "https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() +
                         "/pulls?sort=updated&direction=desc&state=all&per_page=10&page=1",
                 GithubPullRequestDTO[].class, objectMapper, authorization)).thenReturn(githubPullRequestStubs1);
         // PR details by PR
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/74", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/74", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr74);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/75", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/75", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr75);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/76", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/76", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr76);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganisationName() + "/" + repository.getName() + "/pulls/79", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/79", GithubPullRequestDTO.class, objectMapper, authorization))
                 .thenReturn(pr79);
 
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository,

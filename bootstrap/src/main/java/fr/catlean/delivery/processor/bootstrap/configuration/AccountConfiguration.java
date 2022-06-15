@@ -1,8 +1,8 @@
 package fr.catlean.delivery.processor.bootstrap.configuration;
 
-import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
+import fr.catlean.delivery.processor.domain.model.account.OrganizationAccount;
 import fr.catlean.delivery.processor.domain.model.account.VcsConfiguration;
-import fr.catlean.delivery.processor.domain.port.out.OrganisationAccountAdapter;
+import fr.catlean.delivery.processor.domain.port.out.OrganizationAccountAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,13 +14,13 @@ import java.util.Map;
 public class AccountConfiguration {
 
     @Bean
-    public OrganisationAccountAdapter organisationAccountAdapter() {
-        return new OrganisationAccountAdapter() {
-            private final static Map<String, OrganisationAccount> ORGANISATION_ACCOUNT_MAP = new HashMap<>();
+    public OrganizationAccountAdapter organizationAccountAdapter() {
+        return new OrganizationAccountAdapter() {
+            private final static Map<String, OrganizationAccount> ORGANISATION_ACCOUNT_MAP = new HashMap<>();
 
             static {
-                OrganisationAccount armisOrganisationAccount =
-                        OrganisationAccount.builder().name("armis").vcsConfiguration(VcsConfiguration.builder().organisationName("armis-paris").build()).build()
+                OrganizationAccount armisOrganizationAccount =
+                        OrganizationAccount.builder().name("armis").vcsConfiguration(VcsConfiguration.builder().organizationName("armis-paris").build()).build()
                                 .addTeam("saas-team", List.of("Reference_API",
                                         "saas-backend",
                                         "saas-frontend",
@@ -51,17 +51,17 @@ public class AccountConfiguration {
                                 ), 500, 5)
                                 .addTeam("media-team", List.of("Media-API", "Media-Console", "armis-orchestrator"),
                                         1000, 5);
-                OrganisationAccount dalmaOrganisationAccount =
-                        OrganisationAccount.builder().name("dalma").vcsConfiguration(VcsConfiguration.builder().organisationName("dalmaTeam").build()).build()
-                                .addTeam("front", List.of("web-reactjs", "marketing", "subscription-flow"), 3, 500)
-                                .addTeam("back", List.of("dalma-services"), 3, 500);
-                ORGANISATION_ACCOUNT_MAP.put("armis", armisOrganisationAccount);
-                ORGANISATION_ACCOUNT_MAP.put("dalma", dalmaOrganisationAccount);
+                OrganizationAccount dalmaOrganizationAccount =
+                        OrganizationAccount.builder().name("dalma").vcsConfiguration(VcsConfiguration.builder().organizationName("dalmaTeam").build()).build()
+                                .addTeam("front", List.of("web-reactjs", "marketing", "subscription-flow"), 500, 3)
+                                .addTeam("back", List.of("dalma-services"), 500, 3);
+                ORGANISATION_ACCOUNT_MAP.put("armis", armisOrganizationAccount);
+                ORGANISATION_ACCOUNT_MAP.put("dalma", dalmaOrganizationAccount);
             }
 
             @Override
-            public OrganisationAccount findOrganisationForName(String organisationName) {
-                return ORGANISATION_ACCOUNT_MAP.get(organisationName);
+            public OrganizationAccount findOrganizationForName(String organizationName) {
+                return ORGANISATION_ACCOUNT_MAP.get(organizationName);
             }
         };
     }

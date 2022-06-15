@@ -21,9 +21,9 @@ public class CatleanDeliveryProcessorConfiguration {
 
     @Around(
             "execution(* fr.catlean.delivery.processor.infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getRepositoriesForOrganisationName(..)) || execution(* fr.catlean.delivery.processor" +
+                    ".getRepositoriesForOrganizationName(..)) || execution(* fr.catlean.delivery.processor" +
                     ".infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getPullRequestsForRepositoryAndOrganisation(..)) || execution(* fr.catlean.delivery.processor" +
+                    ".getPullRequestsForRepositoryAndOrganization(..)) || execution(* fr.catlean.delivery.processor" +
                     ".infrastructure.github.adapter.client.GithubHttpClient.getPullRequestDetailsForPullRequestNumber" +
                     "(..))")
     public Object around(ProceedingJoinPoint point) throws Throwable {

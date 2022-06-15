@@ -10,7 +10,7 @@ public interface GithubMapper {
     static Repository mapRepositoryDtoToDomain(final GithubRepositoryDTO githubRepositoryDTO) {
         return Repository.builder()
                 .name(githubRepositoryDTO.getName())
-                .organisationName(githubRepositoryDTO.getOwner().getLogin())
+                .organizationName(githubRepositoryDTO.getOwner().getLogin())
                 .build();
     }
 
@@ -28,6 +28,7 @@ public interface GithubMapper {
                 .commitNumber(githubPullRequestDTO.getCommits())
                 .creationDate(githubPullRequestDTO.getCreatedAt())
                 .mergeDate(githubPullRequestDTO.getMergedAt())
+                .closeDate(githubPullRequestDTO.getClosedAt())
                 .lastUpdateDate(githubPullRequestDTO.getUpdatedAt())
                 .vcsUrl(githubPullRequestDTO.getHtmlUrl())
                 .authorLogin(githubPullRequestDTO.getUser().getLogin())

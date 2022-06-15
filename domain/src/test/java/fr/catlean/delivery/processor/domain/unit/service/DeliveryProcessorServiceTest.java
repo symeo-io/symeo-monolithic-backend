@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import fr.catlean.delivery.processor.domain.command.DeliveryCommand;
 import fr.catlean.delivery.processor.domain.model.PullRequest;
 import fr.catlean.delivery.processor.domain.model.Repository;
-import fr.catlean.delivery.processor.domain.model.account.OrganisationAccount;
+import fr.catlean.delivery.processor.domain.model.account.OrganizationAccount;
 import fr.catlean.delivery.processor.domain.model.account.VcsConfiguration;
 import fr.catlean.delivery.processor.domain.port.out.ExpositionStorage;
 import fr.catlean.delivery.processor.domain.query.DeliveryQuery;
@@ -29,16 +29,16 @@ public class DeliveryProcessorServiceTest {
         final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
         final DeliveryProcessorService deliveryProcessorService = new DeliveryProcessorService(deliveryCommand,
                 deliveryQuery, expositionStorage);
-        final String organisationName = faker.name().name();
-        final OrganisationAccount organisationAccount = OrganisationAccount.builder()
-                .vcsConfiguration(VcsConfiguration.builder().build()).name(organisationName).build();
+        final String organizationName = faker.name().name();
+        final OrganizationAccount organizationAccount = OrganizationAccount.builder()
+                .vcsConfiguration(VcsConfiguration.builder().build()).name(organizationName).build();
 
         // When
         final Repository repo1 =
-                Repository.builder().name(faker.pokemon().name() + "1").organisationName(organisationName).build();
+                Repository.builder().name(faker.pokemon().name() + "1").organizationName(organizationName).build();
         final Repository repo2 =
-                Repository.builder().name(faker.pokemon().name() + "2").organisationName(organisationName).build();
-        when(deliveryQuery.readRepositoriesForOrganisation(organisationAccount))
+                Repository.builder().name(faker.pokemon().name() + "2").organizationName(organizationName).build();
+        when(deliveryQuery.readRepositoriesForOrganization(organizationAccount))
                 .thenReturn(
                         List.of(
                                 repo1,
@@ -57,49 +57,49 @@ public class DeliveryProcessorServiceTest {
         when(deliveryQuery.readPullRequestsForRepository(repo2))
                 .thenReturn(List.of());
         final List<PullRequest> pullRequestList =
-                deliveryProcessorService.collectPullRequestsForOrganisation(organisationAccount);
+                deliveryProcessorService.collectPullRequestsForOrganization(organizationAccount);
 
         // Then
         assertThat(pullRequestList).containsAll(List.of(pr11, pr12));
     }
 
     @Test
-    void should_compute_collect_all_pull_requests_details_for_a_given_organisation_account() {
+    void should_compute_collect_all_pull_requests_details_for_a_given_organization_account() {
         // Given
         final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
         final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
         final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
         final DeliveryProcessorService deliveryProcessorService = new DeliveryProcessorService(deliveryCommand,
                 deliveryQuery, expositionStorage);
-        final String vcsOrganisationName = faker.name().name();
-        final String organisationName = faker.name().lastName();
+        final String vcsOrganizationName = faker.name().name();
+        final String organizationName = faker.name().lastName();
         final String repo1Name = faker.pokemon().name() + "1";
         final String repo2Name = faker.pokemon().name() + "2";
         final String repo3Name = faker.pokemon().name() + "3";
         final String repo4Name = faker.pokemon().name() + "4";
-        final OrganisationAccount organisationAccount = OrganisationAccount.builder().name(organisationName)
+        final OrganizationAccount organizationAccount = OrganizationAccount.builder().name(organizationName)
                 .vcsConfiguration(
                         VcsConfiguration.builder()
-                                .organisationName(vcsOrganisationName)
+                                .organizationName(vcsOrganizationName)
                                 .build()
                 )
                 .build();
         final String team1Name = faker.pokemon().name() + "team1";
         final String team2Name = faker.pokemon().name() + "team2";
-        organisationAccount.addTeam(team1Name, List.of(repo1Name, repo3Name), 1000, 5);
-        organisationAccount.addTeam(team2Name, List.of(repo4Name), 500, 7);
+        organizationAccount.addTeam(team1Name, List.of(repo1Name, repo3Name), 1000, 5);
+        organizationAccount.addTeam(team2Name, List.of(repo4Name), 500, 7);
 
         // When
         final Repository repo1 =
-                Repository.builder().name(repo1Name).organisationName(vcsOrganisationName).build();
+                Repository.builder().name(repo1Name).organizationName(vcsOrganizationName).build();
         final Repository repo2 =
-                Repository.builder().name(repo2Name).organisationName(vcsOrganisationName).build();
+                Repository.builder().name(repo2Name).organizationName(vcsOrganizationName).build();
         final Repository repo3 =
-                Repository.builder().name(repo3Name).organisationName(vcsOrganisationName).build();
+                Repository.builder().name(repo3Name).organizationName(vcsOrganizationName).build();
         final Repository repo4 =
-                Repository.builder().name(repo4Name).organisationName(vcsOrganisationName).build();
+                Repository.builder().name(repo4Name).organizationName(vcsOrganizationName).build();
 
-        when(deliveryQuery.readRepositoriesForOrganisation(organisationAccount))
+        when(deliveryQuery.readRepositoriesForOrganization(organizationAccount))
                 .thenReturn(
                         List.of(
                                 repo1,
@@ -145,7 +145,7 @@ public class DeliveryProcessorServiceTest {
                         )
                 );
         List<PullRequest> pullRequestList =
-                deliveryProcessorService.collectPullRequestsForOrganisation(organisationAccount);
+                deliveryProcessorService.collectPullRequestsForOrganization(organizationAccount);
 
         // Then
         assertThat(pullRequestList.stream().map(PullRequest::getId)).containsAll(
@@ -154,6 +154,7 @@ public class DeliveryProcessorServiceTest {
         for (PullRequest pullRequest : pullRequestList) {
             assertThat(pullRequest.getTeam()).isNotNull();
             assertThat(pullRequest.getVcsOrganization()).isNotNull();
+            assertThat(pullRequest.getOrganization()).isNotNull();
         }
         verify(expositionStorage, times(1)).savePullRequestDetails(pullRequestList);
     }

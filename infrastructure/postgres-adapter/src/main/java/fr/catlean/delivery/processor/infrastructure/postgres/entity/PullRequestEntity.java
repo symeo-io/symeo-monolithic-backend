@@ -63,6 +63,8 @@ public class PullRequestEntity {
     String vcsRepository;
     @Column(name = "vcs_organization")
     String vcsOrganization;
+    @Column(name = "organization")
+    String organization;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

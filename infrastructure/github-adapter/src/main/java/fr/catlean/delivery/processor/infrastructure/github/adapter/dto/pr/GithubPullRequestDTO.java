@@ -389,7 +389,7 @@ public class GithubPullRequestDTO {
     }
 
     @JsonProperty("closed_at")
-    public Object getClosedAt() {
+    public Date getClosedAt() {
         return closedAt;
     }
 

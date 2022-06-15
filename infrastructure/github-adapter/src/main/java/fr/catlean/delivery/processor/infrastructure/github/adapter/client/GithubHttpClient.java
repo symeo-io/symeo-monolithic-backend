@@ -24,12 +24,12 @@ public class GithubHttpClient {
         this.token = token;
     }
 
-    public GithubRepositoryDTO[] getRepositoriesForOrganisationName(
-            String organisationName, Integer page, Integer size) {
+    public GithubRepositoryDTO[] getRepositoriesForOrganizationName(
+            String organizationName, Integer page, Integer size) {
         final String uri =
                 githubApiBaseUrl
                         + "orgs/"
-                        + organisationName
+                        + organizationName
                         + "/repos?sort=name&per_page="
                         + size.toString()
                         + "&page="
@@ -49,13 +49,13 @@ public class GithubHttpClient {
         return objectMapper.readValue(bytes, tClass);
     }
 
-    public GithubPullRequestDTO[] getPullRequestsForRepositoryAndOrganisation(String organisationName,
+    public GithubPullRequestDTO[] getPullRequestsForRepositoryAndOrganization(String organizationName,
                                                                               String repositoryName, Integer page,
                                                                               Integer size) {
         final String uri =
                 githubApiBaseUrl
                         + "repos/"
-                        + organisationName
+                        + organizationName
                         + "/" +
                         repositoryName
                         + "/pulls?sort=updated&direction=desc&state=all&per_page="
@@ -69,13 +69,13 @@ public class GithubHttpClient {
                 Map.of(authorizationHeaderKey, authorizationHeaderTokenValue + token));
     }
 
-    public GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(final String organisationName,
+    public GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(final String organizationName,
                                                                           final String repositoryName,
                                                                           final Integer number) {
         final String uri =
                 githubApiBaseUrl
                         + "repos/"
-                        + organisationName
+                        + organizationName
                         + "/" +
                         repositoryName
                         + "/pulls/"

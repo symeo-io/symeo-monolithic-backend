@@ -32,6 +32,7 @@ public interface PullRequestMapper {
                 .vcsRepository(pullRequest.getRepository())
                 .team(pullRequest.getTeam())
                 .vcsOrganization(pullRequest.getVcsOrganization())
+                .organization(pullRequest.getOrganization())
                 .size(pullRequest.getSize())
                 .daysOpened(pullRequest.getDaysOpened())
                 .startDateRange(pullRequest.getStartDateRange())

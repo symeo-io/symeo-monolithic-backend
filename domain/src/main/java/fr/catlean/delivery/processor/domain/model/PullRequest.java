@@ -35,11 +35,8 @@ public class PullRequest {
     String authorLogin;
     String repository;
     String vcsOrganization;
+    String organization;
     String team;
-
-    private String buildState() {
-        return null;
-    }
 
     public static String getNameFromRepository(String repositoryName) {
         return ALL + "_" + repositoryName;

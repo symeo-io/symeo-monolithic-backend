@@ -8,5 +8,5 @@ import lombok.Value;
 public class Repository {
     public static final String ALL = "repositories";
     String name;
-    String organisationName;
+    String organizationName;
 }
