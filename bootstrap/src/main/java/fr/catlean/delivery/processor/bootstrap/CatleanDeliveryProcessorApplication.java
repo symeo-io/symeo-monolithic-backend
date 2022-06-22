@@ -35,7 +35,7 @@ public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        final String organization = "armis";
+        final String organization = "dalma";
         final OrganizationAccount organizationAccount =
                 organizationAccountAdapter.findOrganizationForName(organization);
         final List<PullRequest> pullRequestList =
