@@ -19,10 +19,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>fr.catlean.delivery.processor</groupId>
-    <artifactId>catlean-delivery-processor</artifactId>
+    <groupId>fr.catlean.monolithic.backend</groupId>
+    <artifactId>catlean-monolithic-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>catlean-delivery-processor</name>
+    <name>catlean-monolithic-backend</name>
     <packaging>pom</packaging>
     <description>App to collect and process delivery metrics</description>
 
@@ -30,7 +30,7 @@
         <java.version>17</java.version>
         <spring-boot-starter-web.version>2.7.0</spring-boot-starter-web.version>
         <jackson.version>2.12.4</jackson.version>
-        <start-class>fr.catlean.delivery.processor.bootstrap.CatleanDeliveryProcessorApplication</start-class>
+        <start-class>fr.catlean.monolithic.backend.bootstrap.CatleanDeliveryProcessorApplication</start-class>
         <assertj-core.version>3.22.0</assertj-core.version>
         <javafaker.version>1.0.2</javafaker.version>
         <liquibase-core.version>4.10.0</liquibase-core.version>
