@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableAutoConfiguration
 @EntityScan(basePackages = {
-        "fr.catlean.delivery.processor.infrastructure.postgres.entity"
+        "fr.catlean.monolithic.backend.infrastructure.postgres.entity"
 })
 @EnableJpaRepositories(basePackages = {
-        "fr.catlean.delivery.processor.infrastructure.postgres.repository"
+        "fr.catlean.monolithic.backend.infrastructure.postgres.repository"
 })
 @EnableTransactionManagement
 @EnableJpaAuditing

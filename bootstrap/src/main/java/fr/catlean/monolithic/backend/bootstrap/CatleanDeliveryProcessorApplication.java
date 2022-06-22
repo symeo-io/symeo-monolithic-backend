@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap;
 
-import fr.catlean.delivery.processor.bootstrap.configuration.*;
+import fr.catlean.monolithic.backend.bootstrap.configuration.*;
 import fr.catlean.monolithic.backend.bootstrap.configuration.*;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
