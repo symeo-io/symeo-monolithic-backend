@@ -18,7 +18,6 @@ import static fr.catlean.monolithic.backend.domain.helper.DateHelper.getWeekStar
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.SIZE_LIMIT;
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.TIME_LIMIT;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @AllArgsConstructor
 public class PullRequestService {
@@ -28,25 +27,21 @@ public class PullRequestService {
 
     public void computeAndSavePullRequestSizeHistogram(List<PullRequest> pullRequests,
                                                        OrganizationAccount organizationAccount) {
-        final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
-        for (VcsTeam vcsTeam : organizationAccount.getVcsConfiguration().getVcsTeams()) {
-
-            final PullRequestHistogram pullRequestHistogram =
-                    getPullRequestHistogramForVcsTeam(SIZE_LIMIT, pullRequests,
-                            organizationAccount, vcsTeam);
-            pullRequestHistograms.add(pullRequestHistogram);
-
-        }
-        expositionStorage.savePullRequestHistograms(pullRequestHistograms);
+        computeAndSavePullRequestHistogram(pullRequests, organizationAccount, SIZE_LIMIT);
     }
 
     public void computeAndSavePullRequestTimeHistogram(List<PullRequest> pullRequests,
                                                        OrganizationAccount organizationAccount) {
+        computeAndSavePullRequestHistogram(pullRequests, organizationAccount, TIME_LIMIT);
+    }
+
+    private void computeAndSavePullRequestHistogram(List<PullRequest> pullRequests,
+                                                    OrganizationAccount organizationAccount, String sizeLimit) {
         final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
         for (VcsTeam vcsTeam : organizationAccount.getVcsConfiguration().getVcsTeams()) {
 
             final PullRequestHistogram pullRequestHistogram =
-                    getPullRequestHistogramForVcsTeam(TIME_LIMIT, pullRequests,
+                    getPullRequestHistogramForVcsTeam(sizeLimit, pullRequests,
                             organizationAccount, vcsTeam);
             pullRequestHistograms.add(pullRequestHistogram);
 
@@ -91,8 +86,7 @@ public class PullRequestService {
                                 .anyMatch(repositoryName -> pullRequest.getRepository().equals(repositoryName))
                         ).toList();
         pullRequests =
-                // TODO: remove the filter on the date and add condition on business rules
-                pullRequests.stream().filter(pullRequest -> !pullRequest.getIsDraft() && !(isNull(pullRequest.getMergeDate()) && nonNull(pullRequest.getCloseDate()))).toList();
+                pullRequests.stream().filter(PullRequest::isValid).toList();
         return pullRequests;
     }
 
@@ -103,7 +97,7 @@ public class PullRequestService {
                 DataCompareToLimit.builder().dateAsString(weekStart).build();
 
         for (PullRequest pullRequest : pullRequests) {
-            if (pullRequestIsConsideredAsOpenDuringWeek(pullRequest, weekStartDate)) {
+            if (pullRequest.isConsideredAsOpenDuringWeek(weekStartDate)) {
                 if (pullRequestHistogramType.equals(SIZE_LIMIT)) {
                     dataCompareToLimit = getDataCompareToSizeLimit(pullRequestLimit, dataCompareToLimit, pullRequest);
                 } else {
@@ -151,27 +145,6 @@ public class PullRequestService {
             }
         }
         return dataCompareToLimit;
-    }
-
-    private boolean pullRequestIsConsideredAsOpenDuringWeek(final PullRequest pullRequest, final Date weekStartDate) {
-        final Date creationDate = pullRequest.getCreationDate();
-        final Date mergeDate = pullRequest.getMergeDate();
-        if (creationDate.before(weekStartDate)) {
-            return isNull(mergeDate) || mergeDate.after(weekStartDate);
-        } else {
-            if (creationDate.equals(weekStartDate)) {
-                return true;
-            } else if (nonNull(mergeDate)) {
-                long daysBetweenMergeAndWeekStart =
-                        TimeUnit.DAYS.convert(mergeDate.getTime() - weekStartDate.getTime(),
-                                TimeUnit.MILLISECONDS);
-                long daysBetweenCreationAndWeekStart =
-                        TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
-                                TimeUnit.MILLISECONDS);
-                return daysBetweenCreationAndWeekStart < 7 && daysBetweenMergeAndWeekStart < 7;
-            }
-        }
-        return false;
     }
 
 

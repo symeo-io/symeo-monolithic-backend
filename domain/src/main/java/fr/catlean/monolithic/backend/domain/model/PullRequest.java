@@ -79,4 +79,29 @@ public class PullRequest {
         }
         return simpleDateFormat.format(this.closeDate);
     }
+
+    public boolean isConsideredAsOpenDuringWeek(final Date weekStartDate) {
+        final Date creationDate = this.getCreationDate();
+        final Date mergeDate = this.getMergeDate();
+        if (creationDate.before(weekStartDate)) {
+            return isNull(mergeDate) || mergeDate.after(weekStartDate);
+        } else {
+            if (creationDate.equals(weekStartDate)) {
+                return true;
+            } else if (nonNull(mergeDate)) {
+                long daysBetweenMergeAndWeekStart =
+                        TimeUnit.DAYS.convert(mergeDate.getTime() - weekStartDate.getTime(),
+                                TimeUnit.MILLISECONDS);
+                long daysBetweenCreationAndWeekStart =
+                        TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
+                                TimeUnit.MILLISECONDS);
+                return daysBetweenCreationAndWeekStart < 7 && daysBetweenMergeAndWeekStart < 7;
+            }
+        }
+        return false;
+    }
+
+    public boolean isValid() {
+        return !this.getIsDraft() && !(isNull(this.getMergeDate()) && nonNull(this.getCloseDate()));
+    }
 }

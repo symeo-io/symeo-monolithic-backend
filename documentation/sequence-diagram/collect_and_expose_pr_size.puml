@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/sequence-diagram
 participant cronjob order 10
-participant "catlean-processor" as cp order 20
+participant "catlean-monolithic-backend" as backend order 20
 participant github order 30
 database "raw-storage" order 40
 database "exposition-storage" order 50
@@ -11,8 +11,8 @@ actor User order 70
 
 
 alt collect data
-cronjob -> cp : trigger data collection
-cronjob <-- cp
+cronjob -> backend : trigger data collection
+cronjob <-- backend
 "catlean-processor" -> github: get all repositories
 "catlean-processor" <-- github
 "catlean-processor" -> "raw-storage": save repositories
