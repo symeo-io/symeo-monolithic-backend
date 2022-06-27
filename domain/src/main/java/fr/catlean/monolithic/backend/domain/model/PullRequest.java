@@ -104,4 +104,24 @@ public class PullRequest {
     public boolean isValid() {
         return !this.getIsDraft() && !(isNull(this.getMergeDate()) && nonNull(this.getCloseDate()));
     }
+
+    public boolean isAboveSizeLimit(int pullRequestLimit) {
+        return this.getAddedLineNumber() + this.getDeletedLineNumber() >= pullRequestLimit;
+    }
+
+    public boolean isAboveTimeLimit(int pullRequestLimit, Date weekStartDate) {
+        final Date creationDate = this.getCreationDate();
+        final Date mergeDate = this.getMergeDate();
+        if (isNull(mergeDate) || (mergeDate.after(weekStartDate))) {
+            long daysBetweenCreationAndWeekStart =
+                    TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
+                            TimeUnit.MILLISECONDS);
+            return Math.abs(daysBetweenCreationAndWeekStart) > pullRequestLimit;
+        } else {
+            long daysBetweenMergeAndWeekStart =
+                    TimeUnit.DAYS.convert(mergeDate.getTime() - weekStartDate.getTime(),
+                            TimeUnit.MILLISECONDS);
+            return Math.abs(daysBetweenMergeAndWeekStart) > pullRequestLimit;
+        }
+    }
 }

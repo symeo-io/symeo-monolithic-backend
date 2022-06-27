@@ -12,12 +12,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static fr.catlean.monolithic.backend.domain.helper.DateHelper.getWeekStartDateForTheLastWeekNumber;
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.SIZE_LIMIT;
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.TIME_LIMIT;
-import static java.util.Objects.isNull;
 
 @AllArgsConstructor
 public class PullRequestService {
@@ -112,7 +110,7 @@ public class PullRequestService {
     private static DataCompareToLimit getDataCompareToSizeLimit(int pullRequestLimit,
                                                                 DataCompareToLimit dataCompareToLimit,
                                                                 PullRequest pullRequest) {
-        if (pullRequest.getAddedLineNumber() + pullRequest.getDeletedLineNumber() >= pullRequestLimit) {
+        if (pullRequest.isAboveSizeLimit(pullRequestLimit)) {
             dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
         } else {
             dataCompareToLimit = dataCompareToLimit.incrementDataBelowLimit();
@@ -123,26 +121,10 @@ public class PullRequestService {
     private static DataCompareToLimit getDataCompareToTimeLimit(int pullRequestLimit, Date weekStartDate,
                                                                 DataCompareToLimit dataCompareToLimit,
                                                                 PullRequest pullRequest) {
-        final Date creationDate = pullRequest.getCreationDate();
-        final Date mergeDate = pullRequest.getMergeDate();
-        if (isNull(mergeDate) || (mergeDate.after(weekStartDate))) {
-            long daysBetweenCreationAndWeekStart =
-                    TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
-                            TimeUnit.MILLISECONDS);
-            if (Math.abs(daysBetweenCreationAndWeekStart) > pullRequestLimit) {
-                dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
-            } else {
-                dataCompareToLimit = dataCompareToLimit.incrementDataBelowLimit();
-            }
+        if (pullRequest.isAboveTimeLimit(pullRequestLimit, weekStartDate)) {
+            dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
         } else {
-            long daysBetweenMergeAndWeekStart =
-                    TimeUnit.DAYS.convert(mergeDate.getTime() - weekStartDate.getTime(),
-                            TimeUnit.MILLISECONDS);
-            if (Math.abs(daysBetweenMergeAndWeekStart) > pullRequestLimit) {
-                dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
-            } else {
-                dataCompareToLimit = dataCompareToLimit.incrementDataBelowLimit();
-            }
+            dataCompareToLimit = dataCompareToLimit.incrementDataBelowLimit();
         }
         return dataCompareToLimit;
     }
