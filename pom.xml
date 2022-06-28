@@ -30,7 +30,7 @@
         <java.version>17</java.version>
         <spring-boot-starter-web.version>2.7.0</spring-boot-starter-web.version>
         <jackson.version>2.12.4</jackson.version>
-        <start-class>fr.catlean.monolithic.backend.bootstrap.CatleanDeliveryProcessorApplication</start-class>
+        <start-class>fr.catlean.monolithic.backend.bootstrap.CatleanMonolithicBackendApplication</start-class>
         <assertj-core.version>3.22.0</assertj-core.version>
         <javafaker.version>1.0.2</javafaker.version>
         <liquibase-core.version>4.10.0</liquibase-core.version>

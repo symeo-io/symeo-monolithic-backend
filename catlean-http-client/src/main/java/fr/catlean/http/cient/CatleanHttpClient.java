@@ -25,4 +25,12 @@ public interface CatleanHttpClient {
             Class<ResponseBody> responseClass,
             ObjectMapper objectMapper,
             final Map<String, String> headers);
+
+    <ResponseBody> ResponseBody getWithRetries(
+            final String uri,
+            Class<ResponseBody> responseClass,
+            ObjectMapper objectMapper,
+            final Map<String, String> headers, int retryNumber);
+
+
 }

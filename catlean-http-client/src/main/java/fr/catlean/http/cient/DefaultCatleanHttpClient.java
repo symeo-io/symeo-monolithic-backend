@@ -19,6 +19,7 @@ import static java.util.Optional.of;
 public class DefaultCatleanHttpClient implements CatleanHttpClient {
 
     private final HttpClient httpClient;
+    private final int maxRetryNumber = 3;
 
     public DefaultCatleanHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -46,18 +47,33 @@ public class DefaultCatleanHttpClient implements CatleanHttpClient {
     @Override
     public <ResponseBody> ResponseBody get(String uri, Class<ResponseBody> responseClass,
                                            ObjectMapper objectMapper, Map<String, String> headers) {
+        return getWithRetries(uri, responseClass, objectMapper, headers, 3);
+    }
+
+    @Override
+    public <ResponseBody> ResponseBody getWithRetries(String uri, Class<ResponseBody> responseClass,
+                                                      ObjectMapper objectMapper, Map<String, String> headers,
+                                                      int retryNumber) {
         final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(uri))
                 .GET();
         if (nonNull(headers) && !headers.isEmpty()) {
             headers.forEach(requestBuilder::header);
         }
-        return sendRequest(requestBuilder.build(), objectMapper, responseClass);
+        try {
+            return sendRequest(requestBuilder.build(), objectMapper, responseClass);
+        } catch (Exception e) {
+            if (retryNumber > 0 && retryNumber < maxRetryNumber) {
+                retryNumber++;
+                return getWithRetries(uri, responseClass, objectMapper, headers, retryNumber);
+            } else {
+                throw e;
+            }
+        }
     }
-
 
     @SuppressWarnings("java:S2142") // TODO define if we want to deal with this here
     private <ResponseBody> ResponseBody sendRequest(final HttpRequest httpRequest, final ObjectMapper objectMapper,
-                                                    Class<ResponseBody> responseClass) {
+                                                    final Class<ResponseBody> responseClass) {
         try {
             final HttpResponse<byte[]> httpResponse = this.httpClient.send(httpRequest,
                     HttpResponse.BodyHandlers.ofByteArray());

@@ -1,7 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap;
 
 import fr.catlean.monolithic.backend.bootstrap.configuration.*;
-import fr.catlean.monolithic.backend.bootstrap.configuration.*;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
 import fr.catlean.monolithic.backend.domain.port.out.OrganizationAccountAdapter;
@@ -24,19 +23,19 @@ import java.util.List;
         JsonLocalStorageConfiguration.class, PostgresConfiguration.class, AccountConfiguration.class})
 @Slf4j
 @AllArgsConstructor
-public class CatleanDeliveryProcessorApplication implements CommandLineRunner {
+public class CatleanMonolithicBackendApplication implements CommandLineRunner {
 
     private final DeliveryProcessorService deliveryProcessorService;
     private final OrganizationAccountAdapter organizationAccountAdapter;
     private final PullRequestService pullRequestService;
 
     public static void main(String[] args) {
-        SpringApplication.run(CatleanDeliveryProcessorApplication.class, args);
+        SpringApplication.run(CatleanMonolithicBackendApplication.class, args);
     }
 
     @Override
     public void run(String... args) {
-        final String organization = "dalma";
+        final String organization = "armis";
         final OrganizationAccount organizationAccount =
                 organizationAccountAdapter.findOrganizationForName(organization);
         final List<PullRequest> pullRequestList =

@@ -1,5 +1,5 @@
 json-local-storage:
-  root-directory: /Users/ilysse/Workspace/CATLEAN/catlean-delivery-processor/json_local_storage
+  root-directory: /Users/ilysse/Workspace/CATLEAN/catlean-monolithic-backend/json_local_storage
 
 github:
   size: 100
@@ -8,11 +8,11 @@ github:
 
 spring:
   application:
-    name: catlean-delivery-processor
+    name: catlean-monolithic-backend
   liquibase:
     enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/catlean-delivery-processor?rewriteBatchedStatements=true
+    url: jdbc:postgresql://localhost:5432/catlean-monolithic-backend?rewriteBatchedStatements=true
     username: postgres
     password: P@ssw0rd
     driver-class-name: org.postgresql.Driver

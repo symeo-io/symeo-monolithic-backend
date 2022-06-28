@@ -7,6 +7,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=P@ssw0rd
-      - POSTGRES_DB=catlean-delivery-processor
+      - POSTGRES_DB=catlean-monolithic-backend
     ports:
       - "5432:5432"

@@ -14,8 +14,8 @@ public class JsonToGeneratorMain {
     public static void main(String[] args) throws IOException {
         final Converter converter = new Converter();
 
-        final URL inputJsonUrl = new URL("file:///Users/ilysse/Workspace/CATLEAN/catlean-delivery-processor/catlean-json-to-pojo-generator/src/main/resources/single_github_repo.json");
-        final File outputJavaClassDirectory = new File("/Users/ilysse/Workspace/CATLEAN/catlean-delivery-processor" +
+        final URL inputJsonUrl = new URL("file:///Users/ilysse/Workspace/CATLEAN/catlean-monolithic-backend/catlean-json-to-pojo-generator/src/main/resources/single_github_repo.json");
+        final File outputJavaClassDirectory = new File("/Users/ilysse/Workspace/CATLEAN/catlean-monolithic-backend" +
                 "/infrastructure/github-adapter/src/main/java");
         final String packageName = "fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.repo";
         final String javaClassName = "GithubRepositoryDTO";
