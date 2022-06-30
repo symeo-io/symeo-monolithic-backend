@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableConfigurationProperties
 @Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class,
         JsonLocalStorageConfiguration.class, PostgresConfiguration.class, AccountConfiguration.class,
-        DataProcessingJobRestApiConfiguration.class, SwaggerConfiguration.class})
+        RestApiConfiguration.class})
 @Slf4j
 @AllArgsConstructor
 @EnableWebMvc

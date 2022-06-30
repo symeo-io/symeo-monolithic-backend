@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>catlean-data-processing-api</artifactId>
+    <artifactId>catlean-frontend-api</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <generated.code.dir>${project.basedir}/src/gen/java</generated.code.dir>
-        <contract.name>catlean-data-processing-api.yaml</contract.name>
+        <contract.name>catlean-frontend-api.yaml</contract.name>
         <contract.path>src/main/resources/${contract.name}</contract.path>
         <old-contract.path>${project.build.directory}/${contract.name}</old-contract.path>
 
@@ -113,8 +113,8 @@
                             <inputSpec>${project.basedir}/${contract.path}</inputSpec>
                             <generatorName>spring</generatorName>
                             <configHelp>false</configHelp>
-                            <apiPackage>fr.catlean.monolithic.backend.data.processing.contract.api</apiPackage>
-                            <modelPackage>fr.catlean.monolithic.backend.data.processing.contract.api.model</modelPackage>
+                            <apiPackage>fr.catlean.monolithic.backend.frontend.contract.api</apiPackage>
+                            <modelPackage>fr.catlean.monolithic.backend.frontend.contract.api.model</modelPackage>
                             <configOptions>
                                 <java8>true</java8>
                                 <library>spring-boot</library>
@@ -200,5 +200,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>

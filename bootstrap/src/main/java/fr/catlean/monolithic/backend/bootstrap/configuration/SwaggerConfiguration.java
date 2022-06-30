@@ -29,7 +29,8 @@ public class SwaggerConfiguration {
                 )
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("catlean.monolithic.backend.rest.api.adapter"))
-                .paths(PathSelectors.any())
-                .build();
+                .paths(PathSelectors.regex("/api/.*"))
+                .build()
+                .pathMapping("/");
     }
 }

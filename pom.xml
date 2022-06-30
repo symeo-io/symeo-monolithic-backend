@@ -11,6 +11,7 @@
         <module>catlean-http-client</module>
         <module>catlean-json-to-pojo-generator</module>
         <module>catlean-data-processing-api</module>
+        <module>catlean-frontend-api</module>
     </modules>
 
     <parent>
