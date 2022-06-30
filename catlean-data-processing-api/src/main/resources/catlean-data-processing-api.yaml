@@ -1,0 +1,25 @@
+openapi: 3.0.3
+info:
+  version: 0.0.1-SNAPSHOT
+  title: Armis Orchestartor API
+servers:
+  - url: http://localhost:9999
+    description: Local
+
+
+paths:
+  /api/v1/job/data-processing:
+    get:
+      tags:
+        - DataProcessingJob
+      summary: Start to collect and process data from clients' platforms
+      operationId: startDataProcessingJob
+      description: |
+        Start to collect and process data from clients' platforms
+      responses:
+        200:
+          description: Job ran successfully
+        400:
+          description: A functional error has occurred
+        500:
+          description: An internal error has occurred

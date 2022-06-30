@@ -10,6 +10,7 @@
         <module>infrastructure</module>
         <module>catlean-http-client</module>
         <module>catlean-json-to-pojo-generator</module>
+        <module>catlean-data-processing-api</module>
     </modules>
 
     <parent>

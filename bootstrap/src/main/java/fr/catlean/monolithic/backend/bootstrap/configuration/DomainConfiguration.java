@@ -2,9 +2,11 @@ package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorage;
+import fr.catlean.monolithic.backend.domain.port.out.OrganizationAccountAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
+import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.service.DeliveryProcessorService;
 import fr.catlean.monolithic.backend.domain.service.PullRequestService;
 import org.springframework.context.annotation.Bean;
@@ -36,5 +38,13 @@ public class DomainConfiguration {
     @Bean
     public PullRequestService pullRequestSizeService(final ExpositionStorage expositionStorage) {
         return new PullRequestService(expositionStorage);
+    }
+
+
+    @Bean
+    public DataProcessingJobService dataProcessingJobService(final DeliveryProcessorService deliveryProcessorService,
+                                                             final PullRequestService pullRequestService,
+                                                             final OrganizationAccountAdapter organizationAccountAdapter) {
+        return new DataProcessingJobService(deliveryProcessorService, organizationAccountAdapter, pullRequestService);
     }
 }
