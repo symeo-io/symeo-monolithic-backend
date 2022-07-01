@@ -18,7 +18,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
     @Override
     public ResponseEntity<Void> startDataProcessingJob() {
         try {
-            dataProcessingJobAdapter.start("dalma");
+            dataProcessingJobAdapter.start("armis");
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

@@ -1,5 +1,5 @@
 json-local-storage:
-  root-directory: /Users/ilysse/Workspace/CATLEAN/catlean-monolithic-backend/json_local_storage
+  root-directory: /tmp/json_local_storage
 
 github:
   size: 100
@@ -12,7 +12,7 @@ spring:
   liquibase:
     enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/catlean-monolithic-backend?rewriteBatchedStatements=true
+    url: jdbc:postgresql://postgres_exposition_host:5432/catlean-monolithic-backend?rewriteBatchedStatements=true
     username: postgres
     password: P@ssw0rd
     driver-class-name: org.postgresql.Driver

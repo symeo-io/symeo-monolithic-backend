@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  exposition-database:
+    image: "postgres:13"
+    container_name: "exposition-database"
+    hostname: postgres_exposition_host
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=P@ssw0rd
+      - POSTGRES_DB=catlean-monolithic-backend
+    ports:
+      - "5432:5432"
+    networks:
+      - catlean-backend-network
+
+  catlean-monolithic-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9999:9999"
+    networks:
+      - catlean-backend-network
+
+networks:
+  catlean-backend-network:
+    driver: bridge
