@@ -19,6 +19,29 @@ jobs:
       - run:
           name: Test
           command: mvn test -T 4
+  deploy:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - setup_remote_docker
+      - aws-cli/setup
+      - restore_cache:
+          key: build-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Build docker
+          command: |
+            cd .aws && ./build_docker.sh \
+              --region ${AWS_REGION} \
+              --env ${ENVIRONMENT} \
+              --tag ${CIRCLE_SHA1}
+      - run:
+          name: Deploy
+          command: |
+            cd .aws && ./deploy.sh \
+              --region ${AWS_REGION} \
+              --env ${ENVIRONMENT} \
+              --db-password ${DB_PASSWORD} \
+              --tag ${CIRCLE_SHA1}
   build-aws-infrastructure:
     executor: aws-cli/default
     steps:
@@ -44,23 +67,32 @@ jobs:
               --subnets ${SUBNETS}
 
 workflows:
-  build-test:
+  build-test-deploy:
     jobs:
       - build-and-test
-      - hold:
-          type: approval
+      - deploy:
           requires:
             - build-and-test
-          filters:
-            branches:
-              only:
-                - aws
-      - build-aws-infrastructure:
-          requires:
-            - hold
           context:
             - staging
           filters:
             branches:
               only:
                 - aws
+#      - hold:
+#          type: approval
+#          requires:
+#            - build-and-test
+#          filters:
+#            branches:
+#              only:
+#                - aws
+#      - build-aws-infrastructure:
+#          requires:
+#            - hold
+#          context:
+#            - staging
+#          filters:
+#            branches:
+#              only:
+#                - aws
