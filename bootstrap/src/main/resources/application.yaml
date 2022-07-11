@@ -12,9 +12,9 @@ spring:
   liquibase:
     enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/catlean-monolithic-backend?rewriteBatchedStatements=true
-    username: postgres
-    password: P@ssw0rd
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       connectionTimeout: 10000

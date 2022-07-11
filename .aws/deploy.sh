@@ -60,7 +60,6 @@ export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
 AccountId=$(get_aws_account_id)
 
 NODE_ENV=$([ "$ENV" == 'prod' ] && echo "production" || echo "$ENV")
-
 aws ecs register-task-definition --task-role-arn arn:aws:iam::${AccountId}:role/${CatleanBackendTaskRole} --family ${FamilyName} --region ${REGION} --container-definitions "
 [
   {
@@ -72,8 +71,10 @@ aws ecs register-task-definition --task-role-arn arn:aws:iam::${AccountId}:role/
     \"portMappings\":[{\"containerPort\":9999,\"hostPort\":0, \"protocol\":\"tcp\"}],
     \"environment\":[
       {\"name\":\"AWS_REGION\",\"value\":\"${REGION}\"},
-      {\"name\":\"S3_DATALAKE_BUCKET_NAME\",\"value\":\"${PdfS3Bucket}\"},
-      {\"name\":\"DATABASE_URL\",\"value\":\"postgresql://${DBUsername}:${DB_PASSWORD}@${ClusterEndpoint}:${DBPort}/${DBName}?schema=public\"}
+      {\"name\":\"S3_DATALAKE_BUCKET_NAME\",\"value\":\"${DatalakeS3Bucket}\"},
+      {\"name\":\"DATABASE_USERNAME\",\"value\":\"${DBUsername}\"},
+      {\"name\":\"DATABASE_PASSWORD\",\"value\":\"${DB_PASSWORD}\"},
+      {\"name\":\"DATABASE_URL\",\"value\":\"jdbc:postgresql://${ClusterEndpoint}:${DBPort}/${DBName}?rewriteBatchedStatements=true\"}
     ],
     \"logConfiguration\":{
       \"logDriver\":\"awslogs\",
