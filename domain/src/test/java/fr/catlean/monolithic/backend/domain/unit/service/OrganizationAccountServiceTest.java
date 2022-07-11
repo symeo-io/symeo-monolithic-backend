@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.domain.unit.service;
 
 import com.github.javafaker.Faker;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.OrganizationAccountAdapter;
@@ -14,8 +15,9 @@ public class OrganizationAccountServiceTest {
 
     private final Faker faker = new Faker();
 
+    // TODO : add unit test raising CatleanException
     @Test
-    void should_return_organization_given_a_name() {
+    void should_return_organization_given_a_name() throws CatleanException {
         // Given
         final String organizationName = faker.name().firstName();
         final OrganizationAccountAdapter organizationAccountAdapter = Mockito.mock(OrganizationAccountAdapter.class);

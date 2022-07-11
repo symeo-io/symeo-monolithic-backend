@@ -16,6 +16,22 @@ paths:
       operationId: getPullRequestHistogram
       description: |
         Get PullRequest Histogram
+      parameters:
+        - in: query
+          name: organization_name
+          schema:
+            type: string
+            example: armis
+        - in: query
+          name: team_name
+          schema:
+            type: string
+            example: data-team
+        - in: query
+          name: histogram_type
+          schema:
+            type: string
+            example: size-limit
       responses:
         "200":
           description: 'Successfully retrieved pull request histogram'

@@ -2,7 +2,7 @@ package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
-import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorage;
+import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.PullRequestEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.PullRequestHistogramDataEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.PullRequestHistogramMapper;
@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 @AllArgsConstructor
-public class PostgresAdapter implements ExpositionStorage {
+public class PostgresAdapter implements ExpositionStorageAdapter {
 
     private final PullRequestRepository pullRequestRepository;
     private final PullRequestHistogramRepository pullRequestHistogramRepository;
@@ -32,5 +32,14 @@ public class PostgresAdapter implements ExpositionStorage {
         final List<PullRequestHistogramDataEntity> pullRequestHistogramDataEntities =
                 pullRequestHistograms.stream().map(PullRequestHistogramMapper::domainToEntities).flatMap(Collection::stream).toList();
         pullRequestHistogramRepository.saveAll(pullRequestHistogramDataEntities);
+    }
+
+    @Override
+    public PullRequestHistogram readPullRequestHistogram(String organizationName, String teamName,
+                                                         String histogramType) {
+        final List<PullRequestHistogramDataEntity> histogramDataEntities =
+                pullRequestHistogramRepository.findByOrganizationNameAndTeamNameAndHistogramType(organizationName,
+                        teamName, histogramType);
+        return PullRequestHistogramMapper.entitiesToDomain(histogramDataEntities);
     }
 }

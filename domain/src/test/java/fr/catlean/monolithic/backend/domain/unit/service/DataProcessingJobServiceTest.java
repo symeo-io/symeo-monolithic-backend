@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.domain.unit.service;
 
 import com.github.javafaker.Faker;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
@@ -18,8 +19,9 @@ public class DataProcessingJobServiceTest {
 
     private final Faker faker = new Faker();
 
+    // TODO : add unit test raising CatleanException
     @Test
-    void should_start_data_processing_job_given_an_organisation_name() {
+    void should_start_data_processing_job_given_an_organisation_name() throws CatleanException {
         // Given
         final DeliveryProcessorService deliveryProcessorService = mock(DeliveryProcessorService.class);
         final OrganizationAccountAdapter organizationAccountAdapter = mock(OrganizationAccountAdapter.class);

@@ -6,7 +6,7 @@ import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
-import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorage;
+import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.service.DeliveryProcessorService;
 import org.junit.jupiter.api.Test;
@@ -26,9 +26,9 @@ public class DeliveryProcessorServiceTest {
         // Given
         final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
         final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
-        final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final DeliveryProcessorService deliveryProcessorService = new DeliveryProcessorService(deliveryCommand,
-                deliveryQuery, expositionStorage);
+                deliveryQuery, expositionStorageAdapter);
         final String organizationName = faker.name().name();
         final OrganizationAccount organizationAccount = OrganizationAccount.builder()
                 .vcsConfiguration(VcsConfiguration.builder().build()).name(organizationName).build();
@@ -68,9 +68,9 @@ public class DeliveryProcessorServiceTest {
         // Given
         final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
         final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
-        final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final DeliveryProcessorService deliveryProcessorService = new DeliveryProcessorService(deliveryCommand,
-                deliveryQuery, expositionStorage);
+                deliveryQuery, expositionStorageAdapter);
         final String vcsOrganizationName = faker.name().name();
         final String organizationName = faker.name().lastName();
         final String repo1Name = faker.pokemon().name() + "1";
@@ -156,6 +156,6 @@ public class DeliveryProcessorServiceTest {
             assertThat(pullRequest.getVcsOrganization()).isNotNull();
             assertThat(pullRequest.getOrganization()).isNotNull();
         }
-        verify(expositionStorage, times(1)).savePullRequestDetails(pullRequestList);
+        verify(expositionStorageAdapter, times(1)).savePullRequestDetails(pullRequestList);
     }
 }

@@ -1,11 +1,12 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
-import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorage;
+import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.OrganizationAccountAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
+import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.service.DeliveryProcessorService;
 import fr.catlean.monolithic.backend.domain.service.PullRequestService;
@@ -31,13 +32,13 @@ public class DomainConfiguration {
     @Bean
     public DeliveryProcessorService deliveryProcessorService(final DeliveryCommand deliveryCommand,
                                                              final DeliveryQuery deliveryQuery,
-                                                             final ExpositionStorage expositionStorage) {
-        return new DeliveryProcessorService(deliveryCommand, deliveryQuery, expositionStorage);
+                                                             final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new DeliveryProcessorService(deliveryCommand, deliveryQuery, expositionStorageAdapter);
     }
 
     @Bean
-    public PullRequestService pullRequestSizeService(final ExpositionStorage expositionStorage) {
-        return new PullRequestService(expositionStorage);
+    public PullRequestService pullRequestSizeService(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new PullRequestService(expositionStorageAdapter);
     }
 
 
@@ -46,5 +47,11 @@ public class DomainConfiguration {
                                                              final PullRequestService pullRequestService,
                                                              final OrganizationAccountAdapter organizationAccountAdapter) {
         return new DataProcessingJobService(deliveryProcessorService, organizationAccountAdapter, pullRequestService);
+    }
+
+    @Bean
+    public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter,
+                                         final OrganizationAccountAdapter organizationAccountAdapter) {
+        return new HistogramQuery(expositionStorageAdapter, organizationAccountAdapter);
     }
 }

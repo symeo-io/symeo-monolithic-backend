@@ -4,7 +4,7 @@ import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
-import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorage;
+import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import lombok.AllArgsConstructor;
 
@@ -18,12 +18,12 @@ public class DeliveryProcessorService {
 
     private final DeliveryCommand deliveryCommand;
     private final DeliveryQuery deliveryQuery;
-    private final ExpositionStorage expositionStorage;
+    private final ExpositionStorageAdapter expositionStorageAdapter;
 
     public List<PullRequest> collectPullRequestsForOrganization(final OrganizationAccount organizationAccount) {
         final List<PullRequest> pullRequests = getPullRequestsForOrganizationAccount(organizationAccount).stream()
                 .map(pullRequest -> populateWithOrganizationAccount(pullRequest, organizationAccount)).toList();
-        expositionStorage.savePullRequestDetails(pullRequests);
+        expositionStorageAdapter.savePullRequestDetails(pullRequests);
         return pullRequests;
     }
 
