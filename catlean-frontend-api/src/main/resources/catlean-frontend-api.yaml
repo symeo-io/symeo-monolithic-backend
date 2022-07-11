@@ -17,9 +17,96 @@ paths:
       description: |
         Get PullRequest Histogram
       responses:
-        200:
-          description: Job ran successfully
-        400:
-          description: A functional error has occurred
-        500:
+        "200":
+          description: 'Successfully retrieved pull request histogram'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistogramResponseContract'
+              example:
+                data:
+                  - start_date_range: 12/08/1992
+                    data_above_limit: 11
+                    data_below_limit: 22
+                  - start_date_range: 24/09/1992
+                    data_above_limit: 1
+                    data_below_limit: 10
+                errors:
+                  {}
+
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+        "500":
           description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+components:
+  schemas:
+    CatleanErrorsContract:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
+    CatleanErrorContract:
+      type: object
+      required:
+        - code
+        - message
+        - metadata
+      properties:
+        code:
+          type: string
+          example: F.NOT_FOUND
+        message:
+          type: string
+          example: Histogram not found
+        metadata:
+          type: object
+    HistogramDataResponseContract:
+      required:
+        - start_date_range
+        - data_above_limit
+        - data_below_limit
+      properties:
+        start_date_range:
+          type: string
+          example: 12/08/1992
+        data_above_limit:
+          type: integer
+          example: 95
+        data_below_limit:
+          type: integer
+          example: 111
+    HistogramResponseContract:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistogramDataResponseContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
+
+
+
+
+
