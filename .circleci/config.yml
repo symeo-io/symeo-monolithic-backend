@@ -79,20 +79,21 @@ workflows:
             branches:
               only:
                 - aws
-      - hold:
-          type: approval
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only:
-                - aws
-      - build-aws-infrastructure:
-          requires:
-            - hold
-          context:
-            - staging
-          filters:
-            branches:
-              only:
-                - aws
+#      - hold:
+
+#          type: approval
+#          requires:
+#            - build-and-test
+#          filters:
+#            branches:
+#              only:
+#                - aws
+#      - build-aws-infrastructure:
+#          requires:
+#            - hold
+#          context:
+#            - staging
+#          filters:
+#            branches:
+#              only:
+#                - aws
