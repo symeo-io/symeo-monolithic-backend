@@ -14,8 +14,8 @@ public interface PullRequestHistogramMapper {
                 .toList();
     }
 
-    static PullRequestHistogramDataEntity domainToEntity(final DataCompareToLimit dataCompareToLimit,
-                                                         final PullRequestHistogram pullRequestHistogram) {
+    private static PullRequestHistogramDataEntity domainToEntity(final DataCompareToLimit dataCompareToLimit,
+                                                                 final PullRequestHistogram pullRequestHistogram) {
         return PullRequestHistogramDataEntity.builder()
                 .id(
                         HistogramId.builder()
@@ -27,6 +27,24 @@ public interface PullRequestHistogramMapper {
                 )
                 .dataBelowLimit(dataCompareToLimit.getNumberBelowLimit())
                 .dataAboveLimit(dataCompareToLimit.getNumberAboveLimit())
+                .build();
+    }
+
+    static PullRequestHistogram entitiesToDomain(final List<PullRequestHistogramDataEntity> histogramDataEntities) {
+        final PullRequestHistogramDataEntity firstData = histogramDataEntities.get(0);
+        return PullRequestHistogram.builder()
+                .organizationAccount(firstData.getId().getOrganizationName())
+                .team(firstData.getId().getTeamName())
+                .type(firstData.getId().getHistogramType())
+                .dataByWeek(histogramDataEntities.stream().map(PullRequestHistogramMapper::entityToDomain).toList())
+                .build();
+    }
+
+    private static DataCompareToLimit entityToDomain(final PullRequestHistogramDataEntity pullRequestHistogramDataEntity) {
+        return DataCompareToLimit.builder()
+                .numberBelowLimit(pullRequestHistogramDataEntity.getDataBelowLimit())
+                .numberAboveLimit(pullRequestHistogramDataEntity.getDataAboveLimit())
+                .dateAsString(pullRequestHistogramDataEntity.getId().getStartDateRange())
                 .build();
     }
 }

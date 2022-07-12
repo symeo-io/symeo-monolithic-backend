@@ -5,7 +5,7 @@ import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
 import fr.catlean.monolithic.backend.domain.model.account.VcsTeam;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
-import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorage;
+import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 
 import java.text.SimpleDateFormat;
@@ -20,7 +20,7 @@ import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHist
 @AllArgsConstructor
 public class PullRequestService {
 
-    private final ExpositionStorage expositionStorage;
+    private final ExpositionStorageAdapter expositionStorageAdapter;
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
     public void computeAndSavePullRequestSizeHistogram(List<PullRequest> pullRequests,
@@ -44,7 +44,7 @@ public class PullRequestService {
             pullRequestHistograms.add(pullRequestHistogram);
 
         }
-        expositionStorage.savePullRequestHistograms(pullRequestHistograms);
+        expositionStorageAdapter.savePullRequestHistograms(pullRequestHistograms);
     }
 
 

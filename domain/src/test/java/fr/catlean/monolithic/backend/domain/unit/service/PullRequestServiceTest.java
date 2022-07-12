@@ -6,7 +6,7 @@ import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
-import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorage;
+import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.PullRequestService;
 import org.junit.jupiter.api.Test;
 
@@ -35,8 +35,8 @@ public class PullRequestServiceTest {
                 ).build();
         final String repositoryName1 = faker.pokemon().name() + "-1";
         organizationAccount.addTeam("team1", List.of(repositoryName1), 500, 5);
-        final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
-        final PullRequestService pullRequestService = new PullRequestService(expositionStorage);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final PullRequestService pullRequestService = new PullRequestService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organizationAccount, 100);
         final PullRequestHistogram pullRequestHistogram =
@@ -91,7 +91,7 @@ public class PullRequestServiceTest {
         pullRequestService.computeAndSavePullRequestSizeHistogram(pullRequests, organizationAccount);
 
         // Then
-        verify(expositionStorage, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
+        verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
     }
 
      @Test
@@ -104,8 +104,8 @@ public class PullRequestServiceTest {
                 ).build();
         final String repositoryName1 = faker.pokemon().name() + "-1";
         organizationAccount.addTeam("team1", List.of(repositoryName1), 500, 5);
-        final ExpositionStorage expositionStorage = mock(ExpositionStorage.class);
-        final PullRequestService pullRequestService = new PullRequestService(expositionStorage);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final PullRequestService pullRequestService = new PullRequestService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organizationAccount, 100);
         final PullRequestHistogram pullRequestHistogram =
@@ -160,7 +160,7 @@ public class PullRequestServiceTest {
         pullRequestService.computeAndSavePullRequestTimeHistogram(pullRequests, organizationAccount);
 
         // Then
-        verify(expositionStorage, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
+        verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
     }
 
 

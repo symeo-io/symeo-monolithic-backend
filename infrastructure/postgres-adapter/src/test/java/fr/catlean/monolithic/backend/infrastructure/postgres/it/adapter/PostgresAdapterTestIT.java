@@ -11,7 +11,6 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.PullRequestH
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.PullRequestRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,25 +79,57 @@ public class PostgresAdapterTestIT {
 
         // Then
         final List<PullRequestHistogramDataEntity> all = pullRequestHistogramRepository.findAll();
-        Assertions.assertThat(all).hasSize(3 * 5);
+        assertThat(all).hasSize(3 * 5);
 
     }
 
-    private PullRequestHistogram buildPullRequestHistogram(String organizationName) {
+    @Test
+    void should_read_pull_request_histograms_given_an_organization_a_team_a_type() {
+        // Given
+        final String organization1 = faker.name().firstName() + "-1";
+        final String organization2 = faker.name().firstName() + "-2";
+        final String team1 = faker.name().firstName() + "-1";
+        final String team2 = faker.name().firstName() + "-2";
+        final PostgresAdapter postgresAdapter = new PostgresAdapter(pullRequestRepository,
+                pullRequestHistogramRepository);
+        final List<PullRequestHistogram> pullRequestHistograms = List.of(
+                buildPullRequestHistogramForOrgAndTeam(team1, organization1),
+                buildPullRequestHistogramForOrgAndTeam(team2, organization2)
+        );
 
+        // When
+        postgresAdapter.savePullRequestHistograms(pullRequestHistograms);
+        final PullRequestHistogram pullRequestHistogram = postgresAdapter.readPullRequestHistogram(organization1,
+                team1, PullRequestHistogram.SIZE_LIMIT);
+
+        // Then
+        assertThat(pullRequestHistogram).isNotNull();
+        assertThat(pullRequestHistogram.getTeam()).isEqualTo(team1);
+        assertThat(pullRequestHistogram.getOrganizationAccount()).isEqualTo(organization1);
+        assertThat(pullRequestHistogram.getDataByWeek()).hasSize(5);
+    }
+
+    private PullRequestHistogram buildPullRequestHistogram(String organizationName) {
+        final String team = faker.name().firstName();
+        return buildPullRequestHistogramForOrgAndTeam(team, organizationName);
+    }
+
+    private PullRequestHistogram buildPullRequestHistogramForOrgAndTeam(String team, String organizationName) {
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
         DateHelper.getWeekStartDateForTheLastWeekNumber(5, TimeZone.getTimeZone(ZoneId.systemDefault()))
                 .stream().map(date -> new SimpleDateFormat("dd/MM/yyyy").format(date))
                 .forEach(dateAsString -> dataCompareToLimits.add(buildDataCompareToLimit(dateAsString)));
 
+
         return PullRequestHistogram.builder()
-                .organizationAccount(faker.name().lastName())
-                .team(faker.name().firstName())
+                .organizationAccount(organizationName)
+                .team(team)
                 .limit(faker.number().randomDigit())
                 .type(PullRequestHistogram.SIZE_LIMIT)
                 .dataByWeek(dataCompareToLimits)
                 .build();
     }
+
 
     private DataCompareToLimit buildDataCompareToLimit(final String dateAsString) {
         return DataCompareToLimit.builder()

@@ -1,5 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.OrganizationAccountAdapter;
@@ -60,8 +61,13 @@ public class AccountConfiguration {
             }
 
             @Override
-            public OrganizationAccount findOrganizationForName(String organizationName) {
-                return ORGANISATION_ACCOUNT_MAP.get(organizationName);
+            public OrganizationAccount findOrganizationForName(String organizationName) throws CatleanException {
+                if (ORGANISATION_ACCOUNT_MAP.containsKey(organizationName)) {
+                    return ORGANISATION_ACCOUNT_MAP.get(organizationName);
+                }
+                throw CatleanException.builder().code("F.ORGANIZATION_NOT_FOUND").message(String.format("Organization" +
+                        " %s not found", organizationName)).build();
+
             }
         };
     }
