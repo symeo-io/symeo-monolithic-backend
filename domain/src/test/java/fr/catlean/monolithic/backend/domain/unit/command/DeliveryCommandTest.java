@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.domain.unit.command;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
@@ -17,7 +18,7 @@ public class DeliveryCommandTest {
     private final Faker faker = Faker.instance();
 
     @Test
-    void should_collect_all_repositories_given_an_organization() {
+    void should_collect_all_repositories_given_an_organization() throws CatleanException {
         // Given
         final String organizationName = faker.pokemon().name();
         final String vcsOrganizationName = faker.pokemon().location();
@@ -43,7 +44,7 @@ public class DeliveryCommandTest {
 
 
     @Test
-    void should_collect_all_pull_requests_given_a_repository_and_no_already_collected_pull_requests() {
+    void should_collect_all_pull_requests_given_a_repository_and_no_already_collected_pull_requests() throws CatleanException {
         // Given
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
@@ -65,7 +66,7 @@ public class DeliveryCommandTest {
 
 
     @Test
-    void should_collect_updated_all_pull_requests_given_a_repository_with_pull_requests_already_collected() {
+    void should_collect_updated_all_pull_requests_given_a_repository_with_pull_requests_already_collected() throws CatleanException {
         // Given
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);

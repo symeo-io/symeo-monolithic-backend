@@ -37,6 +37,7 @@
         <javafaker.version>1.0.2</javafaker.version>
         <liquibase-core.version>4.10.0</liquibase-core.version>
         <auth0-spring-security-api.version>1.5.1</auth0-spring-security-api.version>
+        <aws-java-sdk-s3.version>1.12.7</aws-java-sdk-s3.version>
     </properties>
 
     <dependencyManagement>
@@ -56,10 +57,17 @@
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase-core.version}</version>
             </dependency>
+            <!-- Auth0 -->
             <dependency>
                 <groupId>com.auth0</groupId>
                 <artifactId>auth0-spring-security-api</artifactId>
                 <version>${auth0-spring-security-api.version}</version>
+            </dependency>
+            <!-- AWS Dependencies -->
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-s3</artifactId>
+                <version>${aws-java-sdk-s3.version}</version>
             </dependency>
 
             <!-- Test -->

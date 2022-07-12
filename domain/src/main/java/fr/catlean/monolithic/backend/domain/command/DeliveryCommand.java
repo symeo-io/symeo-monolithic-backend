@@ -1,5 +1,6 @@
 package fr.catlean.monolithic.backend.domain.command;
 
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
@@ -21,7 +22,7 @@ public class DeliveryCommand {
         this.versionControlSystemAdapter = versionControlSystemAdapter;
     }
 
-    public void collectRepositoriesForOrganization(OrganizationAccount organizationAccount) {
+    public void collectRepositoriesForOrganization(OrganizationAccount organizationAccount) throws CatleanException {
         final byte[] rawRepositories =
                 versionControlSystemAdapter.getRawRepositories(organizationAccount.getVcsConfiguration().getOrganizationName());
         rawStorageAdapter.save(
@@ -31,7 +32,7 @@ public class DeliveryCommand {
                 rawRepositories);
     }
 
-    public void collectPullRequestsForRepository(Repository repository) {
+    public void collectPullRequestsForRepository(Repository repository) throws CatleanException {
         byte[] alreadyRawPullRequestsCollected = null;
         if (rawStorageAdapter.exists(repository.getOrganizationName(), versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()))) {

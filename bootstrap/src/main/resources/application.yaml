@@ -9,6 +9,12 @@ auth0:
   api-audience: ${AUTH0_AUDIENCE}
   api-issuer: ${AUTH0_ISSUER}
 
+aws:
+  access-key:
+  secret-key:
+  region:
+  raw-bucket-name:
+
 web:
   cors:
     hosts: ${FRONTEND_CORS_HOST}

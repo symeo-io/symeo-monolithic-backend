@@ -1,5 +1,6 @@
 package fr.catlean.monolithic.backend.domain.query;
 
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
@@ -19,14 +20,14 @@ public class DeliveryQuery {
         this.versionControlSystemAdapter = versionControlSystemAdapter;
     }
 
-    public List<Repository> readRepositoriesForOrganization(OrganizationAccount organizationAccount) {
+    public List<Repository> readRepositoriesForOrganization(OrganizationAccount organizationAccount) throws CatleanException {
         final byte[] repositoriesBytes =
                 rawStorageAdapter.read(organizationAccount.getVcsConfiguration().getOrganizationName(),
                 versionControlSystemAdapter.getName(), Repository.ALL);
         return versionControlSystemAdapter.repositoriesBytesToDomain(repositoriesBytes);
     }
 
-    public List<PullRequest> readPullRequestsForRepository(Repository repository) {
+    public List<PullRequest> readPullRequestsForRepository(Repository repository) throws CatleanException {
         final byte[] pullRequestsBytes = rawStorageAdapter.read(repository.getOrganizationName(),
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()));
