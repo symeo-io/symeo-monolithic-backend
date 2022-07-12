@@ -17,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
         RestApiConfiguration.class, Auth0Configuration.class})
 @Slf4j
 @AllArgsConstructor
-@EnableWebMvc
 public class CatleanMonolithicBackendApplication {
 
 

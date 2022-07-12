@@ -5,7 +5,7 @@ info:
 servers:
   - url: http://localhost:9999
     description: Local
-  - url: https://api-staging.catlean.fr/
+  - url: https://api-staging.catlean.fr
     description: Staging
 
 paths:
