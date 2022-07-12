@@ -1,5 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap;
 
+import fr.catlean.monolithic.backend.bootstrap.cors.WebCorsConfig;
 import fr.catlean.monolithic.backend.bootstrap.configuration.*;
 import fr.catlean.monolithic.backend.infrastructure.postgres.configuration.PostgresConfiguration;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties
 @Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class,
         JsonLocalStorageConfiguration.class, PostgresConfiguration.class, AccountConfiguration.class,
-        RestApiConfiguration.class, Auth0Configuration.class, WebCorsConfig.class})
+        RestApiConfiguration.class, WebSecurityConfiguration.class, WebCorsConfig.class})
 @Slf4j
 @AllArgsConstructor
 public class CatleanMonolithicBackendApplication {

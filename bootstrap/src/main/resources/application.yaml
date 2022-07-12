@@ -9,6 +9,10 @@ auth0:
   api-audience: ${AUTH0_AUDIENCE}
   api-issuer: ${AUTH0_ISSUER}
 
+web:
+  cors:
+    hosts: ${FRONTEND_CORS_HOST}
+
 spring:
   application:
     name: catlean-monolithic-backend
