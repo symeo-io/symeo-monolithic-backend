@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@3.1
+
 jobs:
   build-and-test:
     docker:
@@ -9,11 +12,87 @@ jobs:
       - run:
           name: Build
           command: mvn -B -DskipTests clean package -T 4
+      - save_cache:
+          key: build-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - bootstrap/target/
       - run:
           name: Test
           command: mvn test -T 4
+  deploy:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - setup_remote_docker
+      - aws-cli/setup
+      - restore_cache:
+          key: build-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Build docker
+          command: |
+            cd .aws && ./build_docker.sh \
+              --region ${AWS_REGION} \
+              --env ${ENVIRONMENT} \
+              --tag ${CIRCLE_SHA1}
+      - run:
+          name: Deploy
+          command: |
+            cd .aws && ./deploy.sh \
+              --region ${AWS_REGION} \
+              --env ${ENVIRONMENT} \
+              --db-password ${DB_PASSWORD} \
+              --tag ${CIRCLE_SHA1}
+  build-aws-infrastructure:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - setup_remote_docker
+      - aws-cli/setup
+      - restore_cache:
+          key: build-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Build infrastructure
+          command: |
+            cd .aws && ./build_infrastructure.sh \
+              --region ${AWS_REGION} \
+              --env ${ENVIRONMENT} \
+              --db-password ${DB_PASSWORD} \
+              --key-name catlean-backend-${ENVIRONMENT} \
+              --domain ${DOMAIN} \
+              --prefix-url ${PREFIX_URL} \
+              --acm-arn ${ACM_ARN} \
+              --acm-arn-alb ${ACM_ARN_ALB} \
+              --tag ${CIRCLE_SHA1} \
+              --vpc-id ${VPC_ID} \
+              --subnets ${SUBNETS}
 
 workflows:
-  build-test:
+  build-test-deploy:
     jobs:
       - build-and-test
+      - deploy:
+          requires:
+            - build-and-test
+          context:
+            - staging
+          filters:
+            branches:
+              only:
+                - staging
+#      - hold:
+#          type: approval
+#          requires:
+#            - build-and-test
+#          filters:
+#            branches:
+#              only:
+#                - staging
+#      - build-aws-infrastructure:
+#          requires:
+#            - hold
+#          context:
+#            - staging
+#          filters:
+#            branches:
+#              only:
+#                - staging

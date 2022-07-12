@@ -2,6 +2,7 @@ version: '3'
 
 services:
   exposition-database:
+    platform: linux/arm64/v8
     image: "postgres:13"
     container_name: "exposition-database"
     hostname: postgres_exposition_host
@@ -15,6 +16,7 @@ services:
       - catlean-backend-network
 
   catlean-monolithic-backend:
+    platform: linux/x86_64
     build:
       context: .
       dockerfile: Dockerfile
