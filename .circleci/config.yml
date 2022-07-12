@@ -79,20 +79,20 @@ workflows:
             branches:
               only:
                 - staging
-#      - hold:
-#          type: approval
-#          requires:
-#            - build-and-test
-#          filters:
-#            branches:
-#              only:
-#                - staging
-#      - build-aws-infrastructure:
-#          requires:
-#            - hold
-#          context:
-#            - staging
-#          filters:
-#            branches:
-#              only:
-#                - staging
+      - hold:
+          type: approval
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only:
+                - staging
+      - build-aws-infrastructure:
+          requires:
+            - hold
+          context:
+            - staging
+          filters:
+            branches:
+              only:
+                - staging
