@@ -10,6 +10,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=P@ssw0rd
       - POSTGRES_DB=catlean-monolithic-backend
+      - AUTH0_AUDIENCE=https://api-staging.catlean.fr
+      - AUTH0_ISSUER=https://catlean-staging.eu.auth0.com/
     ports:
       - "5432:5432"
     networks:

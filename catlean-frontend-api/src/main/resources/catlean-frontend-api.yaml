@@ -5,11 +5,14 @@ info:
 servers:
   - url: http://localhost:9999
     description: Local
-
+  - url: https://api-staging.catlean.fr
+    description: Staging
 
 paths:
   /api/v1/pull-request/histogram:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - PullRequest
       summary: Get PullRequest Histogram
@@ -49,7 +52,8 @@ paths:
                     data_below_limit: 10
                 errors:
                   {}
-
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: Not found error
           content:
@@ -68,6 +72,14 @@ paths:
                     message: "Failed to open connection with database"
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
   schemas:
     CatleanErrorsContract:
       type: object
@@ -121,8 +133,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CatleanErrorContract'
-
-
 
 
 

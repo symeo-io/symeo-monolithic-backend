@@ -5,6 +5,9 @@ github:
   size: 100
   token: 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
 
+auth0:
+  api-audience: ${AUTH0_AUDIENCE}
+  api-issuer: ${AUTH0_ISSUER}
 
 spring:
   application:
