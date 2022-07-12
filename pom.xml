@@ -36,6 +36,7 @@
         <assertj-core.version>3.22.0</assertj-core.version>
         <javafaker.version>1.0.2</javafaker.version>
         <liquibase-core.version>4.10.0</liquibase-core.version>
+        <auth0-spring-security-api.version>1.5.1</auth0-spring-security-api.version>
     </properties>
 
     <dependencyManagement>
@@ -54,6 +55,11 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>auth0-spring-security-api</artifactId>
+                <version>${auth0-spring-security-api.version}</version>
             </dependency>
 
             <!-- Test -->
