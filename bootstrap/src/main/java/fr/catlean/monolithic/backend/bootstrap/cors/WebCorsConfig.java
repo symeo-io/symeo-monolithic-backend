@@ -1,0 +1,26 @@
+package fr.catlean.monolithic.backend.bootstrap.cors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+@EnableWebMvc
+public class WebCorsConfig implements WebMvcConfigurer {
+
+    private final WebCorsProperties webCorsProperties;
+
+    @Autowired
+    public WebCorsConfig(WebCorsProperties webCorsProperties) {
+        this.webCorsProperties = webCorsProperties;
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOrigins(this.webCorsProperties.getHosts());
+    }
+
+}
