@@ -246,6 +246,10 @@ aws cloudformation deploy \
       ECSServiceRole=${CatleanBackendServiceRole} \
       ECSTaskRole=${CatleanBackendTaskRole} \
       Env=${ENV} \
+      DatalakeS3Bucket=${DatalakeS3Bucket} \
+      DBUsername=${DBUsername} \
+      DBPassword=${DB_PASSWORD} \
+      DBUrl="jdbc:postgresql://${ClusterEndpoint}:${DBPort}/${DBName}?rewriteBatchedStatements=true" \
       Tag=${MY_TAG} \
       TargetGroup=${TargetGroup} \
       TargetGroupName=${TargetGroupName} \
