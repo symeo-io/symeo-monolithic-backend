@@ -11,6 +11,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.PullRequestH
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.PullRequestRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,11 @@ public class PostgresAdapterTestIT {
     @Autowired
     private PullRequestHistogramRepository pullRequestHistogramRepository;
 
+
+    @AfterEach
+    void tearDown() {
+        pullRequestHistogramRepository.deleteAll();
+    }
 
     @Test
     void should_save_pull_requests_to_postgres() {
