@@ -66,8 +66,8 @@ aws ecs register-task-definition --task-role-arn arn:aws:iam::${AccountId}:role/
     \"name\":\"CatleanBackendContainer-${ENV}\",
     \"image\":\"${CatleanBackendRepository}:${TAG}\",
     \"essential\":true,
-    \"memoryReservation\":1536,
-    \"cpu\":768,
+    \"memoryReservation\":1024,
+    \"cpu\":512,
     \"portMappings\":[{\"containerPort\":9999,\"hostPort\":0, \"protocol\":\"tcp\"}],
     \"environment\":[
       {\"name\":\"AWS_REGION\",\"value\":\"${REGION}\"},
