@@ -78,16 +78,15 @@ workflows:
           filters:
             branches:
               only:
-                - aws
+                - staging
 #      - hold:
-
 #          type: approval
 #          requires:
 #            - build-and-test
 #          filters:
 #            branches:
 #              only:
-#                - aws
+#                - staging
 #      - build-aws-infrastructure:
 #          requires:
 #            - hold
@@ -96,4 +95,4 @@ workflows:
 #          filters:
 #            branches:
 #              only:
-#                - aws
+#                - staging
