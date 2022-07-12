@@ -6,7 +6,7 @@ github:
   token: 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
 
 auth0:
-  api-audience: https://catlean-staging.eu.auth0.com/api/v2/
+  api-audience: https://api-staging.catlean.fr
   api-issuer: https://catlean-staging.eu.auth0.com/
 
 spring:

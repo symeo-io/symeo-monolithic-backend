@@ -24,6 +24,6 @@ public class Auth0SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .forRS256(auth0SecurityProperties.getApiAudience(), auth0SecurityProperties.getApiIssuer())
                 .configure(http);
         http.authorizeRequests()
-                .antMatchers("/api/**").fullyAuthenticated();
+                .antMatchers("/api/**").authenticated();
     }
 }
