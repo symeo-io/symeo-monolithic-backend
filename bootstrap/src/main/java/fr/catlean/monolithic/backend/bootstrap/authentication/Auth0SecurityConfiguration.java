@@ -24,7 +24,8 @@ public class Auth0SecurityConfiguration extends WebSecurityConfigurerAdapter {
         JwtWebSecurityConfigurer
                 .forRS256(auth0SecurityProperties.getApiAudience(), auth0SecurityProperties.getApiIssuer())
                 .configure(http);
-        http.authorizeRequests()
+        http.cors().and().authorizeRequests()
                 .antMatchers("/api/**").authenticated();
+
     }
 }

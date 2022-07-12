@@ -8,13 +8,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
 @EnableConfigurationProperties
 @Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class,
         JsonLocalStorageConfiguration.class, PostgresConfiguration.class, AccountConfiguration.class,
-        RestApiConfiguration.class, Auth0Configuration.class})
+        RestApiConfiguration.class, Auth0Configuration.class, WebCorsConfig.class})
 @Slf4j
 @AllArgsConstructor
 public class CatleanMonolithicBackendApplication {
