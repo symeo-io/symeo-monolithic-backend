@@ -2,7 +2,7 @@ FROM openjdk:17-alpine
 
 WORKDIR webapp/
 ADD bootstrap/target/catlean-monolithic-backend.jar webapp/catlean-monolithic-backend.jar
-ADD docker-compose-resources/application.yaml webapp/application.yaml
+ADD bootstrap/src/main/resources/application.yaml webapp/application.yaml
 
 ENV JAVA_OPTS="-server -XX:MaxRAMPercentage=75.0 -XX:MaxMetaspaceSize=256m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom"
 
