@@ -62,7 +62,8 @@ public class DeliveryProcessorService {
     private static boolean filterRepositoryForOrganizationAccount(final OrganizationAccount organizationAccount,
                                                                   final Repository repository) {
         final List<String> allTeamsRepositories =
-                organizationAccount.getVcsConfiguration().getAllTeamsRepositories();
+                organizationAccount.getVcsConfiguration().getAllTeamsRepositories().stream().filter(s -> !s.equals(
+                        "saas-fronted")).toList();
         return allTeamsRepositories.isEmpty() || allTeamsRepositories.contains(repository.getName());
     }
 
