@@ -79,17 +79,14 @@ workflows:
             branches:
               only:
                 - staging
-      - hold:
-          type: approval
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only:
-                - staging
+  build-infrastructure:
+    when:
+      and:
+        - matches:
+            pattern: "^infrastructure-.+$"
+            value: << pipeline.git.tag >>
+    jobs:
       - build-aws-infrastructure:
-          requires:
-            - hold
           context:
             - staging
           filters:

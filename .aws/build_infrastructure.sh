@@ -216,24 +216,6 @@ aws cloudformation deploy \
 
 export_stack_outputs catlean-backend-ecs-cluster-${ENV} ${REGION}
 
-## ECS AutoScaling group
-aws cloudformation deploy \
-  --no-fail-on-empty-changeset \
-  --parameter-overrides \
-      AmiImageId=${AmiImageId} \
-      AssociatePublicIp=true \
-      ECSCluster=${ECSCluster} \
-      Env=${ENV} \
-      InstanceProfile=${CatleanBackendEC2InstanceProfile} \
-      KeyName=${PEM_KEY} \
-      SecurityGroup=${CatleanBackendSg} \
-      Subnets=${SUBNETS} \
-  --stack-name catlean-backend-ecs-autoscaling-${ENV} \
-  --region ${REGION} \
-  --template-file cloudformation/autoscaling.yml
-
-export_stack_outputs catlean-backend-ecs-autoscaling-${ENV} ${REGION}
-
 ## ECS Services
 aws cloudformation deploy \
   --no-fail-on-empty-changeset \
@@ -243,8 +225,8 @@ aws cloudformation deploy \
       DockerRepository=${CatleanBackendRepository} \
       ECSAutoScaleRole=${CatleanBackendAutoScaleRole} \
       ECSCluster=${ECSCluster} \
-      ECSServiceRole=${CatleanBackendServiceRole} \
       ECSTaskRole=${CatleanBackendTaskRole} \
+      ECSExecutionRole=${CatleanBackendECSExecutionRole} \
       Env=${ENV} \
       DatalakeS3Bucket=${DatalakeS3Bucket} \
       DBUsername=${DBUsername} \
@@ -253,6 +235,8 @@ aws cloudformation deploy \
       Tag=${MY_TAG} \
       TargetGroup=${TargetGroup} \
       TargetGroupName=${TargetGroupName} \
+      SecurityGroup=${CatleanBackendSg} \
+      Subnets=${SUBNETS} \
   --region ${REGION} \
   --stack-name catlean-backend-ecs-services-${ENV} \
   --template-file cloudformation/ecs-services.yml
