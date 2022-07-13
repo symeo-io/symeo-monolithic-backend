@@ -59,21 +59,29 @@ export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
 
 AccountId=$(get_aws_account_id)
 
-NODE_ENV=$([ "$ENV" == 'prod' ] && echo "production" || echo "$ENV")
-aws ecs register-task-definition --task-role-arn arn:aws:iam::${AccountId}:role/${CatleanBackendTaskRole} --family ${FamilyName} --region ${REGION} --container-definitions "
+aws ecs register-task-definition \
+  --task-role-arn arn:aws:iam::${AccountId}:role/${CatleanBackendTaskRole} \
+  --execution-role-arn arn:aws:iam::${AccountId}:role/${CatleanBackendECSExecutionRole} \
+  --family ${FamilyName} \
+  --region ${REGION} \
+  --requires-compatibilities FARGATE \
+  --cpu 1024 \
+  --memory 2GB \
+  --network-mode awsvpc \
+  --container-definitions "
 [
   {
     \"name\":\"CatleanBackendContainer-${ENV}\",
     \"image\":\"${CatleanBackendRepository}:${TAG}\",
-    \"essential\":true,
-    \"memoryReservation\":1024,
-    \"cpu\":512,
-    \"portMappings\":[{\"containerPort\":9999,\"hostPort\":0, \"protocol\":\"tcp\"}],
+    \"portMappings\":[{\"containerPort\":9999}],
     \"environment\":[
       {\"name\":\"AWS_REGION\",\"value\":\"${REGION}\"},
       {\"name\":\"S3_DATALAKE_BUCKET_NAME\",\"value\":\"${DatalakeS3Bucket}\"},
       {\"name\":\"DATABASE_USERNAME\",\"value\":\"${DBUsername}\"},
       {\"name\":\"DATABASE_PASSWORD\",\"value\":\"${DB_PASSWORD}\"},
+      {\"name\":\"AUTH0_AUDIENCE\",\"value\":\"${AUTH0_AUDIENCE}\"},
+      {\"name\":\"AUTH0_ISSUER\",\"value\":\"${AUTH0_ISSUER}\"},
+      {\"name\":\"FRONTEND_CORS_HOST\",\"value\":\"${FRONTEND_CORS_HOST}\"},
       {\"name\":\"DATABASE_URL\",\"value\":\"jdbc:postgresql://${ClusterEndpoint}:${DBPort}/${DBName}?rewriteBatchedStatements=true\"}
     ],
     \"logConfiguration\":{
