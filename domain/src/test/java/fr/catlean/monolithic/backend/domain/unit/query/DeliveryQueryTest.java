@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.domain.unit.query;
 
 import com.github.javafaker.Faker;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
@@ -21,7 +22,7 @@ public class DeliveryQueryTest {
     private final Faker faker = Faker.instance();
 
     @Test
-    void should_read_repositories_given_an_organization() {
+    void should_read_repositories_given_an_organization() throws CatleanException {
         // Given
         final String organizationName = faker.pokemon().name();
         final String vcsOrganizationName = faker.harryPotter().book();
@@ -55,7 +56,7 @@ public class DeliveryQueryTest {
     }
 
     @Test
-    void should_read_pull_requests_given_an_organization_and_a_repository() {
+    void should_read_pull_requests_given_an_organization_and_a_repository() throws CatleanException {
         // Given
         final VersionControlSystemAdapter versionControlSystemAdapter =
                 mock(VersionControlSystemAdapter.class);

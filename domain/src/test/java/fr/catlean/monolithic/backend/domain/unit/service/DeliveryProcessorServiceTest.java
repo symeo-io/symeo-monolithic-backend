@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.domain.unit.service;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
@@ -22,7 +23,7 @@ public class DeliveryProcessorServiceTest {
     private final Faker faker = Faker.instance();
 
     @Test
-    void should_return_empty_list_for_repository_without_pull_request() {
+    void should_return_empty_list_for_repository_without_pull_request() throws CatleanException {
         // Given
         final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
         final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
@@ -64,7 +65,7 @@ public class DeliveryProcessorServiceTest {
     }
 
     @Test
-    void should_compute_collect_all_pull_requests_details_for_a_given_organization_account() {
+    void should_compute_collect_all_pull_requests_details_for_a_given_organization_account() throws CatleanException {
         // Given
         final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
         final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);

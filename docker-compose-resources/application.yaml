@@ -9,6 +9,13 @@ auth0:
   api-audience: ${AUTH0_AUDIENCE}
   api-issuer: ${AUTH0_ISSUER}
 
+aws:
+  raw-bucket-name: ${S3_DATALAKE_BUCKET_NAME}
+
+web:
+  cors:
+    hosts: ${FRONTEND_CORS_HOST}
+
 spring:
   application:
     name: catlean-monolithic-backend
