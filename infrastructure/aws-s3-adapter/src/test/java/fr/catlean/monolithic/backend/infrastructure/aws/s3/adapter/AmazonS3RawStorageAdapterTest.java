@@ -3,11 +3,15 @@ package fr.catlean.monolithic.backend.infrastructure.aws.s3.adapter;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.client.methods.HttpGet;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.util.Base64;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -132,13 +136,110 @@ public class AmazonS3RawStorageAdapterTest {
                 " the bucket does not exist.");
     }
 
+    @Test
+    void should_return_if_the_bucket_content_exists() throws CatleanException {
+        // Given
+        final AmazonS3 amazonS3 = mock(AmazonS3.class);
+        final AmazonS3Properties amazonS3Properties = buildAmazonS3PropertiesStub();
+        final AmazonS3RawStorageAdapter amazonS3RawStorageAdapter =
+                new AmazonS3RawStorageAdapter(amazonS3Properties, amazonS3);
+        final String organization = faker.animal().name();
+        final String adapterName = faker.app().name();
+        final String contentName = faker.pokemon().name();
+
+        // When
+        when(amazonS3.doesObjectExist(amazonS3Properties.getRawBucketName(), organization + "/" + adapterName +
+                "/" + contentName + ".json")).thenReturn(true);
+        final boolean exists = amazonS3RawStorageAdapter.exists(organization, adapterName, contentName);
+
+
+        // Then
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    void should_raise_exception_when_check_if_the_bucket_exists() {
+        // Given
+        final AmazonS3 amazonS3 = mock(AmazonS3.class);
+        final AmazonS3Properties amazonS3Properties = buildAmazonS3PropertiesStub();
+        final AmazonS3RawStorageAdapter amazonS3RawStorageAdapter =
+                new AmazonS3RawStorageAdapter(amazonS3Properties, amazonS3);
+        final String organization = faker.animal().name();
+        final String adapterName = faker.app().name();
+        final String contentName = faker.pokemon().name();
+
+        // When
+        when(amazonS3.doesObjectExist(amazonS3Properties.getRawBucketName(), organization + "/" + adapterName +
+                "/" + contentName + ".json")).thenThrow(new SdkClientException(faker.name().firstName()));
+        CatleanException exception = null;
+        try {
+            amazonS3RawStorageAdapter.exists(organization, adapterName, contentName);
+        } catch (CatleanException e) {
+            exception = e;
+        }
+
+        // Then
+        assertThat(exception).isNotNull();
+        assertThat(exception.getCode()).isEqualTo("T.AWS_API_EXCEPTION");
+        assertThat(exception.getMessage()).isEqualTo("A technical error happened with AWS API");
+
+    }
+
+
+    @Test
+    void should_read_bucket_content() throws CatleanException {
+        // Given
+        final AmazonS3 amazonS3 = mock(AmazonS3.class);
+        final AmazonS3Properties amazonS3Properties = buildAmazonS3PropertiesStub();
+        final AmazonS3RawStorageAdapter amazonS3RawStorageAdapter =
+                new AmazonS3RawStorageAdapter(amazonS3Properties, amazonS3);
+        final String organization = faker.animal().name();
+        final String adapterName = faker.app().name();
+        final String contentName = faker.pokemon().name();
+        final S3Object s3Object = mock(S3Object.class);
+        final byte[] expectedBytes = faker.name().firstName().getBytes();
+
+        // When
+        when(amazonS3.getObject(any())).thenReturn(s3Object);
+        when(s3Object.getObjectContent()).thenReturn(new S3ObjectInputStream(new ByteArrayInputStream(expectedBytes),
+                new HttpGet()));
+        final byte[] bytes = amazonS3RawStorageAdapter.read(organization, adapterName, contentName);
+
+        // Then
+        assertThat(bytes).isEqualTo(expectedBytes);
+    }
+
+
+    @Test
+    void should_raise_a_technical_exception_while_reading_bucket_content() {
+        // Given
+        final AmazonS3 amazonS3 = mock(AmazonS3.class);
+        final AmazonS3Properties amazonS3Properties = buildAmazonS3PropertiesStub();
+        final AmazonS3RawStorageAdapter amazonS3RawStorageAdapter =
+                new AmazonS3RawStorageAdapter(amazonS3Properties, amazonS3);
+        final String organization = faker.animal().name();
+        final String adapterName = faker.app().name();
+        final String contentName = faker.pokemon().name();
+
+        // When
+        when(amazonS3.getObject(any())).thenThrow(new SdkClientException(faker.name().firstName()));
+        CatleanException exception = null;
+        try {
+            amazonS3RawStorageAdapter.read(organization, adapterName, contentName);
+        } catch (CatleanException e) {
+            exception = e;
+        }
+
+        // Then
+        assertThat(exception).isNotNull();
+        assertThat(exception.getCode()).isEqualTo("T.AWS_API_EXCEPTION");
+        assertThat(exception.getMessage()).isEqualTo("A technical error happened with AWS API");
+    }
+
 
     private AmazonS3Properties buildAmazonS3PropertiesStub() {
         final AmazonS3Properties amazonS3Properties = new AmazonS3Properties();
-        amazonS3Properties.setAccessKey(faker.pokemon().name());
-        amazonS3Properties.setRegion(faker.university().name());
         amazonS3Properties.setRawBucketName(faker.name().name());
-        amazonS3Properties.setSecretKey(faker.harryPotter().book());
         return amazonS3Properties;
     }
 }

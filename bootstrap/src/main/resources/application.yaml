@@ -10,10 +10,7 @@ auth0:
   api-issuer: ${AUTH0_ISSUER}
 
 aws:
-  access-key:
-  secret-key:
-  region:
-  raw-bucket-name:
+  raw-bucket-name: ${S3_DATALAKE_BUCKET_NAME}
 
 web:
   cors:

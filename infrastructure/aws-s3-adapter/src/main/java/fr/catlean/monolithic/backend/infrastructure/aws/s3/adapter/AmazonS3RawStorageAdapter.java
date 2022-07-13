@@ -46,7 +46,7 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
                     ".AWS_API_EXCEPTION").build();
         } catch (IOException e) {
             throw CatleanException.builder().message("Failed to serialize AWS S3 Content").code("T" +
-                    ".AWS_S3_SER_EXCEPTION").build();
+                    ".AWS_S3_SERIALIZATION_EXCEPTION").build();
         }
     }
 
