@@ -38,6 +38,7 @@
         <liquibase-core.version>4.10.0</liquibase-core.version>
         <auth0-spring-security-api.version>1.5.1</auth0-spring-security-api.version>
         <aws-java-sdk-s3.version>1.12.7</aws-java-sdk-s3.version>
+        <sentry-spring-boot-starter.version>6.2.1</sentry-spring-boot-starter.version>
     </properties>
 
     <dependencyManagement>
@@ -68,6 +69,11 @@
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-s3</artifactId>
                 <version>${aws-java-sdk-s3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.sentry</groupId>
+                <artifactId>sentry-spring-boot-starter</artifactId>
+                <version>${sentry-spring-boot-starter.version}</version>
             </dependency>
 
             <!-- Test -->
