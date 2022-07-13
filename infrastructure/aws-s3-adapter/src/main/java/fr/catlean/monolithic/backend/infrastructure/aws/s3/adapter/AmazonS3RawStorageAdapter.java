@@ -9,21 +9,20 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.IOUtils;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Base64;
 
+@AllArgsConstructor
+@Slf4j
 public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
 
     private final AmazonS3Properties amazonS3Properties;
     private final AmazonS3 amazonS3;
-
-    public AmazonS3RawStorageAdapter(AmazonS3Properties amazonS3Properties) {
-        this.amazonS3Properties = amazonS3Properties;
-        this.amazonS3 = AmazonS3ClientFactory.getAmazonS3Client(amazonS3Properties);
-    }
 
     @Override
     public void save(String organization, String adapterName, String contentName, byte[] bytes) throws CatleanException {
@@ -57,6 +56,8 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
             return amazonS3.doesObjectExist(amazonS3Properties.getRawBucketName(), getBucketKey(organization,
                     adapterName, contentName));
         } catch (SdkClientException sdkClientException) {
+            LOGGER.error("Error while checking if bucket {} {} {} exists", organization, adapterName,
+                    contentName, sdkClientException);
             throw CatleanException.builder()
                     .message("A technical error happened with AWS API")
                     .code("T.AWS_API_EXCEPTION")
@@ -65,13 +66,14 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
     }
 
 
-    public void uploadByteArrayToS3Bucket(final byte[] byteArray, final String bucketName, final String bucketKey) throws CatleanException {
+    private void uploadByteArrayToS3Bucket(final byte[] byteArray, final String bucketName, final String bucketKey) throws CatleanException {
         final String md5 = new String(Base64.getEncoder().encode(DigestUtils.md5(byteArray)));
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         try {
             final String md5FromUploadedFile = putObjectToS3andGetContentFileUploadedMd5(bucketName, bucketKey,
                     byteArrayInputStream);
             if (!md5.equals(md5FromUploadedFile)) {
+                LOGGER.error("Bucket {} {} md5 content is not equaled to file md5 content", bucketName, bucketKey);
                 throw CatleanException.builder()
                         .message("Failed to upload report " + bucketKey + " to S3 bucket " + bucketName + " : md5s " +
                                 "are not equaled, it should be a partial upload")
@@ -79,6 +81,7 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
                         .build();
             }
         } catch (SdkClientException sdkClientException) {
+            LOGGER.error("A technical exception happened with AWS SDK Client", sdkClientException);
             throw CatleanException.builder()
                     .message("A technical error happened with AWS API")
                     .code("T.AWS_API_EXCEPTION")
@@ -86,15 +89,16 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
         }
     }
 
-    private String putObjectToS3andGetContentFileUploadedMd5(String dv360RawBucketStorage, String reportName,
+    private String putObjectToS3andGetContentFileUploadedMd5(String bucketStorage, String bucketKeyId,
                                                              ByteArrayInputStream byteArrayInputStream) throws CatleanException, SdkClientException {
-        if (amazonS3.doesBucketExistV2(dv360RawBucketStorage)) {
-            final PutObjectResult putObjectResult = amazonS3.putObject(dv360RawBucketStorage, reportName,
+        if (amazonS3.doesBucketExistV2(bucketStorage)) {
+            final PutObjectResult putObjectResult = amazonS3.putObject(bucketStorage, bucketKeyId,
                     byteArrayInputStream, new ObjectMetadata());
             return putObjectResult.getContentMd5();
         } else {
+            LOGGER.error("Failed to upload report {} to S3 bucket {}", bucketKeyId, bucketStorage);
             throw CatleanException.builder()
-                    .message("Failed to upload report " + reportName + " to S3 bucket " + dv360RawBucketStorage + " :" +
+                    .message("Failed to upload report " + bucketKeyId + " to S3 bucket " + bucketStorage + " :" +
                             " the bucket does not exist.")
                     .code("F.INVALID_BUCKET_NAME")
                     .build();
