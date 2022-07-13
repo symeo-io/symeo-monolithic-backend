@@ -57,9 +57,3 @@ spring:
 
 server:
   port: 9999
-
-sentry:
-  dsn: https://f4857496207c4352ac9ceb448406e6a8@o1317381.ingest.sentry.io/6570536
-  # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
-  # We recommend adjusting this value in production.
-  traces-sample-rate: 1.0
