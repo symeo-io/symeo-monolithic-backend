@@ -4,11 +4,10 @@ import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
-import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
-import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,8 +25,8 @@ public class DeliveryQueryTest {
         // Given
         final String organizationName = faker.pokemon().name();
         final String vcsOrganizationName = faker.harryPotter().book();
-        final OrganizationAccount organizationAccount =
-                OrganizationAccount.builder().name(organizationName).vcsConfiguration(
+        final Organization organizationAccount =
+                Organization.builder().name(organizationName).vcsConfiguration(
                         VcsConfiguration.builder().organizationName(vcsOrganizationName).build()
                 ).build();
         final String contentName = faker.animal().name();

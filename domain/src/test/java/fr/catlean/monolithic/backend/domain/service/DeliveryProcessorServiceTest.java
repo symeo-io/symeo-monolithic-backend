@@ -5,11 +5,10 @@ import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
-import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
-import fr.catlean.monolithic.backend.domain.service.DeliveryProcessorService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -31,7 +30,7 @@ public class DeliveryProcessorServiceTest {
         final DeliveryProcessorService deliveryProcessorService = new DeliveryProcessorService(deliveryCommand,
                 deliveryQuery, expositionStorageAdapter);
         final String organizationName = faker.name().name();
-        final OrganizationAccount organizationAccount = OrganizationAccount.builder()
+        final Organization organizationAccount = Organization.builder()
                 .vcsConfiguration(VcsConfiguration.builder().build()).name(organizationName).build();
 
         // When
@@ -78,7 +77,7 @@ public class DeliveryProcessorServiceTest {
         final String repo2Name = faker.pokemon().name() + "2";
         final String repo3Name = faker.pokemon().name() + "3";
         final String repo4Name = faker.pokemon().name() + "4";
-        final OrganizationAccount organizationAccount = OrganizationAccount.builder().name(organizationName)
+        final Organization organizationAccount = Organization.builder().name(organizationName)
                 .vcsConfiguration(
                         VcsConfiguration.builder()
                                 .organizationName(vcsOrganizationName)

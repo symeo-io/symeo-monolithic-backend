@@ -8,10 +8,12 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.UUID;
 
 @Builder(toBuilder = true)
 @Value
-public class OrganizationAccount {
+public class Organization {
+    UUID id;
     String name;
     @NonNull
     VcsConfiguration vcsConfiguration;
@@ -19,10 +21,11 @@ public class OrganizationAccount {
     List<TeamAccount> teamAccounts = new ArrayList<>();
     @Builder.Default
     TimeZone timeZone = TimeZone.getTimeZone(ZoneId.systemDefault());
+    String externalId;
 
-    public OrganizationAccount addTeam(final String teamName, final List<String> teamVcsRepositoryNames,
-                                       final Integer pullRequestLineNumberLimit,
-                                       final Integer pullRequestDayNumberLimit) {
+    public Organization addTeam(final String teamName, final List<String> teamVcsRepositoryNames,
+                                final Integer pullRequestLineNumberLimit,
+                                final Integer pullRequestDayNumberLimit) {
         final List<VcsTeam> vcsTeams = this.vcsConfiguration.getVcsTeams();
         final List<TeamAccount> teamAccounts = this.getTeamAccounts();
         vcsTeams.add(

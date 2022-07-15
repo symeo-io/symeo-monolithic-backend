@@ -1,6 +1,6 @@
 package catlean.monolithic.backend.rest.api.adapter.mapper;
 
-import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CurrentUserResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.OrganizationContract;
@@ -20,13 +20,13 @@ public interface UserResponseMapper {
         final UserContract userContract = new UserContract();
         userContract.setEmail(user.getMail());
         userContract.setId(user.getId());
-        if (nonNull(user.getOrganizationAccount())) {
-            userContract.setOrganization(organizationToContract(user.getOrganizationAccount()));
+        if (nonNull(user.getOrganization())) {
+            userContract.setOrganization(organizationToContract(user.getOrganization()));
         }
         return userContract;
     }
 
-    private static OrganizationContract organizationToContract(final OrganizationAccount organizationAccount) {
+    private static OrganizationContract organizationToContract(final Organization organizationAccount) {
         final OrganizationContract organizationContract = new OrganizationContract();
         organizationContract.setId(organizationContract.getId());
         organizationContract.setName(organizationAccount.getName());

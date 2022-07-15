@@ -1,7 +1,7 @@
 package fr.catlean.monolithic.backend.domain.service;
 
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
-import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsTeam;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
@@ -24,17 +24,17 @@ public class PullRequestService {
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
     public void computeAndSavePullRequestSizeHistogram(List<PullRequest> pullRequests,
-                                                       OrganizationAccount organizationAccount) {
+                                                       Organization organizationAccount) {
         computeAndSavePullRequestHistogram(pullRequests, organizationAccount, SIZE_LIMIT);
     }
 
     public void computeAndSavePullRequestTimeHistogram(List<PullRequest> pullRequests,
-                                                       OrganizationAccount organizationAccount) {
+                                                       Organization organizationAccount) {
         computeAndSavePullRequestHistogram(pullRequests, organizationAccount, TIME_LIMIT);
     }
 
     private void computeAndSavePullRequestHistogram(List<PullRequest> pullRequests,
-                                                    OrganizationAccount organizationAccount, String sizeLimit) {
+                                                    Organization organizationAccount, String sizeLimit) {
         final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
         for (VcsTeam vcsTeam : organizationAccount.getVcsConfiguration().getVcsTeams()) {
 
@@ -50,7 +50,7 @@ public class PullRequestService {
 
     private PullRequestHistogram getPullRequestHistogramForVcsTeam(final String pullRequestHistogramType,
                                                                    List<PullRequest> pullRequests,
-                                                                   final OrganizationAccount organizationAccount,
+                                                                   final Organization organizationAccount,
                                                                    final VcsTeam vcsTeam) {
         int pullRequestLimit;
         if (pullRequestHistogramType.equals(SIZE_LIMIT)) {

@@ -4,7 +4,7 @@ import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
-import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class DeliveryProcessorService {
     private final DeliveryQuery deliveryQuery;
     private final ExpositionStorageAdapter expositionStorageAdapter;
 
-    public List<PullRequest> collectPullRequestsForOrganization(final OrganizationAccount organizationAccount) throws CatleanException {
+    public List<PullRequest> collectPullRequestsForOrganization(final Organization organizationAccount) throws CatleanException {
         final List<PullRequest> pullRequests = getPullRequestsForOrganizationAccount(organizationAccount).stream()
                 .map(pullRequest -> populateWithOrganizationAccount(pullRequest, organizationAccount)).toList();
         expositionStorageAdapter.savePullRequestDetails(pullRequests);
@@ -30,7 +30,7 @@ public class DeliveryProcessorService {
     }
 
     private PullRequest populateWithOrganizationAccount(final PullRequest pullRequest,
-                                                        final OrganizationAccount organizationAccount) {
+                                                        final Organization organizationAccount) {
         return organizationAccount.getVcsConfiguration().getVcsTeams().stream()
                 .filter(vcsTeam -> vcsTeam.getVcsRepositoryNames().contains(pullRequest.getRepository()))
                 .findFirst()
@@ -42,7 +42,7 @@ public class DeliveryProcessorService {
                 ).orElse(pullRequest);
     }
 
-    private List<PullRequest> getPullRequestsForOrganizationAccount(final OrganizationAccount organizationAccount) throws CatleanException {
+    private List<PullRequest> getPullRequestsForOrganizationAccount(final Organization organizationAccount) throws CatleanException {
         deliveryCommand.collectRepositoriesForOrganization(organizationAccount);
         List<Repository> repositories = deliveryQuery.readRepositoriesForOrganization(organizationAccount);
         return repositories.parallelStream()
@@ -59,7 +59,7 @@ public class DeliveryProcessorService {
                 ).flatMap(Collection::stream).toList();
     }
 
-    private static boolean filterRepositoryForOrganizationAccount(final OrganizationAccount organizationAccount,
+    private static boolean filterRepositoryForOrganizationAccount(final Organization organizationAccount,
                                                                   final Repository repository) {
         final List<String> allTeamsRepositories =
                 organizationAccount.getVcsConfiguration().getAllTeamsRepositories().stream().filter(s -> !s.equals(
