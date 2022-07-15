@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@3.1
+  slack: circleci/slack@4.10.1
 
 jobs:
   build-and-test:
@@ -19,6 +20,12 @@ jobs:
       - run:
           name: Test
           command: mvn test -T 4
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: basic_success_1
   deploy:
     executor: aws-cli/default
     steps:
@@ -42,6 +49,12 @@ jobs:
               --env ${ENVIRONMENT} \
               --db-password ${DB_PASSWORD} \
               --tag ${CIRCLE_SHA1}
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: basic_success_1
   build-aws-infrastructure:
     executor: aws-cli/default
     steps:
@@ -65,16 +78,25 @@ jobs:
               --tag ${CIRCLE_SHA1} \
               --vpc-id ${VPC_ID} \
               --subnets ${SUBNETS}
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: basic_success_1
 
 workflows:
   build-test-deploy:
     jobs:
-      - build-and-test
+      - build-and-test:
+          context:
+            - slack-notifications
       - deploy:
           requires:
             - build-and-test
           context:
             - staging
+            - slack-notifications
           filters:
             branches:
               only:
@@ -89,6 +111,7 @@ workflows:
       - build-aws-infrastructure:
           context:
             - staging
+            - slack-notifications
           filters:
             branches:
               only:
