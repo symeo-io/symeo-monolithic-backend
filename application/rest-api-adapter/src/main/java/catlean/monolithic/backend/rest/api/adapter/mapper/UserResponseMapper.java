@@ -26,10 +26,10 @@ public interface UserResponseMapper {
         return userContract;
     }
 
-    private static OrganizationContract organizationToContract(final Organization organizationAccount) {
+    private static OrganizationContract organizationToContract(final Organization organization) {
         final OrganizationContract organizationContract = new OrganizationContract();
-        organizationContract.setId(organizationContract.getId());
-        organizationContract.setName(organizationAccount.getName());
+        organizationContract.setId(organization.getId());
+        organizationContract.setName(organization.getName());
         return organizationContract;
     }
 }
