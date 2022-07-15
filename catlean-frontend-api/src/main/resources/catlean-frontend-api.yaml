@@ -116,7 +116,7 @@ paths:
         - User
         - Organization
       summary: Link Current Logged In User to Organization
-      operationId: linkCurrentUserToOrganizationy
+      operationId: linkCurrentUserToOrganization
       description: |
         Link Current Logged In User to Organization based on vcs external id
       requestBody:

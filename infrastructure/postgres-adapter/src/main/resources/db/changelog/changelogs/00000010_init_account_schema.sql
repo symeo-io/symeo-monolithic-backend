@@ -6,6 +6,7 @@ create table account.user
         constraint user_id primary key,
     mail                        varchar(200)               not null
         constraint unique_mail unique,
+    organization_id             varchar(40),
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null
 );

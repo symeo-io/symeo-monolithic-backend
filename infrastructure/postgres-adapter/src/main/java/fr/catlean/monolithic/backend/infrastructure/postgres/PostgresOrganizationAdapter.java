@@ -37,4 +37,5 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
                     .build();
         }
     }
+
 }

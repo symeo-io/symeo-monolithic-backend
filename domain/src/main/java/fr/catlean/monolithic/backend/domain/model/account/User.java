@@ -6,9 +6,9 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class User {
     String mail;
     UUID id;
-    Organization organizationAccount;
+    Organization organization;
 }

@@ -24,8 +24,9 @@ public class RestApiConfiguration {
     }
 
     @Bean
-    public UserRestApiAdapter userRestApiAdapter(final AuthenticationService authenticationService) {
-        return new UserRestApiAdapter(authenticationService);
+    public UserRestApiAdapter userRestApiAdapter(final AuthenticationService authenticationService,
+                                                 final UserFacadeAdapter userFacadeAdapter) {
+        return new UserRestApiAdapter(authenticationService, userFacadeAdapter);
     }
 
     @Bean
