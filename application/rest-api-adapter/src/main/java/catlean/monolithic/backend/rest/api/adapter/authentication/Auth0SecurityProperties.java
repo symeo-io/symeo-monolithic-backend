@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.bootstrap.authentication;
+package catlean.monolithic.backend.rest.api.adapter.authentication;
 
 import lombok.Data;
 

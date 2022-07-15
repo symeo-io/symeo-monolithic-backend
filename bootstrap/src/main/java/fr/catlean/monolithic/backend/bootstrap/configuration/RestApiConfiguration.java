@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import catlean.monolithic.backend.rest.api.adapter.DataProcessingRestApiAdapter;
 import catlean.monolithic.backend.rest.api.adapter.PullRequestRestApiAdapter;
+import catlean.monolithic.backend.rest.api.adapter.UserRestApiAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import org.springframework.context.annotation.Bean;
@@ -18,4 +19,8 @@ public class RestApiConfiguration {
         return new PullRequestRestApiAdapter(histogramQuery);
     }
 
+    @Bean
+    public UserRestApiAdapter userRestApiAdapter() {
+        return new UserRestApiAdapter();
+    }
 }

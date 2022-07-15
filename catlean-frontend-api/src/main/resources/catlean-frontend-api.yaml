@@ -28,7 +28,7 @@ paths:
                 $ref: '#/components/schemas/CurrentUserResponseContract'
               example:
                 user:
-                  id: 16
+                  id: 818e351a-0421-11ed-b939-0242ac120002
                   email: john.doe@catlean.fr
                   organization:
                     id: 42
@@ -178,8 +178,9 @@ components:
         - name
       properties:
         id:
-          type: integer
-          example: 16
+          type: string
+          format: uuid
+          example: 8ad1c7ea-0421-11ed-b939-0242ac120002
         name:
           type: string
           example: Catlean
@@ -191,15 +192,14 @@ components:
         - organization
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
           example: 16
         email:
           type: string
           example: john.doe@catlean.fr
         organization:
-          type: object
-          items:
-            $ref: '#/components/schemas/OrganizationContract'
+          $ref: '#/components/schemas/OrganizationContract'
     CurrentUserResponseContract:
       type: object
       required:
@@ -207,9 +207,7 @@ components:
         - organization
       properties:
         user:
-          type: object
-          items:
-            $ref: '#/components/schemas/UserContract'
+          $ref: '#/components/schemas/UserContract'
         errors:
           type: array
           items:

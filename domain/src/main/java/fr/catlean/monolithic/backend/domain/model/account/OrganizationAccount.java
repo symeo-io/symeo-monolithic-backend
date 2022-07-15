@@ -1,6 +1,5 @@
 package fr.catlean.monolithic.backend.domain.model.account;
 
-import fr.catlean.monolithic.backend.domain.domain.account.TeamAccount;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
