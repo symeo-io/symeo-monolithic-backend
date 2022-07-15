@@ -1,15 +1,6 @@
 package catlean.monolithic.backend.rest.api.adapter.authentication;
 
-import fr.catlean.monolithic.backend.domain.model.account.User;
-import fr.catlean.monolithic.backend.domain.port.in.UserQueryAdapter;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class UserAuthenticationServiceTest {
 //

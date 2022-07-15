@@ -1,8 +1,8 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.configuration;
 
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAdapter;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.PullRequestHistogramRepository;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -24,9 +24,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class PostgresConfiguration {
 
     @Bean
-    public PostgresAdapter postgresAdapter(final PullRequestRepository pullRequestRepository,
-                                           final PullRequestHistogramRepository pullRequestHistogramRepository) {
-        return new PostgresAdapter(pullRequestRepository, pullRequestHistogramRepository);
+    public PostgresExpositionAdapter postgresAdapter(final PullRequestRepository pullRequestRepository,
+                                                     final PullRequestHistogramRepository pullRequestHistogramRepository) {
+        return new PostgresExpositionAdapter(pullRequestRepository, pullRequestHistogramRepository);
     }
 
 }
