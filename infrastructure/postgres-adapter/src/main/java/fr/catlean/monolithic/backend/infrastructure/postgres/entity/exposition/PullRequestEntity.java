@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition;
 
 import com.sun.istack.NotNull;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.AbstractEntity;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
@@ -17,8 +18,7 @@ import java.time.ZonedDateTime;
 @Data
 @Builder
 @Table(name = "pull_request", schema = "exposition_storage")
-@EntityListeners(AuditingEntityListener.class)
-public class PullRequestEntity {
+public class PullRequestEntity extends AbstractEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -65,11 +65,5 @@ public class PullRequestEntity {
     String vcsOrganization;
     @Column(name = "organization")
     String organization;
-    @Column(name = "technical_creation_date", updatable = false)
-    @CreationTimestamp
-    ZonedDateTime technicalCreationDate;
-    @UpdateTimestamp
-    @Column(name = "technical_modification_date")
-    ZonedDateTime technicalModificationDate;
 
 }

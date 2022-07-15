@@ -37,4 +37,4 @@ json_local_storage
 ### env files ###
 .env
 
-catlean-staging-io.2022-07-14.private-key.pem
+catlean-staging-io.private-key.pem

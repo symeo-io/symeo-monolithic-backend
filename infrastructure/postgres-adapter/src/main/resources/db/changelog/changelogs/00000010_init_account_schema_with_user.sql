@@ -2,9 +2,10 @@ create schema if not exists account;
 
 create table account.user
 (
-    id                          varchar(40)               not null
+    id                          varchar(40)                not null
         constraint user_id primary key,
-    mail varchar(200)                     not null,
+    mail                        varchar(200)               not null
+        constraint unique,
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null
 );

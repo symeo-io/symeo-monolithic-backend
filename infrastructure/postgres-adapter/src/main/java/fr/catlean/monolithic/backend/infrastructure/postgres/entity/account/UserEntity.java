@@ -1,5 +1,6 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.entity.account;
 
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.AbstractEntity;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -17,8 +18,7 @@ import static java.util.UUID.randomUUID;
 @Data
 @Builder
 @Table(name = "user", schema = "account")
-@EntityListeners(AuditingEntityListener.class)
-public class UserEntity {
+public class UserEntity extends AbstractEntity {
 
 
     @Id
@@ -26,12 +26,6 @@ public class UserEntity {
     String id;
     @Column(name = "mail", nullable = false)
     String mail;
-    @Column(name = "technical_creation_date", updatable = false)
-    @CreationTimestamp
-    ZonedDateTime technicalCreationDate;
-    @UpdateTimestamp
-    @Column(name = "technical_modification_date")
-    ZonedDateTime technicalModificationDate;
 
 
 }
