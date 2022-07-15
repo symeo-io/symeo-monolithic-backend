@@ -20,8 +20,8 @@ public interface UserResponseMapper {
         final UserContract userContract = new UserContract();
         userContract.setEmail(user.getMail());
         userContract.setId(user.getId());
-        if (nonNull(user.getOrganizationAccount())) {
-            userContract.setOrganization(organizationToContract(user.getOrganizationAccount()));
+        if (nonNull(user.getOrganization())) {
+            userContract.setOrganization(organizationToContract(user.getOrganization()));
         }
         return userContract;
     }

@@ -53,8 +53,8 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public UserFacadeAdapter userFacadeAdapter(final AccountStorageAdapter accountStorageAdapter) {
-        return new UserService(accountStorageAdapter);
+    public UserFacadeAdapter userFacadeAdapter(final UserStorageAdapter userStorageAdapter) {
+        return new UserService(userStorageAdapter);
     }
 
     @Bean

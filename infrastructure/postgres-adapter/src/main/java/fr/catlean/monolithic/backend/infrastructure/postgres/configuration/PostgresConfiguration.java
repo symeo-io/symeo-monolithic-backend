@@ -34,8 +34,9 @@ public class PostgresConfiguration {
     }
 
     @Bean
-    public PostgresUserAdapter postgresAccountAdapter(final UserRepository userRepository) {
-        return new PostgresUserAdapter(userRepository);
+    public PostgresUserAdapter postgresAccountAdapter(final UserRepository userRepository,
+                                                      final OrganizationRepository organizationRepository) {
+        return new PostgresUserAdapter(userRepository, organizationRepository);
     }
 
     @Bean

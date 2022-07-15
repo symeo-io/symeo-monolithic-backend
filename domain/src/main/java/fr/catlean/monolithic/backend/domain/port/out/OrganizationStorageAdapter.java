@@ -7,4 +7,5 @@ public interface OrganizationStorageAdapter {
     Organization findOrganizationForName(String organizationName) throws CatleanException;
 
     Organization createOrganization(Organization organization) throws CatleanException;
+
 }
