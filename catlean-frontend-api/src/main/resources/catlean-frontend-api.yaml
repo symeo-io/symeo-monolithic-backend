@@ -9,6 +9,44 @@ servers:
     description: Staging
 
 paths:
+  /api/v1/me:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - User
+      summary: Get Current Logged In User
+      operationId: getCurrentUser
+      description: |
+        Get Current Logged In User
+      responses:
+        "200":
+          description: 'Successfully current user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUserResponseContract'
+              example:
+                user:
+                  id: 16
+                  email: john.doe@catlean.fr
+                  organization:
+                    id: 42
+                    name: Catlean
+                errors:
+                  { }
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
   /api/v1/pull-request/histogram:
     get:
       security:
@@ -52,7 +90,7 @@ paths:
                     data_below_limit: 10
                 errors:
                   {}
-        '401':
+        "401":
           $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: Not found error
@@ -133,6 +171,46 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CatleanErrorContract'
-
-
-
+    OrganizationContract:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          example: 16
+        name:
+          type: string
+          example: Catlean
+    UserContract:
+      type: object
+      required:
+        - id
+        - email
+        - organization
+      properties:
+        id:
+          type: integer
+          example: 16
+        email:
+          type: string
+          example: john.doe@catlean.fr
+        organization:
+          type: object
+          items:
+            $ref: '#/components/schemas/OrganizationContract'
+    CurrentUserResponseContract:
+      type: object
+      required:
+        - user
+        - organization
+      properties:
+        user:
+          type: object
+          items:
+            $ref: '#/components/schemas/UserContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
