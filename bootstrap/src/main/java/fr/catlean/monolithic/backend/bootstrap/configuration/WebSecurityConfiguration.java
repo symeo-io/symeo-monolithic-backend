@@ -1,7 +1,7 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
-import fr.catlean.monolithic.backend.bootstrap.authentication.Auth0SecurityConfiguration;
-import fr.catlean.monolithic.backend.bootstrap.authentication.Auth0SecurityProperties;
+import catlean.monolithic.backend.rest.api.adapter.authentication.Auth0SecurityConfiguration;
+import catlean.monolithic.backend.rest.api.adapter.authentication.Auth0SecurityProperties;
 import fr.catlean.monolithic.backend.bootstrap.cors.WebCorsConfig;
 import fr.catlean.monolithic.backend.bootstrap.cors.WebCorsProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;

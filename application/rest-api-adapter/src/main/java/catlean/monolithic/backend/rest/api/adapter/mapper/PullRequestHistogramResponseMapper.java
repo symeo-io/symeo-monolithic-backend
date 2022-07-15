@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.List;
 
+import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorResponseMapper.catleanExceptionToContract;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -35,10 +36,10 @@ public interface PullRequestHistogramResponseMapper {
 
     static ResponseEntity<HistogramResponseContract> errorToContract(CatleanException e) {
         final HistogramResponseContract histogramResponseContract = new HistogramResponseContract();
-        final CatleanErrorContract catleanErrorContract = new CatleanErrorContract();
-        catleanErrorContract.setCode(e.getCode());
-        catleanErrorContract.setMessage(e.getMessage());
+        final CatleanErrorContract catleanErrorContract = catleanExceptionToContract(e);
         histogramResponseContract.errors(List.of(catleanErrorContract));
         return internalServerError().body(histogramResponseContract);
     }
+
+
 }
