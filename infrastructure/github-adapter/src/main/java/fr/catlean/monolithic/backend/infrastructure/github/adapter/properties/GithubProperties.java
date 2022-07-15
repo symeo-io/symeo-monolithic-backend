@@ -6,5 +6,5 @@ import lombok.Data;
 public class GithubProperties {
 
     private int size;
-    private String token;
+    private String privateKeyCertificatePath;
 }
