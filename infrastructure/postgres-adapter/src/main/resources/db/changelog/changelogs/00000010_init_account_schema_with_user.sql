@@ -1,7 +1,5 @@
 create schema if not exists account;
 
-create sequence if not exists account.user;
-
 create table account.user
 (
     id                          varchar(40)               not null

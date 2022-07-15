@@ -6,6 +6,8 @@ import fr.catlean.monolithic.backend.frontend.contract.api.model.CurrentUserResp
 import fr.catlean.monolithic.backend.frontend.contract.api.model.OrganizationContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.UserContract;
 
+import static java.util.Objects.nonNull;
+
 public interface UserResponseMapper {
 
     static CurrentUserResponseContract userToResponse(final User user) {
@@ -18,7 +20,9 @@ public interface UserResponseMapper {
         final UserContract userContract = new UserContract();
         userContract.setEmail(user.getMail());
         userContract.setId(user.getId());
-        userContract.setOrganization(organizationToContract(user.getOrganizationAccount()));
+        if (nonNull(user.getOrganizationAccount())) {
+            userContract.setOrganization(organizationToContract(user.getOrganizationAccount()));
+        }
         return userContract;
     }
 

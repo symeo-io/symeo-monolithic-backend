@@ -1,15 +1,14 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
-import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
-import fr.catlean.monolithic.backend.domain.port.out.OrganizationAccountAdapter;
-import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
-import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
+import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
+import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.service.DeliveryProcessorService;
 import fr.catlean.monolithic.backend.domain.service.PullRequestService;
+import fr.catlean.monolithic.backend.domain.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -53,5 +52,10 @@ public class DomainConfiguration {
     public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter,
                                          final OrganizationAccountAdapter organizationAccountAdapter) {
         return new HistogramQuery(expositionStorageAdapter, organizationAccountAdapter);
+    }
+
+    @Bean
+    public UserFacadeAdapter userFacadeAdapter(final AccountStorageAdapter accountStorageAdapter) {
+        return new UserService(accountStorageAdapter);
     }
 }
