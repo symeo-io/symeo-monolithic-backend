@@ -1,7 +1,7 @@
 package fr.catlean.monolithic.backend.domain.domain.account;
 
 import com.github.javafaker.Faker;
-import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ public class OrganizationAccountTest {
                 faker.shakespeare().romeoAndJulietQuote());
         final List<String> team2VcsRepositoryNames = List.of(faker.pokemon().name(), faker.harryPotter().house(),
                 faker.shakespeare().romeoAndJulietQuote());
-        OrganizationAccount organizationAccount = OrganizationAccount.builder()
+        Organization organizationAccount = Organization.builder()
                 .vcsConfiguration(VcsConfiguration.builder().organizationName(faker.animal().name()).build())
                 .build();
 

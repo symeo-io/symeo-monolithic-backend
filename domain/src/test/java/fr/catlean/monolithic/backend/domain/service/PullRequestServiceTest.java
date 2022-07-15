@@ -3,11 +3,10 @@ package fr.catlean.monolithic.backend.domain.service;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
-import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
-import fr.catlean.monolithic.backend.domain.service.PullRequestService;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
@@ -28,7 +27,7 @@ public class PullRequestServiceTest {
     @Test
     void should_compute_and_save_pull_request_size_histogram_given_simple_pull_request_cases() {
         // Given
-        final OrganizationAccount organizationAccount = OrganizationAccount.builder()
+        final Organization organizationAccount = Organization.builder()
                 .name("fake-orga-account")
                 .vcsConfiguration(
                         VcsConfiguration.builder().organizationName("fake-orga-name").build()
@@ -97,7 +96,7 @@ public class PullRequestServiceTest {
      @Test
     void should_compute_and_save_pull_request_time_histogram_given_simple_pull_request_cases() {
         // Given
-        final OrganizationAccount organizationAccount = OrganizationAccount.builder()
+        final Organization organizationAccount = Organization.builder()
                 .name("fake-orga-account")
                 .vcsConfiguration(
                         VcsConfiguration.builder().organizationName("fake-orga-name").build()
@@ -167,7 +166,7 @@ public class PullRequestServiceTest {
 
 
     private static List<PullRequest> getPullRequestsStubsWithSizeLimitToTestWeekRange(final String repositoryName,
-                                                                                      final OrganizationAccount organizationAccount,
+                                                                                      final Organization organizationAccount,
                                                                                       final Integer halfCodeSize) {
         final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organizationAccount.getTimeZone());
 

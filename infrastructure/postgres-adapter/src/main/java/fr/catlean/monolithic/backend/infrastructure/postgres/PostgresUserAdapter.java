@@ -13,7 +13,7 @@ import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.accou
 import static java.util.UUID.randomUUID;
 
 @AllArgsConstructor
-public class PostgresAccountAdapter implements AccountStorageAdapter {
+public class PostgresUserAdapter implements AccountStorageAdapter {
 
     private final UserRepository userRepository;
 

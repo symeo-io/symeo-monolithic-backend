@@ -10,5 +10,5 @@ import java.util.UUID;
 public class User {
     String mail;
     UUID id;
-    OrganizationAccount organizationAccount;
+    Organization organizationAccount;
 }

@@ -1,14 +1,12 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
+import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
-import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
-import fr.catlean.monolithic.backend.domain.service.DeliveryProcessorService;
-import fr.catlean.monolithic.backend.domain.service.PullRequestService;
-import fr.catlean.monolithic.backend.domain.service.UserService;
+import fr.catlean.monolithic.backend.domain.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,18 +42,23 @@ public class DomainConfiguration {
     @Bean
     public DataProcessingJobService dataProcessingJobService(final DeliveryProcessorService deliveryProcessorService,
                                                              final PullRequestService pullRequestService,
-                                                             final OrganizationAccountAdapter organizationAccountAdapter) {
-        return new DataProcessingJobService(deliveryProcessorService, organizationAccountAdapter, pullRequestService);
+                                                             final OrganizationStorageAdapter organizationStorageAdapter) {
+        return new DataProcessingJobService(deliveryProcessorService, organizationStorageAdapter, pullRequestService);
     }
 
     @Bean
     public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter,
-                                         final OrganizationAccountAdapter organizationAccountAdapter) {
-        return new HistogramQuery(expositionStorageAdapter, organizationAccountAdapter);
+                                         final OrganizationStorageAdapter organizationStorageAdapter) {
+        return new HistogramQuery(expositionStorageAdapter, organizationStorageAdapter);
     }
 
     @Bean
     public UserFacadeAdapter userFacadeAdapter(final AccountStorageAdapter accountStorageAdapter) {
         return new UserService(accountStorageAdapter);
+    }
+
+    @Bean
+    public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter) {
+        return new OrganizationService(organizationStorageAdapter);
     }
 }

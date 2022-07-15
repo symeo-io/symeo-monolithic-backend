@@ -2,7 +2,7 @@ databaseChangeLog:
   - include:
       file: db/changelog/changelogs/00000000_init_schema_with_pr.sql
   - include:
-      file: db/changelog/changelogs/00000010_init_account_schema_with_user.sql
+      file: db/changelog/changelogs/00000010_init_account_schema.sql
 
 
 

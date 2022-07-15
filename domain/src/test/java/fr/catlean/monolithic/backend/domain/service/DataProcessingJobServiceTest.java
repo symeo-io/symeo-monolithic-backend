@@ -3,12 +3,9 @@ package fr.catlean.monolithic.backend.domain.service;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
-import fr.catlean.monolithic.backend.domain.model.account.OrganizationAccount;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
-import fr.catlean.monolithic.backend.domain.port.out.OrganizationAccountAdapter;
-import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
-import fr.catlean.monolithic.backend.domain.service.DeliveryProcessorService;
-import fr.catlean.monolithic.backend.domain.service.PullRequestService;
+import fr.catlean.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -24,19 +21,19 @@ public class DataProcessingJobServiceTest {
     void should_start_data_processing_job_given_an_organisation_name() throws CatleanException {
         // Given
         final DeliveryProcessorService deliveryProcessorService = mock(DeliveryProcessorService.class);
-        final OrganizationAccountAdapter organizationAccountAdapter = mock(OrganizationAccountAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter = mock(OrganizationStorageAdapter.class);
         final PullRequestService pullRequestService = mock(PullRequestService.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(deliveryProcessorService,
-                        organizationAccountAdapter, pullRequestService);
+                        organizationStorageAdapter, pullRequestService);
         final String organisationName = faker.name().username();
-        final OrganizationAccount organisationAccount = OrganizationAccount.builder().name(organisationName)
+        final Organization organisationAccount = Organization.builder().name(organisationName)
                 .vcsConfiguration(VcsConfiguration.builder().build()).build();
         final List<PullRequest> pullRequests = List.of(PullRequest.builder().id(faker.pokemon().name()).build(),
                 PullRequest.builder().id(faker.hacker().abbreviation()).build());
 
         // When
-        when(organizationAccountAdapter.findOrganizationForName(organisationName)).thenReturn(
+        when(organizationStorageAdapter.findOrganizationForName(organisationName)).thenReturn(
                 organisationAccount
         );
         when(deliveryProcessorService.collectPullRequestsForOrganization(organisationAccount)).thenReturn(

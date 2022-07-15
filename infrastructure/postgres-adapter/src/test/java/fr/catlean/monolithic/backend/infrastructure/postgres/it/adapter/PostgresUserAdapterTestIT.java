@@ -2,7 +2,7 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.model.account.User;
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresAccountAdapterTestIT {
+public class PostgresUserAdapterTestIT {
 
     private final Faker faker = new Faker();
     @Autowired
@@ -35,11 +35,11 @@ public class PostgresAccountAdapterTestIT {
     @Test
     void should_create_user() {
         // Given
-        final PostgresAccountAdapter postgresAccountAdapter = new PostgresAccountAdapter(userRepository);
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository);
         final String mail = faker.name().title();
 
         // When
-        final User user = postgresAccountAdapter.createUserWithMail(mail);
+        final User user = postgresUserAdapter.createUserWithMail(mail);
 
         // Then
         assertThat(user).isNotNull();
@@ -54,13 +54,13 @@ public class PostgresAccountAdapterTestIT {
     @Test
     void should_read_user() {
         // Given
-        final PostgresAccountAdapter postgresAccountAdapter = new PostgresAccountAdapter(userRepository);
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository);
         final String mail = faker.name().title();
-        postgresAccountAdapter.createUserWithMail(mail);
+        postgresUserAdapter.createUserWithMail(mail);
 
         // When
-        final Optional<User> existingUser = postgresAccountAdapter.getUserFromMail(mail);
-        final Optional<User> notExistingUser = postgresAccountAdapter.getUserFromMail(faker.dragonBall().character());
+        final Optional<User> existingUser = postgresUserAdapter.getUserFromMail(mail);
+        final Optional<User> notExistingUser = postgresUserAdapter.getUserFromMail(faker.dragonBall().character());
 
         // Then
         assertThat(existingUser).isPresent();
