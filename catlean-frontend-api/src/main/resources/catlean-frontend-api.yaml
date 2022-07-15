@@ -108,6 +108,51 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+  /api/v1/me/organization:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - User
+        - Organization
+      summary: Link Current Logged In User to Organization
+      operationId: linkCurrentUserToOrganizationy
+      description: |
+        Link Current Logged In User to Organization based on vcs external id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkOrganizationToCurrentUserRequestContract'
+      responses:
+        "200":
+          description: 'Successfully linked organization to current user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUserResponseContract'
+              example:
+                user:
+                  id: 818e351a-0421-11ed-b939-0242ac120002
+                  email: john.doe@catlean.fr
+                  organization:
+                    id: 42
+                    name: Catlean
+                errors:
+                  { }
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
 
 components:
   securitySchemes:
@@ -212,3 +257,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CatleanErrorContract'
+    LinkOrganizationToCurrentUserRequestContract:
+      type: object
+      required:
+        - externalId
+      properties:
+        externalId:
+          type: string
+          example: 123456543
