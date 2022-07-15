@@ -16,6 +16,12 @@ paths:
       operationId: startDataProcessingJob
       description: |
         Start to collect and process data from clients' platforms
+      parameters:
+        - in: query
+          name: organization_name
+          schema:
+            type: string
+            example: armis
       responses:
         200:
           description: Job ran successfully

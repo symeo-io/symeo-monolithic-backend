@@ -18,13 +18,15 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
     private final DataProcessingJobAdapter dataProcessingJobAdapter;
 
     @Override
-    public ResponseEntity<Void> startDataProcessingJob() {
+    public ResponseEntity<Void> startDataProcessingJob(String organizationName) {
         try {
-            dataProcessingJobAdapter.start("armis");
+            dataProcessingJobAdapter.start(organizationName);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             LOGGER.error("{}", e);
             return ResponseEntity.internalServerError().build();
         }
+
     }
+
 }
