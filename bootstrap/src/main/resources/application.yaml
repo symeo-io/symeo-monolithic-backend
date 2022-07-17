@@ -2,8 +2,11 @@ json-local-storage:
   root-directory: /Users/ilysse/Workspace/CATLEAN/catlean-monolithic-backend/json_local_storage
 
 github:
+  api: "https://api.github.com/"
   size: 100
-  token: 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
+  github-app-id: ${GITHUB_APP_ID}
+  private-key-certificate-path: ${GITHUB_APP_PRIVATE_CERTIFICATE_DER_PATH}
+
 
 auth0:
   api-audience: ${AUTH0_AUDIENCE}
