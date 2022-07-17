@@ -1,6 +1,8 @@
 package fr.catlean.monolithic.backend.infrastructure.github.adapter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
@@ -25,9 +27,10 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     private GithubHttpClient githubHttpClient;
     private GithubProperties properties;
+    private ObjectMapper objectMapper;
 
     @Override
-    public byte[] getRawRepositories(final String organization) {
+    public byte[] getRawRepositories(final String organization) throws CatleanException {
         int page = 1;
         GithubRepositoryDTO[] githubRepositoryDTOS =
                 this.githubHttpClient.getRepositoriesForOrganizationName(
@@ -46,7 +49,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         }
 
         try {
-            return githubHttpClient.dtoToBytes(githubRepositoryDTOList.toArray());
+            return dtoToBytes(githubRepositoryDTOList.toArray());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -61,7 +64,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     @Override
     public List<Repository> repositoriesBytesToDomain(final byte[] repositoriesBytes) {
         try {
-            GithubRepositoryDTO[] githubRepositoryDTOS = githubHttpClient.bytesToDto(repositoriesBytes,
+            GithubRepositoryDTO[] githubRepositoryDTOS = bytesToDto(repositoriesBytes,
                     GithubRepositoryDTO[].class);
             return Arrays.stream(githubRepositoryDTOS).map(GithubMapper::mapRepositoryDtoToDomain).toList();
         } catch (IOException e) {
@@ -71,7 +74,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     @Override
     public byte[] getRawPullRequestsForRepository(final Repository repository,
-                                                  final byte[] alreadyRawCollectedPullRequests) {
+                                                  final byte[] alreadyRawCollectedPullRequests) throws CatleanException {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
                 this.githubHttpClient.getPullRequestsForRepositoryAndOrganization(
@@ -92,17 +95,18 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         try {
             List<GithubPullRequestDTO> githubDetailedPullRequests = null;
             if (alreadyRawCollectedPullRequests == null || alreadyRawCollectedPullRequests.length == 0) {
-                githubDetailedPullRequests = githubPullRequestDTOList.stream().map(githubPullRequestDTO ->
-                        githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
-                                repository.getName(), githubPullRequestDTO.getNumber())
-                ).toList();
+                githubDetailedPullRequests = new ArrayList<>();
+                for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestDTOList) {
+                    githubDetailedPullRequests.add(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                            repository.getName(), githubPullRequestDTO.getNumber()));
+                }
             } else {
                 githubDetailedPullRequests = getIncrementalGithubPullRequests(repository,
                         alreadyRawCollectedPullRequests,
                         githubPullRequestDTOList);
             }
 
-            return githubHttpClient.dtoToBytes(githubDetailedPullRequests.toArray());
+            return dtoToBytes(githubDetailedPullRequests.toArray());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -110,7 +114,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     private List<GithubPullRequestDTO> getIncrementalGithubPullRequests(Repository repository,
                                                                         byte[] alreadyRawCollectedPullRequests,
-                                                                        List<GithubPullRequestDTO> githubPullRequestDTOList) throws IOException {
+                                                                        List<GithubPullRequestDTO> githubPullRequestDTOList) throws IOException, CatleanException {
         List<GithubPullRequestDTO> githubDetailedPullRequests;
         final GithubPullRequestDTO[] alreadyCollectedGithubPullRequestDTOS =
                 getGithubPullRequestDTOSFromBytes(alreadyRawCollectedPullRequests);
@@ -155,7 +159,16 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     }
 
     private GithubPullRequestDTO[] getGithubPullRequestDTOSFromBytes(byte[] bytes) throws IOException {
-        return githubHttpClient.bytesToDto(bytes,
+        return bytesToDto(bytes,
                 GithubPullRequestDTO[].class);
+    }
+
+
+    public <T> byte[] dtoToBytes(T t) throws JsonProcessingException {
+        return objectMapper.writeValueAsBytes(t);
+    }
+
+    public <T> T bytesToDto(byte[] bytes, Class<T> tClass) throws IOException {
+        return objectMapper.readValue(bytes, tClass);
     }
 }

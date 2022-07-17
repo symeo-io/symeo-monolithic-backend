@@ -8,7 +8,6 @@
         <module>application</module>
         <module>domain</module>
         <module>infrastructure</module>
-        <module>catlean-http-client</module>
         <module>catlean-json-to-pojo-generator</module>
         <module>catlean-data-processing-api</module>
         <module>catlean-frontend-api</module>
@@ -40,6 +39,8 @@
         <auth0-spring-security-api.version>1.5.1</auth0-spring-security-api.version>
         <aws-java-sdk-s3.version>1.12.7</aws-java-sdk-s3.version>
         <sentry-jul.version>6.2.1</sentry-jul.version>
+        <wiremock-jre8.version>2.33.2</wiremock-jre8.version>
+        <reactor-netty.version>1.0.21</reactor-netty.version>
     </properties>
 
     <dependencyManagement>
@@ -79,6 +80,18 @@
                 <artifactId>spring-boot-starter-test</artifactId>
                 <scope>test</scope>
                 <version>${spring-boot-starter-web.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.tomakehurst</groupId>
+                <artifactId>wiremock-jre8</artifactId>
+                <version>${wiremock-jre8.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.projectreactor.netty</groupId>
+                <artifactId>reactor-netty</artifactId>
+                <version>${reactor-netty.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

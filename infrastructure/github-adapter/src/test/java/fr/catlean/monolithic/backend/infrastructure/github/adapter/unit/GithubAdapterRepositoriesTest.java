@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.infrastructure.github.adapter.unit;
 
-import fr.catlean.http.cient.CatleanHttpClient;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
@@ -12,43 +12,37 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
 
 
     @Test
-    void should_get_repositories_given_an_organization_name() throws IOException {
+    void should_get_repositories_given_an_organization_name() throws IOException, CatleanException {
         // Given
         final String organizationName = faker.animal().name();
-        final String token = faker.pokemon().name();
         final GithubProperties githubProperties = new GithubProperties();
         githubProperties.setSize(3);
-        githubProperties.setToken(token);
-        final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper, token),
-                githubProperties);
+        githubProperties.setGithubAppId(faker.name().name());
+        githubProperties.setPrivateKeyCertificatePath(faker.animal().name());
+        final GithubHttpClient githubHttpClient = Mockito.mock(GithubHttpClient.class);
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
+                githubProperties, objectMapper);
 
         final GithubRepositoryDTO[] githubRepositoryStubs1 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_1_size_3" +
                         ".json", GithubRepositoryDTO[].class);
-        Mockito.when(catleanHttpClient.get(
-                "https://api.github.com/orgs/" + organizationName + "/repos?sort=name&per_page=3&page=1",
-                GithubRepositoryDTO[].class, objectMapper, Map.of("Authorization", "token " + token))).thenReturn(githubRepositoryStubs1);
         final GithubRepositoryDTO[] githubRepositoryStubs2 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_2_size_3" +
                         ".json", GithubRepositoryDTO[].class);
-        Mockito.when(catleanHttpClient.get(
-                "https://api.github.com/orgs/" + organizationName + "/repos?sort=name&per_page=3&page=2",
-                GithubRepositoryDTO[].class, objectMapper, Map.of("Authorization", "token " + token))).thenReturn(githubRepositoryStubs2);
         final GithubRepositoryDTO[] githubRepositoryStubs3 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_3_size_3" +
                         ".json", GithubRepositoryDTO[].class);
-        Mockito.when(catleanHttpClient.get(
-                "https://api.github.com/orgs/" + organizationName + "/repos?sort=name&per_page=3&page=3",
-                GithubRepositoryDTO[].class, objectMapper, Map.of("Authorization", "token " + token))).thenReturn(githubRepositoryStubs3);
+        when(githubHttpClient.getRepositoriesForOrganizationName(organizationName, 1, 3)).thenReturn(githubRepositoryStubs1);
+        when(githubHttpClient.getRepositoriesForOrganizationName(organizationName, 2, 3)).thenReturn(githubRepositoryStubs2);
+        when(githubHttpClient.getRepositoriesForOrganizationName(organizationName, 3, 3)).thenReturn(githubRepositoryStubs3);
 
 
         // When
@@ -64,13 +58,12 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
     @Test
     void should_map_repositories_bytes_to_domain_repositories() throws IOException {
         // Given
-        final String token = faker.pokemon().name();
         final GithubProperties githubProperties = new GithubProperties();
         githubProperties.setSize(3);
-        githubProperties.setToken(token);
-        final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper, token),
-                githubProperties);
+        githubProperties.setGithubAppId(faker.name().name());
+        githubProperties.setPrivateKeyCertificatePath(faker.animal().name());
+        final GithubAdapter githubAdapter = new GithubAdapter(Mockito.mock(GithubHttpClient.class),
+                githubProperties, objectMapper);
         final GithubRepositoryDTO[] githubRepositoryStubs1 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_1_size_3" +
                         ".json", GithubRepositoryDTO[].class);

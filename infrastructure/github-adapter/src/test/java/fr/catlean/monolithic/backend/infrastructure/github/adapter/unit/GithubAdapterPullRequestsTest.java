@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.infrastructure.github.adapter.unit;
 
-import fr.catlean.http.cient.CatleanHttpClient;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
@@ -8,7 +8,6 @@ import fr.catlean.monolithic.backend.infrastructure.github.adapter.client.Github
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,16 +22,14 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
 
 
     @Test
-    void should_get_pull_requests_given_a_repository() throws IOException {
+    void should_get_pull_requests_given_a_repository() throws IOException, CatleanException {
         // Given
         final String token = faker.pokemon().name();
         final GithubProperties githubProperties = new GithubProperties();
         githubProperties.setSize(3);
-        githubProperties.setToken(token);
-        final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper,
-                token),
-                githubProperties);
+        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
+                githubProperties, objectMapper);
         final Repository repository =
                 Repository.builder().organizationName(faker.name().lastName()).name(faker.name().firstName()).build();
         final Map<String, String> authorization = Map.of("Authorization", "token " + token);
@@ -66,39 +63,34 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
 
         // When
         // All PRs by repo
-        when(catleanHttpClient.get(
-                "https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() +
-                        "/pulls?sort=updated&direction=desc&state=all&per_page=3&page=1",
-                GithubPullRequestDTO[].class, objectMapper, authorization)).thenReturn(githubPullRequestStubs1);
-        when(catleanHttpClient.get(
-                "https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() +
-                        "/pulls?sort=updated&direction=desc&state=all&per_page=3&page=2",
-                GithubPullRequestDTO[].class, objectMapper, authorization)).thenReturn(githubPullRequestStubs2);
-        when(catleanHttpClient.get(
-                "https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() +
-                        "/pulls?sort=updated&direction=desc&state=all&per_page=3&page=3",
-                GithubPullRequestDTO[].class, objectMapper, authorization)).thenReturn(githubPullRequestStubs3);
-        // PR details by PR
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/74", GithubPullRequestDTO.class, objectMapper, authorization))
-                .thenReturn(pr74);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/75", GithubPullRequestDTO.class, objectMapper, authorization))
-                .thenReturn(pr75);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/76", GithubPullRequestDTO.class, objectMapper, authorization))
-                .thenReturn(pr76);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/77", GithubPullRequestDTO.class, objectMapper, authorization))
-                .thenReturn(pr77);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/78", GithubPullRequestDTO.class, objectMapper, authorization))
-                .thenReturn(pr78);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/79", GithubPullRequestDTO.class, objectMapper, authorization))
-                .thenReturn(pr79);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/80", GithubPullRequestDTO.class, objectMapper, authorization))
-                .thenReturn(pr80);
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getOrganizationName(),
+                repository.getName(), 1, 3)).thenReturn(githubPullRequestStubs1);
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getOrganizationName(),
+                repository.getName(), 2, 3)).thenReturn(githubPullRequestStubs2);
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getOrganizationName(),
+                repository.getName(), 3, 3)).thenReturn(githubPullRequestStubs3);
 
+        // PR details by PR
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 74)).thenReturn(pr74);
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 75)).thenReturn(pr75);
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 76)).thenReturn(pr76);
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 77)).thenReturn(pr77);
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 78)).thenReturn(pr78);
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 79)).thenReturn(pr79);
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 80)).thenReturn(pr80);
 
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
 
         // Then
-        verify(catleanHttpClient, times(10)).get(anyString(), any(), any(), any());
+        verify(githubHttpClient, times(3)).getPullRequestsForRepositoryAndOrganization(any(), any(), any(), any());
+        verify(githubHttpClient, times(7)).getPullRequestDetailsForPullRequestNumber(any(), any(), any());
         final List<PullRequest> expectedResults = Stream.of(pr74, pr75,
                 pr76, pr77,
                 pr78, pr79, pr80).map(pr -> mapPullRequestDtoToDomain(pr, githubAdapter.getName())).toList();
@@ -107,16 +99,14 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
     }
 
     @Test
-    void should_get_incremental_pull_requests_given_a_repository_and_already_collected_pull_requests() throws IOException {
+    void should_get_incremental_pull_requests_given_a_repository_and_already_collected_pull_requests() throws IOException, CatleanException {
         // Given
         final String token = faker.pokemon().name();
         final GithubProperties githubProperties = new GithubProperties();
         githubProperties.setSize(10);
-        githubProperties.setToken(token);
-        final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper,
-                token),
-                githubProperties);
+        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
+                githubProperties, objectMapper);
         final Repository repository =
                 Repository.builder().organizationName(faker.name().lastName()).name(faker.name().firstName()).build();
         final Map<String, String> authorization = Map.of("Authorization", "token " + token);
@@ -145,25 +135,28 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
 
         // When
         // All PRs by repo
-        when(catleanHttpClient.get(
-                "https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() +
-                        "/pulls?sort=updated&direction=desc&state=all&per_page=10&page=1",
-                GithubPullRequestDTO[].class, objectMapper, authorization)).thenReturn(githubPullRequestStubs1);
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getOrganizationName(),
+                repository.getName(), 1, 10))
+                .thenReturn(githubPullRequestStubs1);
         // PR details by PR
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/74", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 74))
                 .thenReturn(pr74);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/75", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 75))
                 .thenReturn(pr75);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/76", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 76))
                 .thenReturn(pr76);
-        when(catleanHttpClient.get("https://api.github.com/repos/" + repository.getOrganizationName() + "/" + repository.getName() + "/pulls/79", GithubPullRequestDTO.class, objectMapper, authorization))
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+                repository.getName(), 79))
                 .thenReturn(pr79);
-
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository,
                 rawPullRequestsAlreadyCollected);
 
         // Then
-        verify(catleanHttpClient, times(5)).get(anyString(), any(), any(), any());
+        verify(githubHttpClient, times(1)).getPullRequestsForRepositoryAndOrganization(any(), any(), any(), any());
+        verify(githubHttpClient, times(4)).getPullRequestDetailsForPullRequestNumber(anyString(), any(), any());
         final List<PullRequest> expectedResults =
                 Stream.of(pr74, pr75, pr76, pr77, pr78, pr79).map(pr -> mapPullRequestDtoToDomain(pr,
                         githubAdapter.getName())).toList();
@@ -176,14 +169,10 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
     void should_return_empty_pull_requests_list_given_an_empty_byte_array_to_map_to_domain() {
         // Given
         final byte[] emptyBytes = new byte[0];
-        final String token = faker.pokemon().name();
         final GithubProperties githubProperties = new GithubProperties();
         githubProperties.setSize(3);
-        githubProperties.setToken(token);
-        final CatleanHttpClient catleanHttpClient = Mockito.mock(CatleanHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(new GithubHttpClient(catleanHttpClient, objectMapper,
-                token),
-                githubProperties);
+        final GithubAdapter githubAdapter = new GithubAdapter(mock(GithubHttpClient.class),
+                githubProperties, objectMapper);
 
         // When
         final List<PullRequest> pullRequestList = githubAdapter.pullRequestsBytesToDomain(emptyBytes);
