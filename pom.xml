@@ -41,6 +41,7 @@
         <sentry-jul.version>6.2.1</sentry-jul.version>
         <wiremock-jre8.version>2.33.2</wiremock-jre8.version>
         <reactor-netty.version>1.0.21</reactor-netty.version>
+        <jjwt-jackson.version>0.11.2</jjwt-jackson.version>
     </properties>
 
     <dependencyManagement>
@@ -71,6 +72,12 @@
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-s3</artifactId>
                 <version>${aws-java-sdk-s3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt-jackson.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
 

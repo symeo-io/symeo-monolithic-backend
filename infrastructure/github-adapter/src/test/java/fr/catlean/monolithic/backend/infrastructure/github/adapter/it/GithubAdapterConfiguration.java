@@ -1,10 +1,12 @@
 package fr.catlean.monolithic.backend.infrastructure.github.adapter.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.jwt.GithubJwtTokenProvider;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -43,8 +45,20 @@ public class GithubAdapterConfiguration {
     }
 
     @Bean
-    public GithubJwtTokenProvider githubJwtTokenProvider() {
-        return () -> "fake-token";
+    public GithubJwtTokenProviderMock githubJwtTokenProvider() {
+        return new GithubJwtTokenProviderMock();
     }
 
+    @Data
+    public static class GithubJwtTokenProviderMock implements GithubJwtTokenProvider {
+
+        private String signedJwtToken;
+        private int count = 0;
+
+        @Override
+        public String generateSignedJwtToken() throws CatleanException {
+            count++;
+            return signedJwtToken;
+        }
+    }
 }

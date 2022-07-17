@@ -1,6 +1,5 @@
 package fr.catlean.monolithic.backend.infrastructure.github.adapter.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
@@ -134,19 +133,24 @@ public class GithubHttpClient {
         for (GithubInstallationDTO githubInstallationDTO : getGithubInstallationsDTO(jwtTokenBearer,
                 organizationName)) {
             if (githubInstallationDTO.getAccount().getLogin().equals(organizationName)) {
-                final HttpRequest.Builder requestBuilder = HttpRequest
-                        .newBuilder(URI.create(api + "/app/installations/" + githubInstallationDTO.getId() +
-                                "/access_token"))
-                        .POST(HttpRequest.BodyPublishers.noBody());
-
-                Map.of(AUTHORIZATION_HEADER_KEY, jwtTokenBearer).forEach(requestBuilder::header);
-                final GithubInstallationAccessTokenDTO githubInstallationAccessTokenDTO =
-                        sendRequest(requestBuilder.build(), GithubInstallationAccessTokenDTO.class, organizationName);
-                return githubInstallationAccessTokenDTO.getToken();
+                return getInstallationToken(organizationName, jwtTokenBearer, githubInstallationDTO);
             }
         }
         throw buildOrgaTokenNotFoundException(organizationName);
 
+    }
+
+    private String getInstallationToken(String organizationName, String jwtTokenBearer,
+                                        GithubInstallationDTO githubInstallationDTO) throws CatleanException {
+        final HttpRequest.Builder requestBuilder = HttpRequest
+                .newBuilder(URI.create(api + "/app/installations/" + githubInstallationDTO.getId() +
+                        "/access_token"))
+                .POST(HttpRequest.BodyPublishers.noBody());
+
+        Map.of(AUTHORIZATION_HEADER_KEY, jwtTokenBearer).forEach(requestBuilder::header);
+        final GithubInstallationAccessTokenDTO githubInstallationAccessTokenDTO =
+                sendRequest(requestBuilder.build(), GithubInstallationAccessTokenDTO.class, organizationName);
+        return githubInstallationAccessTokenDTO.getToken();
     }
 
     private GithubInstallationDTO[] getGithubInstallationsDTO(final String jwtTokenBearer,

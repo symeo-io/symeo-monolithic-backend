@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.infrastructure.github.adapter.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javafaker.Faker;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class AbstractGithubAdapterIT {
 
     @Autowired
     protected ObjectMapper objectMapper;
+    protected final static Faker FAKER = new Faker();
 
 
     public static class WireMockInitializer
