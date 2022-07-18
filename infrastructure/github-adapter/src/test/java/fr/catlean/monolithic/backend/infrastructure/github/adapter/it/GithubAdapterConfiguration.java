@@ -23,7 +23,7 @@ public class GithubAdapterConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "github")
+    @ConfigurationProperties(prefix = "github.app")
     public GithubProperties githubProperties() {
         return new GithubProperties();
     }

@@ -18,7 +18,7 @@ import static com.fasterxml.jackson.core.JsonParser.Feature.AUTO_CLOSE_SOURCE;
 public class GithubConfiguration {
 
     @Bean
-    @ConfigurationProperties("github")
+    @ConfigurationProperties("github.app")
     public GithubProperties githubProperties() {
         return new GithubProperties();
     }

@@ -60,7 +60,7 @@ public class AbstractGithubAdapterIT {
                     });
 
             TestPropertyValues.of(
-                            "github.api:http://localhost:" + wireMockServer.port())
+                            "github.app.api:http://localhost:" + wireMockServer.port())
                     .applyTo(configurableApplicationContext);
         }
     }
