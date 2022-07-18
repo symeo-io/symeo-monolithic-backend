@@ -83,6 +83,9 @@ aws ecs register-task-definition \
       {\"name\":\"AUTH0_ISSUER\",\"value\":\"${AUTH0_ISSUER}\"},
       {\"name\":\"GITHUB_APP_ID\",\"value\":\"${GITHUB_APP_ID}\"},
       {\"name\":\"GITHUB_WEBHOOK_SECRET\",\"value\":\"${GITHUB_WEBHOOK_SECRET}\"},
+      {\"name\":\"SENTRY_DSN\",\"value\":\"${SENTRY_DSN}\"},
+      {\"name\":\"SENTRY_ENVIRONMENT\",\"value\":\"${SENTRY_ENVIRONMENT}\"},
+      {\"name\":\"SENTRY_SERVERNAME\",\"value\":\"${SENTRY_SERVERNAME}\"},
       {\"name\":\"FRONTEND_CORS_HOST\",\"value\":\"${FRONTEND_CORS_HOST}\"},
       {\"name\":\"DATABASE_URL\",\"value\":\"jdbc:postgresql://${ClusterEndpoint}:${DBPort}/${DBName}?rewriteBatchedStatements=true\"}
     ],

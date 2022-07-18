@@ -1,7 +1,8 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
-import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import io.sentry.Sentry;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -11,17 +12,32 @@ import org.springframework.context.annotation.Profile;
 public class SentryConfiguration {
 
     @Bean
-    public SentryInitiator sentryInitiator() {
-        return new SentryInitiator();
+    public SentryInitiator sentryInitiator(final SentryProperties sentryProperties) {
+        return new SentryInitiator(sentryProperties);
     }
 
+    @Bean
+    @ConfigurationProperties(prefix = "sentry")
+    public SentryProperties sentryProperties() {
+        return new SentryProperties();
+    }
 
     public static class SentryInitiator {
 
-        public SentryInitiator() {
-            Sentry.init("https://f4857496207c4352ac9ceb448406e6a8@o1317381.ingest.sentry.io/6570536");
-            Sentry.captureException(CatleanException.builder().code("T.TEST_SENTRY").message("Testing Sentry").build());
+        private final SentryProperties sentryProperties;
+
+        public SentryInitiator(final SentryProperties sentryProperties) {
+            this.sentryProperties = sentryProperties;
+            Sentry.init(sentryProperties.getDns());
         }
+    }
+
+
+    @Data
+    public static class SentryProperties {
+        String dns;
+        String environment;
+        String serverName;
     }
 
 }
