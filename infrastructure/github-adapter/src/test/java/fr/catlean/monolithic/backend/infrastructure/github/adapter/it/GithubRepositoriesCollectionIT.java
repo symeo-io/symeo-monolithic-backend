@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
 
     @Autowired
-    public GithubAdapterConfiguration.GithubJwtTokenProviderMock githubJwtTokenProvider;
+    public GithubAdapterITConfiguration.GithubJwtTokenProviderMock githubJwtTokenProvider;
     @Autowired
     public GithubAdapter githubAdapter;
     @Autowired

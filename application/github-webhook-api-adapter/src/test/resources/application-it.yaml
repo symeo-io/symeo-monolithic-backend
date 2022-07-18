@@ -1,0 +1,6 @@
+github:
+  webhook:
+    secret: G+KbPeShVmYq3s6v9y$B&E)H@McQfTjW
+
+server:
+  port: 7777

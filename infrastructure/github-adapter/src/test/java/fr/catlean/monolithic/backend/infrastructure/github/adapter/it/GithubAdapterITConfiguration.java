@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.net.http.HttpClient;
 
-public class GithubAdapterConfiguration {
+public class GithubAdapterITConfiguration {
 
 
     @Bean

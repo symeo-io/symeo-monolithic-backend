@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.infrastructure.github.adapter.it;
+package catlean.monolithic.backend.github.webhook.api.adapter.it;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,12 +9,13 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
+
 @SpringBootApplication
-@Import(GithubAdapterITConfiguration.class)
-public class GithubAdapterITApplication {
+@Import(GithubWebhookITConfiguration.class)
+public class GithubWebhookAdapterITApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GithubAdapterITApplication.class, args);
+        SpringApplication.run(GithubWebhookAdapterITApplication.class, args);
     }
 
     @Profile("it")
@@ -24,6 +25,5 @@ public class GithubAdapterITApplication {
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.newConnection().compress(true)))
                 .build();
     }
-
 
 }
