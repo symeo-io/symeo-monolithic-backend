@@ -1,60 +1,67 @@
 package fr.catlean.monolithic.backend.infrastructure.github.adapter.client;
 
-import fr.catlean.http.cient.CatleanHttpClient;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
+import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
+import fr.catlean.monolithic.backend.infrastructure.github.adapter.jwt.GithubJwtTokenProvider;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class GithubHttpClient {
 
-    private final CatleanHttpClient catleanHttpClient;
+    private static final String AUTHORIZATION_HEADER_KEY = "Authorization";
+    private static final String AUTHORIZATION_HEADER_TOKEN_VALUE = "Bearer ";
+    private static final Map<String, String> INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION = new HashMap<>();
     private final ObjectMapper objectMapper;
-    private final String githubApiBaseUrl = "https://api.github.com/";
-    private final String authorizationHeaderKey = "Authorization";
-    private final String authorizationHeaderTokenValue = "token ";
-    private final String token;
+    private final HttpClient httpClient;
+    private final GithubJwtTokenProvider githubJwtTokenProvider;
+    private final String api;
 
-    public GithubHttpClient(CatleanHttpClient catleanHttpClient, ObjectMapper objectMapper, String token) {
-        this.catleanHttpClient = catleanHttpClient;
+
+    public GithubHttpClient(final ObjectMapper objectMapper, final HttpClient httpClient,
+                            final GithubJwtTokenProvider githubJwtTokenProvider, final String api) {
         this.objectMapper = objectMapper;
-        this.token = token;
+        this.httpClient = httpClient;
+        this.githubJwtTokenProvider = githubJwtTokenProvider;
+        this.api = api;
     }
 
-    public GithubRepositoryDTO[] getRepositoriesForOrganizationName(
-            String organizationName, Integer page, Integer size) {
+    public GithubRepositoryDTO[] getRepositoriesForOrganizationName(final String organizationName,
+                                                                    final Integer page,
+                                                                    final Integer size) throws CatleanException {
         final String uri =
-                githubApiBaseUrl
-                        + "orgs/"
+                api
+                        + "/orgs/"
                         + organizationName
                         + "/repos?sort=name&per_page="
                         + size.toString()
                         + "&page="
                         + page.toString();
-        return this.catleanHttpClient.get(
+        return get(
                 uri,
-                GithubRepositoryDTO[].class,
-                objectMapper,
-                Map.of(authorizationHeaderKey, authorizationHeaderTokenValue + token));
+                organizationName,
+                GithubRepositoryDTO[].class);
     }
 
-    public <T> byte[] dtoToBytes(T t) throws JsonProcessingException {
-        return objectMapper.writeValueAsBytes(t);
-    }
-
-    public <T> T bytesToDto(byte[] bytes, Class<T> tClass) throws IOException {
-        return objectMapper.readValue(bytes, tClass);
-    }
-
-    public GithubPullRequestDTO[] getPullRequestsForRepositoryAndOrganization(String organizationName,
-                                                                              String repositoryName, Integer page,
-                                                                              Integer size) {
+    public GithubPullRequestDTO[] getPullRequestsForRepositoryAndOrganization(final String organizationName,
+                                                                              final String repositoryName,
+                                                                              final Integer page,
+                                                                              final Integer size) throws CatleanException {
         final String uri =
-                githubApiBaseUrl
-                        + "repos/"
+                api
+                        + "/repos/"
                         + organizationName
                         + "/" +
                         repositoryName
@@ -62,29 +69,154 @@ public class GithubHttpClient {
                         + size.toString()
                         + "&page="
                         + page.toString();
-        return this.catleanHttpClient.get(
+        return get(
                 uri,
-                GithubPullRequestDTO[].class,
-                objectMapper,
-                Map.of(authorizationHeaderKey, authorizationHeaderTokenValue + token));
+                organizationName,
+                GithubPullRequestDTO[].class);
     }
 
     public GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(final String organizationName,
                                                                           final String repositoryName,
-                                                                          final Integer number) {
+                                                                          final Integer number) throws CatleanException {
         final String uri =
-                githubApiBaseUrl
-                        + "repos/"
+                api
+                        + "/repos/"
                         + organizationName
                         + "/" +
                         repositoryName
                         + "/pulls/"
                         + number;
-        return this.catleanHttpClient.get(
+        return get(
                 uri,
-                GithubPullRequestDTO.class,
-                objectMapper,
-                Map.of(authorizationHeaderKey, authorizationHeaderTokenValue + token)
+                organizationName,
+                GithubPullRequestDTO.class
         );
     }
+
+    private <ResponseBody> ResponseBody get(String uri, String organizationName,
+                                            Class<ResponseBody> responseClass) throws CatleanException {
+        try {
+            final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(uri))
+                    .GET();
+            getGithubAuthenticationHeader(organizationName).forEach(requestBuilder::header);
+            final HttpResponse<byte[]> httpResponse = this.httpClient.send(requestBuilder.build(),
+                    HttpResponse.BodyHandlers.ofByteArray());
+            final int statusCode = httpResponse.statusCode();
+            if (statusCode == 200) {
+                return objectMapper.readValue(httpResponse.body(), responseClass);
+            } else if (statusCode == 401) {
+                flushGithubAuthenticationHeader(organizationName);
+                return get(uri, organizationName, responseClass);
+            }
+            throw buildUnhandledHttpStatusCodeException(uri, organizationName, statusCode);
+        } catch (IOException | InterruptedException e) {
+            throw buildErrorWhileExecutingHttpRequestException(uri, organizationName);
+        }
+    }
+
+    private void flushGithubAuthenticationHeader(final String organizationName) {
+        INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.remove(organizationName);
+    }
+
+    private Map<String, String> getGithubAuthenticationHeader(String organizationName) throws CatleanException {
+        if (!INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.containsKey(organizationName)) {
+            INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.put(organizationName,
+                    getGithubInstallationTokenForOrganization(organizationName));
+        }
+        return Map.of(AUTHORIZATION_HEADER_KEY,
+                AUTHORIZATION_HEADER_TOKEN_VALUE + INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.get(organizationName));
+    }
+
+    private String getGithubInstallationTokenForOrganization(String organizationName) throws CatleanException {
+
+        final String jwtTokenBearer = "Bearer " + githubJwtTokenProvider.generateSignedJwtToken();
+        for (GithubInstallationDTO githubInstallationDTO : getGithubInstallationsDTO(jwtTokenBearer,
+                organizationName)) {
+            if (githubInstallationDTO.getAccount().getLogin().equals(organizationName)) {
+                return getInstallationToken(organizationName, jwtTokenBearer, githubInstallationDTO);
+            }
+        }
+        throw buildOrgaTokenNotFoundException(organizationName);
+
+    }
+
+    private String getInstallationToken(String organizationName, String jwtTokenBearer,
+                                        GithubInstallationDTO githubInstallationDTO) throws CatleanException {
+        final HttpRequest.Builder requestBuilder = HttpRequest
+                .newBuilder(URI.create(api + "/app/installations/" + githubInstallationDTO.getId() +
+                        "/access_token"))
+                .POST(HttpRequest.BodyPublishers.noBody());
+
+        Map.of(AUTHORIZATION_HEADER_KEY, jwtTokenBearer).forEach(requestBuilder::header);
+        final GithubInstallationAccessTokenDTO githubInstallationAccessTokenDTO =
+                sendRequest(requestBuilder.build(), GithubInstallationAccessTokenDTO.class, organizationName);
+        return githubInstallationAccessTokenDTO.getToken();
+    }
+
+    private GithubInstallationDTO[] getGithubInstallationsDTO(final String jwtTokenBearer,
+                                                              final String organizationName) throws CatleanException {
+        try {
+            final String uri =
+                    api
+                            + "/app/installations";
+            return sendRequest(HttpRequest.newBuilder(new URI(uri)).headers("Authorization",
+                    jwtTokenBearer).build(), GithubInstallationDTO[].class, organizationName);
+        } catch (URISyntaxException e) {
+            throw buildInvalidUriException(e);
+        }
+    }
+
+    private <ResponseBody> ResponseBody sendRequest(final HttpRequest httpRequest,
+                                                    final Class<ResponseBody> responseClass,
+                                                    final String organizationName) throws CatleanException {
+        try {
+            final HttpResponse<byte[]> httpResponse = this.httpClient.send(httpRequest,
+                    HttpResponse.BodyHandlers.ofByteArray());
+            if (httpResponse.statusCode() == 200) {
+                return objectMapper.readValue(httpResponse.body(), responseClass);
+            }
+            throw buildUnhandledHttpStatusCodeException(httpRequest.uri().toString(), organizationName,
+                    httpResponse.statusCode());
+        } catch (final InterruptedException | IOException e) {
+            throw buildErrorWhileExecutingHttpRequestException(httpRequest.uri().toString(), organizationName);
+        }
+    }
+
+    private static CatleanException buildErrorWhileExecutingHttpRequestException(String uri, String organizationName) {
+        final String message = String.format("Error while calling %s for organization %s", uri, organizationName);
+        LOGGER.error(message);
+        return CatleanException.builder()
+                .message(message)
+                .code("T.ERROR_WHILE_EXECUTING_HTTP_REQUEST")
+                .build();
+    }
+
+    private static CatleanException buildUnhandledHttpStatusCodeException(String uri, String organizationName,
+                                                                          int statusCode) {
+        final String message = String.format("Http status %d not handle while calling uri %s for organization %s"
+                , statusCode, uri, organizationName);
+        return CatleanException.builder()
+                .code("F.UNHANDLED_HTTP_STATUS_CODE")
+                .message(message)
+                .build();
+    }
+
+    private static CatleanException buildOrgaTokenNotFoundException(String organizationName) {
+        final String message = String.format("Installation token not found for organization %s", organizationName);
+        LOGGER.error(message);
+        return CatleanException.builder()
+                .code("F.GITHUB_ORG_TOKEN_NOT_FOUND")
+                .message(message)
+                .build();
+    }
+
+    private static CatleanException buildInvalidUriException(URISyntaxException e) {
+        final String message = "Invalid uri for github app installations";
+        LOGGER.error(message, e);
+        return CatleanException.builder()
+                .code("T.INVALID_URI_FOR_GITHUB")
+                .message(message)
+                .build();
+    }
+
 }

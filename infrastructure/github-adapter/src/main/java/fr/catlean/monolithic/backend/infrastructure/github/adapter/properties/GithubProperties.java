@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class GithubProperties {
-
+    private String api;
     private int size;
-    private String token;
+    private String privateKeyCertificatePath;
+    private String githubAppId;
 }

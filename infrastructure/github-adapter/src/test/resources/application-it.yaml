@@ -1,0 +1,6 @@
+github:
+  app:
+    api: "https://api.github.com/"
+    size: 3
+    github-app-id: 111
+    private-key-certificate-path: ~/fake

@@ -1,9 +1,10 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
-import fr.catlean.http.cient.DefaultCatleanHttpClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
+import fr.catlean.monolithic.backend.infrastructure.github.adapter.jwt.DefaultGithubJwtTokenProvider;
+import fr.catlean.monolithic.backend.infrastructure.github.adapter.jwt.GithubJwtTokenProvider;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,7 @@ import static com.fasterxml.jackson.core.JsonParser.Feature.AUTO_CLOSE_SOURCE;
 public class GithubConfiguration {
 
     @Bean
-    @ConfigurationProperties("github")
+    @ConfigurationProperties("github.app")
     public GithubProperties githubProperties() {
         return new GithubProperties();
     }
@@ -36,15 +37,23 @@ public class GithubConfiguration {
     }
 
     @Bean
-    public GithubHttpClient githubHttpClient(HttpClient httpClient, ObjectMapper objectMapper,
-                                             GithubProperties githubProperties) {
-        return new GithubHttpClient(new DefaultCatleanHttpClient(httpClient), objectMapper,
-                githubProperties.getToken());
+    public GithubHttpClient githubHttpClient(final HttpClient httpClient,
+                                             final ObjectMapper objectMapper,
+                                             final GithubJwtTokenProvider githubJwtTokenProvider,
+                                             final GithubProperties githubProperties) {
+        return new GithubHttpClient(objectMapper, httpClient, githubJwtTokenProvider, githubProperties.getApi());
     }
 
     @Bean
     public GithubAdapter githubAdapter(
-            GithubHttpClient githubHttpClient, GithubProperties githubProperties) {
-        return new GithubAdapter(githubHttpClient, githubProperties);
+            final GithubHttpClient githubHttpClient, final GithubProperties githubProperties,
+            final ObjectMapper objectMapper) {
+        return new GithubAdapter(githubHttpClient, githubProperties, objectMapper);
+    }
+
+    @Bean
+    public GithubJwtTokenProvider githubJwtTokenProvider(final GithubProperties githubProperties) {
+        return new DefaultGithubJwtTokenProvider(githubProperties.getPrivateKeyCertificatePath(),
+                githubProperties.getGithubAppId());
     }
 }

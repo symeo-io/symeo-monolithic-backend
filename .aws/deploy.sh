@@ -81,6 +81,8 @@ aws ecs register-task-definition \
       {\"name\":\"DATABASE_PASSWORD\",\"value\":\"${DB_PASSWORD}\"},
       {\"name\":\"AUTH0_AUDIENCE\",\"value\":\"${AUTH0_AUDIENCE}\"},
       {\"name\":\"AUTH0_ISSUER\",\"value\":\"${AUTH0_ISSUER}\"},
+      {\"name\":\"GITHUB_APP_ID\",\"value\":\"${GITHUB_APP_ID}\"},
+      {\"name\":\"GITHUB_WEBHOOK_SECRET\",\"value\":\"${GITHUB_WEBHOOK_SECRET}\"},
       {\"name\":\"FRONTEND_CORS_HOST\",\"value\":\"${FRONTEND_CORS_HOST}\"},
       {\"name\":\"DATABASE_URL\",\"value\":\"jdbc:postgresql://${ClusterEndpoint}:${DBPort}/${DBName}?rewriteBatchedStatements=true\"}
     ],
