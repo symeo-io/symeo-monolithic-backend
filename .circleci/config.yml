@@ -38,7 +38,7 @@ jobs:
           name: Prepare Github App private key
           command: |
             source .aws/prepare_github_certificate.sh
-            prepare_github_private_key
+            prepare_github_private_key $PWD
       - run:
           name: Build docker
           command: |
