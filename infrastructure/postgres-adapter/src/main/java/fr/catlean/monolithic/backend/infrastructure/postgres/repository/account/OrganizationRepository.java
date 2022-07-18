@@ -10,4 +10,6 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
         JpaSpecificationExecutor<OrganizationEntity> {
 
     Optional<OrganizationEntity> findByExternalId(String externalId);
+
+    Optional<OrganizationEntity> findByName(String name);
 }

@@ -20,7 +20,15 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
 
     @Override
     public Organization findOrganizationForName(String organizationName) throws CatleanException {
-        return null;
+        return organizationRepository.findByName(organizationName)
+                .map(OrganizationMapper::entityToDomain)
+                .orElseThrow(
+                        () -> CatleanException.builder()
+                                .message(String.format("Organization not found for name %s", organizationName))
+                                .code("F.ORGANIZATION_NAME_NOT_FOUND")
+                                .build()
+                );
+
     }
 
     @Override
@@ -30,7 +38,7 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
         try {
             return OrganizationMapper.entityToDomain(organizationRepository.save(organizationEntity));
         } catch (Exception e) {
-            LOGGER.error("Failed to create organization {}", organization);
+            LOGGER.error("Failed to create organization {}", organization, e);
             throw CatleanException.builder()
                     .code("T.POSTGRES_EXCEPTION")
                     .message("Failed to create organization " + organization.getName())

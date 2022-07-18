@@ -50,4 +50,48 @@ public class PostgresOrganizationAdapterTestIT {
         assertThat(result).isNotNull();
         assertThat(organizationRepository.findAll()).hasSize(1);
     }
+
+    @Test
+    void should_find_an_organization_by_name() throws CatleanException {
+        // Given
+        final PostgresOrganizationAdapter postgresOrganizationAdapter =
+                new PostgresOrganizationAdapter(organizationRepository);
+        final String externalId = faker.name().firstName();
+        final String name = faker.pokemon().name();
+        final Organization organization = Organization.builder()
+                .externalId(externalId)
+                .name(name)
+                .vcsConfiguration(VcsConfiguration.builder().build())
+                .build();
+
+        // When
+        postgresOrganizationAdapter.createOrganization(organization);
+        final Organization result = postgresOrganizationAdapter.findOrganizationForName(name);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo(name);
+    }
+
+    @Test
+    void should_raise_an_exception_for_an_organization_not_existing() {
+        // Given
+        final PostgresOrganizationAdapter postgresOrganizationAdapter =
+                new PostgresOrganizationAdapter(organizationRepository);
+        final String organizationName = faker.ancient().god();
+
+        // When
+        CatleanException catleanException = null;
+        try {
+            postgresOrganizationAdapter.findOrganizationForName(organizationName);
+        } catch (CatleanException e) {
+            catleanException = e;
+        }
+
+        // Then
+        assertThat(catleanException).isNotNull();
+        assertThat(catleanException.getMessage()).isEqualTo(String.format("Organization not found for name %s",
+                organizationName));
+        assertThat(catleanException.getCode()).isEqualTo("F.ORGANIZATION_NAME_NOT_FOUND");
+    }
 }
