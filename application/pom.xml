@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>rest-api-adapter</module>
+        <module>github-webhook-api-adapter</module>
     </modules>
     <artifactId>application</artifactId>
 
