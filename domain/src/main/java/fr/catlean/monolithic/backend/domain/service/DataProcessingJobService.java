@@ -35,7 +35,9 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     }
 
     private void collectRepositories(Organization organization) throws CatleanException {
-        final List<Repository> repositories = deliveryProcessorService.collectRepositoriesForOrganization(organization);
+        List<Repository> repositories = deliveryProcessorService.collectRepositoriesForOrganization(organization);
+        repositories =
+                repositories.stream().map(repository -> repository.toBuilder().organization(organization).build()).toList();
         repositoryService.saveRepositories(repositories);
     }
 }

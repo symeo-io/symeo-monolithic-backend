@@ -28,9 +28,8 @@ public class DomainConfiguration {
 
     @Bean
     public DeliveryProcessorService deliveryProcessorService(final DeliveryCommand deliveryCommand,
-                                                             final DeliveryQuery deliveryQuery,
-                                                             final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new DeliveryProcessorService(deliveryCommand, deliveryQuery, expositionStorageAdapter);
+                                                             final DeliveryQuery deliveryQuery) {
+        return new DeliveryProcessorService(deliveryCommand, deliveryQuery);
     }
 
     @Bean
@@ -42,8 +41,15 @@ public class DomainConfiguration {
     @Bean
     public DataProcessingJobService dataProcessingJobService(final DeliveryProcessorService deliveryProcessorService,
                                                              final PullRequestService pullRequestService,
-                                                             final OrganizationStorageAdapter organizationStorageAdapter) {
-        return new DataProcessingJobService(deliveryProcessorService, organizationStorageAdapter, pullRequestService);
+                                                             final OrganizationStorageAdapter organizationStorageAdapter,
+                                                             final RepositoryService repositoryService) {
+        return new DataProcessingJobService(deliveryProcessorService, organizationStorageAdapter, pullRequestService,
+                repositoryService);
+    }
+
+    @Bean
+    public RepositoryService repositoryService(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new RepositoryService(expositionStorageAdapter);
     }
 
     @Bean

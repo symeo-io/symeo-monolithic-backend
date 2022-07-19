@@ -29,7 +29,7 @@ public class DataProcessingJobServiceTest {
                 new DataProcessingJobService(deliveryProcessorService,
                         organizationStorageAdapter, pullRequestService, repositoryService);
         final String organisationName = faker.name().username();
-        final Organization organisationAccount = Organization.builder().name(organisationName)
+        final Organization organisation = Organization.builder().name(organisationName)
                 .vcsConfiguration(VcsConfiguration.builder().build()).build();
         final List<PullRequest> pullRequests = List.of(PullRequest.builder().id(faker.pokemon().name()).build(),
                 PullRequest.builder().id(faker.hacker().abbreviation()).build());
@@ -41,21 +41,23 @@ public class DataProcessingJobServiceTest {
 
         // When
         when(organizationStorageAdapter.findOrganizationForName(organisationName)).thenReturn(
-                organisationAccount
+                organisation
         );
-        when(deliveryProcessorService.collectPullRequestsForOrganization(organisationAccount)).thenReturn(
+        when(deliveryProcessorService.collectPullRequestsForOrganization(organisation)).thenReturn(
                 pullRequests
         );
-        when(deliveryProcessorService.collectRepositoriesForOrganization(organisationAccount)).thenReturn(
+        when(deliveryProcessorService.collectRepositoriesForOrganization(organisation)).thenReturn(
                 repositories
         );
         dataProcessingJobService.start(organisationName);
 
         // Then
-        verify(repositoryService, times(1)).saveRepositories(repositories);
-        verify(pullRequestService, times(1)).computeAndSavePullRequestSizeHistogram(pullRequests, organisationAccount);
-        verify(pullRequestService, times(1)).computeAndSavePullRequestTimeHistogram(pullRequests, organisationAccount);
-        verify(pullRequestService,times(1)).savePullRequests(pullRequests);
+        verify(repositoryService, times(1)).saveRepositories(
+                repositories.stream().map(repository -> repository.toBuilder().organization(organisation).build()).toList()
+        );
+        verify(pullRequestService, times(1)).computeAndSavePullRequestSizeHistogram(pullRequests, organisation);
+        verify(pullRequestService, times(1)).computeAndSavePullRequestTimeHistogram(pullRequests, organisation);
+        verify(pullRequestService, times(1)).savePullRequests(pullRequests);
 
     }
 }

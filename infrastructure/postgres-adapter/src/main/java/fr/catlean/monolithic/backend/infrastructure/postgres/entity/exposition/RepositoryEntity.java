@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.time.ZonedDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -24,15 +23,11 @@ public class RepositoryEntity extends AbstractEntity {
     @Column(name = "id", nullable = false)
     @NaturalId
     String id;
-    @Column(name = "vcs_id", nullable = false)
+    @Column(name = "name", nullable = false)
     @NotNull
-    String vcsId;
+    String name;
     @Column(name = "vcs_organization_name")
     String vcsOrganizationName;
     @Column(name = "organization_id")
     String organizationId;
-    @Column(name = "creation_date", nullable = false)
-    ZonedDateTime creationDate;
-    @Column(name = "last_update_date", nullable = false)
-    ZonedDateTime lastUpdateDate;
 }

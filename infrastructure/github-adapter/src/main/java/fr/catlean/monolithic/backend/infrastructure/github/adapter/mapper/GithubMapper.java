@@ -11,6 +11,7 @@ public interface GithubMapper {
         return Repository.builder()
                 .name(githubRepositoryDTO.getName())
                 .vcsOrganizationName(githubRepositoryDTO.getOwner().getLogin())
+                .vcsId(githubRepositoryDTO.getId().toString())
                 .build();
     }
 

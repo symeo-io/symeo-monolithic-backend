@@ -8,14 +8,12 @@ import java.util.Date;
 import java.util.UUID;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class Repository {
     public static final String ALL = "repositories";
     UUID id;
     String name;
     String vcsOrganizationName;
     String vcsId;
-    Date creationDate;
-    Date lastUpdateDate;
     Organization organization;
 }
