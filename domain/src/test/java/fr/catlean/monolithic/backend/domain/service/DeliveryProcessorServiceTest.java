@@ -33,9 +33,9 @@ public class DeliveryProcessorServiceTest {
 
         // When
         final Repository repo1 =
-                Repository.builder().name(faker.pokemon().name() + "1").organizationName(organizationName).build();
+                Repository.builder().name(faker.pokemon().name() + "1").vcsOrganizationName(organizationName).build();
         final Repository repo2 =
-                Repository.builder().name(faker.pokemon().name() + "2").organizationName(organizationName).build();
+                Repository.builder().name(faker.pokemon().name() + "2").vcsOrganizationName(organizationName).build();
         when(deliveryQuery.readRepositoriesForOrganization(organizationAccount))
                 .thenReturn(
                         List.of(
@@ -75,9 +75,9 @@ public class DeliveryProcessorServiceTest {
 
         // When
         final Repository repo1 =
-                Repository.builder().name(faker.pokemon().name() + "1").organizationName(organizationName).build();
+                Repository.builder().name(faker.pokemon().name() + "1").vcsOrganizationName(organizationName).build();
         final Repository repo2 =
-                Repository.builder().name(faker.pokemon().name() + "2").organizationName(organizationName).build();
+                Repository.builder().name(faker.pokemon().name() + "2").vcsOrganizationName(organizationName).build();
         when(deliveryQuery.readRepositoriesForOrganization(organization))
                 .thenReturn(
                         List.of(

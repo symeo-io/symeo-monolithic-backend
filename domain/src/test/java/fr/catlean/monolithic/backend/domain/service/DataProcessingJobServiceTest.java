@@ -34,9 +34,9 @@ public class DataProcessingJobServiceTest {
         final List<PullRequest> pullRequests = List.of(PullRequest.builder().id(faker.pokemon().name()).build(),
                 PullRequest.builder().id(faker.hacker().abbreviation()).build());
         final List<Repository> repositories = List.of(
-                Repository.builder().name(faker.name().firstName()).organizationName(organisationName).build(),
-                Repository.builder().name(faker.name().firstName()).organizationName(organisationName).build(),
-                Repository.builder().name(faker.name().firstName()).organizationName(organisationName).build()
+                Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
+                Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
+                Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build()
         );
 
         // When

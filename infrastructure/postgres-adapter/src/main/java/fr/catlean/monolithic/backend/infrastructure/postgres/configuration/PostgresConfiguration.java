@@ -7,6 +7,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -29,8 +30,10 @@ public class PostgresConfiguration {
 
     @Bean
     public PostgresExpositionAdapter postgresAdapter(final PullRequestRepository pullRequestRepository,
-                                                     final PullRequestHistogramRepository pullRequestHistogramRepository) {
-        return new PostgresExpositionAdapter(pullRequestRepository, pullRequestHistogramRepository);
+                                                     final PullRequestHistogramRepository pullRequestHistogramRepository,
+                                                     final RepositoryRepository repositoryRepository) {
+        return new PostgresExpositionAdapter(pullRequestRepository, pullRequestHistogramRepository,
+                repositoryRepository);
     }
 
     @Bean

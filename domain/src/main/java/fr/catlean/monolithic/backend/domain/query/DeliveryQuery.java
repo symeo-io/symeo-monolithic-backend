@@ -28,7 +28,7 @@ public class DeliveryQuery {
     }
 
     public List<PullRequest> readPullRequestsForRepository(Repository repository) throws CatleanException {
-        final byte[] pullRequestsBytes = rawStorageAdapter.read(repository.getOrganizationName(),
+        final byte[] pullRequestsBytes = rawStorageAdapter.read(repository.getVcsOrganizationName(),
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()));
         return versionControlSystemAdapter.pullRequestsBytesToDomain(pullRequestsBytes);

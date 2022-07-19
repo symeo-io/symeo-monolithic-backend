@@ -3,6 +3,9 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.Repository;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
@@ -11,6 +14,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.P
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,10 +25,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +40,8 @@ public class PostgresExpositionAdapterTestIT {
     private PullRequestRepository pullRequestRepository;
     @Autowired
     private PullRequestHistogramRepository pullRequestHistogramRepository;
+    @Autowired
+    private RepositoryRepository repositoryRepository;
 
 
     @AfterEach
@@ -50,7 +53,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_save_pull_requests_to_postgres() {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository);
+                pullRequestHistogramRepository, repositoryRepository);
         final List<PullRequest> pullRequestsToSave = List.of(
                 buildPullRequest(1),
                 buildPullRequest(2),
@@ -73,7 +76,7 @@ public class PostgresExpositionAdapterTestIT {
         final String organization2 = faker.name().firstName() + "-2";
         final String organization3 = faker.name().firstName() + "-3";
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository);
+                pullRequestHistogramRepository, repositoryRepository);
         final List<PullRequestHistogram> pullRequestHistograms = List.of(
                 buildPullRequestHistogram(organization1),
                 buildPullRequestHistogram(organization2),
@@ -97,7 +100,7 @@ public class PostgresExpositionAdapterTestIT {
         final String team1 = faker.name().firstName() + "-1";
         final String team2 = faker.name().firstName() + "-2";
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository);
+                pullRequestHistogramRepository, repositoryRepository);
         final List<PullRequestHistogram> pullRequestHistograms = List.of(
                 buildPullRequestHistogramForOrgAndTeam(team1, organization1),
                 buildPullRequestHistogramForOrgAndTeam(team2, organization2)
@@ -105,14 +108,48 @@ public class PostgresExpositionAdapterTestIT {
 
         // When
         postgresExpositionAdapter.savePullRequestHistograms(pullRequestHistograms);
-        final PullRequestHistogram pullRequestHistogram = postgresExpositionAdapter.readPullRequestHistogram(organization1,
-                team1, PullRequestHistogram.SIZE_LIMIT);
+        final PullRequestHistogram pullRequestHistogram =
+                postgresExpositionAdapter.readPullRequestHistogram(organization1,
+                        team1, PullRequestHistogram.SIZE_LIMIT);
 
         // Then
         assertThat(pullRequestHistogram).isNotNull();
         assertThat(pullRequestHistogram.getTeam()).isEqualTo(team1);
         assertThat(pullRequestHistogram.getOrganizationAccount()).isEqualTo(organization1);
         assertThat(pullRequestHistogram.getDataByWeek()).hasSize(5);
+    }
+
+    @Test
+    void should_save_repositories() {
+        // Given
+        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
+                pullRequestHistogramRepository, repositoryRepository);
+        final Organization organization = Organization.builder()
+                .externalId(UUID.randomUUID().toString())
+                .vcsConfiguration(VcsConfiguration.builder().organizationName(faker.name().name()).build())
+                .build();
+
+        // When
+        postgresExpositionAdapter.saveRepositories(
+                List.of(
+                        buildRepository(organization),
+                        buildRepository(organization),
+                        buildRepository(organization)
+                )
+        );
+
+        // Then
+        assertThat(repositoryRepository.findAll()).hasSize(3);
+    }
+
+    private Repository buildRepository(Organization organization) {
+        return Repository.builder()
+                .organization(organization)
+                .vcsId(faker.address().firstName())
+                .lastUpdateDate(new Date())
+                .creationDate(new Date())
+                .vcsOrganizationName(organization.getVcsConfiguration().getOrganizationName())
+                .build();
     }
 
     private PullRequestHistogram buildPullRequestHistogram(String organizationName) {

@@ -34,16 +34,16 @@ public class DeliveryCommand {
 
     public void collectPullRequestsForRepository(Repository repository) throws CatleanException {
         byte[] alreadyRawPullRequestsCollected = null;
-        if (rawStorageAdapter.exists(repository.getOrganizationName(), versionControlSystemAdapter.getName(),
+        if (rawStorageAdapter.exists(repository.getVcsOrganizationName(), versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()))) {
-            alreadyRawPullRequestsCollected = rawStorageAdapter.read(repository.getOrganizationName(),
+            alreadyRawPullRequestsCollected = rawStorageAdapter.read(repository.getVcsOrganizationName(),
                     versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()));
         }
         final byte[] rawPullRequestsForRepository =
                 versionControlSystemAdapter.getRawPullRequestsForRepository(repository,
                         alreadyRawPullRequestsCollected);
         rawStorageAdapter.save(
-                repository.getOrganizationName(),
+                repository.getVcsOrganizationName(),
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()),
                 rawPullRequestsForRepository);

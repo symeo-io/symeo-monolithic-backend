@@ -1,12 +1,21 @@
 package fr.catlean.monolithic.backend.domain.model;
 
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import lombok.Builder;
 import lombok.Value;
+
+import java.util.Date;
+import java.util.UUID;
 
 @Value
 @Builder
 public class Repository {
     public static final String ALL = "repositories";
+    UUID id;
     String name;
-    String organizationName;
+    String vcsOrganizationName;
+    String vcsId;
+    Date creationDate;
+    Date lastUpdateDate;
+    Organization organization;
 }

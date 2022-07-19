@@ -94,6 +94,6 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
 
         // Then
         assertThat(repository.getName()).isEqualTo(githubRepositoryDTO.getName());
-        assertThat(repository.getOrganizationName()).isEqualTo(githubRepositoryDTO.getOwner().getLogin());
+        assertThat(repository.getVcsOrganizationName()).isEqualTo(githubRepositoryDTO.getOwner().getLogin());
     }
 }

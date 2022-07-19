@@ -1,14 +1,17 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestHistogramDataEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestHistogramMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
+import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import lombok.AllArgsConstructor;
 
 import java.util.Collection;
@@ -19,6 +22,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     private final PullRequestRepository pullRequestRepository;
     private final PullRequestHistogramRepository pullRequestHistogramRepository;
+    private final RepositoryRepository repositoryRepository;
 
     @Override
     public void savePullRequestDetails(List<PullRequest> pullRequests) {
@@ -41,5 +45,10 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
                 pullRequestHistogramRepository.findByOrganizationNameAndTeamNameAndHistogramType(organizationName,
                         teamName, histogramType);
         return PullRequestHistogramMapper.entitiesToDomain(histogramDataEntities);
+    }
+
+    @Override
+    public void saveRepositories(List<Repository> repositories) {
+        repositoryRepository.saveAll(repositories.stream().map(RepositoryMapper::domainToEntity).toList());
     }
 }

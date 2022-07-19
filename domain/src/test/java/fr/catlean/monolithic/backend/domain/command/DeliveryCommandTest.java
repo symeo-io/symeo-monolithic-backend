@@ -49,17 +49,17 @@ public class DeliveryCommandTest {
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
         final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
         final Repository repository =
-                Repository.builder().name(faker.pokemon().name()).organizationName(faker.name().firstName()).build();
+                Repository.builder().name(faker.pokemon().name()).vcsOrganizationName(faker.name().firstName()).build();
         final byte[] bytes = new byte[0];
 
         // When
         when(versionControlSystemAdapter.getRawPullRequestsForRepository(repository, null)).thenReturn(bytes);
-        when(rawStorageAdapter.exists(repository.getOrganizationName(),
+        when(rawStorageAdapter.exists(repository.getVcsOrganizationName(),
                 versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()))).thenReturn(false);
         deliveryCommand.collectPullRequestsForRepository(repository);
 
         // Then
-        verify(rawStorageAdapter, times(1)).save(repository.getOrganizationName(),
+        verify(rawStorageAdapter, times(1)).save(repository.getVcsOrganizationName(),
                 versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()), bytes);
     }
 
@@ -71,23 +71,23 @@ public class DeliveryCommandTest {
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
         final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
         final Repository repository =
-                Repository.builder().name(faker.pokemon().name()).organizationName(faker.name().firstName()).build();
+                Repository.builder().name(faker.pokemon().name()).vcsOrganizationName(faker.name().firstName()).build();
         final byte[] bytes = new byte[0];
         final byte[] pullRequestsBytes = faker.name().name().getBytes();
 
         // When
         when(versionControlSystemAdapter.getRawPullRequestsForRepository(repository, pullRequestsBytes)).thenReturn(bytes);
-        when(rawStorageAdapter.exists(repository.getOrganizationName(),
+        when(rawStorageAdapter.exists(repository.getVcsOrganizationName(),
                 versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()))).thenReturn(true);
-        when(rawStorageAdapter.read(repository.getOrganizationName(), versionControlSystemAdapter.getName(),
+        when(rawStorageAdapter.read(repository.getVcsOrganizationName(), versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName())))
                 .thenReturn(pullRequestsBytes);
         deliveryCommand.collectPullRequestsForRepository(repository);
 
         // Then
-        verify(rawStorageAdapter, times(1)).save(repository.getOrganizationName(),
+        verify(rawStorageAdapter, times(1)).save(repository.getVcsOrganizationName(),
                 versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()), bytes);
-        verify(rawStorageAdapter, times(1)).exists(repository.getOrganizationName(),
+        verify(rawStorageAdapter, times(1)).exists(repository.getVcsOrganizationName(),
                 versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()));
 
     }

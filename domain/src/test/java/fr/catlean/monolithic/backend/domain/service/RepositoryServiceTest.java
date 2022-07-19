@@ -19,9 +19,9 @@ public class RepositoryServiceTest {
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final RepositoryService repositoryService = new RepositoryService(expositionStorageAdapter);
         final List<Repository> repositories = List.of(
-                Repository.builder().organizationName(faker.name().name()).name(faker.name().firstName()).build(),
-                Repository.builder().organizationName(faker.name().name()).name(faker.name().firstName()).build(),
-                Repository.builder().organizationName(faker.name().name()).name(faker.name().firstName()).build()
+                Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build(),
+                Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build(),
+                Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build()
         );
 
         // When

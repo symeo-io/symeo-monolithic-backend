@@ -31,7 +31,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
                 githubProperties, objectMapper);
         final Repository repository =
-                Repository.builder().organizationName(faker.name().lastName()).name(faker.name().firstName()).build();
+                Repository.builder().vcsOrganizationName(faker.name().lastName()).name(faker.name().firstName()).build();
         final Map<String, String> authorization = Map.of("Authorization", "token " + token);
         final GithubPullRequestDTO[] githubPullRequestStubs1 = getStubsFromClassT("get_pull_requests_for_repo",
                 "get_pr_for_repo_page_1_size_3.json", GithubPullRequestDTO[].class);
@@ -63,27 +63,27 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
 
         // When
         // All PRs by repo
-        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getVcsOrganizationName(),
                 repository.getName(), 1, 3)).thenReturn(githubPullRequestStubs1);
-        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getVcsOrganizationName(),
                 repository.getName(), 2, 3)).thenReturn(githubPullRequestStubs2);
-        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getVcsOrganizationName(),
                 repository.getName(), 3, 3)).thenReturn(githubPullRequestStubs3);
 
         // PR details by PR
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 74)).thenReturn(pr74);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 75)).thenReturn(pr75);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 76)).thenReturn(pr76);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 77)).thenReturn(pr77);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 78)).thenReturn(pr78);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 79)).thenReturn(pr79);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 80)).thenReturn(pr80);
 
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
@@ -108,7 +108,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
                 githubProperties, objectMapper);
         final Repository repository =
-                Repository.builder().organizationName(faker.name().lastName()).name(faker.name().firstName()).build();
+                Repository.builder().vcsOrganizationName(faker.name().lastName()).name(faker.name().firstName()).build();
         final Map<String, String> authorization = Map.of("Authorization", "token " + token);
         final GithubPullRequestDTO[] githubPullRequestStubs1 = getStubsFromClassT("get_pull_requests_for_repo",
                 "incremental_get_pr_for_repo_page_1_size_10.json", GithubPullRequestDTO[].class);
@@ -135,20 +135,20 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
 
         // When
         // All PRs by repo
-        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getVcsOrganizationName(),
                 repository.getName(), 1, 10))
                 .thenReturn(githubPullRequestStubs1);
         // PR details by PR
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 74))
                 .thenReturn(pr74);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 75))
                 .thenReturn(pr75);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 76))
                 .thenReturn(pr76);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getOrganizationName(),
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 79))
                 .thenReturn(pr79);
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository,
