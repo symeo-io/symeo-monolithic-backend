@@ -18,4 +18,8 @@ public class User {
     public void hasConnectedToVcs() {
         this.onboarding = this.onboarding.toBuilder().hasConnectedToVcs(true).build();
     }
+
+    public void hasConfiguredTeam() {
+        this.onboarding = this.onboarding.toBuilder().hasConfiguredTeam(true).build();
+    }
 }

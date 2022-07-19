@@ -30,9 +30,9 @@ public class TeamRestApiAdapter implements TeamApi {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return ok(domainToCreateTeamResponseContract(
-                    teamService.createTeamForNameAndRepositoriesAndOrganization(createTeamRequestContract.getName(),
+                    teamService.createTeamForNameAndRepositoriesAndUser(createTeamRequestContract.getName(),
                             createTeamRequestContract.getRepositoryIds(),
-                            authenticatedUser.getOrganization()))
+                            authenticatedUser))
             );
         } catch (CatleanException e) {
             return ResponseEntity.internalServerError().body(errorToContract(e));

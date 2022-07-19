@@ -5,9 +5,11 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
+import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,20 +35,27 @@ public class TeamServiceTest {
         final Team team = Team.builder().name(teamName).build();
 
         // When
+        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
         final Team expectedTeam = team.toBuilder()
                 .id(UUID.randomUUID())
                 .name(teamName)
                 .organizationId(organization.getId())
                 .repositories(repositoryIds.stream().map(id -> Repository.builder().id(id).build()).toList())
                 .build();
-        when(accountTeamStorage.createTeam(any()))
+        when(accountTeamStorage.createTeamForUser(any(), userArgumentCaptor.capture()))
                 .thenReturn(expectedTeam);
-        final Team result = teamService.createTeamForNameAndRepositoriesAndOrganization(teamName, repositoryIds,
-                organization);
+        final Team result = teamService.createTeamForNameAndRepositoriesAndUser(teamName, repositoryIds,
+                User.builder()
+                        .organization(
+                                Organization.builder().id(UUID.randomUUID())
+                                        .vcsConfiguration(VcsConfiguration.builder().build())
+                                        .build())
+                        .build());
 
         // Then
         assertThat(result.getName()).isEqualTo(expectedTeam.getName());
         assertThat(result.getOrganizationId()).isEqualTo(expectedTeam.getOrganizationId());
         assertThat(result.getRepositories()).isEqualTo(expectedTeam.getRepositories());
+        assertThat(userArgumentCaptor.getValue().getOnboarding().getHasConfiguredTeam()).isTrue();
     }
 }
