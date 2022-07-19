@@ -11,6 +11,7 @@ import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestHistogramDataEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
@@ -47,6 +48,7 @@ public class PostgresExpositionAdapterTestIT {
     @AfterEach
     void tearDown() {
         pullRequestHistogramRepository.deleteAll();
+        repositoryRepository.deleteAll();
     }
 
     @Test
@@ -125,7 +127,7 @@ public class PostgresExpositionAdapterTestIT {
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 pullRequestHistogramRepository, repositoryRepository);
         final Organization organization = Organization.builder()
-                .externalId(UUID.randomUUID().toString())
+                .id(UUID.randomUUID())
                 .vcsConfiguration(VcsConfiguration.builder().organizationName(faker.name().name()).build())
                 .build();
 
@@ -142,12 +144,36 @@ public class PostgresExpositionAdapterTestIT {
         assertThat(repositoryRepository.findAll()).hasSize(3);
     }
 
+    @Test
+    void should_read_repositories_for_an_organization() {
+        // Given
+        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
+                pullRequestHistogramRepository, repositoryRepository);
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsConfiguration(VcsConfiguration.builder().organizationName(faker.name().name()).build())
+                .build();
+        final List<RepositoryEntity> repositoryEntities = List.of(
+                new RepositoryEntity(1, faker.gameOfThrones().character(),
+                        faker.name().firstName(), faker.friends().character(), organization.getId().toString()),
+                new RepositoryEntity(2, faker.gameOfThrones().character(),
+                        faker.name().firstName(), faker.friends().character(), organization.getId().toString()),
+                new RepositoryEntity(3, faker.gameOfThrones().character(),
+                        faker.name().firstName(), faker.friends().character(), organization.getId().toString()));
+        repositoryRepository.saveAll(repositoryEntities);
+
+        // When
+        final List<Repository> repositories = postgresExpositionAdapter.readRepositoriesForOrganization(organization);
+
+        // Then
+        assertThat(repositories).hasSize(3);
+    }
+
     private Repository buildRepository(Organization organization) {
         return Repository.builder()
                 .organization(organization)
-                .vcsId(faker.address().firstName())
-                .lastUpdateDate(new Date())
-                .creationDate(new Date())
+                .name(faker.pokemon().name())
+                .vcsId(faker.address().firstName() + faker.ancient().god())
                 .vcsOrganizationName(organization.getVcsConfiguration().getOrganizationName())
                 .build();
     }

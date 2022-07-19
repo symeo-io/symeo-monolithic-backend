@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.domain.port.out;
 
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface ExpositionStorageAdapter {
     PullRequestHistogram readPullRequestHistogram(String organizationName, String teamName, String histogramType);
 
     void saveRepositories(List<Repository> repositories);
+
+    List<Repository> readRepositoriesForOrganization(Organization organization);
 }

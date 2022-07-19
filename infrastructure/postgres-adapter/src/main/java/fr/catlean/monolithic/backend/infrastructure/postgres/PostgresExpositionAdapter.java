@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
@@ -50,5 +51,13 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     @Override
     public void saveRepositories(List<Repository> repositories) {
         repositoryRepository.saveAll(repositories.stream().map(RepositoryMapper::domainToEntity).toList());
+    }
+
+    @Override
+    public List<Repository> readRepositoriesForOrganization(Organization organization) {
+        return repositoryRepository.findRepositoryEntitiesByOrganizationId(organization.getId().toString())
+                .stream()
+                .map(RepositoryMapper::entityToDomain)
+                .toList();
     }
 }

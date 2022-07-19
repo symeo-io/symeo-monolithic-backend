@@ -4,6 +4,5 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.P
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface PullRequestRepository extends JpaRepository<PullRequestEntity, Long> {
 }

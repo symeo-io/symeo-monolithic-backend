@@ -3,12 +3,8 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition;
 import com.sun.istack.NotNull;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.AbstractEntity;
 import lombok.*;
-import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
@@ -21,8 +17,11 @@ public class RepositoryEntity extends AbstractEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    @NaturalId
-    String id;
+    @GeneratedValue(generator = "exposition_storage.repository_sequence", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "exposition_storage.repository_sequence", sequenceName = "exposition_storage.repository_sequence", allocationSize = 1)
+    Integer id;
+    @Column(name = "vcs_id", nullable = false)
+    String vcsId;
     @Column(name = "name", nullable = false)
     @NotNull
     String name;

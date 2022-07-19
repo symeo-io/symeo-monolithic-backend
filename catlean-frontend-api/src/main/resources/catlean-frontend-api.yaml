@@ -114,7 +114,6 @@ paths:
         - bearerAuth: [ ]
       tags:
         - User
-        - Organization
       summary: Link Current Logged In User to Organization
       operationId: linkCurrentUserToOrganization
       description: |
@@ -153,6 +152,45 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+  /api/v1/repository:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Repository
+      summary: Get repository linked to current user organization
+      description: |
+        Get repository linked to current user organization
+      responses:
+        "200":
+          description: 'Successfully linked organization to current user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRepositoriesResponseContract'
+              example:
+                repository:
+                    - id: 11111
+                      name: repo-1
+                    - id: 22222
+                      name: repo-2
+                    - id: 33333
+                      name: repo-3
+                errors:
+                  { }
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "F.REPOSITORIES_NOT_FOUND"
+                    message: "Failed to find repositories"
+
 
 components:
   securitySchemes:
@@ -265,3 +303,24 @@ components:
         externalId:
           type: string
           example: 123456543
+    GetRepositoriesResponseContract:
+      type: object
+      properties:
+        repositories:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepositoryResponseContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
+    RepositoryResponseContract:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
