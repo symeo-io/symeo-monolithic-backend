@@ -11,7 +11,6 @@
         <module>catlean-json-to-pojo-generator</module>
         <module>catlean-data-processing-api</module>
         <module>catlean-frontend-api</module>
-        <module>application/github-webhook-api-adapter</module>
     </modules>
 
     <parent>
@@ -42,6 +41,8 @@
         <wiremock-jre8.version>2.33.2</wiremock-jre8.version>
         <reactor-netty.version>1.0.21</reactor-netty.version>
         <jjwt-jackson.version>0.11.2</jjwt-jackson.version>
+        <logback-core.version>1.2.6</logback-core.version>
+        <sentry-logback.version>1.7.30</sentry-logback.version>
     </properties>
 
     <dependencyManagement>
@@ -79,7 +80,11 @@
                 <version>${jjwt-jackson.version}</version>
                 <scope>runtime</scope>
             </dependency>
-
+            <dependency>
+                <groupId>io.sentry</groupId>
+                <artifactId>sentry-logback</artifactId>
+                <version>${sentry-logback.version}</version>
+            </dependency>
 
             <!-- Test -->
             <dependency>
@@ -113,9 +118,14 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry-jul</artifactId>
-            <version>${sentry-jul.version}</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-core.version}</version>
         </dependency>
 
         <!-- Test -->

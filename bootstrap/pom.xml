@@ -52,12 +52,17 @@
         </dependency>
         <dependency>
             <groupId>fr.catlean.monolithic.backend</groupId>
-            <artifactId>github-webhook-api</artifactId>
+            <artifactId>github-webhook-api-adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-logback</artifactId>
+            <version>${sentry-logback.version}</version>
         </dependency>
 
         <!-- Test -->
