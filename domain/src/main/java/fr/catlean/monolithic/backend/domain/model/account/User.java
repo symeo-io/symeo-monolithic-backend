@@ -14,4 +14,8 @@ public class User {
     Organization organization;
     @Builder.Default
     Onboarding onboarding = Onboarding.builder().build();
+
+    public void hasConnectedToVcs() {
+        this.onboarding = this.onboarding.toBuilder().hasConnectedToVcs(true).build();
+    }
 }

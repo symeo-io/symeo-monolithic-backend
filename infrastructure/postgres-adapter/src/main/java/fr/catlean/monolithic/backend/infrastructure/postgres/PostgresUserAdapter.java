@@ -30,7 +30,6 @@ public class PostgresUserAdapter implements UserStorageAdapter {
     @Override
     public User createUserWithMail(String mail) {
         final UserEntity userEntity = createUserFromMail(mail);
-        onboardingRepository.save(userEntity.getOnboardingEntity());
         return entityToDomain(userRepository.save(userEntity));
     }
 
@@ -40,7 +39,7 @@ public class PostgresUserAdapter implements UserStorageAdapter {
         userEntity.setOrganizationEntity(organizationRepository.findByExternalId(organizationExternalId)
                 .orElseThrow(() -> CatleanException.builder().code("F.ORGANIZATION_NOT_FOUND").message(
                         "Organization not found for externalId " + organizationExternalId).build()));
-        return UserMapper.entityToDomain(userRepository.save(userEntity));
+        return entityToDomain(userRepository.save(userEntity));
 
 
     }

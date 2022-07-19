@@ -8,7 +8,7 @@ import java.util.UUID;
 import static java.lang.Boolean.FALSE;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class Onboarding {
     UUID id;
     @Builder.Default

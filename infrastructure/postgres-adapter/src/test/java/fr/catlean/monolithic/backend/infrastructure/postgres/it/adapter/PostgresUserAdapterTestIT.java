@@ -102,11 +102,13 @@ public class PostgresUserAdapterTestIT {
         // When
         final User user = postgresUserAdapter.createUserWithMail(faker.dragonBall().character());
         final Organization expectedOrganization = postgresOrganizationAdapter.createOrganization(organization);
-        final User updateUserWithOrganization = postgresUserAdapter.updateUserWithOrganization(user,
+        final User updateUserWithOrganization = postgresUserAdapter.updateUserWithOrganization(user.toBuilder()
+                        .onboarding(user.getOnboarding().toBuilder().hasConnectedToVcs(true).build()).build(),
                 externalId);
 
         // Then
         assertThat(updateUserWithOrganization).isNotNull();
         assertThat(updateUserWithOrganization.getOrganization()).isEqualTo(expectedOrganization);
+        assertThat(updateUserWithOrganization.getOnboarding().getHasConnectedToVcs()).isTrue();
     }
 }
