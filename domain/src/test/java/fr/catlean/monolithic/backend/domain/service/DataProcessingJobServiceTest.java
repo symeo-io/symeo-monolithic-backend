@@ -3,6 +3,7 @@ package fr.catlean.monolithic.backend.domain.service;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
@@ -23,14 +24,20 @@ public class DataProcessingJobServiceTest {
         final DeliveryProcessorService deliveryProcessorService = mock(DeliveryProcessorService.class);
         final OrganizationStorageAdapter organizationStorageAdapter = mock(OrganizationStorageAdapter.class);
         final PullRequestService pullRequestService = mock(PullRequestService.class);
+        final RepositoryService repositoryService = mock(RepositoryService.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(deliveryProcessorService,
-                        organizationStorageAdapter, pullRequestService);
+                        organizationStorageAdapter, pullRequestService, repositoryService);
         final String organisationName = faker.name().username();
         final Organization organisationAccount = Organization.builder().name(organisationName)
                 .vcsConfiguration(VcsConfiguration.builder().build()).build();
         final List<PullRequest> pullRequests = List.of(PullRequest.builder().id(faker.pokemon().name()).build(),
                 PullRequest.builder().id(faker.hacker().abbreviation()).build());
+        final List<Repository> repositories = List.of(
+                Repository.builder().name(faker.name().firstName()).organizationName(organisationName).build(),
+                Repository.builder().name(faker.name().firstName()).organizationName(organisationName).build(),
+                Repository.builder().name(faker.name().firstName()).organizationName(organisationName).build()
+        );
 
         // When
         when(organizationStorageAdapter.findOrganizationForName(organisationName)).thenReturn(
@@ -39,11 +46,16 @@ public class DataProcessingJobServiceTest {
         when(deliveryProcessorService.collectPullRequestsForOrganization(organisationAccount)).thenReturn(
                 pullRequests
         );
+        when(deliveryProcessorService.collectRepositoriesForOrganization(organisationAccount)).thenReturn(
+                repositories
+        );
         dataProcessingJobService.start(organisationName);
 
         // Then
+        verify(repositoryService, times(1)).saveRepositories(repositories);
         verify(pullRequestService, times(1)).computeAndSavePullRequestSizeHistogram(pullRequests, organisationAccount);
         verify(pullRequestService, times(1)).computeAndSavePullRequestTimeHistogram(pullRequests, organisationAccount);
+        verify(pullRequestService,times(1)).savePullRequests(pullRequests);
 
     }
 }

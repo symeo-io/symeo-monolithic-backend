@@ -130,4 +130,7 @@ public class PullRequestService {
     }
 
 
+    public void savePullRequests(List<PullRequest> pullRequests) {
+        expositionStorageAdapter.savePullRequestDetails(pullRequests);
+    }
 }
