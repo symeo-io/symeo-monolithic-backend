@@ -39,4 +39,5 @@ json_local_storage
 
 ### Github App pem ###
 catlean-staging-io.private-key.pem
+catlean-io.private-key.der
 catlean-staging-io.private-key.der
