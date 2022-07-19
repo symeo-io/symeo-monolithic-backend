@@ -7,6 +7,7 @@ import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.*;
+import liquibase.pro.packaged.B;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,9 +42,9 @@ public class DomainConfiguration {
     @Bean
     public DataProcessingJobService dataProcessingJobService(final DeliveryProcessorService deliveryProcessorService,
                                                              final PullRequestService pullRequestService,
-                                                             final OrganizationStorageAdapter organizationStorageAdapter,
+                                                             final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService) {
-        return new DataProcessingJobService(deliveryProcessorService, organizationStorageAdapter, pullRequestService,
+        return new DataProcessingJobService(deliveryProcessorService, accountOrganizationStorageAdapter, pullRequestService,
                 repositoryService);
     }
 
@@ -54,8 +55,8 @@ public class DomainConfiguration {
 
     @Bean
     public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter,
-                                         final OrganizationStorageAdapter organizationStorageAdapter) {
-        return new HistogramQuery(expositionStorageAdapter, organizationStorageAdapter);
+                                         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
+        return new HistogramQuery(expositionStorageAdapter, accountOrganizationStorageAdapter);
     }
 
     @Bean
@@ -64,7 +65,12 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter) {
-        return new OrganizationService(organizationStorageAdapter);
+    public OrganizationFacadeAdapter organizationFacadeAdapter(final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
+        return new OrganizationService(accountOrganizationStorageAdapter);
+    }
+
+    @Bean
+    public TeamService teamService(final AccountTeamStorage accountTeamStorage){
+        return new TeamService(accountTeamStorage);
     }
 }

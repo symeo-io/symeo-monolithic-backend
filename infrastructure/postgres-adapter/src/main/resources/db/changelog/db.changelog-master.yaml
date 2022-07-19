@@ -5,6 +5,8 @@ databaseChangeLog:
       file: db/changelog/changelogs/00000010_init_account_schema.sql
   - include:
       file: db/changelog/changelogs/00000020_add_repository_table.sql
+  - include:
+      file: db/changelog/changelogs/00000030_add_team_table.sql
 
 
 

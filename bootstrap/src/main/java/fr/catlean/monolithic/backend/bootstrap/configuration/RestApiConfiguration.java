@@ -2,10 +2,7 @@ package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import catlean.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
 import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
-import catlean.monolithic.backend.rest.api.adapter.DataProcessingRestApiAdapter;
-import catlean.monolithic.backend.rest.api.adapter.PullRequestRestApiAdapter;
-import catlean.monolithic.backend.rest.api.adapter.RepositoryRestApiAdapter;
-import catlean.monolithic.backend.rest.api.adapter.UserRestApiAdapter;
+import catlean.monolithic.backend.rest.api.adapter.*;
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
@@ -13,6 +10,7 @@ import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.RepositoryService;
+import fr.catlean.monolithic.backend.domain.service.TeamService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -38,6 +36,12 @@ public class RestApiConfiguration {
     public RepositoryRestApiAdapter repositoryRestApiAdapter(final AuthenticationService authenticationService,
                                                              final RepositoryService repositoryService) {
         return new RepositoryRestApiAdapter(authenticationService, repositoryService);
+    }
+
+    @Bean
+    public TeamRestApiAdapter teamRestApiAdapter(final AuthenticationService authenticationService,
+                                                 final TeamService teamService) {
+        return new TeamRestApiAdapter(authenticationService, teamService);
     }
 
     @Bean

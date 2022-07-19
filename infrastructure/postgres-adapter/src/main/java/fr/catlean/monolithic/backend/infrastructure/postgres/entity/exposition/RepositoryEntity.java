@@ -18,7 +18,8 @@ public class RepositoryEntity extends AbstractEntity {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(generator = "exposition_storage.repository_sequence", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "exposition_storage.repository_sequence", sequenceName = "exposition_storage.repository_sequence", allocationSize = 1)
+    @SequenceGenerator(name = "exposition_storage.repository_sequence", schema = "exposition_storage", sequenceName =
+            "repository_sequence", allocationSize = 1)
     Integer id;
     @Column(name = "vcs_id", nullable = false)
     String vcsId;

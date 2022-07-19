@@ -6,7 +6,7 @@ import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
-import fr.catlean.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
+import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -22,12 +22,12 @@ public class DataProcessingJobServiceTest {
     void should_start_data_processing_job_given_an_organisation_name() throws CatleanException {
         // Given
         final DeliveryProcessorService deliveryProcessorService = mock(DeliveryProcessorService.class);
-        final OrganizationStorageAdapter organizationStorageAdapter = mock(OrganizationStorageAdapter.class);
+        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter = mock(AccountOrganizationStorageAdapter.class);
         final PullRequestService pullRequestService = mock(PullRequestService.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(deliveryProcessorService,
-                        organizationStorageAdapter, pullRequestService, repositoryService);
+                        accountOrganizationStorageAdapter, pullRequestService, repositoryService);
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().name(organisationName)
                 .vcsConfiguration(VcsConfiguration.builder().build()).build();
@@ -40,7 +40,7 @@ public class DataProcessingJobServiceTest {
         );
 
         // When
-        when(organizationStorageAdapter.findOrganizationForName(organisationName)).thenReturn(
+        when(accountOrganizationStorageAdapter.findOrganizationForName(organisationName)).thenReturn(
                 organisation
         );
         when(deliveryProcessorService.collectPullRequestsForOrganization(organisation)).thenReturn(

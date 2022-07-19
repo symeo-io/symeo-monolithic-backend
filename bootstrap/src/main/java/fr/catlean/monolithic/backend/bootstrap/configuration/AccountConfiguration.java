@@ -1,15 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
-import fr.catlean.monolithic.backend.domain.exception.CatleanException;
-import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
-import fr.catlean.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Configuration
 public class AccountConfiguration {

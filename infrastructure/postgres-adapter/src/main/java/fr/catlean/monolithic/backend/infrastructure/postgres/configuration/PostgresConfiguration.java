@@ -1,9 +1,11 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.configuration;
 
+import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresOrganizationAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.PostgresTeamAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
@@ -43,8 +45,13 @@ public class PostgresConfiguration {
     }
 
     @Bean
-    public PostgresOrganizationAdapter postgresOrganizationAdapter(final OrganizationRepository organizationRepository) {
-        return new PostgresOrganizationAdapter(organizationRepository);
+    public PostgresAccountOrganizationAdapter postgresOrganizationAdapter(final OrganizationRepository organizationRepository, final TeamRepository teamRepository) {
+        return new PostgresAccountOrganizationAdapter(organizationRepository);
+    }
+
+    @Bean
+    public PostgresTeamAdapter postgresTeamAdapter(final TeamRepository teamRepository) {
+        return new PostgresTeamAdapter(teamRepository);
     }
 
 }

@@ -2,19 +2,23 @@ package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
+import fr.catlean.monolithic.backend.domain.model.account.Team;
+import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper.domainToEntity;
-import static java.util.UUID.randomUUID;
+import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper.domainToEntity;
+import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper.entityToDomain;
 
 @AllArgsConstructor
 @Slf4j
-public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
+public class PostgresAccountOrganizationAdapter implements AccountOrganizationStorageAdapter {
 
     private final OrganizationRepository organizationRepository;
 
@@ -33,9 +37,8 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
 
     @Override
     public Organization createOrganization(Organization organization) throws CatleanException {
-        final OrganizationEntity organizationEntity = domainToEntity(organization);
-        organizationEntity.setId(randomUUID().toString());
         try {
+            final OrganizationEntity organizationEntity = domainToEntity(organization);
             return OrganizationMapper.entityToDomain(organizationRepository.save(organizationEntity));
         } catch (Exception e) {
             LOGGER.error("Failed to create organization {}", organization, e);

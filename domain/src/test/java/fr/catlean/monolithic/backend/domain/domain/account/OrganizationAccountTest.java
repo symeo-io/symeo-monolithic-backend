@@ -37,7 +37,7 @@ public class OrganizationAccountTest {
                 team2PullRequestLineNumberLimit, team2PullRequestDayNumberLimit);
 
         // Then
-        assertThat(organizationAccount.getTeamAccounts()).hasSize(2);
+        assertThat(organizationAccount.getTeams()).hasSize(2);
         assertThat(organizationAccount.getVcsConfiguration().getVcsTeams()).hasSize(2);
         assertThat(organizationAccount.getVcsConfiguration().getVcsTeams().get(0).getVcsRepositoryNames()).containsAll(team1VcsRepositoryNames);
         assertThat(organizationAccount.getVcsConfiguration().getVcsTeams().get(0).getPullRequestDayNumberLimit()).isEqualTo(team1PullRequestDayNumberLimit);

@@ -5,7 +5,7 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresOrganizationAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
@@ -81,8 +81,8 @@ public class PostgresUserAdapterTestIT {
     void should_update_user_with_organization() throws CatleanException {
         // Given
         final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository, organizationRepository);
-        final PostgresOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresOrganizationAdapter(organizationRepository);
+        final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
+                new PostgresAccountOrganizationAdapter(organizationRepository);
         final String externalId = faker.name().firstName();
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()

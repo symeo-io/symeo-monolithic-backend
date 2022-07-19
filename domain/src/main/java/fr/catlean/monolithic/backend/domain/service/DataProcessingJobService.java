@@ -5,7 +5,7 @@ import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
-import fr.catlean.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
+import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -14,14 +14,14 @@ import java.util.List;
 public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     private final DeliveryProcessorService deliveryProcessorService;
-    private final OrganizationStorageAdapter organizationStorageAdapter;
+    private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
     private final PullRequestService pullRequestService;
     private final RepositoryService repositoryService;
 
     @Override
     public void start(final String organisationName) throws CatleanException {
         final Organization organization =
-                organizationStorageAdapter.findOrganizationForName(organisationName);
+                accountOrganizationStorageAdapter.findOrganizationForName(organisationName);
         collectRepositories(organization);
         collectPullRequests(organization);
     }
