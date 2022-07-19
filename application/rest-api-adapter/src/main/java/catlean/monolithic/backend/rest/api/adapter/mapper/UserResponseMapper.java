@@ -1,8 +1,10 @@
 package catlean.monolithic.backend.rest.api.adapter.mapper;
 
+import fr.catlean.monolithic.backend.domain.model.Onboarding;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CurrentUserResponseContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.OnboardingContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.OrganizationContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.UserContract;
 
@@ -23,6 +25,9 @@ public interface UserResponseMapper {
         if (nonNull(user.getOrganization())) {
             userContract.setOrganization(organizationToContract(user.getOrganization()));
         }
+        if (nonNull(user.getOnboarding())) {
+            userContract.setOnboarding(onboardingToContract(user.getOnboarding()));
+        }
         return userContract;
     }
 
@@ -31,5 +36,12 @@ public interface UserResponseMapper {
         organizationContract.setId(organization.getId());
         organizationContract.setName(organization.getName());
         return organizationContract;
+    }
+
+    private static OnboardingContract onboardingToContract(final Onboarding onboarding) {
+        final OnboardingContract onboardingContract = new OnboardingContract();
+        onboardingContract.setHasConnectedToVcs(onboardingContract.getHasConnectedToVcs());
+        onboardingContract.setHasConfiguredTeam(onboardingContract.getHasConfiguredTeam());
+        return onboardingContract;
     }
 }

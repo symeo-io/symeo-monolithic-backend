@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.domain.service;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.Onboarding;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
@@ -46,7 +47,9 @@ public class UserServiceTest {
         final String mail = faker.name().fullName();
         final User expectedUser =
                 User.builder().id(UUID.randomUUID())
-                        .mail(mail).build();
+                        .mail(mail)
+                        .onboarding(Onboarding.builder().id(UUID.randomUUID()).build())
+                        .build();
 
         // When
         when(userStorageAdapter.getUserFromMail(mail)).thenReturn(Optional.empty());

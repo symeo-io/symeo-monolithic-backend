@@ -7,6 +7,9 @@ databaseChangeLog:
       file: db/changelog/changelogs/00000020_add_repository_table.sql
   - include:
       file: db/changelog/changelogs/00000030_add_team_table.sql
+  - include:
+      file: db/changelog/changelogs/00000040_add_onboarding_table.sql
+
 
 
 

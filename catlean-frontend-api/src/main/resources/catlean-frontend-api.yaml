@@ -310,12 +310,23 @@ components:
         name:
           type: string
           example: Catlean
+    OnboardingContract:
+      type: object
+      required:
+        - has_connected_to_vcs
+        - has_configured_team
+      properties:
+        has_connected_to_vcs:
+          type: boolean
+        has_configured_team:
+          type: boolean
     UserContract:
       type: object
       required:
         - id
         - email
         - organization
+        - onboarding
       properties:
         id:
           type: string
@@ -326,6 +337,8 @@ components:
           example: john.doe@catlean.fr
         organization:
           $ref: '#/components/schemas/OrganizationContract'
+        onboarding:
+          $ref: '#/components/schemas/OnboardingContract'
     CurrentUserResponseContract:
       type: object
       required:
