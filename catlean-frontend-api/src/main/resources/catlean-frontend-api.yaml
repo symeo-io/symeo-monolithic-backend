@@ -163,7 +163,7 @@ paths:
         Get repository linked to current user organization
       responses:
         "200":
-          description: 'Successfully linked organization to current user'
+          description: 'Successfully get repositories linked to current user organization'
           content:
             application/json:
               schema:
@@ -190,6 +190,49 @@ paths:
                 errors:
                   - code: "F.REPOSITORIES_NOT_FOUND"
                     message: "Failed to find repositories"
+
+  /api/v1/team:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Team
+      summary: Create a team linked to the authenticated user organization
+      operationId: createTeam
+      description: |
+        Create a team linked to the authenticated user organization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTeamRequestContract'
+      responses:
+        "200":
+          description: 'Successfully create team linked organization to current user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTeamResponseContract'
+              example:
+                team:
+                  id: 818e351a-0421-11ed-b939-0242ac120002
+                  name: first-team
+                  repository_ids: [1,2,3]
+                errors:
+                  { }
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
 
 
 components:
@@ -324,3 +367,31 @@ components:
           type: integer
         name:
           type: string
+    CreateTeamRequestContract:
+      type: object
+      properties:
+        name:
+          type:
+            string
+        repository_ids:
+          type: array
+          items:
+            type: integer
+    CreateTeamResponseContract:
+      type: object
+      properties:
+        team:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            repository_ids:
+              type: array
+              items:
+                type: integer
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'

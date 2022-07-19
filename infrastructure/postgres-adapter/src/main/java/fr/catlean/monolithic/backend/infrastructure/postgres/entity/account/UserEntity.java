@@ -17,12 +17,12 @@ public class UserEntity extends AbstractEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    String id;
+    private String id;
     @Column(name = "mail", nullable = false)
-    String mail;
+    private String mail;
     @ManyToOne
     @JoinColumn(name = "organization_id",
             referencedColumnName = "id")
-    OrganizationEntity organizationEntity;
+    private OrganizationEntity organizationEntity;
 
 }

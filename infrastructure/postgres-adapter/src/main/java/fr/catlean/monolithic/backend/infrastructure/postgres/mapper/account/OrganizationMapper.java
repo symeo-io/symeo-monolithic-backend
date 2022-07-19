@@ -6,10 +6,13 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.Orga
 
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
+
 public interface OrganizationMapper {
 
     static OrganizationEntity domainToEntity(final Organization organization) {
         return OrganizationEntity.builder()
+                .id(randomUUID().toString())
                 .name(organization.getName())
                 .externalId(organization.getExternalId())
                 .build();

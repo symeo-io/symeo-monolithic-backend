@@ -21,9 +21,9 @@ public class OrganizationEntity extends AbstractEntity {
     @Id
     @Column(name = "id", nullable = false)
     @NaturalId
-    String id;
+    private String id;
     @Column(name = "name", nullable = false)
-    String name;
+    private String name;
     @Column(name = "external_id", nullable = false)
-    String externalId;
+    private String externalId;
 }

@@ -41,9 +41,9 @@ public class DomainConfiguration {
     @Bean
     public DataProcessingJobService dataProcessingJobService(final DeliveryProcessorService deliveryProcessorService,
                                                              final PullRequestService pullRequestService,
-                                                             final OrganizationStorageAdapter organizationStorageAdapter,
+                                                             final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService) {
-        return new DataProcessingJobService(deliveryProcessorService, organizationStorageAdapter, pullRequestService,
+        return new DataProcessingJobService(deliveryProcessorService, accountOrganizationStorageAdapter, pullRequestService,
                 repositoryService);
     }
 
@@ -54,8 +54,8 @@ public class DomainConfiguration {
 
     @Bean
     public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter,
-                                         final OrganizationStorageAdapter organizationStorageAdapter) {
-        return new HistogramQuery(expositionStorageAdapter, organizationStorageAdapter);
+                                         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
+        return new HistogramQuery(expositionStorageAdapter, accountOrganizationStorageAdapter);
     }
 
     @Bean
@@ -64,7 +64,7 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter) {
-        return new OrganizationService(organizationStorageAdapter);
+    public OrganizationFacadeAdapter organizationFacadeAdapter(final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
+        return new OrganizationService(accountOrganizationStorageAdapter);
     }
 }

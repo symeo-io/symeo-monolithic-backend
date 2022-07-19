@@ -1,10 +1,8 @@
 package fr.catlean.monolithic.backend.domain.service;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
-import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
-import fr.catlean.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.UserStorageAdapter;
 import lombok.AllArgsConstructor;
 
