@@ -1,6 +1,6 @@
 create table account.team
 (
-    id                          integer                    not null
+    id                          varchar(40)                not null
         constraint team_id primary key,
     name                        varchar(300)               not null,
     organization_id             varchar(40),
@@ -10,9 +10,11 @@ create table account.team
     constraint name_organization_id_unique unique (name, organization_id)
 );
 
-create table account.team_to_repository
+create table exposition_storage.team_to_repository
 (
-    team_id       integer not null,
-    repository_id integer not null
+    team_id       varchar(40),
+    repository_id integer not null,
+    constraint fk_team foreign key (team_id) references account.team (id),
+    constraint fk_repository foreign key (repository_id) references exposition_storage.repository (id)
 );
 

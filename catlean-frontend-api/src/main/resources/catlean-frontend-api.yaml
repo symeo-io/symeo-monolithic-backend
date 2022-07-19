@@ -50,7 +50,7 @@ paths:
   /api/v1/pull-request/histogram:
     get:
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       tags:
         - PullRequest
       summary: Get PullRequest Histogram
@@ -89,7 +89,7 @@ paths:
                     data_above_limit: 1
                     data_below_limit: 10
                 errors:
-                  {}
+                  { }
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "404":
@@ -170,12 +170,12 @@ paths:
                 $ref: '#/components/schemas/GetRepositoriesResponseContract'
               example:
                 repository:
-                    - id: 11111
-                      name: repo-1
-                    - id: 22222
-                      name: repo-2
-                    - id: 33333
-                      name: repo-3
+                  - id: 11111
+                    name: repo-1
+                  - id: 22222
+                    name: repo-2
+                  - id: 33333
+                    name: repo-3
                 errors:
                   { }
         "401":
@@ -218,7 +218,7 @@ paths:
                 team:
                   id: 818e351a-0421-11ed-b939-0242ac120002
                   name: first-team
-                  repository_ids: [1,2,3]
+                  repository_ids: [ 1,2,3 ]
                 errors:
                   { }
         "401":
@@ -384,7 +384,8 @@ components:
           type: object
           properties:
             id:
-              type: integer
+              type: string
+              format: uuid
             name:
               type: string
             repository_ids:

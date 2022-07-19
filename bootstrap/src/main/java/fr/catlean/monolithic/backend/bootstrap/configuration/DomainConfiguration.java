@@ -7,6 +7,7 @@ import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.*;
+import liquibase.pro.packaged.B;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -66,5 +67,10 @@ public class DomainConfiguration {
     @Bean
     public OrganizationFacadeAdapter organizationFacadeAdapter(final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
         return new OrganizationService(accountOrganizationStorageAdapter);
+    }
+
+    @Bean
+    public TeamService teamService(final AccountTeamStorage accountTeamStorage){
+        return new TeamService(accountTeamStorage);
     }
 }

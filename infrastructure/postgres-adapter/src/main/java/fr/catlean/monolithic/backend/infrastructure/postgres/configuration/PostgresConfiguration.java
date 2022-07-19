@@ -1,8 +1,9 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.configuration;
 
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.PostgresTeamAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
@@ -48,6 +49,9 @@ public class PostgresConfiguration {
         return new PostgresAccountOrganizationAdapter(organizationRepository);
     }
 
-
+    @Bean
+    public PostgresTeamAdapter postgresTeamAdapter(final TeamRepository teamRepository) {
+        return new PostgresTeamAdapter(teamRepository);
+    }
 
 }

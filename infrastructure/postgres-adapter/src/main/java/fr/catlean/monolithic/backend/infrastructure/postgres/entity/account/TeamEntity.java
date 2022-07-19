@@ -1,14 +1,11 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.entity.account;
 
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.AbstractEntity;
-import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @AllArgsConstructor
@@ -27,11 +24,14 @@ public class TeamEntity extends AbstractEntity {
     @Column(name = "organization_id", nullable = false)
     private String organizationId;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = ALL)
-    @JoinTable(name = "team_to_repository",
-            joinColumns = {@JoinColumn(name = "team_id")},
-            inverseJoinColumns = {@JoinColumn(name = "repository_id")})
+    @ElementCollection
+    @CollectionTable(
+            name = "team_to_repository", schema = "exposition_storage",
+            joinColumns = @JoinColumn(name = "team_id")
+    )
+    @Column(name = "repository_id")
     @Builder.Default
-    List<RepositoryEntity> repositoryEntities = new ArrayList<>();
+    List<Integer> repositoryIds = new ArrayList<>();
+
 
 }
