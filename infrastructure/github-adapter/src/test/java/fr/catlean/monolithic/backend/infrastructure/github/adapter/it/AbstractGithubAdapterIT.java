@@ -60,13 +60,13 @@ public class AbstractGithubAdapterIT {
                     });
 
             TestPropertyValues.of(
-                            "github.app.api:http://localhost:" + wireMockServer.port())
+                            "github.app.api:http://localhost:" + wireMockServer.port() + "/")
                     .applyTo(configurableApplicationContext);
         }
     }
 
-    protected  <T> T getStubsFromClassT(final String testResourcesDir, final String fileName, final Class<T> tClass) throws IOException {
-        final String dto1 = Files.readString(Paths.get("target/test-classes/"+testResourcesDir+"/" + fileName));
-        return objectMapper.readValue(dto1,tClass);
+    protected <T> T getStubsFromClassT(final String testResourcesDir, final String fileName, final Class<T> tClass) throws IOException {
+        final String dto1 = Files.readString(Paths.get("target/test-classes/" + testResourcesDir + "/" + fileName));
+        return objectMapper.readValue(dto1, tClass);
     }
 }

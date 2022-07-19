@@ -43,7 +43,7 @@ public class GithubHttpClient {
                                                                     final Integer size) throws CatleanException {
         final String uri =
                 api
-                        + "/orgs/"
+                        + "orgs/"
                         + organizationName
                         + "/repos?sort=name&per_page="
                         + size.toString()
@@ -61,7 +61,7 @@ public class GithubHttpClient {
                                                                               final Integer size) throws CatleanException {
         final String uri =
                 api
-                        + "/repos/"
+                        + "repos/"
                         + organizationName
                         + "/" +
                         repositoryName
@@ -80,7 +80,7 @@ public class GithubHttpClient {
                                                                           final Integer number) throws CatleanException {
         final String uri =
                 api
-                        + "/repos/"
+                        + "repos/"
                         + organizationName
                         + "/" +
                         repositoryName
@@ -143,8 +143,8 @@ public class GithubHttpClient {
     private String getInstallationToken(String organizationName, String jwtTokenBearer,
                                         GithubInstallationDTO githubInstallationDTO) throws CatleanException {
         final HttpRequest.Builder requestBuilder = HttpRequest
-                .newBuilder(URI.create(api + "/app/installations/" + githubInstallationDTO.getId() +
-                        "/access_token"))
+                .newBuilder(URI.create(api + "app/installations/" + githubInstallationDTO.getId() +
+                        "/access_tokens"))
                 .POST(HttpRequest.BodyPublishers.noBody());
 
         Map.of(AUTHORIZATION_HEADER_KEY, jwtTokenBearer).forEach(requestBuilder::header);
@@ -158,7 +158,7 @@ public class GithubHttpClient {
         try {
             final String uri =
                     api
-                            + "/app/installations";
+                            + "app/installations";
             return sendRequest(HttpRequest.newBuilder(new URI(uri)).headers("Authorization",
                     jwtTokenBearer).build(), GithubInstallationDTO[].class, organizationName);
         } catch (URISyntaxException e) {
@@ -172,7 +172,7 @@ public class GithubHttpClient {
         try {
             final HttpResponse<byte[]> httpResponse = this.httpClient.send(httpRequest,
                     HttpResponse.BodyHandlers.ofByteArray());
-            if (httpResponse.statusCode() == 200) {
+            if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() <= 299) {
                 return objectMapper.readValue(httpResponse.body(), responseClass);
             }
             throw buildUnhandledHttpStatusCodeException(httpRequest.uri().toString(), organizationName,

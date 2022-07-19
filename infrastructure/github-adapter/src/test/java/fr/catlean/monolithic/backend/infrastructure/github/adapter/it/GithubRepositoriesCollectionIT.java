@@ -57,7 +57,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                 GithubInstallationAccessTokenDTO.class);
         wireMockServer.stubFor(
                 post(
-                        urlEqualTo("/app/installations/" + githubInstallationDTO.getId() + "/access_token"))
+                        urlEqualTo("/app/installations/" + githubInstallationDTO.getId() + "/access_tokens"))
                         .withHeader("Authorization",
                                 equalTo("Bearer " + githubJwtTokenProvider.getSignedJwtToken()))
                         .willReturn(
@@ -167,7 +167,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
 
         wireMockServer.stubFor(
                 post(
-                        urlEqualTo("/app/installations/" + githubInstallationDTO1.getId() + "/access_token"))
+                        urlEqualTo("/app/installations/" + githubInstallationDTO1.getId() + "/access_tokens"))
                         .withHeader("Authorization",
                                 equalTo("Bearer " + githubJwtTokenProvider.getSignedJwtToken()))
                         .willReturn(
@@ -176,7 +176,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                         200)));
         wireMockServer.stubFor(
                 post(
-                        urlEqualTo("/app/installations/" + githubInstallationDTO2.getId() + "/access_token"))
+                        urlEqualTo("/app/installations/" + githubInstallationDTO2.getId() + "/access_tokens"))
                         .withHeader("Authorization",
                                 equalTo("Bearer " + githubJwtTokenProvider.getSignedJwtToken()))
                         .willReturn(
@@ -185,7 +185,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                         200)));
         wireMockServer.stubFor(
                 post(
-                        urlEqualTo("/app/installations/" + githubInstallationDTO3.getId() + "/access_token"))
+                        urlEqualTo("/app/installations/" + githubInstallationDTO3.getId() + "/access_tokens"))
                         .withHeader("Authorization",
                                 equalTo("Bearer " + signedJwtToken1))
                         .willReturn(
@@ -194,7 +194,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                         200)));
         wireMockServer.stubFor(
                 post(
-                        urlEqualTo("/app/installations/" + githubInstallationDTO3.getId() + "/access_token"))
+                        urlEqualTo("/app/installations/" + githubInstallationDTO3.getId() + "/access_tokens"))
                         .withHeader("Authorization",
                                 equalTo("Bearer " + signedJwtToken2))
                         .willReturn(
