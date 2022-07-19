@@ -2,6 +2,10 @@ package catlean.monolithic.backend.github.webhook.api.adapter.security;
 
 import org.apache.commons.codec.digest.HmacUtils;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class GithubWebhookSecretValidator {
 
 
@@ -15,6 +19,6 @@ public class GithubWebhookSecretValidator {
     }
 
     private static String hmacWithJava(final byte[] data, final String key) {
-        return new HmacUtils("HmacMD5", key).hmacHex(data);
+        return new HmacUtils("HmacSHA256", key).hmacHex(data);
     }
 }

@@ -62,7 +62,7 @@ public class GithubWebhookApiAdapterIT extends AbstractGithubWebhookAdapterIT {
                 .header(
                         "X-GitHub-Event", "installation"
                 )
-                .header("X-Hub-Signature-256", "sha256=" + new HmacUtils("HmacMD5",
+                .header("X-Hub-Signature-256", "sha256=" + new HmacUtils("HmacSHA256",
                         githubWebhookProperties.getSecret()).hmacHex(bytes))
                 .exchange()
                 // Then
@@ -86,7 +86,7 @@ public class GithubWebhookApiAdapterIT extends AbstractGithubWebhookAdapterIT {
                 .header(
                         "X-GitHub-Event", "fake-event-type"
                 )
-                .header("X-Hub-Signature-256", "sha256=" + new HmacUtils("HmacMD5",
+                .header("X-Hub-Signature-256", "sha256=" + new HmacUtils("HmacSHA256",
                         githubWebhookProperties.getSecret()).hmacHex(bytes))
                 .exchange()
                 // Then

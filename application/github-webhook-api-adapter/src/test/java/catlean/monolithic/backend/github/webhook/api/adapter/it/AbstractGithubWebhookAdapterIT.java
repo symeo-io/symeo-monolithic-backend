@@ -21,5 +21,4 @@ public class AbstractGithubWebhookAdapterIT {
     protected WebTestClient client;
     @Autowired
     protected ObjectMapper objectMapper;
-    protected final static Faker FAKER = new Faker();
 }
