@@ -29,6 +29,11 @@ public class SentryConfiguration {
         public SentryInitiator(final SentryProperties sentryProperties) {
             this.sentryProperties = sentryProperties;
             Sentry.init(sentryProperties.getDns());
+            Sentry.init(sentryOptions -> {
+                sentryOptions.setDsn(sentryOptions.getDsn());
+                sentryOptions.setEnvironment(sentryOptions.getEnvironment());
+                sentryOptions.setServerName(sentryProperties.getServerName());
+            });
         }
     }
 
