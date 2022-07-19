@@ -23,7 +23,7 @@ web:
     hosts: ${FRONTEND_CORS_HOST}
 
 sentry:
-  dns: ${SENTRY_DSN}
+  dsn: ${SENTRY_DSN}
   environment: ${SENTRY_ENVIRONMENT}
   server-name: ${SENTRY_SERVERNAME}
 

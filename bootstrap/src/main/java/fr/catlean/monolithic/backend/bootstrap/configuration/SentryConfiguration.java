@@ -24,14 +24,10 @@ public class SentryConfiguration {
 
     public static class SentryInitiator {
 
-        private final SentryProperties sentryProperties;
-
         public SentryInitiator(final SentryProperties sentryProperties) {
-            this.sentryProperties = sentryProperties;
-            Sentry.init(sentryProperties.getDns());
             Sentry.init(sentryOptions -> {
-                sentryOptions.setDsn(sentryOptions.getDsn());
-                sentryOptions.setEnvironment(sentryOptions.getEnvironment());
+                sentryOptions.setDsn(sentryProperties.getDsn());
+                sentryOptions.setEnvironment(sentryProperties.getEnvironment());
                 sentryOptions.setServerName(sentryProperties.getServerName());
             });
         }
@@ -40,7 +36,7 @@ public class SentryConfiguration {
 
     @Data
     public static class SentryProperties {
-        String dns;
+        String dsn;
         String environment;
         String serverName;
     }
