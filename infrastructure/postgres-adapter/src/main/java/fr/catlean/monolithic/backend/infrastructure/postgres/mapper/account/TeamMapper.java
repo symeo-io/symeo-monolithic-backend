@@ -15,10 +15,6 @@ public interface TeamMapper {
                 .id(isNull(team.getId()) ? UUID.randomUUID().toString() : team.getId().toString())
                 .name(team.getName())
                 .organizationId(team.getOrganizationId().toString())
-//                .repositoryEntities(
-//                        team.getRepositories().stream().map(repository -> RepositoryEntity.builder().id(repository
-//                        .getId()).build()).toList()
-//                )
                 .repositoryIds(team.getRepositories().stream().map(Repository::getId).toList())
                 .build();
     }
@@ -27,7 +23,6 @@ public interface TeamMapper {
         return Team.builder()
                 .name(teamEntity.getName())
                 .repositories(
-//                        teamEntity.getRepositoryEntities().stream().map(RepositoryMapper::entityToDomain).toList()
                         teamEntity.getRepositoryIds().stream().map(id -> Repository.builder().id(id).build()).toList()
                 )
                 .id(UUID.fromString(teamEntity.getId()))
