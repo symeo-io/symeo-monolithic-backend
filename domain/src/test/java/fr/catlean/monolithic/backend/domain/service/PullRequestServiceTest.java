@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.domain.service;
 
 import com.github.javafaker.Faker;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
@@ -23,6 +24,42 @@ public class PullRequestServiceTest {
     private final Faker faker = Faker.instance();
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
+    @Test
+    void should_compute_collect_all_pull_requests_details_for_a_given_organization_account() throws CatleanException {
+        // Given
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final PullRequestService pullRequestService = new PullRequestService(expositionStorageAdapter);
+        final String vcsOrganizationName = faker.name().name();
+        final String organizationName = faker.name().lastName();
+        final String repo1Name = faker.pokemon().name() + "1";
+        final String repo2Name = faker.pokemon().name() + "2";
+        final String repo3Name = faker.pokemon().name() + "3";
+        final String repo4Name = faker.pokemon().name() + "4";
+        final Organization organizationAccount = Organization.builder().name(organizationName)
+                .vcsConfiguration(
+                        VcsConfiguration.builder()
+                                .organizationName(vcsOrganizationName)
+                                .build()
+                )
+                .build();
+        final String team1Name = faker.pokemon().name() + "team1";
+        final String team2Name = faker.pokemon().name() + "team2";
+        organizationAccount.addTeam(team1Name, List.of(repo1Name, repo3Name), 1000, 5);
+        organizationAccount.addTeam(team2Name, List.of(repo4Name), 500, 7);
+
+        // When
+        final PullRequest pr11 = PullRequest.builder().id("github-11").repository(repo1Name).build();
+        final PullRequest pr12 = PullRequest.builder().id("github-12").repository(repo1Name).build();
+        final PullRequest pr21 = PullRequest.builder().id("github-21").repository(repo2Name).build();
+        final PullRequest pr22 = PullRequest.builder().id("github-22").repository(repo2Name).build();
+        final List<PullRequest> pullRequestList = List.of(pr11, pr12, pr21, pr22);
+
+        // When
+        pullRequestService.savePullRequests(pullRequestList);
+
+        // Then
+        verify(expositionStorageAdapter, times(1)).savePullRequestDetails(pullRequestList);
+    }
 
     @Test
     void should_compute_and_save_pull_request_size_histogram_given_simple_pull_request_cases() {
@@ -93,7 +130,7 @@ public class PullRequestServiceTest {
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
     }
 
-     @Test
+    @Test
     void should_compute_and_save_pull_request_time_histogram_given_simple_pull_request_cases() {
         // Given
         final Organization organizationAccount = Organization.builder()
@@ -161,8 +198,6 @@ public class PullRequestServiceTest {
         // Then
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
     }
-
-
 
 
     private static List<PullRequest> getPullRequestsStubsWithSizeLimitToTestWeekRange(final String repositoryName,

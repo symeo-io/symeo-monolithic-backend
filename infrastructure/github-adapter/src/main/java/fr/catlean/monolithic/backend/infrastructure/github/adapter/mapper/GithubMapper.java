@@ -10,7 +10,8 @@ public interface GithubMapper {
     static Repository mapRepositoryDtoToDomain(final GithubRepositoryDTO githubRepositoryDTO) {
         return Repository.builder()
                 .name(githubRepositoryDTO.getName())
-                .organizationName(githubRepositoryDTO.getOwner().getLogin())
+                .vcsOrganizationName(githubRepositoryDTO.getOwner().getLogin())
+                .vcsId(githubRepositoryDTO.getId().toString())
                 .build();
     }
 

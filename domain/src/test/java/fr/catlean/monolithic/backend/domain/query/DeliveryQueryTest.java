@@ -65,7 +65,7 @@ public class DeliveryQueryTest {
         final String organizationName = faker.name().lastName();
         final String repositoryName = faker.name().firstName();
         final Repository repository =
-                Repository.builder().name(repositoryName).organizationName(organizationName).build();
+                Repository.builder().name(repositoryName).vcsOrganizationName(organizationName).build();
         final byte[] dummyBytes = new byte[0];
         final List<PullRequest> pullRequestsStub = List.of(
                 PullRequest.builder().id("github-1").build(),
