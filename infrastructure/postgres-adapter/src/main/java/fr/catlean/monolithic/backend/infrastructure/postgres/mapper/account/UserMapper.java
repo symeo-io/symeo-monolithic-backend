@@ -34,6 +34,8 @@ public interface UserMapper {
         return UserEntity.builder()
                 .id(isNull(user.getId()) ? UUID.randomUUID().toString() : user.getId().toString())
                 .mail(user.getMail())
+                .organizationEntity(isNull(user.getOrganization()) ? null :
+                        OrganizationMapper.domainToEntity(user.getOrganization()))
                 .onboardingEntity(isNull(user.getOnboarding()) ? null :
                         OnboardingMapper.domainToEntity(user.getOnboarding()))
                 .build();
