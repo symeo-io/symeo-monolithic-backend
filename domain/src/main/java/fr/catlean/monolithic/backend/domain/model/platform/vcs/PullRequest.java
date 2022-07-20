@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.domain.model;
+package fr.catlean.monolithic.backend.domain.model.platform.vcs;
 
 import lombok.Builder;
 import lombok.Value;

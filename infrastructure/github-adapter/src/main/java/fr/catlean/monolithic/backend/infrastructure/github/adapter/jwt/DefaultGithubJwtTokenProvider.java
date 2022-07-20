@@ -18,6 +18,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.GITHUB_APP_JWT_GENERATION;
+
 @AllArgsConstructor
 @Slf4j
 public class DefaultGithubJwtTokenProvider implements GithubJwtTokenProvider {
@@ -41,7 +43,7 @@ public class DefaultGithubJwtTokenProvider implements GithubJwtTokenProvider {
             final String message = "Error while generating JWT token for Github App";
             LOGGER.error(message, e);
             throw CatleanException.builder()
-                    .code("T.GITHUB_APP_JWT_GENERATION")
+                    .code(GITHUB_APP_JWT_GENERATION)
                     .message(message)
                     .build();
         }

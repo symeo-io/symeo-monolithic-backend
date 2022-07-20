@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.domain.model.account;
 
-import fr.catlean.monolithic.backend.domain.model.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import lombok.Builder;
 import lombok.Value;
 

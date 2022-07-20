@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.Optional;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.ORGANISATION_NOT_FOUND;
 import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper.domainToEntity;
 import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper.entityToDomain;
 
@@ -37,7 +38,7 @@ public class PostgresUserAdapter implements UserStorageAdapter {
     public User updateUserWithOrganization(User authenticatedUser, String organizationExternalId) throws CatleanException {
         final UserEntity userEntity = domainToEntity(authenticatedUser);
         userEntity.setOrganizationEntity(organizationRepository.findByExternalId(organizationExternalId)
-                .orElseThrow(() -> CatleanException.builder().code("F.ORGANIZATION_NOT_FOUND").message(
+                .orElseThrow(() -> CatleanException.builder().code(ORGANISATION_NOT_FOUND).message(
                         "Organization not found for externalId " + organizationExternalId).build()));
         return entityToDomain(userRepository.save(userEntity));
 

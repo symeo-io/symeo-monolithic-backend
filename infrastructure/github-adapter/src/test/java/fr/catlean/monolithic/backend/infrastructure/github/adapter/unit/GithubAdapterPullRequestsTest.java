@@ -1,8 +1,8 @@
 package fr.catlean.monolithic.backend.infrastructure.github.adapter.unit;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
-import fr.catlean.monolithic.backend.domain.model.PullRequest;
-import fr.catlean.monolithic.backend.domain.model.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;

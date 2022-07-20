@@ -11,6 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Map;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.MISSING_MAIL_AUTH0;
+
 @AllArgsConstructor
 @Slf4j
 public class AuthenticationService {
@@ -25,7 +27,7 @@ public class AuthenticationService {
             final String message = "Mail not found in auth0 JWT token";
             LOGGER.error(message);
             throw CatleanException.builder()
-                    .code("T.MISSING_MAIL_AUTH0")
+                    .code(MISSING_MAIL_AUTH0)
                     .message(message)
                     .build();
         }

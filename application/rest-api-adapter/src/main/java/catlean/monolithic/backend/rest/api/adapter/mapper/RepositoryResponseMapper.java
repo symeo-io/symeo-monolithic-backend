@@ -1,7 +1,7 @@
 package catlean.monolithic.backend.rest.api.adapter.mapper;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
-import fr.catlean.monolithic.backend.domain.model.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.GetRepositoriesResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.RepositoryResponseContract;
 

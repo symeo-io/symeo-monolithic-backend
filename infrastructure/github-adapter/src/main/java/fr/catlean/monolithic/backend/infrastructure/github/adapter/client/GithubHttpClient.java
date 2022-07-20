@@ -18,6 +18,8 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.*;
+
 @Slf4j
 public class GithubHttpClient {
 
@@ -187,7 +189,7 @@ public class GithubHttpClient {
         LOGGER.error(message);
         return CatleanException.builder()
                 .message(message)
-                .code("T.ERROR_WHILE_EXECUTING_HTTP_REQUEST")
+                .code(ERROR_WHILE_EXECUTING_HTTP_REQUEST)
                 .build();
     }
 
@@ -196,7 +198,7 @@ public class GithubHttpClient {
         final String message = String.format("Http status %d not handle while calling uri %s for organization %s"
                 , statusCode, uri, organizationName);
         return CatleanException.builder()
-                .code("F.UNHANDLED_HTTP_STATUS_CODE")
+                .code(UNHANDLED_HTTP_STATUS_CODE)
                 .message(message)
                 .build();
     }
@@ -205,7 +207,7 @@ public class GithubHttpClient {
         final String message = String.format("Installation token not found for organization %s", organizationName);
         LOGGER.error(message);
         return CatleanException.builder()
-                .code("F.GITHUB_ORG_TOKEN_NOT_FOUND")
+                .code(GITHUB_ORG_TOKEN_NOT_FOUND)
                 .message(message)
                 .build();
     }
@@ -214,7 +216,7 @@ public class GithubHttpClient {
         final String message = "Invalid uri for github app installations";
         LOGGER.error(message, e);
         return CatleanException.builder()
-                .code("T.INVALID_URI_FOR_GITHUB")
+                .code(INVALID_URI_FOR_GITHUB)
                 .message(message)
                 .build();
     }
