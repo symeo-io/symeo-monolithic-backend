@@ -1,9 +1,6 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.configuration;
 
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresTeamAdapter;
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.*;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
@@ -40,10 +37,10 @@ public class PostgresConfiguration {
     }
 
     @Bean
-    public PostgresUserAdapter postgresAccountAdapter(final UserRepository userRepository,
-                                                      final OrganizationRepository organizationRepository,
-                                                      final OnboardingRepository onboardingRepository) {
-        return new PostgresUserAdapter(userRepository, organizationRepository, onboardingRepository);
+    public PostgresAccountUserAdapter postgresAccountAdapter(final UserRepository userRepository,
+                                                             final OrganizationRepository organizationRepository,
+                                                             final OnboardingRepository onboardingRepository) {
+        return new PostgresAccountUserAdapter(userRepository, organizationRepository, onboardingRepository);
     }
 
     @Bean
@@ -52,9 +49,14 @@ public class PostgresConfiguration {
     }
 
     @Bean
-    public PostgresTeamAdapter postgresTeamAdapter(final TeamRepository teamRepository,
-                                                   final UserRepository userRepository) {
-        return new PostgresTeamAdapter(teamRepository, userRepository);
+    public PostgresAccountTeamAdapter postgresTeamAdapter(final TeamRepository teamRepository,
+                                                          final UserRepository userRepository) {
+        return new PostgresAccountTeamAdapter(teamRepository, userRepository);
+    }
+
+    @Bean
+    public PostgresAccountOnboardingAdapter postgresAccountOnboardingAdapter(final OnboardingRepository onboardingRepository) {
+        return new PostgresAccountOnboardingAdapter(onboardingRepository);
     }
 
 }

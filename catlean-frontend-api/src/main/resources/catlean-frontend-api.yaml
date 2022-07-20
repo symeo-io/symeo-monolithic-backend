@@ -47,7 +47,98 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/pull-request/histogram:
+  /api/v1/me/organization:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - User
+      summary: Link Current Logged In User to Organization
+      operationId: linkCurrentUserToOrganization
+      description: |
+        Link Current Logged In User to Organization based on vcs external id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkOrganizationToCurrentUserRequestContract'
+      responses:
+        "200":
+          description: 'Successfully linked organization to current user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUserResponseContract'
+              example:
+                user:
+                  id: 818e351a-0421-11ed-b939-0242ac120002
+                  email: john.doe@catlean.fr
+                  organization:
+                    id: 42
+                    name: Catlean
+                errors:
+                  { }
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+  /api/v1/me/onboarding:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - User
+      summary: Update onboarding linked to current user
+      operationId: updateOnboarding
+      description: |
+        Update onboarding linked to current user based on the onboarding id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingContract'
+      responses:
+        "200":
+          description: 'Successfully updated onboarding linked to current user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostOnboardingResponseContract'
+              example:
+                onboarding:
+                  id: 0e075bcc-446a-4e92-a2f0-38c04b4b147f
+                  has_connected_to_vcs: true
+                  has_configured_team: false
+                errors:
+                  { }
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+
+
+
+  /api/v1/pull-requests/histogram:
     get:
       security:
         - bearerAuth: [ ]
@@ -108,51 +199,10 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/me/organization:
-    post:
-      security:
-        - bearerAuth: [ ]
-      tags:
-        - User
-      summary: Link Current Logged In User to Organization
-      operationId: linkCurrentUserToOrganization
-      description: |
-        Link Current Logged In User to Organization based on vcs external id
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LinkOrganizationToCurrentUserRequestContract'
-      responses:
-        "200":
-          description: 'Successfully linked organization to current user'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CurrentUserResponseContract'
-              example:
-                user:
-                  id: 818e351a-0421-11ed-b939-0242ac120002
-                  email: john.doe@catlean.fr
-                  organization:
-                    id: 42
-                    name: Catlean
-                errors:
-                  { }
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
-        "500":
-          description: An internal error has occurred
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CatleanErrorsContract'
-              example:
-                errors:
-                  - code: "T.POSTGRES_TIMEOUT"
-                    message: "Failed to open connection with database"
-  /api/v1/repository:
+
+
+
+  /api/v1/repositories:
     get:
       security:
         - bearerAuth: [ ]
@@ -191,7 +241,9 @@ paths:
                   - code: "F.REPOSITORIES_NOT_FOUND"
                     message: "Failed to find repositories"
 
-  /api/v1/team:
+
+
+  /api/v1/teams:
     post:
       security:
         - bearerAuth: [ ]
@@ -206,19 +258,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTeamRequestContract'
+              $ref: '#/components/schemas/PostCreateTeamsRequestContract'
       responses:
         "200":
           description: 'Successfully create team linked organization to current user'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateTeamResponseContract'
+                $ref: '#/components/schemas/PostCreateTeamsResponseContract'
               example:
-                team:
-                  id: 818e351a-0421-11ed-b939-0242ac120002
-                  name: first-team
-                  repository_ids: [ 1,2,3 ]
+                teams:
+                  - id: 818e351a-0421-11ed-b939-0242ac120002
+                    name: first-team
+                    repository_ids: [ 1,2,3 ]
                 errors:
                   { }
         "401":
@@ -313,9 +365,13 @@ components:
     OnboardingContract:
       type: object
       required:
+        - id
         - has_connected_to_vcs
         - has_configured_team
       properties:
+        id:
+          type: string
+          format: uuid
         has_connected_to_vcs:
           type: boolean
         has_configured_team:
@@ -380,6 +436,10 @@ components:
           type: integer
         name:
           type: string
+    PostCreateTeamsRequestContract:
+      type: array
+      items:
+        $ref: '#/components/schemas/CreateTeamRequestContract'
     CreateTeamRequestContract:
       type: object
       properties:
@@ -390,6 +450,17 @@ components:
           type: array
           items:
             type: integer
+    PostCreateTeamsResponseContract:
+      type: object
+      properties:
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateTeamResponseContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
     CreateTeamResponseContract:
       type: object
       properties:
@@ -405,6 +476,15 @@ components:
               type: array
               items:
                 type: integer
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
+    PostOnboardingResponseContract:
+      type: object
+      properties:
+        onboarding:
+          $ref: '#/components/schemas/OnboardingContract'
         errors:
           type: array
           items:

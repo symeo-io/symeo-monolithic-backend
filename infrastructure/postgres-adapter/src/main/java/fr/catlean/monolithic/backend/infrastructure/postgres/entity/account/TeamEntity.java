@@ -24,7 +24,7 @@ public class TeamEntity extends AbstractEntity {
     @Column(name = "organization_id", nullable = false)
     private String organizationId;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "team_to_repository", schema = "exposition_storage",
             joinColumns = @JoinColumn(name = "team_id")

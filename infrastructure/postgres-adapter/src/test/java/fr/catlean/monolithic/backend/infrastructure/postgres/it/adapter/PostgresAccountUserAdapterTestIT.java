@@ -6,7 +6,7 @@ import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountUserAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresUserAdapterTestIT {
+public class PostgresAccountUserAdapterTestIT {
 
     private final Faker faker = new Faker();
     @Autowired
@@ -45,12 +45,12 @@ public class PostgresUserAdapterTestIT {
     @Test
     void should_create_user() {
         // Given
-        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
+        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
                 organizationRepository, onboardingRepository);
         final String mail = faker.name().title();
 
         // When
-        final User user = postgresUserAdapter.createUserWithMail(mail);
+        final User user = postgresAccountUserAdapter.createUserWithMail(mail);
 
         // Then
         assertThat(user).isNotNull();
@@ -66,14 +66,14 @@ public class PostgresUserAdapterTestIT {
     @Test
     void should_read_user() {
         // Given
-        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
+        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
                 organizationRepository, onboardingRepository);
         final String mail = faker.name().title();
-        postgresUserAdapter.createUserWithMail(mail);
+        postgresAccountUserAdapter.createUserWithMail(mail);
 
         // When
-        final Optional<User> existingUser = postgresUserAdapter.getUserFromMail(mail);
-        final Optional<User> notExistingUser = postgresUserAdapter.getUserFromMail(faker.dragonBall().character());
+        final Optional<User> existingUser = postgresAccountUserAdapter.getUserFromMail(mail);
+        final Optional<User> notExistingUser = postgresAccountUserAdapter.getUserFromMail(faker.dragonBall().character());
 
         // Then
         assertThat(existingUser).isPresent();
@@ -87,7 +87,7 @@ public class PostgresUserAdapterTestIT {
     @Test
     void should_update_user_with_organization() throws CatleanException {
         // Given
-        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
+        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
                 organizationRepository, onboardingRepository);
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
                 new PostgresAccountOrganizationAdapter(organizationRepository);
@@ -100,9 +100,9 @@ public class PostgresUserAdapterTestIT {
                 .build();
 
         // When
-        final User user = postgresUserAdapter.createUserWithMail(faker.dragonBall().character());
+        final User user = postgresAccountUserAdapter.createUserWithMail(faker.dragonBall().character());
         final Organization expectedOrganization = postgresOrganizationAdapter.createOrganization(organization);
-        final User updateUserWithOrganization = postgresUserAdapter.updateUserWithOrganization(user.toBuilder()
+        final User updateUserWithOrganization = postgresAccountUserAdapter.updateUserWithOrganization(user.toBuilder()
                         .onboarding(user.getOnboarding().toBuilder().hasConnectedToVcs(true).build()).build(),
                 externalId);
 

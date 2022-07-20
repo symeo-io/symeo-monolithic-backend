@@ -17,7 +17,7 @@ import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.accou
 import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper.entityToDomain;
 
 @AllArgsConstructor
-public class PostgresUserAdapter implements UserStorageAdapter {
+public class PostgresAccountUserAdapter implements UserStorageAdapter {
 
     private final UserRepository userRepository;
     private final OrganizationRepository organizationRepository;

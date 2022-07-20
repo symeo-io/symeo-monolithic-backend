@@ -11,11 +11,11 @@ import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorResponseMapper.catleanExceptionToContract;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper.catleanExceptionToContract;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
-public interface PullRequestHistogramResponseMapper {
+public interface PullRequestHistogramContractMapper {
 
 
     static ResponseEntity<HistogramResponseContract> domainToContract(final PullRequestHistogram pullRequestHistogram) {

@@ -4,7 +4,9 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 
+import java.util.List;
+
 public interface AccountTeamStorage {
 
-    Team createTeamForUser(Team team, User user) throws CatleanException;
+    List<Team> createTeamsForUser(List<Team> teams, User user) throws CatleanException;
 }

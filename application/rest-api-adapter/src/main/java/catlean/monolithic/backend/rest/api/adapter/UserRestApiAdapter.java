@@ -2,11 +2,15 @@ package catlean.monolithic.backend.rest.api.adapter;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
 import fr.catlean.monolithic.backend.domain.model.account.User;
+import fr.catlean.monolithic.backend.domain.port.in.OnboardingFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.frontend.contract.api.UserApi;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CurrentUserResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.OnboardingContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.PostOnboardingResponseContract;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.AllArgsConstructor;
@@ -15,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorResponseMapper.catleanExceptionToContract;
-import static catlean.monolithic.backend.rest.api.adapter.mapper.UserResponseMapper.userToResponse;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper.catleanExceptionToContract;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.OnboardingContractMapper.getOnboarding;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.OnboardingContractMapper.getPostOnboardingResponseContract;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.UserContractMapper.userToResponse;
 
 @RestController
 @Tags(@Tag(name = "User"))
@@ -25,6 +31,7 @@ public class UserRestApiAdapter implements UserApi {
 
     private final AuthenticationService authenticationService;
     private final UserFacadeAdapter userFacadeAdapter;
+    private final OnboardingFacadeAdapter onboardingFacadeAdapter;
 
     @Override
     public ResponseEntity<CurrentUserResponseContract> getCurrentUser() {
@@ -51,4 +58,18 @@ public class UserRestApiAdapter implements UserApi {
             return ResponseEntity.internalServerError().body(currentUserResponseContract);
         }
     }
+
+    @Override
+    public ResponseEntity<PostOnboardingResponseContract> updateOnboarding(OnboardingContract onboardingContract) {
+        try {
+            Onboarding onboarding = getOnboarding(onboardingContract);
+            onboarding = onboardingFacadeAdapter.updateOnboarding(onboarding);
+            return ResponseEntity.ok(getPostOnboardingResponseContract(onboarding));
+        } catch (CatleanException catleanException) {
+            final PostOnboardingResponseContract postOnboardingResponseContract = new PostOnboardingResponseContract();
+            return ResponseEntity.internalServerError().body(postOnboardingResponseContract);
+        }
+    }
+
+
 }
