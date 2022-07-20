@@ -1,13 +1,13 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account;
 
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
-import static java.util.UUID.randomUUID;
 
 public interface OrganizationMapper {
 
@@ -15,19 +15,44 @@ public interface OrganizationMapper {
         return OrganizationEntity.builder()
                 .id(isNull(organization.getId()) ? UUID.randomUUID().toString() : organization.getId().toString())
                 .name(organization.getName())
-                .externalId(organization.getExternalId())
                 .build();
     }
 
-
-    static Organization entityToDomain(final OrganizationEntity organization) {
+    static Organization entityToDomain(final OrganizationEntity organizationEntity) {
         return Organization.builder()
-                .id(UUID.fromString(organization.getId()))
-                .vcsConfiguration(
-                        VcsConfiguration.builder().organizationName(organization.getName()).build()
-                )
-                .name(organization.getName())
-                .externalId(organization.getExternalId())
+                .name(organizationEntity.getName())
+                .id(UUID.fromString(organizationEntity.getId()))
+                .build();
+
+    }
+
+
+    static Organization entityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+        final OrganizationEntity organizationEntity = vcsOrganizationEntity.getOrganizationEntity();
+        return Organization.builder()
+                .id(UUID.fromString(organizationEntity.getId()))
+                .name(organizationEntity.getName())
+                .vcsOrganization(vcsEntityToDomain(vcsOrganizationEntity))
                 .build();
     }
+
+    static VcsOrganizationEntity vcsDomainToEntity(final Organization organization) {
+        final VcsOrganization vcsOrganization = organization.getVcsOrganization();
+        return VcsOrganizationEntity.builder()
+                .organizationEntity(domainToEntity(organization))
+                .vcsId(vcsOrganization.getVcsId())
+                .name(vcsOrganization.getName())
+                .externalId(vcsOrganization.getExternalId())
+                .build();
+    }
+
+    private static VcsOrganization vcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+        return VcsOrganization.builder()
+                .vcsId(vcsOrganizationEntity.getVcsId())
+                .id(vcsOrganizationEntity.getId().toString())
+                .name(vcsOrganizationEntity.getName())
+                .externalId(vcsOrganizationEntity.getExternalId())
+                .build();
+    }
+
 }

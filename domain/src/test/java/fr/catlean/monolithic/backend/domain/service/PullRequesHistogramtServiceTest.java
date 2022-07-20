@@ -3,9 +3,12 @@ package fr.catlean.monolithic.backend.domain.service;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
@@ -28,24 +32,11 @@ public class PullRequesHistogramtServiceTest {
     void should_compute_collect_all_pull_requests_details_for_a_given_organization_account() throws CatleanException {
         // Given
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequesHistogramtService pullRequesHistogramtService = new PullRequesHistogramtService(expositionStorageAdapter);
-        final String vcsOrganizationName = faker.name().name();
-        final String organizationName = faker.name().lastName();
+        final PullRequesHistogramtService pullRequesHistogramtService =
+                new PullRequesHistogramtService(expositionStorageAdapter);
         final String repo1Name = faker.pokemon().name() + "1";
         final String repo2Name = faker.pokemon().name() + "2";
-        final String repo3Name = faker.pokemon().name() + "3";
-        final String repo4Name = faker.pokemon().name() + "4";
-        final Organization organization = Organization.builder().name(organizationName)
-                .vcsConfiguration(
-                        VcsConfiguration.builder()
-                                .organizationName(vcsOrganizationName)
-                                .build()
-                )
-                .build();
-        final String team1Name = faker.pokemon().name() + "team1";
-        final String team2Name = faker.pokemon().name() + "team2";
-        organization.addTeam(team1Name, List.of(repo1Name, repo3Name), 1000, 5);
-        organization.addTeam(team2Name, List.of(repo4Name), 500, 7);
+
 
         // When
         final PullRequest pr11 = PullRequest.builder().id("github-11").repository(repo1Name).build();
@@ -64,15 +55,23 @@ public class PullRequesHistogramtServiceTest {
     @Test
     void should_compute_and_save_pull_request_size_histogram_given_simple_pull_request_cases() {
         // Given
+        final String repositoryName1 = faker.pokemon().name() + "-1";
+        final Team team1 = Team.builder()
+                .name("team1")
+                .repositories(List.of(Repository.builder().name(repositoryName1).build()))
+                .pullRequestDayNumberLimit(5)
+                .pullRequestLineNumberLimit(500)
+                .build();
         final Organization organization = Organization.builder()
                 .name("fake-orga-account")
-                .vcsConfiguration(
-                        VcsConfiguration.builder().organizationName("fake-orga-name").build()
-                ).build();
-        final String repositoryName1 = faker.pokemon().name() + "-1";
-        organization.addTeam("team1", List.of(repositoryName1), 500, 5);
+                .vcsOrganization(
+                        VcsOrganization.builder().name("fake-orga-name").build()
+                )
+                .teams(List.of(team1))
+                .build();
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequesHistogramtService pullRequesHistogramtService = new PullRequesHistogramtService(expositionStorageAdapter);
+        final PullRequesHistogramtService pullRequesHistogramtService =
+                new PullRequesHistogramtService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organization, 100);
         final PullRequestHistogram pullRequestHistogram =
@@ -80,7 +79,7 @@ public class PullRequesHistogramtServiceTest {
                         type(PullRequestHistogram.SIZE_LIMIT)
                         .limit(500)
                         .organization(organization.getName())
-                        .team(organization.getVcsConfiguration().getVcsTeams().get(0).getName())
+                        .team(organization.getTeams().get(0).getName())
                         .build();
 
         final List<java.util.Date> weekStartDates =
@@ -133,15 +132,26 @@ public class PullRequesHistogramtServiceTest {
     @Test
     void should_compute_and_save_pull_request_time_histogram_given_simple_pull_request_cases() {
         // Given
-        final Organization organization = Organization.builder()
-                .name("fake-orga-account")
-                .vcsConfiguration(
-                        VcsConfiguration.builder().organizationName("fake-orga-name").build()
-                ).build();
         final String repositoryName1 = faker.pokemon().name() + "-1";
-        organization.addTeam("team1", List.of(repositoryName1), 500, 5);
+        final Team team1 = Team.builder()
+                .name("team1")
+                .repositories(List.of(Repository.builder().name(repositoryName1).build()))
+                .pullRequestDayNumberLimit(5)
+                .pullRequestLineNumberLimit(500)
+                .build();
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .name("fake-orga-account")
+                .vcsOrganization(
+                        VcsOrganization.builder().name("fake-orga-name").build()
+                )
+                .teams(List.of(team1))
+                .build();
+
+
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequesHistogramtService pullRequesHistogramtService = new PullRequesHistogramtService(expositionStorageAdapter);
+        final PullRequesHistogramtService pullRequesHistogramtService =
+                new PullRequesHistogramtService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organization, 100);
         final PullRequestHistogram pullRequestHistogram =
@@ -149,7 +159,7 @@ public class PullRequesHistogramtServiceTest {
                         type(PullRequestHistogram.TIME_LIMIT)
                         .limit(5)
                         .organization(organization.getName())
-                        .team(organization.getVcsConfiguration().getVcsTeams().get(0).getName())
+                        .team(organization.getTeams().get(0).getName())
                         .build();
 
         final List<java.util.Date> weekStartDates =

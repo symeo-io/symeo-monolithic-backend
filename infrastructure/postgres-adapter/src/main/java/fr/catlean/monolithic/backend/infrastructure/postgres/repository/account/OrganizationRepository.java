@@ -9,7 +9,5 @@ import java.util.Optional;
 public interface OrganizationRepository extends JpaRepository<OrganizationEntity, String>,
         JpaSpecificationExecutor<OrganizationEntity> {
 
-    Optional<OrganizationEntity> findByExternalId(String externalId);
-
     Optional<OrganizationEntity> findByName(String name);
 }

@@ -6,6 +6,7 @@ import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
@@ -33,7 +34,7 @@ public class DataProcessingJobServiceTest {
                         accountOrganizationStorageAdapter, pullRequesHistogramtService, repositoryService);
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().name(organisationName)
-                .vcsConfiguration(VcsConfiguration.builder().build()).build();
+                .vcsOrganization(VcsOrganization.builder().build()).build();
         final List<PullRequest> pullRequests = List.of(PullRequest.builder().id(faker.pokemon().name()).build(),
                 PullRequest.builder().id(faker.hacker().abbreviation()).build());
         final List<Repository> repositories = List.of(

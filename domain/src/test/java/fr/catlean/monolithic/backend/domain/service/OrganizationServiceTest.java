@@ -3,6 +3,7 @@ package fr.catlean.monolithic.backend.domain.service;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.account.OrganizationService;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ public class OrganizationServiceTest {
         final OrganizationService organizationService =
                 new OrganizationService(accountOrganizationStorageAdapter);
         final Organization expectedOrganizationAccount =
-                Organization.builder().name(organizationName).vcsConfiguration(VcsConfiguration.builder().build()).build();
+                Organization.builder().name(organizationName).vcsOrganization(VcsOrganization.builder().build()).build();
         // When
         when(accountOrganizationStorageAdapter.findOrganizationForName(organizationName))
                 .thenReturn(expectedOrganizationAccount);
@@ -48,10 +49,10 @@ public class OrganizationServiceTest {
         final String vcsOrganizationName = faker.gameOfThrones().character();
         final Organization expectedOrganization = Organization.builder().id(UUID.randomUUID())
                 .name(vcsOrganizationName)
-                .externalId(externalId)
-                .vcsConfiguration(
-                        VcsConfiguration.builder()
-                                .organizationName(vcsOrganizationName)
+                .vcsOrganization(
+                        VcsOrganization.builder()
+                                .externalId(externalId)
+                                .name(vcsOrganizationName)
                                 .build()
                 )
                 .build();
@@ -59,10 +60,10 @@ public class OrganizationServiceTest {
         // When
         when(accountOrganizationStorageAdapter.createOrganization(Organization.builder()
                 .name(vcsOrganizationName)
-                .externalId(externalId)
-                .vcsConfiguration(
-                        VcsConfiguration.builder()
-                                .organizationName(vcsOrganizationName)
+                .vcsOrganization(
+                        VcsOrganization.builder()
+                                .externalId(externalId)
+                                .name(vcsOrganizationName)
                                 .build()
                 )
                 .build())).thenReturn(

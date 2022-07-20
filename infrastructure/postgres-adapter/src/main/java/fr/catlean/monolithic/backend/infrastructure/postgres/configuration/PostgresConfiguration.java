@@ -8,6 +8,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -38,14 +39,14 @@ public class PostgresConfiguration {
 
     @Bean
     public PostgresAccountUserAdapter postgresAccountAdapter(final UserRepository userRepository,
-                                                             final OrganizationRepository organizationRepository,
-                                                             final OnboardingRepository onboardingRepository) {
-        return new PostgresAccountUserAdapter(userRepository, organizationRepository, onboardingRepository);
+                                                             final VcsOrganizationRepository vcsOrganizationRepository) {
+        return new PostgresAccountUserAdapter(userRepository, vcsOrganizationRepository);
     }
 
     @Bean
-    public PostgresAccountOrganizationAdapter postgresOrganizationAdapter(final OrganizationRepository organizationRepository, final TeamRepository teamRepository) {
-        return new PostgresAccountOrganizationAdapter(organizationRepository);
+    public PostgresAccountOrganizationAdapter postgresOrganizationAdapter(final OrganizationRepository organizationRepository,
+                                                                          final VcsOrganizationRepository vcsOrganizationRepository) {
+        return new PostgresAccountOrganizationAdapter(organizationRepository, vcsOrganizationRepository);
     }
 
     @Bean

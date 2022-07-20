@@ -32,7 +32,7 @@ public class TeamRestApiAdapter implements TeamApi {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
 
-            final Map<String, List<Integer>> repositoryIdsMappedToTeamName =
+            final Map<String, List<Long>> repositoryIdsMappedToTeamName =
                     getRepositoryIdsMappedToTeamName(createTeamRequestContract);
             final List<Team> teamsForNameAndRepositoriesAndUser =
                     teamFacadeAdapter.createTeamsForNameAndRepositoriesAndUser(repositoryIdsMappedToTeamName,

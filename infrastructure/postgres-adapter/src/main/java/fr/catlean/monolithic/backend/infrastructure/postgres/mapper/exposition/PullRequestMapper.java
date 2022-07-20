@@ -12,7 +12,7 @@ public interface PullRequestMapper {
 
     static PullRequestEntity domainToEntity(final PullRequest pullRequest) {
         return PullRequestEntity.builder()
-                .id(pullRequest.getOrganization() + "-" + pullRequest.getId())
+                .vcsId(pullRequest.getOrganization() + "-" + pullRequest.getId())
                 .isDraft(pullRequest.getIsDraft())
                 .isMerged(pullRequest.getIsMerged())
                 .commitNumber(pullRequest.getCommitNumber())
@@ -28,7 +28,6 @@ public interface PullRequestMapper {
                 .vcsUrl(pullRequest.getVcsUrl())
                 .state(pullRequest.getState())
                 .authorLogin(pullRequest.getAuthorLogin())
-                .vcsId(pullRequest.getNumber())
                 .vcsRepository(pullRequest.getRepository())
                 .team(pullRequest.getTeam())
                 .vcsOrganization(pullRequest.getVcsOrganization())

@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ public class HistogramQueryTest {
 
         // When
         when(accountOrganizationStorageAdapter.findOrganizationForName(organizationName)).thenReturn(
-                Organization.builder().name(organizationName).vcsConfiguration(VcsConfiguration.builder().build()).build()
+                Organization.builder().name(organizationName).vcsOrganization(VcsOrganization.builder().build()).build()
         );
         when(expositionStorageAdapter.readPullRequestHistogram(organizationName, teamName, histogramType)).thenReturn(pullRequestStub);
         final PullRequestHistogram pullRequestHistogram = histogramQuery.readPullRequestHistogram(organizationName,

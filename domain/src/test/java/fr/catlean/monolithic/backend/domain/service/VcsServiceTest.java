@@ -6,6 +6,7 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ public class VcsServiceTest {
                 deliveryQuery);
         final String organizationName = faker.name().name();
         final Organization organization = Organization.builder()
-                .vcsConfiguration(VcsConfiguration.builder().build()).name(organizationName).build();
+                .vcsOrganization(VcsOrganization.builder().build()).name(organizationName).build();
 
         // When
         final Repository repo1 =
@@ -71,7 +72,7 @@ public class VcsServiceTest {
                 deliveryQuery);
         final String organizationName = faker.name().name();
         final Organization organization = Organization.builder()
-                .vcsConfiguration(VcsConfiguration.builder().build()).name(organizationName).build();
+                .vcsOrganization(VcsOrganization.builder().build()).name(organizationName).build();
 
         // When
         final Repository repo1 =

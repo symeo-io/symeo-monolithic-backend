@@ -58,7 +58,6 @@ public class PostgresAccountTeamAdapterTestIT {
         final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
                 new PostgresAccountTeamAdapter(teamRepository, userRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
-                .externalId(faker.dragonBall().character())
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID().toString())
                 .build();
@@ -109,7 +108,6 @@ public class PostgresAccountTeamAdapterTestIT {
         final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
                 new PostgresAccountTeamAdapter(teamRepository, userRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
-                .externalId(faker.dragonBall().character())
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID().toString())
                 .build();

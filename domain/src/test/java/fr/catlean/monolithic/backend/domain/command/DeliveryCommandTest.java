@@ -2,9 +2,10 @@ package fr.catlean.monolithic.backend.domain.command;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
-import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ public class DeliveryCommandTest {
         final String vcsOrganizationName = faker.pokemon().location();
         final Organization organization = Organization.builder()
                 .name(organizationName)
-                .vcsConfiguration(VcsConfiguration.builder().organizationName(vcsOrganizationName).build())
+                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
                 .build();
         final String vcsAdapterName = faker.animal().name();
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);

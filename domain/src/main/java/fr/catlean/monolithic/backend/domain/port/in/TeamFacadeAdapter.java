@@ -9,6 +9,6 @@ import java.util.Map;
 
 public interface TeamFacadeAdapter {
 
-    List<Team> createTeamsForNameAndRepositoriesAndUser(Map<String, List<Integer>> repositoryIdsMappedToTeamName,
+    List<Team> createTeamsForNameAndRepositoriesAndUser(Map<String, List<Long>> repositoryIdsMappedToTeamName,
                                                         User user) throws CatleanException;
 }

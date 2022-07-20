@@ -26,4 +26,5 @@ public class Organization {
                 .map(Repository::getName)
                 .toList();
     }
+
 }

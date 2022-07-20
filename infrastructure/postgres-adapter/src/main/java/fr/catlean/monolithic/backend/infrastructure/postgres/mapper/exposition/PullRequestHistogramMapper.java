@@ -20,7 +20,7 @@ public interface PullRequestHistogramMapper {
                 .id(
                         HistogramId.builder()
                                 .histogramType(pullRequestHistogram.getType())
-                                .organizationName(pullRequestHistogram.getOrganizationAccount())
+                                .organizationName(pullRequestHistogram.getOrganization())
                                 .teamName(pullRequestHistogram.getTeam())
                                 .startDateRange(dataCompareToLimit.getDateAsString())
                                 .build()

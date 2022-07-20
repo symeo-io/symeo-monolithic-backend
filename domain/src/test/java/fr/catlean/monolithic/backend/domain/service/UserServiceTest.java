@@ -5,6 +5,7 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.UserStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.account.UserService;
 import org.junit.jupiter.api.Test;
@@ -75,10 +76,10 @@ public class UserServiceTest {
         final Organization expectedOrganization = Organization.builder()
                 .name(name)
                 .id(UUID.randomUUID())
-                .externalId(externalId)
-                .vcsConfiguration(
-                        VcsConfiguration.builder()
-                                .organizationName(name)
+                .vcsOrganization(
+                        VcsOrganization.builder()
+                                .externalId(externalId)
+                                .name(name)
                                 .build()
                 )
                 .build();

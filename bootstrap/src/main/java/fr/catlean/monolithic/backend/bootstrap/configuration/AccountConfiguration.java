@@ -12,7 +12,7 @@ public class AccountConfiguration {
 //
 //            static {
 //                Organization armisOrganizationAccount =
-//                        Organization.builder().name("armis").vcsConfiguration(VcsConfiguration.builder().organizationName("armis-paris").build()).build()
+//                        Organization.builder().name("armis").vcsOrganization(VcsOrganization.builder().organizationName("armis-paris").build()).build()
 //                                .addTeam("saas-team", List.of("Reference_API",
 //                                        "saas-backend",
 //                                        "saas-frontend",
@@ -44,7 +44,7 @@ public class AccountConfiguration {
 //                                .addTeam("media-team", List.of("Media-API", "Media-Console", "armis-orchestrator"),
 //                                        1000, 5);
 //                Organization dalmaOrganizationAccount =
-//                        Organization.builder().name("dalma").vcsConfiguration(VcsConfiguration.builder().organizationName("dalmaTeam").build()).build()
+//                        Organization.builder().name("dalma").vcsOrganization(VcsOrganization.builder().organizationName("dalmaTeam").build()).build()
 //                                .addTeam("front", List.of("web-reactjs", "marketing", "subscription-flow"), 500, 3)
 //                                .addTeam("back", List.of("dalma-services"), 500, 3);
 //                ORGANISATION_ACCOUNT_MAP.put("armis", armisOrganizationAccount);

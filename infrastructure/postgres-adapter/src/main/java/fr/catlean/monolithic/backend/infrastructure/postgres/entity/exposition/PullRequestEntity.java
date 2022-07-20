@@ -23,10 +23,10 @@ public class PullRequestEntity extends AbstractEntity {
     @Id
     @Column(name = "id", nullable = false)
     @NaturalId
-    String id;
+    Long id;
     @Column(name = "vcs_id", nullable = false)
     @NotNull
-    int vcsId;
+    String vcsId;
     @Column(name = "commit_number")
     int commitNumber;
     @Column(name = "deleted_line_number")

@@ -3,9 +3,11 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,23 +25,25 @@ public class PostgresOrganizationAdapterTestIT {
     private final Faker faker = new Faker();
     @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
+    private VcsOrganizationRepository vcsOrganizationRepository;
 
     @AfterEach
     void tearDown() {
         organizationRepository.deleteAll();
+        vcsOrganizationRepository.deleteAll();
     }
 
     @Test
     void should_create_an_organization() throws CatleanException {
         // Given
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(organizationRepository);
+                new PostgresAccountOrganizationAdapter(organizationRepository, vcsOrganizationRepository);
         final String externalId = faker.name().firstName();
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
-                .externalId(externalId)
                 .name(name)
-                .vcsConfiguration(VcsConfiguration.builder().build())
+                .vcsOrganization(VcsOrganization.builder().externalId(externalId).build())
                 .build();
 
         // When
@@ -54,13 +58,12 @@ public class PostgresOrganizationAdapterTestIT {
     void should_find_an_organization_by_name() throws CatleanException {
         // Given
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(organizationRepository);
+                new PostgresAccountOrganizationAdapter(organizationRepository, vcsOrganizationRepository);
         final String externalId = faker.name().firstName();
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
-                .externalId(externalId)
                 .name(name)
-                .vcsConfiguration(VcsConfiguration.builder().build())
+                .vcsOrganization(VcsOrganization.builder().externalId(externalId).build())
                 .build();
 
         // When
@@ -76,7 +79,7 @@ public class PostgresOrganizationAdapterTestIT {
     void should_raise_an_exception_for_an_organization_not_existing() {
         // Given
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(organizationRepository);
+                new PostgresAccountOrganizationAdapter(organizationRepository, vcsOrganizationRepository);
         final String organizationName = faker.ancient().god();
 
         // When
