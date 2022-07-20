@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
+import static catlean.monolithic.backend.github.webhook.api.adapter.security.GithubWebhookSecretValidator.validateWebhook;
+
 @RestController
 @Slf4j
 @AllArgsConstructor
@@ -34,7 +36,7 @@ public class GithubWebhookApiAdapter {
 
 
         try {
-            GithubWebhookSecretValidator.validateWebhook(githubWebhookDTOBytes, githubWebhookProperties.getSecret(),
+            validateWebhook(githubWebhookDTOBytes, githubWebhookProperties.getSecret(),
                     githubSha256Signature);
             final GithubWebhookEventDTO githubWebhookEventDTO = objectMapper.readValue(githubWebhookDTOBytes,
                     GithubWebhookEventDTO.class);

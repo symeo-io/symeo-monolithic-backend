@@ -24,5 +24,8 @@ public class UserEntity extends AbstractEntity {
     @JoinColumn(name = "organization_id",
             referencedColumnName = "id")
     private OrganizationEntity organizationEntity;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "onboarding_id", referencedColumnName = "id")
+    private OnboardingEntity onboardingEntity;
 
 }

@@ -9,6 +9,8 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrga
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
+import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -32,6 +34,8 @@ public class PostgresUserAdapterTestIT {
     private UserRepository userRepository;
     @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
+    private OnboardingRepository onboardingRepository;
 
     @AfterEach
     void tearDown() {
@@ -41,7 +45,8 @@ public class PostgresUserAdapterTestIT {
     @Test
     void should_create_user() {
         // Given
-        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository, organizationRepository);
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
+                organizationRepository, onboardingRepository);
         final String mail = faker.name().title();
 
         // When
@@ -55,12 +60,14 @@ public class PostgresUserAdapterTestIT {
         final UserEntity userEntity = optionalUserEntity.get();
         assertThat(userEntity.getId()).isEqualTo(user.getId().toString());
         assertThat(userEntity.getMail()).isEqualTo(user.getMail());
+        assertThat(user.getOnboarding()).isEqualTo(OnboardingMapper.entityToDomain(userEntity.getOnboardingEntity()));
     }
 
     @Test
     void should_read_user() {
         // Given
-        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository, organizationRepository);
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
+                organizationRepository, onboardingRepository);
         final String mail = faker.name().title();
         postgresUserAdapter.createUserWithMail(mail);
 
@@ -80,7 +87,8 @@ public class PostgresUserAdapterTestIT {
     @Test
     void should_update_user_with_organization() throws CatleanException {
         // Given
-        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository, organizationRepository);
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
+                organizationRepository, onboardingRepository);
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
                 new PostgresAccountOrganizationAdapter(organizationRepository);
         final String externalId = faker.name().firstName();
@@ -94,11 +102,13 @@ public class PostgresUserAdapterTestIT {
         // When
         final User user = postgresUserAdapter.createUserWithMail(faker.dragonBall().character());
         final Organization expectedOrganization = postgresOrganizationAdapter.createOrganization(organization);
-        final User updateUserWithOrganization = postgresUserAdapter.updateUserWithOrganization(user,
+        final User updateUserWithOrganization = postgresUserAdapter.updateUserWithOrganization(user.toBuilder()
+                        .onboarding(user.getOnboarding().toBuilder().hasConnectedToVcs(true).build()).build(),
                 externalId);
 
         // Then
         assertThat(updateUserWithOrganization).isNotNull();
         assertThat(updateUserWithOrganization.getOrganization()).isEqualTo(expectedOrganization);
+        assertThat(updateUserWithOrganization.getOnboarding().getHasConnectedToVcs()).isTrue();
     }
 }

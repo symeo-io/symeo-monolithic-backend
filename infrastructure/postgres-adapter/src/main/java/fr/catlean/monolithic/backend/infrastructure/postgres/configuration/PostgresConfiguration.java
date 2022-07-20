@@ -2,8 +2,9 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.configuration;
 
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresTeamAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
-import fr.catlean.monolithic.backend.infrastructure.postgres.entity.PostgresTeamAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
@@ -40,8 +41,9 @@ public class PostgresConfiguration {
 
     @Bean
     public PostgresUserAdapter postgresAccountAdapter(final UserRepository userRepository,
-                                                      final OrganizationRepository organizationRepository) {
-        return new PostgresUserAdapter(userRepository, organizationRepository);
+                                                      final OrganizationRepository organizationRepository,
+                                                      final OnboardingRepository onboardingRepository) {
+        return new PostgresUserAdapter(userRepository, organizationRepository, onboardingRepository);
     }
 
     @Bean
@@ -50,8 +52,9 @@ public class PostgresConfiguration {
     }
 
     @Bean
-    public PostgresTeamAdapter postgresTeamAdapter(final TeamRepository teamRepository) {
-        return new PostgresTeamAdapter(teamRepository);
+    public PostgresTeamAdapter postgresTeamAdapter(final TeamRepository teamRepository,
+                                                   final UserRepository userRepository) {
+        return new PostgresTeamAdapter(teamRepository, userRepository);
     }
 
 }

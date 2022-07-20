@@ -2,11 +2,13 @@ package fr.catlean.monolithic.backend.domain.service;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.Onboarding;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.UserStorageAdapter;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -46,7 +48,9 @@ public class UserServiceTest {
         final String mail = faker.name().fullName();
         final User expectedUser =
                 User.builder().id(UUID.randomUUID())
-                        .mail(mail).build();
+                        .mail(mail)
+                        .onboarding(Onboarding.builder().id(UUID.randomUUID()).build())
+                        .build();
 
         // When
         when(userStorageAdapter.getUserFromMail(mail)).thenReturn(Optional.empty());
@@ -81,12 +85,17 @@ public class UserServiceTest {
 
 
         // When
-        when(userStorageAdapter.updateUserWithOrganization(authenticatedUser, externalId))
+        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        ArgumentCaptor<String> externalIdCaptor = ArgumentCaptor.forClass(String.class);
+        when(userStorageAdapter.updateUserWithOrganization(userArgumentCaptor.capture(), externalIdCaptor.capture()))
                 .thenReturn(authenticatedUser.toBuilder().organization(expectedOrganization).build());
-        final User user = userService.updateUserWithOrganization(authenticatedUser,
+        userService.updateUserWithOrganization(authenticatedUser,
                 externalId);
 
         // Then
-        assertThat(user.getOrganization()).isEqualTo(expectedOrganization);
+        assertThat(userArgumentCaptor.getValue().getId()).isEqualTo(authenticatedUser.getId());
+        assertThat(userArgumentCaptor.getValue().getOrganization()).isEqualTo(authenticatedUser.getOrganization());
+        assertThat(userArgumentCaptor.getValue().getOnboarding().getHasConnectedToVcs()).isEqualTo(authenticatedUser.getOnboarding().getHasConnectedToVcs());
+        assertThat(externalIdCaptor.getValue()).isEqualTo(externalId);
     }
 }

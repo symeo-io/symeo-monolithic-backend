@@ -1,5 +1,6 @@
 package fr.catlean.monolithic.backend.domain.model.account;
 
+import fr.catlean.monolithic.backend.domain.model.Onboarding;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,4 +12,14 @@ public class User {
     String mail;
     UUID id;
     Organization organization;
+    @Builder.Default
+    Onboarding onboarding = Onboarding.builder().build();
+
+    public void hasConnectedToVcs() {
+        this.onboarding = this.onboarding.toBuilder().hasConnectedToVcs(true).build();
+    }
+
+    public void hasConfiguredTeam() {
+        this.onboarding = this.onboarding.toBuilder().hasConfiguredTeam(true).build();
+    }
 }

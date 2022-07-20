@@ -18,6 +18,7 @@ public class UserService implements UserFacadeAdapter {
 
     @Override
     public User updateUserWithOrganization(User authenticatedUser, String externalId) throws CatleanException {
+        authenticatedUser.hasConnectedToVcs();
         return userStorageAdapter.updateUserWithOrganization(authenticatedUser, externalId);
     }
 }
