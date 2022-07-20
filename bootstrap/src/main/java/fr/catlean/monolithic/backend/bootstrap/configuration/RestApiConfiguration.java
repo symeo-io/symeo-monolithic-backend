@@ -6,6 +6,7 @@ import catlean.monolithic.backend.rest.api.adapter.*;
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
+import fr.catlean.monolithic.backend.domain.port.in.OnboardingFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
@@ -28,8 +29,9 @@ public class RestApiConfiguration {
 
     @Bean
     public UserRestApiAdapter userRestApiAdapter(final AuthenticationService authenticationService,
-                                                 final UserFacadeAdapter userFacadeAdapter) {
-        return new UserRestApiAdapter(authenticationService, userFacadeAdapter);
+                                                 final UserFacadeAdapter userFacadeAdapter,
+                                                 final OnboardingFacadeAdapter onboardingFacadeAdapter) {
+        return new UserRestApiAdapter(authenticationService, userFacadeAdapter, onboardingFacadeAdapter);
     }
 
     @Bean

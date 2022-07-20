@@ -1,13 +1,13 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
+import fr.catlean.monolithic.backend.domain.port.in.OnboardingFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.*;
-import liquibase.pro.packaged.B;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,7 +44,8 @@ public class DomainConfiguration {
                                                              final PullRequestService pullRequestService,
                                                              final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService) {
-        return new DataProcessingJobService(deliveryProcessorService, accountOrganizationStorageAdapter, pullRequestService,
+        return new DataProcessingJobService(deliveryProcessorService, accountOrganizationStorageAdapter,
+                pullRequestService,
                 repositoryService);
     }
 
@@ -70,7 +71,12 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public TeamService teamService(final AccountTeamStorage accountTeamStorage){
+    public TeamService teamService(final AccountTeamStorage accountTeamStorage) {
         return new TeamService(accountTeamStorage);
+    }
+
+    @Bean
+    public OnboardingFacadeAdapter onboardingFacadeAdapter(final AccountOnboardingStorage accountOnboardingStorage) {
+        return new OnboardingService(accountOnboardingStorage);
     }
 }

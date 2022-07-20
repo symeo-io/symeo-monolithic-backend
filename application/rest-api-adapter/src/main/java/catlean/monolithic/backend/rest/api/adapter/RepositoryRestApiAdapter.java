@@ -1,7 +1,7 @@
 package catlean.monolithic.backend.rest.api.adapter;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
-import catlean.monolithic.backend.rest.api.adapter.mapper.RepositoryResponseMapper;
+import catlean.monolithic.backend.rest.api.adapter.mapper.RepositoryContractMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.service.RepositoryService;
@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import static catlean.monolithic.backend.rest.api.adapter.mapper.RepositoryResponseMapper.domainToGetRepositoriesResponseContract;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.RepositoryContractMapper.domainToGetRepositoriesResponseContract;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -25,15 +25,17 @@ public class RepositoryRestApiAdapter implements RepositoryApi {
     private final RepositoryService repositoryService;
 
     @Override
-    public ResponseEntity<GetRepositoriesResponseContract> apiV1RepositoryGet() {
+    public ResponseEntity<GetRepositoriesResponseContract> apiV1RepositoriesGet() {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return ok(domainToGetRepositoriesResponseContract(
                     repositoryService.getRepositoriesForOrganization(authenticatedUser.getOrganization()))
             );
         } catch (CatleanException e) {
-            return ResponseEntity.internalServerError().body(RepositoryResponseMapper.domainToKo(e));
+            return ResponseEntity.internalServerError().body(RepositoryContractMapper.domainToKo(e));
         }
 
     }
+
+
 }

@@ -1,6 +1,6 @@
 package catlean.monolithic.backend.rest.api.adapter;
 
-import catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramResponseMapper;
+import catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.frontend.contract.api.PullRequestApi;
@@ -23,9 +23,9 @@ public class PullRequestRestApiAdapter implements PullRequestApi {
     public ResponseEntity<HistogramResponseContract> getPullRequestHistogram(String organizationName, String teamName
             , String histogramType) {
         try {
-            return PullRequestHistogramResponseMapper.domainToContract(histogramQuery.readPullRequestHistogram(organizationName, teamName, histogramType));
+            return PullRequestHistogramContractMapper.domainToContract(histogramQuery.readPullRequestHistogram(organizationName, teamName, histogramType));
         } catch (CatleanException e) {
-            return PullRequestHistogramResponseMapper.errorToContract(e);
+            return PullRequestHistogramContractMapper.errorToContract(e);
         }
     }
 }

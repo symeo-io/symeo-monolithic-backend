@@ -2,20 +2,22 @@ package catlean.monolithic.backend.rest.api.adapter;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.service.TeamService;
 import fr.catlean.monolithic.backend.frontend.contract.api.TeamApi;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamResponseContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.PostCreateTeamsResponseContract;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import static catlean.monolithic.backend.rest.api.adapter.mapper.TeamResponseMapper.domainToCreateTeamResponseContract;
-import static catlean.monolithic.backend.rest.api.adapter.mapper.TeamResponseMapper.errorToContract;
-import static org.springframework.http.ResponseEntity.ok;
+import java.util.List;
+import java.util.Map;
+
+import static catlean.monolithic.backend.rest.api.adapter.mapper.TeamContractMapper.*;
 
 @AllArgsConstructor
 @RestController
@@ -26,16 +28,27 @@ public class TeamRestApiAdapter implements TeamApi {
     private final TeamService teamService;
 
     @Override
-    public ResponseEntity<CreateTeamResponseContract> createTeam(CreateTeamRequestContract createTeamRequestContract) {
+    public ResponseEntity<PostCreateTeamsResponseContract> createTeam(List<CreateTeamRequestContract> createTeamRequestContract) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(domainToCreateTeamResponseContract(
-                    teamService.createTeamForNameAndRepositoriesAndUser(createTeamRequestContract.getName(),
-                            createTeamRequestContract.getRepositoryIds(),
-                            authenticatedUser))
-            );
+
+            final Map<String, List<Integer>> repositoryIdsMappedToTeamName =
+                    getRepositoryIdsMappedToTeamName(createTeamRequestContract);
+            final List<Team> teamsForNameAndRepositoriesAndUser =
+                    teamService.createTeamsForNameAndRepositoriesAndUser(repositoryIdsMappedToTeamName,
+                            authenticatedUser);
+            final PostCreateTeamsResponseContract postCreateTeamsResponseContract =
+                    getPostCreateTeamsResponseContract(teamsForNameAndRepositoriesAndUser);
+            return ResponseEntity.ok(postCreateTeamsResponseContract);
+
+
         } catch (CatleanException e) {
-            return ResponseEntity.internalServerError().body(errorToContract(e));
+            final PostCreateTeamsResponseContract postCreateTeamsResponseContract =
+                    getPostCreateTeamsResponseContractError(e);
+            return ResponseEntity.internalServerError().body(postCreateTeamsResponseContract);
         }
     }
+
+
 }
+

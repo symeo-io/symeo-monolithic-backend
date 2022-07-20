@@ -10,7 +10,7 @@ import fr.catlean.monolithic.backend.frontend.contract.api.model.UserContract;
 
 import static java.util.Objects.nonNull;
 
-public interface UserResponseMapper {
+public interface UserContractMapper {
 
     static CurrentUserResponseContract userToResponse(final User user) {
         final CurrentUserResponseContract currentUserResponseContract = new CurrentUserResponseContract();

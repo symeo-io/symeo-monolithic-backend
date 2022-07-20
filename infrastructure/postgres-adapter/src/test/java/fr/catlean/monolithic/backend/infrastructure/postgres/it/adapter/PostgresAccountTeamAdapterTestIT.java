@@ -3,10 +3,10 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
-import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresTeamAdapter;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountTeamAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
@@ -27,11 +27,12 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import java.util.List;
 import java.util.UUID;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.POSTGRES_EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresTeamAdapterTestIT {
+public class PostgresAccountTeamAdapterTestIT {
 
     private final Faker faker = new Faker();
     @Autowired
@@ -54,8 +55,8 @@ public class PostgresTeamAdapterTestIT {
     @Test
     void should_create_team_given_existing_repositories_and_organization() throws CatleanException {
         // Given
-        final PostgresTeamAdapter postgresTeamAdapter =
-                new PostgresTeamAdapter(teamRepository, userRepository);
+        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
+                new PostgresAccountTeamAdapter(teamRepository, userRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .externalId(faker.dragonBall().character())
                 .name(faker.pokemon().name())
@@ -66,33 +67,47 @@ public class PostgresTeamAdapterTestIT {
         user = UserMapper.entityToDomain(userRepository.save(UserMapper.domainToEntity(user)));
         user.hasConfiguredTeam();
         organizationRepository.save(organizationEntity);
-        final List<Repository> repositories = repositoryRepository.saveAll(List.of(
+        final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().firstName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
                 RepositoryEntity.builder().name(faker.name().lastName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
-        final Team team = Team.builder()
-                .repositories(repositories)
+        final Team team1 = Team.builder()
+                .repositories(repositories1)
                 .name(faker.harryPotter().book())
                 .organizationId(UUID.fromString(organizationEntity.getId()))
                 .build();
+        final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
+                RepositoryEntity.builder().name(faker.name().lastName()).vcsId(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().firstName()).vcsId(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
+        )).stream().map(RepositoryMapper::entityToDomain).toList();
+        final Team team2 = Team.builder()
+                .repositories(repositories2)
+                .name(faker.lordOfTheRings().character())
+                .organizationId(UUID.fromString(organizationEntity.getId()))
+                .build();
+
 
         // When
-        final Team createdTeam = postgresTeamAdapter.createTeamForUser(team, user);
+        final List<Team> createdTeams = postgresAccountTeamAdapter.createTeamsForUser(List.of(team1, team2), user);
 
         // Then
-        assertThat(createdTeam.getId()).isNotNull();
-        assertThat(createdTeam.getName()).isEqualTo(team.getName());
-        assertThat(createdTeam.getOrganizationId()).isEqualTo(team.getOrganizationId());
-        assertThat(createdTeam.getRepositories().size()).isEqualTo(team.getRepositories().size());
-        assertThat(teamRepository.findAll()).hasSize(1);
+        assertThat(createdTeams.get(0).getId()).isNotNull();
+        assertThat(createdTeams.get(0).getName()).isEqualTo(team1.getName());
+        assertThat(createdTeams.get(0).getOrganizationId()).isEqualTo(team1.getOrganizationId());
+        assertThat(createdTeams.get(0).getRepositories().size()).isEqualTo(team1.getRepositories().size());
+        assertThat(createdTeams.get(1).getId()).isNotNull();
+        assertThat(createdTeams.get(1).getName()).isEqualTo(team2.getName());
+        assertThat(createdTeams.get(1).getOrganizationId()).isEqualTo(team2.getOrganizationId());
+        assertThat(createdTeams.get(1).getRepositories().size()).isEqualTo(team2.getRepositories().size());
+        assertThat(teamRepository.findAll()).hasSize(2);
         assertThat(userRepository.findByMail(user.getMail()).get().getOnboardingEntity().getHasConfiguredTeam()).isTrue();
     }
 
     @Test
     void should_raise_an_exception_for_duplicated_team_name_and_organization() {
         // Given
-        final PostgresTeamAdapter postgresTeamAdapter =
-                new PostgresTeamAdapter(teamRepository, userRepository);
+        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
+                new PostgresAccountTeamAdapter(teamRepository, userRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .externalId(faker.dragonBall().character())
                 .name(faker.pokemon().name())
@@ -114,16 +129,16 @@ public class PostgresTeamAdapterTestIT {
         // When
         CatleanException catleanException = null;
         try {
-            postgresTeamAdapter.createTeamForUser(team, user);
-            postgresTeamAdapter.createTeamForUser(team, user);
+            postgresAccountTeamAdapter.createTeamsForUser(List.of(team), user);
+            postgresAccountTeamAdapter.createTeamsForUser(List.of(team), user);
         } catch (CatleanException e) {
             catleanException = e;
         }
 
         // Then
         assertThat(catleanException).isNotNull();
-        assertThat(catleanException.getCode()).isEqualTo("T.POSTGRES_EXCEPTION");
-        assertThat(catleanException.getMessage()).isEqualTo("Failed to create team " + team.getName());
+        assertThat(catleanException.getCode()).isEqualTo(POSTGRES_EXCEPTION);
+        assertThat(catleanException.getMessage()).isEqualTo("Failed to create teams " + team.getName());
     }
 }
 

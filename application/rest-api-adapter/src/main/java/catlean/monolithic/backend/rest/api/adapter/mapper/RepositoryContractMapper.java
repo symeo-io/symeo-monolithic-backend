@@ -7,11 +7,11 @@ import fr.catlean.monolithic.backend.frontend.contract.api.model.RepositoryRespo
 
 import java.util.List;
 
-public interface RepositoryResponseMapper {
+public interface RepositoryContractMapper {
 
     static GetRepositoriesResponseContract domainToGetRepositoriesResponseContract(final List<Repository> repositories) {
         final GetRepositoriesResponseContract getRepositoriesResponseContract = new GetRepositoriesResponseContract();
-        getRepositoriesResponseContract.setRepositories(repositories.stream().map(RepositoryResponseMapper::repositoryToContract).toList());
+        getRepositoriesResponseContract.setRepositories(repositories.stream().map(RepositoryContractMapper::repositoryToContract).toList());
         return getRepositoriesResponseContract;
     }
 
@@ -24,7 +24,7 @@ public interface RepositoryResponseMapper {
 
     static GetRepositoriesResponseContract domainToKo(final CatleanException catleanException) {
         final GetRepositoriesResponseContract getRepositoriesResponseContract = new GetRepositoriesResponseContract();
-        getRepositoriesResponseContract.setErrors(List.of(CatleanErrorResponseMapper.catleanExceptionToContract(catleanException)));
+        getRepositoriesResponseContract.setErrors(List.of(CatleanErrorContractMapper.catleanExceptionToContract(catleanException)));
         return getRepositoriesResponseContract;
     }
 }
