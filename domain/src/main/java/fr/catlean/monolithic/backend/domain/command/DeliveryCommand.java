@@ -1,13 +1,11 @@
 package fr.catlean.monolithic.backend.domain.command;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
-import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
-
-import java.text.SimpleDateFormat;
 
 public class DeliveryCommand {
 
@@ -23,9 +21,9 @@ public class DeliveryCommand {
 
     public void collectRepositoriesForOrganization(Organization organization) throws CatleanException {
         final byte[] rawRepositories =
-                versionControlSystemAdapter.getRawRepositories(organization.().getOrganizationName());
+                versionControlSystemAdapter.getRawRepositories(organization.getVcsOrganization().getName());
         rawStorageAdapter.save(
-                organization.getVcsConfiguration().getOrganizationName(),
+                organization.getVcsOrganization().getName(),
                 versionControlSystemAdapter.getName(),
                 Repository.ALL,
                 rawRepositories);

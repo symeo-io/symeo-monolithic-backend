@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.domain.model.account;
 
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import lombok.Builder;
 import lombok.Value;
 
@@ -16,7 +17,7 @@ public class Organization {
     List<Team> teams = new ArrayList<>();
     @Builder.Default
     TimeZone timeZone = TimeZone.getTimeZone(ZoneId.systemDefault());
-    String externalId;
+    VcsOrganization vcsOrganization;
 
     public List<String> getAllTeamsRepositories() {
         return this.teams.stream()
