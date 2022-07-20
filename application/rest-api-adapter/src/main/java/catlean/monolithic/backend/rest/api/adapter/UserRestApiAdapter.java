@@ -63,7 +63,7 @@ public class UserRestApiAdapter implements UserApi {
     public ResponseEntity<PostOnboardingResponseContract> updateOnboarding(UpdateOnboardingRequestContract updateOnboardingRequestContract) {
         try {
             User authenticatedUser = authenticationService.getAuthenticatedUser();
-            Onboarding onboarding = getOnboarding(authenticatedUser.getOnboarding().getId(), updateOnboardingRequestContract);
+            Onboarding onboarding = getOnboarding(authenticatedUser.getOnboarding(), updateOnboardingRequestContract);
             onboarding = onboardingFacadeAdapter.updateOnboarding(onboarding);
             return ResponseEntity.ok(getPostOnboardingResponseContract(onboarding));
         } catch (CatleanException catleanException) {

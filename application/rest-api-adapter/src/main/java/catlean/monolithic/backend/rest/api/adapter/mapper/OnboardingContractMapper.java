@@ -5,13 +5,10 @@ import fr.catlean.monolithic.backend.frontend.contract.api.model.OnboardingContr
 import fr.catlean.monolithic.backend.frontend.contract.api.model.PostOnboardingResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
 
-import java.util.UUID;
-
 public interface OnboardingContractMapper {
 
-    static Onboarding getOnboarding(UUID id, UpdateOnboardingRequestContract updateOnboardingRequestContract) {
-        return Onboarding.builder()
-                .id(id)
+    static Onboarding getOnboarding(final Onboarding onboarding,final UpdateOnboardingRequestContract updateOnboardingRequestContract) {
+        return onboarding.toBuilder()
                 .hasConfiguredTeam(updateOnboardingRequestContract.getHasConfiguredTeam())
                 .hasConnectedToVcs(updateOnboardingRequestContract.getHasConnectedToVcs())
                 .build();
