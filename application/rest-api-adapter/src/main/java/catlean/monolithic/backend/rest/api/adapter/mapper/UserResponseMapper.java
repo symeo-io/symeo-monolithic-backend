@@ -40,8 +40,8 @@ public interface UserResponseMapper {
 
     private static OnboardingContract onboardingToContract(final Onboarding onboarding) {
         final OnboardingContract onboardingContract = new OnboardingContract();
-        onboardingContract.setHasConnectedToVcs(onboardingContract.getHasConnectedToVcs());
-        onboardingContract.setHasConfiguredTeam(onboardingContract.getHasConfiguredTeam());
+        onboardingContract.setHasConnectedToVcs(onboarding.getHasConnectedToVcs());
+        onboardingContract.setHasConfiguredTeam(onboarding.getHasConfiguredTeam());
         return onboardingContract;
     }
 }
