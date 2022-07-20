@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.domain.service;
+package fr.catlean.monolithic.backend.domain.service.platform.vcs;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
@@ -17,7 +17,7 @@ import static java.util.Objects.isNull;
 
 @AllArgsConstructor
 @Slf4j
-public class DeliveryProcessorService {
+public class VcsService {
 
     private final DeliveryCommand deliveryCommand;
     private final DeliveryQuery deliveryQuery;

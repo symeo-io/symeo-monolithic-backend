@@ -3,11 +3,19 @@ package fr.catlean.monolithic.backend.bootstrap.configuration;
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
 import fr.catlean.monolithic.backend.domain.port.in.OnboardingFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
+import fr.catlean.monolithic.backend.domain.port.in.TeamFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.*;
+import fr.catlean.monolithic.backend.domain.service.account.OrganizationService;
+import fr.catlean.monolithic.backend.domain.service.account.TeamService;
+import fr.catlean.monolithic.backend.domain.service.account.UserService;
+import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
+import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,24 +36,23 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public DeliveryProcessorService deliveryProcessorService(final DeliveryCommand deliveryCommand,
-                                                             final DeliveryQuery deliveryQuery) {
-        return new DeliveryProcessorService(deliveryCommand, deliveryQuery);
+    public VcsService deliveryProcessorService(final DeliveryCommand deliveryCommand,
+                                               final DeliveryQuery deliveryQuery) {
+        return new VcsService(deliveryCommand, deliveryQuery);
     }
 
     @Bean
-    public PullRequestService pullRequestSizeService(final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new PullRequestService(expositionStorageAdapter);
+    public PullRequesHistogramtService pullRequestSizeService(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new PullRequesHistogramtService(expositionStorageAdapter);
     }
 
 
     @Bean
-    public DataProcessingJobService dataProcessingJobService(final DeliveryProcessorService deliveryProcessorService,
-                                                             final PullRequestService pullRequestService,
+    public DataProcessingJobService dataProcessingJobService(final VcsService vcsService,
+                                                             final PullRequesHistogramtService pullRequesHistogramtService,
                                                              final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService) {
-        return new DataProcessingJobService(deliveryProcessorService, accountOrganizationStorageAdapter,
-                pullRequestService,
+        return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter, pullRequesHistogramtService,
                 repositoryService);
     }
 
@@ -71,7 +78,7 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public TeamService teamService(final AccountTeamStorage accountTeamStorage) {
+    public TeamFacadeAdapter teamFacadeAdapter(final AccountTeamStorage accountTeamStorage){
         return new TeamService(accountTeamStorage);
     }
 

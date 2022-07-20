@@ -7,6 +7,7 @@ import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.UserStorageAdapter;
+import fr.catlean.monolithic.backend.domain.service.account.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 

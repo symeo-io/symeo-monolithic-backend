@@ -5,6 +5,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

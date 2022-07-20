@@ -8,10 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.OnboardingFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
+import fr.catlean.monolithic.backend.domain.port.in.TeamFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
-import fr.catlean.monolithic.backend.domain.service.RepositoryService;
-import fr.catlean.monolithic.backend.domain.service.TeamService;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -42,8 +42,8 @@ public class RestApiConfiguration {
 
     @Bean
     public TeamRestApiAdapter teamRestApiAdapter(final AuthenticationService authenticationService,
-                                                 final TeamService teamService) {
-        return new TeamRestApiAdapter(authenticationService, teamService);
+                                                 final TeamFacadeAdapter teamFacadeAdapter) {
+        return new TeamRestApiAdapter(authenticationService, teamFacadeAdapter);
     }
 
     @Bean

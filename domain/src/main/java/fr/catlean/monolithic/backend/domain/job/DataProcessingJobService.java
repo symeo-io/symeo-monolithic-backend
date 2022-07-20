@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.domain.service;
+package fr.catlean.monolithic.backend.domain.job;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
@@ -6,6 +6,9 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -13,9 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 public class DataProcessingJobService implements DataProcessingJobAdapter {
 
-    private final DeliveryProcessorService deliveryProcessorService;
+    private final VcsService vcsService;
     private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
-    private final PullRequestService pullRequestService;
+    private final PullRequesHistogramtService pullRequesHistogramtService;
     private final RepositoryService repositoryService;
 
     @Override
@@ -28,14 +31,14 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     private void collectPullRequests(Organization organization) throws CatleanException {
         final List<PullRequest> pullRequestList =
-                deliveryProcessorService.collectPullRequestsForOrganization(organization);
-        pullRequestService.savePullRequests(pullRequestList);
-        pullRequestService.computeAndSavePullRequestSizeHistogram(pullRequestList, organization);
-        pullRequestService.computeAndSavePullRequestTimeHistogram(pullRequestList, organization);
+                vcsService.collectPullRequestsForOrganization(organization);
+        pullRequesHistogramtService.savePullRequests(pullRequestList);
+        pullRequesHistogramtService.computeAndSavePullRequestSizeHistogram(pullRequestList, organization);
+        pullRequesHistogramtService.computeAndSavePullRequestTimeHistogram(pullRequestList, organization);
     }
 
     private void collectRepositories(Organization organization) throws CatleanException {
-        List<Repository> repositories = deliveryProcessorService.collectRepositoriesForOrganization(organization);
+        List<Repository> repositories = vcsService.collectRepositoriesForOrganization(organization);
         repositories =
                 repositories.stream().map(repository -> repository.toBuilder().organization(organization).build()).toList();
         repositoryService.saveRepositories(repositories);

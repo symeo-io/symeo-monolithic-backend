@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.domain.service;
+package fr.catlean.monolithic.backend.domain.service.insights;
 
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
@@ -18,7 +18,7 @@ import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHist
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.TIME_LIMIT;
 
 @AllArgsConstructor
-public class PullRequestService {
+public class PullRequesHistogramtService {
 
     private final ExpositionStorageAdapter expositionStorageAdapter;
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");

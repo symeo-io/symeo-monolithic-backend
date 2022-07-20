@@ -8,6 +8,7 @@ import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
+import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
@@ -19,7 +20,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
-public class PullRequestServiceTest {
+public class PullRequesHistogramtServiceTest {
 
     private final Faker faker = Faker.instance();
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
@@ -28,7 +29,7 @@ public class PullRequestServiceTest {
     void should_compute_collect_all_pull_requests_details_for_a_given_organization_account() throws CatleanException {
         // Given
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequestService pullRequestService = new PullRequestService(expositionStorageAdapter);
+        final PullRequesHistogramtService pullRequesHistogramtService = new PullRequesHistogramtService(expositionStorageAdapter);
         final String vcsOrganizationName = faker.name().name();
         final String organizationName = faker.name().lastName();
         final String repo1Name = faker.pokemon().name() + "1";
@@ -55,7 +56,7 @@ public class PullRequestServiceTest {
         final List<PullRequest> pullRequestList = List.of(pr11, pr12, pr21, pr22);
 
         // When
-        pullRequestService.savePullRequests(pullRequestList);
+        pullRequesHistogramtService.savePullRequests(pullRequestList);
 
         // Then
         verify(expositionStorageAdapter, times(1)).savePullRequestDetails(pullRequestList);
@@ -72,7 +73,7 @@ public class PullRequestServiceTest {
         final String repositoryName1 = faker.pokemon().name() + "-1";
         organizationAccount.addTeam("team1", List.of(repositoryName1), 500, 5);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequestService pullRequestService = new PullRequestService(expositionStorageAdapter);
+        final PullRequesHistogramtService pullRequesHistogramtService = new PullRequesHistogramtService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organizationAccount, 100);
         final PullRequestHistogram pullRequestHistogram =
@@ -124,7 +125,7 @@ public class PullRequestServiceTest {
 
 
         // When
-        pullRequestService.computeAndSavePullRequestSizeHistogram(pullRequests, organizationAccount);
+        pullRequesHistogramtService.computeAndSavePullRequestSizeHistogram(pullRequests, organizationAccount);
 
         // Then
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
@@ -141,7 +142,7 @@ public class PullRequestServiceTest {
         final String repositoryName1 = faker.pokemon().name() + "-1";
         organizationAccount.addTeam("team1", List.of(repositoryName1), 500, 5);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequestService pullRequestService = new PullRequestService(expositionStorageAdapter);
+        final PullRequesHistogramtService pullRequesHistogramtService = new PullRequesHistogramtService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organizationAccount, 100);
         final PullRequestHistogram pullRequestHistogram =
@@ -193,7 +194,7 @@ public class PullRequestServiceTest {
 
 
         // When
-        pullRequestService.computeAndSavePullRequestTimeHistogram(pullRequests, organizationAccount);
+        pullRequesHistogramtService.computeAndSavePullRequestTimeHistogram(pullRequests, organizationAccount);
 
         // Then
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
