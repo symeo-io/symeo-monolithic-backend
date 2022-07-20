@@ -44,8 +44,8 @@ public class VcsServiceTest {
                                 repo2
                         )
                 );
-        final PullRequest pr11 = PullRequest.builder().id("github-11").build();
-        final PullRequest pr12 = PullRequest.builder().id("github-12").build();
+        final PullRequest pr11 = PullRequest.builder().vcsId("github-11").build();
+        final PullRequest pr12 = PullRequest.builder().vcsId("github-12").build();
         when(deliveryQuery.readPullRequestsForRepository(repo1))
                 .thenReturn(
                         List.of(

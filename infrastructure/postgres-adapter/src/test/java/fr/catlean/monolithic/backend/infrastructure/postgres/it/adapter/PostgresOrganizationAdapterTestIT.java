@@ -30,8 +30,8 @@ public class PostgresOrganizationAdapterTestIT {
 
     @AfterEach
     void tearDown() {
-        organizationRepository.deleteAll();
         vcsOrganizationRepository.deleteAll();
+        organizationRepository.deleteAll();
     }
 
     @Test
@@ -43,7 +43,10 @@ public class PostgresOrganizationAdapterTestIT {
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
                 .name(name)
-                .vcsOrganization(VcsOrganization.builder().externalId(externalId).build())
+                .vcsOrganization(VcsOrganization.builder()
+                        .name(faker.name().bloodGroup())
+                        .vcsId(faker.dragonBall().character())
+                        .externalId(externalId).build())
                 .build();
 
         // When
@@ -63,7 +66,10 @@ public class PostgresOrganizationAdapterTestIT {
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
                 .name(name)
-                .vcsOrganization(VcsOrganization.builder().externalId(externalId).build())
+                .vcsOrganization(VcsOrganization.builder()
+                        .name(faker.name().bloodGroup())
+                        .vcsId(faker.dragonBall().character())
+                        .externalId(externalId).build())
                 .build();
 
         // When

@@ -35,8 +35,8 @@ public class DataProcessingJobServiceTest {
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
-        final List<PullRequest> pullRequests = List.of(PullRequest.builder().id(faker.pokemon().name()).build(),
-                PullRequest.builder().id(faker.hacker().abbreviation()).build());
+        final List<PullRequest> pullRequests = List.of(PullRequest.builder().vcsId(faker.pokemon().name()).build(),
+                PullRequest.builder().vcsId(faker.hacker().abbreviation()).build());
         final List<Repository> repositories = List.of(
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),

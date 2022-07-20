@@ -27,7 +27,7 @@ public class VcsOrganizationEntity extends AbstractEntity {
     String name;
     @Column(name = "external_id")
     String externalId;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "organization_id", referencedColumnName = "id")
     OrganizationEntity organizationEntity;
 

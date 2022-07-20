@@ -18,31 +18,11 @@ public class OrganizationServiceTest {
 
     private final Faker faker = new Faker();
 
-    // TODO : add unit test raising CatleanException
-    @Test
-    void should_return_organization_given_a_name() throws CatleanException {
-        // Given
-        final String organizationName = faker.name().firstName();
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter = Mockito.mock(AccountOrganizationStorageAdapter.class);
-        final OrganizationService organizationService =
-                new OrganizationService(accountOrganizationStorageAdapter);
-        final Organization expectedOrganizationAccount =
-                Organization.builder().name(organizationName).vcsOrganization(VcsOrganization.builder().build()).build();
-        // When
-        when(accountOrganizationStorageAdapter.findOrganizationForName(organizationName))
-                .thenReturn(expectedOrganizationAccount);
-        final Organization organization =
-                organizationService.getOrganizationForName(organizationName);
-
-        // Then
-        assertThat(organization).isNotNull();
-        assertThat(organization.getName()).isEqualTo(organizationName);
-    }
-
     @Test
     void should_create_organization_given_a_vcs_organization_name_and_external_id() throws CatleanException {
         // Given
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter = Mockito.mock(AccountOrganizationStorageAdapter.class);
+        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
+                Mockito.mock(AccountOrganizationStorageAdapter.class);
         final OrganizationService organizationService =
                 new OrganizationService(accountOrganizationStorageAdapter);
         final String externalId = faker.name().name();

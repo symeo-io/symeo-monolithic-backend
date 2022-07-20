@@ -98,7 +98,10 @@ public class PostgresAccountUserAdapterTestIT {
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
                 .name(name)
-                .vcsOrganization(VcsOrganization.builder().externalId(externalId).build())
+                .vcsOrganization(VcsOrganization.builder()
+                        .name(faker.name().bloodGroup())
+                        .vcsId(faker.dragonBall().character())
+                        .externalId(externalId).build())
                 .build();
 
         // When
@@ -110,7 +113,7 @@ public class PostgresAccountUserAdapterTestIT {
 
         // Then
         assertThat(updateUserWithOrganization).isNotNull();
-        assertThat(updateUserWithOrganization.getOrganization()).isEqualTo(expectedOrganization);
+        assertThat(updateUserWithOrganization.getOrganization().getId()).isEqualTo(expectedOrganization.getId());
         assertThat(updateUserWithOrganization.getOnboarding().getHasConnectedToVcs()).isTrue();
     }
 }

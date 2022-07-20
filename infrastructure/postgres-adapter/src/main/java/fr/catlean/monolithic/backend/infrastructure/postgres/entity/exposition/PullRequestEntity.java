@@ -3,10 +3,6 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition;
 import com.sun.istack.NotNull;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.AbstractEntity;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -22,7 +18,9 @@ public class PullRequestEntity extends AbstractEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    @NaturalId
+    @GeneratedValue(generator = "pull_request_sequence", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "pull_request_sequence", schema = "exposition_storage", sequenceName =
+            "pull_request_sequence", allocationSize = 1)
     Long id;
     @Column(name = "vcs_id", nullable = false)
     @NotNull

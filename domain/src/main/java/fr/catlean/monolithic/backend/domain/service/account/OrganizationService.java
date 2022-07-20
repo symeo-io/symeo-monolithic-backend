@@ -11,10 +11,6 @@ import lombok.AllArgsConstructor;
 public class OrganizationService implements OrganizationFacadeAdapter {
     final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
 
-    public Organization getOrganizationForName(String organizationName) throws CatleanException {
-        return accountOrganizationStorageAdapter.findOrganizationForName(organizationName);
-    }
-
     @Override
     public Organization createOrganizationForVcsNameAndExternalId(String vcsOrganizationName, String externalId) throws CatleanException {
         return accountOrganizationStorageAdapter.createOrganization(
