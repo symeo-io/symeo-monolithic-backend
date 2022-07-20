@@ -9,7 +9,7 @@ import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.frontend.contract.api.UserApi;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CurrentUserResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.OnboardingContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.PostOnboardingResponseContract;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
@@ -60,9 +60,10 @@ public class UserRestApiAdapter implements UserApi {
     }
 
     @Override
-    public ResponseEntity<PostOnboardingResponseContract> updateOnboarding(OnboardingContract onboardingContract) {
+    public ResponseEntity<PostOnboardingResponseContract> updateOnboarding(UpdateOnboardingRequestContract updateOnboardingRequestContract) {
         try {
-            Onboarding onboarding = getOnboarding(onboardingContract);
+            User authenticatedUser = authenticationService.getAuthenticatedUser();
+            Onboarding onboarding = getOnboarding(authenticatedUser.getOnboarding().getId(), updateOnboardingRequestContract);
             onboarding = onboardingFacadeAdapter.updateOnboarding(onboarding);
             return ResponseEntity.ok(getPostOnboardingResponseContract(onboarding));
         } catch (CatleanException catleanException) {

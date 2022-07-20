@@ -3,14 +3,17 @@ package catlean.monolithic.backend.rest.api.adapter.mapper;
 import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.OnboardingContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.PostOnboardingResponseContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
+
+import java.util.UUID;
 
 public interface OnboardingContractMapper {
 
-    static Onboarding getOnboarding(OnboardingContract onboardingContract) {
+    static Onboarding getOnboarding(UUID id, UpdateOnboardingRequestContract updateOnboardingRequestContract) {
         return Onboarding.builder()
-                .id(onboardingContract.getId())
-                .hasConfiguredTeam(onboardingContract.getHasConfiguredTeam())
-                .hasConnectedToVcs(onboardingContract.getHasConnectedToVcs())
+                .id(id)
+                .hasConfiguredTeam(updateOnboardingRequestContract.getHasConfiguredTeam())
+                .hasConnectedToVcs(updateOnboardingRequestContract.getHasConnectedToVcs())
                 .build();
     }
 

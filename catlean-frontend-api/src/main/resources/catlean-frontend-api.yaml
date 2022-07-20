@@ -107,7 +107,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OnboardingContract'
+              $ref: '#/components/schemas/UpdateOnboardingRequestContract'
       responses:
         "200":
           description: 'Successfully updated onboarding linked to current user'
@@ -372,6 +372,16 @@ components:
         id:
           type: string
           format: uuid
+        has_connected_to_vcs:
+          type: boolean
+        has_configured_team:
+          type: boolean
+    UpdateOnboardingRequestContract:
+      type: object
+      required:
+        - has_connected_to_vcs
+        - has_configured_team
+      properties:
         has_connected_to_vcs:
           type: boolean
         has_configured_team:
