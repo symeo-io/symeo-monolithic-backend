@@ -5,7 +5,6 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
@@ -36,7 +35,7 @@ public class PullRequesHistogramtServiceTest {
         final String repo2Name = faker.pokemon().name() + "2";
         final String repo3Name = faker.pokemon().name() + "3";
         final String repo4Name = faker.pokemon().name() + "4";
-        final Organization organizationAccount = Organization.builder().name(organizationName)
+        final Organization organization = Organization.builder().name(organizationName)
                 .vcsConfiguration(
                         VcsConfiguration.builder()
                                 .organizationName(vcsOrganizationName)
@@ -45,8 +44,8 @@ public class PullRequesHistogramtServiceTest {
                 .build();
         final String team1Name = faker.pokemon().name() + "team1";
         final String team2Name = faker.pokemon().name() + "team2";
-        organizationAccount.addTeam(team1Name, List.of(repo1Name, repo3Name), 1000, 5);
-        organizationAccount.addTeam(team2Name, List.of(repo4Name), 500, 7);
+        organization.addTeam(team1Name, List.of(repo1Name, repo3Name), 1000, 5);
+        organization.addTeam(team2Name, List.of(repo4Name), 500, 7);
 
         // When
         final PullRequest pr11 = PullRequest.builder().id("github-11").repository(repo1Name).build();
@@ -65,27 +64,27 @@ public class PullRequesHistogramtServiceTest {
     @Test
     void should_compute_and_save_pull_request_size_histogram_given_simple_pull_request_cases() {
         // Given
-        final Organization organizationAccount = Organization.builder()
+        final Organization organization = Organization.builder()
                 .name("fake-orga-account")
                 .vcsConfiguration(
                         VcsConfiguration.builder().organizationName("fake-orga-name").build()
                 ).build();
         final String repositoryName1 = faker.pokemon().name() + "-1";
-        organizationAccount.addTeam("team1", List.of(repositoryName1), 500, 5);
+        organization.addTeam("team1", List.of(repositoryName1), 500, 5);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final PullRequesHistogramtService pullRequesHistogramtService = new PullRequesHistogramtService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
-                organizationAccount, 100);
+                organization, 100);
         final PullRequestHistogram pullRequestHistogram =
                 PullRequestHistogram.builder().
                         type(PullRequestHistogram.SIZE_LIMIT)
                         .limit(500)
-                        .organizationAccount(organizationAccount.getName())
-                        .team(organizationAccount.getVcsConfiguration().getVcsTeams().get(0).getName())
+                        .organization(organization.getName())
+                        .team(organization.getVcsConfiguration().getVcsTeams().get(0).getName())
                         .build();
 
         final List<java.util.Date> weekStartDates =
-                DateHelper.getWeekStartDateForTheLastWeekNumber(3 * 4, organizationAccount.getTimeZone());
+                DateHelper.getWeekStartDateForTheLastWeekNumber(3 * 4, organization.getTimeZone());
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
                 0, 0, SDF.format(weekStartDates.get(0))
         );
@@ -125,7 +124,7 @@ public class PullRequesHistogramtServiceTest {
 
 
         // When
-        pullRequesHistogramtService.computeAndSavePullRequestSizeHistogram(pullRequests, organizationAccount);
+        pullRequesHistogramtService.computeAndSavePullRequestSizeHistogram(pullRequests, organization);
 
         // Then
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
@@ -134,27 +133,27 @@ public class PullRequesHistogramtServiceTest {
     @Test
     void should_compute_and_save_pull_request_time_histogram_given_simple_pull_request_cases() {
         // Given
-        final Organization organizationAccount = Organization.builder()
+        final Organization organization = Organization.builder()
                 .name("fake-orga-account")
                 .vcsConfiguration(
                         VcsConfiguration.builder().organizationName("fake-orga-name").build()
                 ).build();
         final String repositoryName1 = faker.pokemon().name() + "-1";
-        organizationAccount.addTeam("team1", List.of(repositoryName1), 500, 5);
+        organization.addTeam("team1", List.of(repositoryName1), 500, 5);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final PullRequesHistogramtService pullRequesHistogramtService = new PullRequesHistogramtService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
-                organizationAccount, 100);
+                organization, 100);
         final PullRequestHistogram pullRequestHistogram =
                 PullRequestHistogram.builder().
                         type(PullRequestHistogram.TIME_LIMIT)
                         .limit(5)
-                        .organizationAccount(organizationAccount.getName())
-                        .team(organizationAccount.getVcsConfiguration().getVcsTeams().get(0).getName())
+                        .organization(organization.getName())
+                        .team(organization.getVcsConfiguration().getVcsTeams().get(0).getName())
                         .build();
 
         final List<java.util.Date> weekStartDates =
-                DateHelper.getWeekStartDateForTheLastWeekNumber(3 * 4, organizationAccount.getTimeZone());
+                DateHelper.getWeekStartDateForTheLastWeekNumber(3 * 4, organization.getTimeZone());
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
                 0, 0, SDF.format(weekStartDates.get(0))
         );
@@ -194,7 +193,7 @@ public class PullRequesHistogramtServiceTest {
 
 
         // When
-        pullRequesHistogramtService.computeAndSavePullRequestTimeHistogram(pullRequests, organizationAccount);
+        pullRequesHistogramtService.computeAndSavePullRequestTimeHistogram(pullRequests, organization);
 
         // Then
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
@@ -202,9 +201,9 @@ public class PullRequesHistogramtServiceTest {
 
 
     private static List<PullRequest> getPullRequestsStubsWithSizeLimitToTestWeekRange(final String repositoryName,
-                                                                                      final Organization organizationAccount,
+                                                                                      final Organization organization,
                                                                                       final Integer halfCodeSize) {
-        final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organizationAccount.getTimeZone());
+        final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organization.getTimeZone());
 
 
         final PullRequest pr1Above = PullRequest.builder()
@@ -212,7 +211,7 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(25, ChronoUnit.DAYS)))
                 .addedLineNumber(halfCodeSize * 1000)
                 .deletedLineNumber(halfCodeSize * 1000)
@@ -223,7 +222,7 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(25, ChronoUnit.DAYS)))
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
@@ -233,10 +232,10 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(25, ChronoUnit.DAYS)))
                 .mergeDate(Date.valueOf(weekStartDate.toInstant()
-                        .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                        .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                         .minus(10, ChronoUnit.DAYS)))
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
@@ -248,7 +247,7 @@ public class PullRequesHistogramtServiceTest {
                 .isDraft(true)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(25, ChronoUnit.DAYS)))
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
@@ -259,7 +258,7 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(15, ChronoUnit.DAYS)))
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
@@ -271,7 +270,7 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(15, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr3WeekStart = PullRequest.builder()
@@ -281,11 +280,11 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(14, ChronoUnit.DAYS)))
                 .mergeDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(13, ChronoUnit.DAYS))
                 )
                 .build();
@@ -297,7 +296,7 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(6, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr4Draft = PullRequest.builder()
@@ -308,7 +307,7 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(6, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr5 = PullRequest.builder()
@@ -318,12 +317,12 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(12, ChronoUnit.DAYS)))
                 .build();
 
         java.util.Date mergeDateFewHoursLater = Date.valueOf(weekStartDate.toInstant()
-                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                 .minus(9, ChronoUnit.DAYS));
         mergeDateFewHoursLater = Date.from(Instant.ofEpochMilli(mergeDateFewHoursLater.getTime() + 1000 * 60 * 60 * 6));
 
@@ -334,7 +333,7 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(9, ChronoUnit.DAYS)))
                 .mergeDate(
                         mergeDateFewHoursLater)
@@ -346,7 +345,7 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(4, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr7 = PullRequest.builder()
@@ -356,11 +355,11 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(3, ChronoUnit.DAYS)))
                 .mergeDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(3, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr7Above = PullRequest.builder()
@@ -370,11 +369,11 @@ public class PullRequesHistogramtServiceTest {
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(3, ChronoUnit.DAYS)))
                 .mergeDate(
                         Date.valueOf(weekStartDate.toInstant()
-                                .atZone(organizationAccount.getTimeZone().toZoneId()).toLocalDate()
+                                .atZone(organization.getTimeZone().toZoneId()).toLocalDate()
                                 .minus(3, ChronoUnit.DAYS)))
                 .build();
 

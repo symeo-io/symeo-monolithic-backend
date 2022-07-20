@@ -2,7 +2,6 @@ package fr.catlean.monolithic.backend.domain.domain.account;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,27 +25,27 @@ public class OrganizationAccountTest {
                 faker.shakespeare().romeoAndJulietQuote());
         final List<String> team2VcsRepositoryNames = List.of(faker.pokemon().name(), faker.harryPotter().house(),
                 faker.shakespeare().romeoAndJulietQuote());
-        Organization organizationAccount = Organization.builder()
+        Organization organization = Organization.builder()
                 .vcsConfiguration(VcsConfiguration.builder().organizationName(faker.animal().name()).build())
                 .build();
 
         // When
-        organizationAccount = organizationAccount.addTeam(team1Name, team1VcsRepositoryNames,
+        organization = organization.addTeam(team1Name, team1VcsRepositoryNames,
                 team1PullRequestLineNumberLimit, team1PullRequestDayNumberLimit);
-        organizationAccount = organizationAccount.addTeam(team2Name, team2VcsRepositoryNames,
+        organization = organization.addTeam(team2Name, team2VcsRepositoryNames,
                 team2PullRequestLineNumberLimit, team2PullRequestDayNumberLimit);
 
         // Then
-        assertThat(organizationAccount.getTeams()).hasSize(2);
-        assertThat(organizationAccount.getVcsConfiguration().getVcsTeams()).hasSize(2);
-        assertThat(organizationAccount.getVcsConfiguration().getVcsTeams().get(0).getVcsRepositoryNames()).containsAll(team1VcsRepositoryNames);
-        assertThat(organizationAccount.getVcsConfiguration().getVcsTeams().get(0).getPullRequestDayNumberLimit()).isEqualTo(team1PullRequestDayNumberLimit);
-        assertThat(organizationAccount.getVcsConfiguration().getVcsTeams().get(0).getPullRequestLineNumberLimit()).isEqualTo(team1PullRequestLineNumberLimit);
-        assertThat(organizationAccount.getVcsConfiguration().getVcsTeams().get(1).getVcsRepositoryNames()).containsAll(team2VcsRepositoryNames);
-        assertThat(organizationAccount.getVcsConfiguration().getVcsTeams().get(1).getPullRequestDayNumberLimit()).isEqualTo(team2PullRequestDayNumberLimit);
-        assertThat(organizationAccount.getVcsConfiguration().getVcsTeams().get(1).getPullRequestLineNumberLimit()).isEqualTo(team2PullRequestLineNumberLimit);
-        assertThat(organizationAccount.getVcsConfiguration().getAllTeamsRepositories()).hasSize(6);
-        assertThat(organizationAccount.getVcsConfiguration().getAllTeamsRepositories()).containsAll(team1VcsRepositoryNames);
-        assertThat(organizationAccount.getVcsConfiguration().getAllTeamsRepositories()).containsAll(team2VcsRepositoryNames);
+        assertThat(organization.getTeams()).hasSize(2);
+        assertThat(organization.getVcsConfiguration().getVcsTeams()).hasSize(2);
+        assertThat(organization.getVcsConfiguration().getVcsTeams().get(0).getVcsRepositoryNames()).containsAll(team1VcsRepositoryNames);
+        assertThat(organization.getVcsConfiguration().getVcsTeams().get(0).getPullRequestDayNumberLimit()).isEqualTo(team1PullRequestDayNumberLimit);
+        assertThat(organization.getVcsConfiguration().getVcsTeams().get(0).getPullRequestLineNumberLimit()).isEqualTo(team1PullRequestLineNumberLimit);
+        assertThat(organization.getVcsConfiguration().getVcsTeams().get(1).getVcsRepositoryNames()).containsAll(team2VcsRepositoryNames);
+        assertThat(organization.getVcsConfiguration().getVcsTeams().get(1).getPullRequestDayNumberLimit()).isEqualTo(team2PullRequestDayNumberLimit);
+        assertThat(organization.getVcsConfiguration().getVcsTeams().get(1).getPullRequestLineNumberLimit()).isEqualTo(team2PullRequestLineNumberLimit);
+        assertThat(organization.getVcsConfiguration().getAllTeamsRepositories()).hasSize(6);
+        assertThat(organization.getVcsConfiguration().getAllTeamsRepositories()).containsAll(team1VcsRepositoryNames);
+        assertThat(organization.getVcsConfiguration().getAllTeamsRepositories()).containsAll(team2VcsRepositoryNames);
     }
 }

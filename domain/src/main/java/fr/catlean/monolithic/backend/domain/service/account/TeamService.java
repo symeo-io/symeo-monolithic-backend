@@ -4,7 +4,6 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.port.in.TeamFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
 import lombok.AllArgsConstructor;
@@ -20,7 +19,7 @@ public class TeamService implements TeamFacadeAdapter {
 
     @Override
     public List<Team> createTeamsForNameAndRepositoriesAndUser(final Map<String, List<Integer>> repositoryIdsMappedToTeamName,
-                                                         User user) throws CatleanException {
+                                                               User user) throws CatleanException {
         user.hasConfiguredTeam();
         final List<Team> teams = new ArrayList<>();
         repositoryIdsMappedToTeamName.forEach((teamName, repositoryIds) -> teams.add(

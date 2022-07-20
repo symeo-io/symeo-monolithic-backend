@@ -21,11 +21,11 @@ public class DeliveryCommand {
         this.versionControlSystemAdapter = versionControlSystemAdapter;
     }
 
-    public void collectRepositoriesForOrganization(Organization organizationAccount) throws CatleanException {
+    public void collectRepositoriesForOrganization(Organization organization) throws CatleanException {
         final byte[] rawRepositories =
-                versionControlSystemAdapter.getRawRepositories(organizationAccount.getVcsConfiguration().getOrganizationName());
+                versionControlSystemAdapter.getRawRepositories(organization.().getOrganizationName());
         rawStorageAdapter.save(
-                organizationAccount.getVcsConfiguration().getOrganizationName(),
+                organization.getVcsConfiguration().getOrganizationName(),
                 versionControlSystemAdapter.getName(),
                 Repository.ALL,
                 rawRepositories);

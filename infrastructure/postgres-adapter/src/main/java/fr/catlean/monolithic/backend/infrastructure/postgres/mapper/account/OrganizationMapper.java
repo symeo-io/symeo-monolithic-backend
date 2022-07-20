@@ -1,7 +1,6 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account;
 
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 
 import java.util.Objects;

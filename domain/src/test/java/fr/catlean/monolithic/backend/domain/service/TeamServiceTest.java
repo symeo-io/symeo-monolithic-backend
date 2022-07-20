@@ -5,8 +5,11 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
+<<<<<<< HEAD
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
+=======
+>>>>>>> b1ba85e... WIP
 import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
 import fr.catlean.monolithic.backend.domain.service.account.TeamService;
 import org.junit.jupiter.api.Test;

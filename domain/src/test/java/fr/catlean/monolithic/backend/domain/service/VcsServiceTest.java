@@ -6,7 +6,6 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ public class VcsServiceTest {
         final VcsService vcsService = new VcsService(deliveryCommand,
                 deliveryQuery);
         final String organizationName = faker.name().name();
-        final Organization organizationAccount = Organization.builder()
+        final Organization organization = Organization.builder()
                 .vcsConfiguration(VcsConfiguration.builder().build()).name(organizationName).build();
 
         // When
@@ -37,7 +36,7 @@ public class VcsServiceTest {
                 Repository.builder().name(faker.pokemon().name() + "1").vcsOrganizationName(organizationName).build();
         final Repository repo2 =
                 Repository.builder().name(faker.pokemon().name() + "2").vcsOrganizationName(organizationName).build();
-        when(deliveryQuery.readRepositoriesForOrganization(organizationAccount))
+        when(deliveryQuery.readRepositoriesForOrganization(organization))
                 .thenReturn(
                         List.of(
                                 repo1,
@@ -56,7 +55,7 @@ public class VcsServiceTest {
         when(deliveryQuery.readPullRequestsForRepository(repo2))
                 .thenReturn(List.of());
         final List<PullRequest> pullRequestList =
-                vcsService.collectPullRequestsForOrganization(organizationAccount);
+                vcsService.collectPullRequestsForOrganization(organization);
 
         // Then
         assertThat(pullRequestList).containsAll(List.of(pr11, pr12));

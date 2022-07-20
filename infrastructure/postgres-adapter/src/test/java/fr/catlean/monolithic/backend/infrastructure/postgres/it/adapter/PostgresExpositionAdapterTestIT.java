@@ -5,7 +5,6 @@ import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
@@ -191,7 +190,7 @@ public class PostgresExpositionAdapterTestIT {
 
 
         return PullRequestHistogram.builder()
-                .organizationAccount(organizationName)
+                .organization(organizationName)
                 .team(team)
                 .limit(faker.number().randomDigit())
                 .type(PullRequestHistogram.SIZE_LIMIT)

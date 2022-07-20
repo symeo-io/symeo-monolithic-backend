@@ -5,7 +5,6 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ public class DeliveryCommandTest {
         // Given
         final String organizationName = faker.pokemon().name();
         final String vcsOrganizationName = faker.pokemon().location();
-        final Organization organizationAccount = Organization.builder()
+        final Organization organization = Organization.builder()
                 .name(organizationName)
                 .vcsConfiguration(VcsConfiguration.builder().organizationName(vcsOrganizationName).build())
                 .build();
@@ -35,7 +34,7 @@ public class DeliveryCommandTest {
         when(rawStorageAdapter.exists(vcsOrganizationName, vcsAdapterName, Repository.ALL)).thenReturn(false);
         when(versionControlSystemAdapter.getRawRepositories(vcsOrganizationName)).thenReturn(bytes);
         when(versionControlSystemAdapter.getName()).thenReturn(vcsAdapterName);
-        deliveryCommand.collectRepositoriesForOrganization(organizationAccount);
+        deliveryCommand.collectRepositoriesForOrganization(organization);
 
         // Then
         verify(rawStorageAdapter, times(1)).save(vcsOrganizationName, vcsAdapterName, Repository.ALL, bytes);

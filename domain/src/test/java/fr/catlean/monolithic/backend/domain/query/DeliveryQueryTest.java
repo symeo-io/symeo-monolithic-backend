@@ -5,7 +5,6 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ public class DeliveryQueryTest {
         // Given
         final String organizationName = faker.pokemon().name();
         final String vcsOrganizationName = faker.harryPotter().book();
-        final Organization organizationAccount =
+        final Organization organization =
                 Organization.builder().name(organizationName).vcsConfiguration(
                         VcsConfiguration.builder().organizationName(vcsOrganizationName).build()
                 ).build();
@@ -48,7 +47,7 @@ public class DeliveryQueryTest {
         when(versionControlSystemAdapter.repositoriesBytesToDomain(dummyBytes)).thenReturn(
                 repositoriesStub
         );
-        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganization(organizationAccount);
+        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganization(organization);
 
         // Then
         assertThat(repositories).isEqualTo(repositoriesStub);

@@ -20,9 +20,9 @@ public class DeliveryQuery {
         this.versionControlSystemAdapter = versionControlSystemAdapter;
     }
 
-    public List<Repository> readRepositoriesForOrganization(Organization organizationAccount) throws CatleanException {
+    public List<Repository> readRepositoriesForOrganization(Organization organization) throws CatleanException {
         final byte[] repositoriesBytes =
-                rawStorageAdapter.read(organizationAccount.getVcsConfiguration().getOrganizationName(),
+                rawStorageAdapter.read(organization.getVcsConfiguration().getOrganizationName(),
                 versionControlSystemAdapter.getName(), Repository.ALL);
         return versionControlSystemAdapter.repositoriesBytesToDomain(repositoriesBytes);
     }

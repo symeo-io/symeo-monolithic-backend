@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 public class AccountConfiguration {
 
 //    @Bean
-//    public OrganizationStorageAdapter organizationAccountAdapter() {
+//    public OrganizationStorageAdapter organizationAdapter() {
 //        return new OrganizationStorageAdapter() {
 //            private final static Map<String, Organization> ORGANISATION_ACCOUNT_MAP = new HashMap<>();
 //

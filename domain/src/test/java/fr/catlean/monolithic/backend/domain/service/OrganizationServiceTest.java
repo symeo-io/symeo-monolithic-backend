@@ -3,7 +3,6 @@ package fr.catlean.monolithic.backend.domain.service;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.account.OrganizationService;
 import org.junit.jupiter.api.Test;
@@ -31,12 +30,12 @@ public class OrganizationServiceTest {
         // When
         when(accountOrganizationStorageAdapter.findOrganizationForName(organizationName))
                 .thenReturn(expectedOrganizationAccount);
-        final Organization organizationAccount =
+        final Organization organization =
                 organizationService.getOrganizationForName(organizationName);
 
         // Then
-        assertThat(organizationAccount).isNotNull();
-        assertThat(organizationAccount.getName()).isEqualTo(organizationName);
+        assertThat(organization).isNotNull();
+        assertThat(organization.getName()).isEqualTo(organizationName);
     }
 
     @Test

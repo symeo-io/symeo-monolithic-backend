@@ -6,7 +6,6 @@ import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;

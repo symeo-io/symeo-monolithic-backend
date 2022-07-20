@@ -5,8 +5,10 @@ import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TeamFacadeAdapter {
-    Team createTeamForNameAndRepositoriesAndUser(String teamName, List<Integer> repositoryIds,
-                                                 User user) throws CatleanException;
+
+    List<Team> createTeamsForNameAndRepositoriesAndUser(Map<String, List<Integer>> repositoryIdsMappedToTeamName,
+                                                        User user) throws CatleanException;
 }

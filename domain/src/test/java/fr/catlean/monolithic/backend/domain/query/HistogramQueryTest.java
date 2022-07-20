@@ -3,7 +3,6 @@ package fr.catlean.monolithic.backend.domain.query;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
@@ -77,7 +76,7 @@ public class HistogramQueryTest {
 
     private static PullRequestHistogram generatePullRequestStub(String organizationName) {
         return PullRequestHistogram.builder()
-                .organizationAccount(organizationName)
+                .organization(organizationName)
                 .build();
     }
 }

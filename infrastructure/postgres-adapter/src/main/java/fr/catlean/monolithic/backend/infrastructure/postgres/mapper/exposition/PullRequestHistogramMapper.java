@@ -33,7 +33,7 @@ public interface PullRequestHistogramMapper {
     static PullRequestHistogram entitiesToDomain(final List<PullRequestHistogramDataEntity> histogramDataEntities) {
         final PullRequestHistogramDataEntity firstData = histogramDataEntities.get(0);
         return PullRequestHistogram.builder()
-                .organizationAccount(firstData.getId().getOrganizationName())
+                .organization(firstData.getId().getOrganizationName())
                 .team(firstData.getId().getTeamName())
                 .type(firstData.getId().getHistogramType())
                 .dataByWeek(histogramDataEntities.stream().map(PullRequestHistogramMapper::entityToDomain).toList())

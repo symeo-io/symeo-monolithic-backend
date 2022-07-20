@@ -5,7 +5,6 @@ import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWe
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
