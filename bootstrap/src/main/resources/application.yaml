@@ -1,5 +1,5 @@
 json-local-storage:
-  root-directory: /Users/ilysse/Workspace/CATLEAN/catlean-monolithic-backend/json_local_storage
+  root-directory: ${LOCAL_JSON_STORAGE_PATH}
 
 github:
   app:
