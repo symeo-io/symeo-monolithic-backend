@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account;
 
-import fr.catlean.monolithic.backend.domain.model.Onboarding;
+import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OnboardingEntity;
 
 import java.util.UUID;

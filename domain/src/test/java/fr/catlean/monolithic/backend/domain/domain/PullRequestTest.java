@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.domain.domain;
 
-import fr.catlean.monolithic.backend.domain.model.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;

@@ -2,8 +2,8 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
-import fr.catlean.monolithic.backend.domain.model.PullRequest;
-import fr.catlean.monolithic.backend.domain.model.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;

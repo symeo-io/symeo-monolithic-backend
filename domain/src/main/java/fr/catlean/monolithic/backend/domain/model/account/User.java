@@ -1,6 +1,5 @@
 package fr.catlean.monolithic.backend.domain.model.account;
 
-import fr.catlean.monolithic.backend.domain.model.Onboarding;
 import lombok.Builder;
 import lombok.Data;
 

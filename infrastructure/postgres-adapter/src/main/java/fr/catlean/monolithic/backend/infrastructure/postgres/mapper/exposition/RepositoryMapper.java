@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
-import fr.catlean.monolithic.backend.domain.model.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 
 public interface RepositoryMapper {

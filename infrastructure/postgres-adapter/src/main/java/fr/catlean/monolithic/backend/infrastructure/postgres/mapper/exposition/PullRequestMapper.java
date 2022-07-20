@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
-import fr.catlean.monolithic.backend.domain.model.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 
 import java.time.ZoneId;

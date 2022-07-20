@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -70,7 +71,7 @@ public class AmazonS3RawStorageAdapterTest {
 
         // Then
         assertThat(exception).isNotNull();
-        assertThat(exception.getCode()).isEqualTo("T.AWS_API_EXCEPTION");
+        assertThat(exception.getCode()).isEqualTo(AWS_API_EXCEPTION);
         assertThat(exception.getMessage()).isEqualTo("A technical error happened with AWS API");
     }
 
@@ -100,7 +101,7 @@ public class AmazonS3RawStorageAdapterTest {
 
         // Then
         assertThat(exception).isNotNull();
-        assertThat(exception.getCode()).isEqualTo("T.PARTIAL_S3_UPLOAD");
+        assertThat(exception.getCode()).isEqualTo(AWS_PARTIAL_S3_UPLOAD);
         assertThat(exception.getMessage()).isEqualTo("Failed to upload report " + organization + "/" + adapterName +
                 "/" + contentName + ".json" + " to S3 bucket " + amazonS3Properties.getRawBucketName() + " : md5s " +
                 "are not equaled, it should be a partial upload");
@@ -130,7 +131,7 @@ public class AmazonS3RawStorageAdapterTest {
 
         // Then
         assertThat(exception).isNotNull();
-        assertThat(exception.getCode()).isEqualTo("F.INVALID_BUCKET_NAME");
+        assertThat(exception.getCode()).isEqualTo(AWS_INVALID_BUCKET_NAME);
         assertThat(exception.getMessage()).isEqualTo("Failed to upload report " + organization + "/" + adapterName +
                 "/" + contentName + ".json" + " to S3 bucket " + amazonS3Properties.getRawBucketName() + " :" +
                 " the bucket does not exist.");
@@ -180,7 +181,7 @@ public class AmazonS3RawStorageAdapterTest {
 
         // Then
         assertThat(exception).isNotNull();
-        assertThat(exception.getCode()).isEqualTo("T.AWS_API_EXCEPTION");
+        assertThat(exception.getCode()).isEqualTo(AWS_API_EXCEPTION);
         assertThat(exception.getMessage()).isEqualTo("A technical error happened with AWS API");
 
     }
@@ -232,7 +233,7 @@ public class AmazonS3RawStorageAdapterTest {
 
         // Then
         assertThat(exception).isNotNull();
-        assertThat(exception.getCode()).isEqualTo("T.AWS_API_EXCEPTION");
+        assertThat(exception.getCode()).isEqualTo(AWS_API_EXCEPTION);
         assertThat(exception.getMessage()).isEqualTo("A technical error happened with AWS API");
     }
 

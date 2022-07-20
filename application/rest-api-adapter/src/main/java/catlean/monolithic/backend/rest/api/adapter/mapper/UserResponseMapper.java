@@ -1,6 +1,6 @@
 package catlean.monolithic.backend.rest.api.adapter.mapper;
 
-import fr.catlean.monolithic.backend.domain.model.Onboarding;
+import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CurrentUserResponseContract;

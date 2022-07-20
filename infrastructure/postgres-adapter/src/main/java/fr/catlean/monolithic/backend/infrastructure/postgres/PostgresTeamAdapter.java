@@ -10,6 +10,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.POSTGRES_EXCEPTION;
 import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper.domainToEntity;
 import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper.entityToDomain;
 import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper.domainToEntity;
@@ -31,7 +32,7 @@ public class PostgresTeamAdapter implements AccountTeamStorage {
         } catch (Exception e) {
             LOGGER.error("Failed to create team {}", team, e);
             throw CatleanException.builder()
-                    .code("T.POSTGRES_EXCEPTION")
+                    .code(POSTGRES_EXCEPTION)
                     .message("Failed to create team " + team.getName())
                     .build();
         }
