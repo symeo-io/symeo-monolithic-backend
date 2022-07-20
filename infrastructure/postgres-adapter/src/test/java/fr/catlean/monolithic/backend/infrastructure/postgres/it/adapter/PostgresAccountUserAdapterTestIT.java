@@ -93,7 +93,7 @@ public class PostgresAccountUserAdapterTestIT {
         final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(organizationRepository, vcsOrganizationRepository);
+                new PostgresAccountOrganizationAdapter(vcsOrganizationRepository);
         final String externalId = faker.name().firstName();
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()

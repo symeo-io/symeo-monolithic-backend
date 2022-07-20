@@ -38,7 +38,7 @@ public class PostgresOrganizationAdapterTestIT {
     void should_create_an_organization() throws CatleanException {
         // Given
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(organizationRepository, vcsOrganizationRepository);
+                new PostgresAccountOrganizationAdapter(vcsOrganizationRepository);
         final String externalId = faker.name().firstName();
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
@@ -58,23 +58,24 @@ public class PostgresOrganizationAdapterTestIT {
     }
 
     @Test
-    void should_find_an_organization_by_name() throws CatleanException {
+    void should_find_an_organization_by_vcs_organization_name() throws CatleanException {
         // Given
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(organizationRepository, vcsOrganizationRepository);
+                new PostgresAccountOrganizationAdapter(vcsOrganizationRepository);
         final String externalId = faker.name().firstName();
         final String name = faker.pokemon().name();
+        final String vcsOrganizationName = faker.name().bloodGroup();
         final Organization organization = Organization.builder()
                 .name(name)
                 .vcsOrganization(VcsOrganization.builder()
-                        .name(faker.name().bloodGroup())
+                        .name(vcsOrganizationName)
                         .vcsId(faker.dragonBall().character())
                         .externalId(externalId).build())
                 .build();
 
         // When
         postgresOrganizationAdapter.createOrganization(organization);
-        final Organization result = postgresOrganizationAdapter.findOrganizationForName(name);
+        final Organization result = postgresOrganizationAdapter.findVcsOrganizationForName(vcsOrganizationName);
 
         // Then
         assertThat(result).isNotNull();
@@ -85,20 +86,20 @@ public class PostgresOrganizationAdapterTestIT {
     void should_raise_an_exception_for_an_organization_not_existing() {
         // Given
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(organizationRepository, vcsOrganizationRepository);
+                new PostgresAccountOrganizationAdapter(vcsOrganizationRepository);
         final String organizationName = faker.ancient().god();
 
         // When
         CatleanException catleanException = null;
         try {
-            postgresOrganizationAdapter.findOrganizationForName(organizationName);
+            postgresOrganizationAdapter.findVcsOrganizationForName(organizationName);
         } catch (CatleanException e) {
             catleanException = e;
         }
 
         // Then
         assertThat(catleanException).isNotNull();
-        assertThat(catleanException.getMessage()).isEqualTo(String.format("Organization not found for name %s",
+        assertThat(catleanException.getMessage()).isEqualTo(String.format("Vcs Organization not found for name %s",
                 organizationName));
         assertThat(catleanException.getCode()).isEqualTo("F.ORGANIZATION_NAME_NOT_FOUND");
     }

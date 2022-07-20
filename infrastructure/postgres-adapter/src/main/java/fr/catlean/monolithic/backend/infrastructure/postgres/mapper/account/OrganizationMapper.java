@@ -46,7 +46,7 @@ public interface OrganizationMapper {
                 .build();
     }
 
-    private static VcsOrganization vcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+    static VcsOrganization vcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
         return VcsOrganization.builder()
                 .vcsId(vcsOrganizationEntity.getVcsId())
                 .id(vcsOrganizationEntity.getId().toString())

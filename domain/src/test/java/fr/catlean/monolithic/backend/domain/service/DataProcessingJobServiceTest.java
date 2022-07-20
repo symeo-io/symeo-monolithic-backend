@@ -44,7 +44,7 @@ public class DataProcessingJobServiceTest {
         );
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationForName(organisationName)).thenReturn(
+        when(accountOrganizationStorageAdapter.findVcsOrganizationForName(organisationName)).thenReturn(
                 organisation
         );
         when(vcsService.collectPullRequestsForOrganization(organisation)).thenReturn(

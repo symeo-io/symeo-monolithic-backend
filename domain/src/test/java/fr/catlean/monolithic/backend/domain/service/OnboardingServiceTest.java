@@ -3,6 +3,7 @@ package fr.catlean.monolithic.backend.domain.service;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOnboardingStorage;
+import fr.catlean.monolithic.backend.domain.service.account.OnboardingService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 

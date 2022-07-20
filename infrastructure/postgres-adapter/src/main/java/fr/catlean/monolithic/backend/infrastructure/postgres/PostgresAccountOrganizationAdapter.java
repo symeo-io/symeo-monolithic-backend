@@ -5,7 +5,6 @@ import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,17 +18,16 @@ import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.accou
 @Slf4j
 public class PostgresAccountOrganizationAdapter implements AccountOrganizationStorageAdapter {
 
-    private final OrganizationRepository organizationRepository;
     private final VcsOrganizationRepository vcsOrganizationRepository;
 
     @Override
-    public Organization findOrganizationForName(String organizationName) throws CatleanException {
+    public Organization findVcsOrganizationForName(String organizationName) throws CatleanException {
 
-        return organizationRepository.findByName(organizationName)
+        return vcsOrganizationRepository.findByName(organizationName)
                 .map(OrganizationMapper::entityToDomain)
                 .orElseThrow(
                         () -> CatleanException.builder()
-                                .message(String.format("Organization not found for name %s", organizationName))
+                                .message(String.format("Vcs Organization not found for name %s", organizationName))
                                 .code(ORGANIZATION_NAME_NOT_FOUND)
                                 .build()
                 );

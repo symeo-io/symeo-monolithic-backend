@@ -5,7 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface VcsOrganizationRepository extends JpaRepository<VcsOrganizationEntity,Long> {
+public interface VcsOrganizationRepository extends JpaRepository<VcsOrganizationEntity, Long> {
 
     Optional<VcsOrganizationEntity> findByExternalId(String externalId);
+
+    Optional<VcsOrganizationEntity> findByName(String name);
 }

@@ -2,7 +2,6 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.configuration;
 
 import fr.catlean.monolithic.backend.infrastructure.postgres.*;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
@@ -44,9 +43,8 @@ public class PostgresConfiguration {
     }
 
     @Bean
-    public PostgresAccountOrganizationAdapter postgresOrganizationAdapter(final OrganizationRepository organizationRepository,
-                                                                          final VcsOrganizationRepository vcsOrganizationRepository) {
-        return new PostgresAccountOrganizationAdapter(organizationRepository, vcsOrganizationRepository);
+    public PostgresAccountOrganizationAdapter postgresOrganizationAdapter(final VcsOrganizationRepository vcsOrganizationRepository) {
+        return new PostgresAccountOrganizationAdapter(vcsOrganizationRepository);
     }
 
     @Bean

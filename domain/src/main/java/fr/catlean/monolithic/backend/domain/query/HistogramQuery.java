@@ -16,7 +16,7 @@ public class HistogramQuery {
     public PullRequestHistogram readPullRequestHistogram(String organizationName, String teamName,
                                                          String histogramType) throws CatleanException {
         final Organization organization =
-                accountOrganizationStorageAdapter.findOrganizationForName(organizationName);
+                accountOrganizationStorageAdapter.findVcsOrganizationForName(organizationName);
         return expositionStorageAdapter.readPullRequestHistogram(organization.getName(), teamName, histogramType);
     }
 }

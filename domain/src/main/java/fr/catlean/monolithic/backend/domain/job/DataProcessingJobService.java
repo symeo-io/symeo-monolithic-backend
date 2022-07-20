@@ -1,9 +1,9 @@
 package fr.catlean.monolithic.backend.domain.job;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
-import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
@@ -22,9 +22,9 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     private final RepositoryService repositoryService;
 
     @Override
-    public void start(final String organisationName) throws CatleanException {
+    public void start(final String vcsOrganizationName) throws CatleanException {
         final Organization organization =
-                accountOrganizationStorageAdapter.findOrganizationForName(organisationName);
+                accountOrganizationStorageAdapter.findVcsOrganizationForName(vcsOrganizationName);
         collectRepositories(organization);
         collectPullRequests(organization);
     }

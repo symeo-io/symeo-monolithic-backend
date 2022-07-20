@@ -8,7 +8,7 @@ import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
-import fr.catlean.monolithic.backend.domain.service.*;
+import fr.catlean.monolithic.backend.domain.service.account.OnboardingService;
 import fr.catlean.monolithic.backend.domain.service.account.OrganizationService;
 import fr.catlean.monolithic.backend.domain.service.account.TeamService;
 import fr.catlean.monolithic.backend.domain.service.account.UserService;
