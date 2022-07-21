@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.ORGANISATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -270,6 +271,48 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.onboarding.has_configured_team").isEqualTo(false)
                 .jsonPath("$.onboarding.has_connected_to_vcs").isEqualTo(false)
                 .jsonPath("$.onboarding.id").isNotEmpty();
+    }
+
+    @Order(8)
+    @Test
+    void should_return_empty_repositories() {
+        // Given
+        teamRepository.deleteAll();
+        repositoryRepository.deleteAll();
+
+        // When
+        client.get()
+                .uri(getApiURI(REPOSITORIES_REST_API_GET))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.repositories").isEmpty();
+    }
+
+    @Order(9)
+    @Test
+    void should_return_error_for_not_found_organization_to_link_to_current_user() {
+        // Given
+        final LinkOrganizationToCurrentUserRequestContract requestContract =
+                new LinkOrganizationToCurrentUserRequestContract();
+        final String externalId = faker.ancient().god();
+        requestContract.setExternalId(externalId);
+
+        // When
+        client.post()
+                .uri(getApiURI(USER_REST_API_POST_ME_ORGANIZATION))
+                .body(BodyInserters.fromValue(requestContract))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is5xxServerError()
+                .expectBody()
+                .jsonPath("$.errors[0].code").isEqualTo(ORGANISATION_NOT_FOUND)
+                .jsonPath("$.errors[0].message").isEqualTo("Organization not found for externalId " + externalId)
+                .jsonPath("$.user").isEmpty();
     }
 
     private static RepositoryEntity buildRepository(final Integer vcsId,
