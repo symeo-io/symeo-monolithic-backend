@@ -19,12 +19,14 @@ import java.util.stream.Collectors;
 public class CatleanDeliveryProcessorConfiguration {
 
     @Around(
-            "execution(* fr.catlean.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getRepositoriesForOrganizationName(..)) || execution(* fr.catlean.monolithic.backend" +
+            "execution(* fr.catlean.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient.getRepositoriesForOrganizationName(..)) || execution(* fr.catlean.monolithic.backend" +
                     ".infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getPullRequestsForRepositoryAndOrganization(..)) || execution(* fr.catlean.monolithic.backend" +
-                    ".infrastructure.github.adapter.client.GithubHttpClient.getPullRequestDetailsForPullRequestNumber" +
-                    "(..))")
+                    ".getPullRequestsForRepositoryAndOrganization(..)) " +
+                    "|| execution(* fr.catlean.monolithic.backend.infrastructure.github.adapter.client" +
+                    ".GithubHttpClient.getPullRequestDetailsForPullRequestNumber" +
+                    "(..))"
+            + "|| execution(* fr.catlean.monolithic.backend.infrastructure.postgres.*.*(..))"
+    )
     public Object around(ProceedingJoinPoint point) throws Throwable {
         final StopWatch stopWatch = new StopWatch("aop-stopwatch");
         stopWatch.start();
