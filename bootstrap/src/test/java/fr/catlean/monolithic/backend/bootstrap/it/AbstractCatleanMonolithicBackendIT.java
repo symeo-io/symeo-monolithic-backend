@@ -4,6 +4,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.bootstrap.CatleanMonolithicBackendITApplication;
+import fr.catlean.monolithic.backend.bootstrap.ITAuthenticationContextProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -55,7 +56,7 @@ public abstract class AbstractCatleanMonolithicBackendIT {
     WebTestClient client;
     protected final Faker faker = new Faker();
 
-    protected URI getApiURI(final String path, final String... contextPath) {
+    protected URI getApiURI(final String path) {
         return UriComponentsBuilder.newInstance()
                 .scheme("http")
                 .host("localhost")
@@ -66,21 +67,10 @@ public abstract class AbstractCatleanMonolithicBackendIT {
     }
 
     protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
+    protected static final String USER_REST_API_GET_ME = "/api/v1/me";
 
-    protected void authorizedUserForMail(String mail) {
-        Authentication authentication = mock(Authentication.class);
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        final DecodedJWT decodedJWT = mock(DecodedJWT.class);
-        when(authentication.getDetails()).thenReturn(decodedJWT);
-        final Map<String, Claim> claims = mock(Map.class);
-        when(decodedJWT.getClaims()).thenReturn(claims);
-        when(claims.containsKey("https://catlean.fr/email")).thenReturn(true);
-        final Claim claim = mock(Claim.class);
-        when(claims.get("https://catlean.fr/email")).thenReturn(claim);
-        when(claim.asString()).thenReturn(mail);
-        SecurityContextHolder.setContext(securityContext);
-    }
+    @Autowired
+    ITAuthenticationContextProvider authenticationContextProvider;
 
 
 }

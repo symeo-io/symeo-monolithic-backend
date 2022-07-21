@@ -3,6 +3,7 @@ package fr.catlean.monolithic.backend.bootstrap.configuration;
 import catlean.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
 import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import catlean.monolithic.backend.rest.api.adapter.*;
+import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationContextProvider;
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.port.in.*;
@@ -43,8 +44,9 @@ public class RestApiConfiguration {
     }
 
     @Bean
-    public AuthenticationService userAuthenticationService(final UserFacadeAdapter userFacadeAdapter) {
-        return new AuthenticationService(userFacadeAdapter);
+    public AuthenticationService userAuthenticationService(final UserFacadeAdapter userFacadeAdapter,
+                                                           final AuthenticationContextProvider authenticationContextProvider) {
+        return new AuthenticationService(userFacadeAdapter, authenticationContextProvider);
     }
 
     @Bean

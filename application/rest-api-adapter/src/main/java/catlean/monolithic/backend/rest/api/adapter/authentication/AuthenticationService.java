@@ -1,13 +1,11 @@
 package catlean.monolithic.backend.rest.api.adapter.authentication;
 
 import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Map;
 
@@ -18,11 +16,11 @@ import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCod
 public class AuthenticationService {
 
     private UserFacadeAdapter userFacadeAdapter;
+    private AuthenticationContextProvider authenticationContextProvider;
     private final static String CATLEAN_MAIL_KEY = "https://catlean.fr/email";
 
     public User getAuthenticatedUser() throws CatleanException {
-        final Map<String, Claim> claims =
-                ((DecodedJWT) SecurityContextHolder.getContext().getAuthentication().getDetails()).getClaims();
+        final Map<String, Claim> claims = authenticationContextProvider.getClaims();
         if (!claims.containsKey(CATLEAN_MAIL_KEY)) {
             final String message = "Mail not found in auth0 JWT token";
             LOGGER.error(message);

@@ -30,11 +30,14 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
     @Order(1)
     @Test
     public void should_create_an_organization_triggered_by_a_github_webhook_installation_event() throws IOException {
+        // Given
         final byte[] githubWebhookInstallationCreatedEventBytes = Files.readString(Paths.get("target/test-classes" +
                 "/webhook_events" +
                 "/post_installation_created_1.json")).getBytes();
         final String hmacSHA256 = new HmacUtils("HmacSHA256",
                 githubWebhookProperties.getSecret()).hmacHex(githubWebhookInstallationCreatedEventBytes);
+
+        // When
         client
                 .post()
                 .uri(getApiURI(GITHUB_WEBHOOK_API))
@@ -45,6 +48,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .expectStatus()
                 .is2xxSuccessful();
 
+        // Then
         final List<VcsOrganizationEntity> vcsOrganizationEntities = vcsOrganizationRepository.findAll();
         assertThat(vcsOrganizationEntities).hasSize(1);
         final GithubWebhookEventDTO githubWebhookEventDTO =
@@ -53,5 +57,22 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
         assertThat(vcsOrganizationEntities.get(0).getVcsId()).isEqualTo("github-" + githubWebhookEventDTO.getInstallation().getAccount().getId());
         assertThat(vcsOrganizationEntities.get(0).getExternalId()).isEqualTo(githubWebhookEventDTO.getInstallation().getId());
         assertThat(vcsOrganizationEntities.get(0).getOrganizationEntity().getName()).isEqualTo(githubWebhookEventDTO.getInstallation().getAccount().getLogin());
+    }
+
+    @Order(2)
+    @Test
+    void should_create_user() {
+        // Given
+        final String mail = faker.name().firstName() + "@" + faker.name().firstName() + ".fr";
+        authenticationContextProvider.authorizeUserForMail(mail);
+
+        // When
+        client.get()
+                .uri(getApiURI(USER_REST_API_GET_ME))
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful();
+
+        // Then
     }
 }
