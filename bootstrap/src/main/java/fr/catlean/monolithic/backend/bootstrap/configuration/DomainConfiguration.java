@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
+import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.port.in.OnboardingFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.TeamFacadeAdapter;
@@ -12,8 +13,7 @@ import fr.catlean.monolithic.backend.domain.service.account.OnboardingService;
 import fr.catlean.monolithic.backend.domain.service.account.OrganizationService;
 import fr.catlean.monolithic.backend.domain.service.account.TeamService;
 import fr.catlean.monolithic.backend.domain.service.account.UserService;
-import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
-import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
+import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.springframework.context.annotation.Bean;
@@ -42,17 +42,17 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public PullRequesHistogramtService pullRequestSizeService(final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new PullRequesHistogramtService(expositionStorageAdapter);
+    public PullRequesHistogramService pullRequestSizeService(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new PullRequesHistogramService(expositionStorageAdapter);
     }
 
 
     @Bean
     public DataProcessingJobService dataProcessingJobService(final VcsService vcsService,
-                                                             final PullRequesHistogramtService pullRequesHistogramtService,
+                                                             final PullRequesHistogramService pullRequesHistogramService,
                                                              final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService) {
-        return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter, pullRequesHistogramtService,
+        return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter, pullRequesHistogramService,
                 repositoryService);
     }
 

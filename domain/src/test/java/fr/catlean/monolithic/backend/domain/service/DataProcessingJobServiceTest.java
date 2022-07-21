@@ -3,12 +3,12 @@ package fr.catlean.monolithic.backend.domain.service;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
-import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
-import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
+import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
@@ -27,11 +27,11 @@ public class DataProcessingJobServiceTest {
         // Given
         final VcsService vcsService = mock(VcsService.class);
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter = mock(AccountOrganizationStorageAdapter.class);
-        final PullRequesHistogramtService pullRequesHistogramtService = mock(PullRequesHistogramtService.class);
+        final PullRequesHistogramService pullRequesHistogramService = mock(PullRequesHistogramService.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, pullRequesHistogramtService, repositoryService);
+                        accountOrganizationStorageAdapter, pullRequesHistogramService, repositoryService);
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
@@ -59,9 +59,9 @@ public class DataProcessingJobServiceTest {
         verify(repositoryService, times(1)).saveRepositories(
                 repositories.stream().map(repository -> repository.toBuilder().organization(organisation).build()).toList()
         );
-        verify(pullRequesHistogramtService, times(1)).computeAndSavePullRequestSizeHistogram(pullRequests, organisation);
-        verify(pullRequesHistogramtService, times(1)).computeAndSavePullRequestTimeHistogram(pullRequests, organisation);
-        verify(pullRequesHistogramtService, times(1)).savePullRequests(pullRequests);
+        verify(pullRequesHistogramService, times(1)).computeAndSavePullRequestSizeHistogram(pullRequests, organisation);
+        verify(pullRequesHistogramService, times(1)).computeAndSavePullRequestTimeHistogram(pullRequests, organisation);
+        verify(pullRequesHistogramService, times(1)).savePullRequests(pullRequests);
 
     }
 }

@@ -1,7 +1,6 @@
 package catlean.monolithic.backend.github.webhook.api.adapter.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;

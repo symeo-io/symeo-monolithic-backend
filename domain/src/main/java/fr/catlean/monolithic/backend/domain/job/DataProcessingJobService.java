@@ -6,7 +6,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
-import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramtService;
+import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     private final VcsService vcsService;
     private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
-    private final PullRequesHistogramtService pullRequesHistogramtService;
+    private final PullRequesHistogramService pullRequesHistogramService;
     private final RepositoryService repositoryService;
 
     @Override
@@ -32,9 +32,9 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     private void collectPullRequests(Organization organization) throws CatleanException {
         final List<PullRequest> pullRequestList =
                 vcsService.collectPullRequestsForOrganization(organization);
-        pullRequesHistogramtService.savePullRequests(pullRequestList);
-        pullRequesHistogramtService.computeAndSavePullRequestSizeHistogram(pullRequestList, organization);
-        pullRequesHistogramtService.computeAndSavePullRequestTimeHistogram(pullRequestList, organization);
+        pullRequesHistogramService.savePullRequests(pullRequestList);
+        pullRequesHistogramService.computeAndSavePullRequestSizeHistogram(pullRequestList, organization);
+        pullRequesHistogramService.computeAndSavePullRequestTimeHistogram(pullRequestList, organization);
     }
 
     private void collectRepositories(Organization organization) throws CatleanException {

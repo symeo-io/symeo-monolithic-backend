@@ -5,11 +5,7 @@ import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWe
 import catlean.monolithic.backend.rest.api.adapter.*;
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
-import fr.catlean.monolithic.backend.domain.port.in.OnboardingFacadeAdapter;
-import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
-import fr.catlean.monolithic.backend.domain.port.in.TeamFacadeAdapter;
-import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
+import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
