@@ -1,5 +1,5 @@
 version: 2.1
-
+machine: true
 orbs:
   aws-cli: circleci/aws-cli@3.1
   slack: circleci/slack@4.10.1
@@ -12,14 +12,17 @@ jobs:
       - checkout
       - run:
           name: Build
-          command: mvn -B -DskipTests clean package -T 4
+          command: mvn -B -DskipTests clean package -T 6
       - save_cache:
           key: build-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - bootstrap/target/
       - run:
           name: Test
-          command: mvn test -T 4
+          command: mvn test -T 6
+      - run:
+          name: Integration Test
+          command: mvn integration-test -T 4
       - slack/notify:
           event: fail
           template: basic_fail_1
