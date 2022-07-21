@@ -4,7 +4,7 @@ import catlean.monolithic.backend.rest.api.adapter.authentication.Authentication
 import catlean.monolithic.backend.rest.api.adapter.mapper.RepositoryContractMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
-import fr.catlean.monolithic.backend.domain.service.RepositoryService;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.frontend.contract.api.RepositoryApi;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.GetRepositoriesResponseContract;
 import io.swagger.v3.oas.annotations.tags.Tag;

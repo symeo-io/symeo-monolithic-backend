@@ -70,7 +70,7 @@ public class GithubWebhookApiAdapterIT extends AbstractGithubWebhookAdapterIT {
         assertThat(organizationAdapterMock.getOrganizations()).hasSize(1);
         final GithubWebhookEventDTO githubWebhookEventDTO = objectMapper.readValue(bytes, GithubWebhookEventDTO.class);
         assertThat(organizationAdapterMock.getOrganizations().get(0).getName()).isEqualTo(githubWebhookEventDTO.getInstallation().getAccount().getLogin());
-        assertThat(organizationAdapterMock.getOrganizations().get(0).getExternalId()).isEqualTo(githubWebhookEventDTO.getInstallation().getId());
+        assertThat(organizationAdapterMock.getOrganizations().get(0).getVcsOrganization().getExternalId()).isEqualTo(githubWebhookEventDTO.getInstallation().getId());
     }
 
     @Test

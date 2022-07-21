@@ -1,10 +1,11 @@
 package fr.catlean.monolithic.backend.domain.service;
 
 import com.github.javafaker.Faker;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class RepositoryServiceTest {
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final RepositoryService repositoryService = new RepositoryService(expositionStorageAdapter);
         final Organization organization = Organization.builder()
-                .vcsConfiguration(VcsConfiguration.builder().build())
+                .vcsOrganization(VcsOrganization.builder().build())
                 .build();
         final List<Repository> repositories = List.of(
                 Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build(),

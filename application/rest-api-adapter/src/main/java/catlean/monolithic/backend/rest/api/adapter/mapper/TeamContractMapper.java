@@ -24,8 +24,8 @@ public interface TeamContractMapper {
         return createTeamResponseContract;
     }
 
-    static Map<String, List<Integer>> getRepositoryIdsMappedToTeamName(List<CreateTeamRequestContract> createTeamRequestContract) {
-        final Map<String, List<Integer>> repositoryIdsMappedToTeamName = new HashMap<>();
+    static Map<String, List<Long>> getRepositoryIdsMappedToTeamName(List<CreateTeamRequestContract> createTeamRequestContract) {
+        final Map<String, List<Long>> repositoryIdsMappedToTeamName = new HashMap<>();
         for (CreateTeamRequestContract teamRequestContract : createTeamRequestContract) {
             repositoryIdsMappedToTeamName.put(teamRequestContract.getName(), teamRequestContract.getRepositoryIds());
         }

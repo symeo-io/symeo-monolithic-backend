@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.domain.service;
+package fr.catlean.monolithic.backend.domain.service.account;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Onboarding;

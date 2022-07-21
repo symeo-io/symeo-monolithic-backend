@@ -1,10 +1,10 @@
-package fr.catlean.monolithic.backend.domain.service;
+package fr.catlean.monolithic.backend.domain.service.insights;
 
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsTeam;
+import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 
@@ -18,29 +18,29 @@ import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHist
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.TIME_LIMIT;
 
 @AllArgsConstructor
-public class PullRequestService {
+public class PullRequesHistogramService {
 
     private final ExpositionStorageAdapter expositionStorageAdapter;
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
     public void computeAndSavePullRequestSizeHistogram(List<PullRequest> pullRequests,
-                                                       Organization organizationAccount) {
-        computeAndSavePullRequestHistogram(pullRequests, organizationAccount, SIZE_LIMIT);
+                                                       Organization organization) {
+        computeAndSavePullRequestHistogram(pullRequests, organization, SIZE_LIMIT);
     }
 
     public void computeAndSavePullRequestTimeHistogram(List<PullRequest> pullRequests,
-                                                       Organization organizationAccount) {
-        computeAndSavePullRequestHistogram(pullRequests, organizationAccount, TIME_LIMIT);
+                                                       Organization organization) {
+        computeAndSavePullRequestHistogram(pullRequests, organization, TIME_LIMIT);
     }
 
     private void computeAndSavePullRequestHistogram(List<PullRequest> pullRequests,
-                                                    Organization organizationAccount, String sizeLimit) {
+                                                    Organization organization, String sizeLimit) {
         final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
-        for (VcsTeam vcsTeam : organizationAccount.getVcsConfiguration().getVcsTeams()) {
+        for (Team team : organization.getTeams()) {
 
             final PullRequestHistogram pullRequestHistogram =
                     getPullRequestHistogramForVcsTeam(sizeLimit, pullRequests,
-                            organizationAccount, vcsTeam);
+                            organization, team);
             pullRequestHistograms.add(pullRequestHistogram);
 
         }
@@ -50,38 +50,38 @@ public class PullRequestService {
 
     private PullRequestHistogram getPullRequestHistogramForVcsTeam(final String pullRequestHistogramType,
                                                                    List<PullRequest> pullRequests,
-                                                                   final Organization organizationAccount,
-                                                                   final VcsTeam vcsTeam) {
+                                                                   final Organization organization,
+                                                                   final Team team) {
         int pullRequestLimit;
         if (pullRequestHistogramType.equals(SIZE_LIMIT)) {
-            pullRequestLimit = vcsTeam.getPullRequestLineNumberLimit();
+            pullRequestLimit = team.getPullRequestLineNumberLimit();
         } else {
-            pullRequestLimit = vcsTeam.getPullRequestDayNumberLimit();
+            pullRequestLimit = team.getPullRequestDayNumberLimit();
         }
 
-        pullRequests = filterPullRequests(pullRequests, vcsTeam);
+        pullRequests = filterPullRequests(pullRequests, team);
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
         for (Date weekStartDate : getWeekStartDateForTheLastWeekNumber(3 * 4,
-                organizationAccount.getTimeZone())) {
+                organization.getTimeZone())) {
             final String weekStart = SDF.format(weekStartDate);
             dataCompareToLimits.add(getDataCompareToLimit(pullRequestHistogramType, pullRequests, pullRequestLimit,
                     weekStartDate, weekStart));
         }
         return PullRequestHistogram.builder()
                 .type(pullRequestHistogramType)
-                .organizationAccount(organizationAccount.getName())
-                .team(vcsTeam.getName())
+                .organization(organization.getName())
+                .team(team.getName())
                 .dataByWeek(dataCompareToLimits)
                 .limit(pullRequestLimit)
                 .build();
 
     }
 
-    private static List<PullRequest> filterPullRequests(List<PullRequest> pullRequests, VcsTeam vcsTeam) {
+    private static List<PullRequest> filterPullRequests(List<PullRequest> pullRequests, Team team) {
         pullRequests =
                 pullRequests.stream()
-                        .filter(pullRequest -> vcsTeam.getVcsRepositoryNames().stream()
-                                .anyMatch(repositoryName -> pullRequest.getRepository().equals(repositoryName))
+                        .filter(pullRequest -> team.getRepositories().stream()
+                                .anyMatch(repository -> pullRequest.getRepository().equals(repository.getName()))
                         ).toList();
         pullRequests =
                 pullRequests.stream().filter(PullRequest::isValid).toList();

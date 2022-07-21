@@ -2,7 +2,6 @@ package catlean.monolithic.backend.github.webhook.api.adapter;
 
 import catlean.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookEventDTO;
 import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
-import catlean.monolithic.backend.github.webhook.api.adapter.security.GithubWebhookSecretValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;

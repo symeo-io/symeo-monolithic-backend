@@ -3,8 +3,8 @@ package fr.catlean.monolithic.backend.domain.query;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import org.junit.jupiter.api.Test;
@@ -33,8 +33,8 @@ public class HistogramQueryTest {
         final PullRequestHistogram pullRequestStub = generatePullRequestStub(organizationName);
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationForName(organizationName)).thenReturn(
-                Organization.builder().name(organizationName).vcsConfiguration(VcsConfiguration.builder().build()).build()
+        when(accountOrganizationStorageAdapter.findVcsOrganizationForName(organizationName)).thenReturn(
+                Organization.builder().name(organizationName).vcsOrganization(VcsOrganization.builder().build()).build()
         );
         when(expositionStorageAdapter.readPullRequestHistogram(organizationName, teamName, histogramType)).thenReturn(pullRequestStub);
         final PullRequestHistogram pullRequestHistogram = histogramQuery.readPullRequestHistogram(organizationName,
@@ -59,7 +59,7 @@ public class HistogramQueryTest {
                 " found", ORGANISATION_NOT_FOUND);
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationForName(organizationName))
+        when(accountOrganizationStorageAdapter.findVcsOrganizationForName(organizationName))
                 .thenThrow(organisationNotFoundException);
 
         // Then
@@ -77,7 +77,7 @@ public class HistogramQueryTest {
 
     private static PullRequestHistogram generatePullRequestStub(String organizationName) {
         return PullRequestHistogram.builder()
-                .organizationAccount(organizationName)
+                .organization(organizationName)
                 .build();
     }
 }

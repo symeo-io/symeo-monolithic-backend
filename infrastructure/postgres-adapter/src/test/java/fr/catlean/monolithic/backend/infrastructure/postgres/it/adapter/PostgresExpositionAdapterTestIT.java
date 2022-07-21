@@ -2,12 +2,12 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestHistogramDataEntity;
@@ -117,7 +117,7 @@ public class PostgresExpositionAdapterTestIT {
         // Then
         assertThat(pullRequestHistogram).isNotNull();
         assertThat(pullRequestHistogram.getTeam()).isEqualTo(team1);
-        assertThat(pullRequestHistogram.getOrganizationAccount()).isEqualTo(organization1);
+        assertThat(pullRequestHistogram.getOrganization()).isEqualTo(organization1);
         assertThat(pullRequestHistogram.getDataByWeek()).hasSize(5);
     }
 
@@ -128,7 +128,7 @@ public class PostgresExpositionAdapterTestIT {
                 pullRequestHistogramRepository, repositoryRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
-                .vcsConfiguration(VcsConfiguration.builder().organizationName(faker.name().name()).build())
+                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
 
         // When
@@ -151,14 +151,14 @@ public class PostgresExpositionAdapterTestIT {
                 pullRequestHistogramRepository, repositoryRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
-                .vcsConfiguration(VcsConfiguration.builder().organizationName(faker.name().name()).build())
+                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         final List<RepositoryEntity> repositoryEntities = List.of(
-                new RepositoryEntity(1, faker.gameOfThrones().character(),
+                new RepositoryEntity(1L, faker.gameOfThrones().character(),
                         faker.name().firstName(), faker.friends().character(), organization.getId().toString()),
-                new RepositoryEntity(2, faker.gameOfThrones().character(),
+                new RepositoryEntity(2L, faker.gameOfThrones().character(),
                         faker.name().firstName(), faker.friends().character(), organization.getId().toString()),
-                new RepositoryEntity(3, faker.gameOfThrones().character(),
+                new RepositoryEntity(3L, faker.gameOfThrones().character(),
                         faker.name().firstName(), faker.friends().character(), organization.getId().toString()));
         repositoryRepository.saveAll(repositoryEntities);
 
@@ -174,7 +174,7 @@ public class PostgresExpositionAdapterTestIT {
                 .organization(organization)
                 .name(faker.pokemon().name())
                 .vcsId(faker.address().firstName() + faker.ancient().god())
-                .vcsOrganizationName(organization.getVcsConfiguration().getOrganizationName())
+                .vcsOrganizationName(organization.getVcsOrganization().getName())
                 .build();
     }
 
@@ -191,7 +191,7 @@ public class PostgresExpositionAdapterTestIT {
 
 
         return PullRequestHistogram.builder()
-                .organizationAccount(organizationName)
+                .organization(organizationName)
                 .team(team)
                 .limit(faker.number().randomDigit())
                 .type(PullRequestHistogram.SIZE_LIMIT)
@@ -210,7 +210,7 @@ public class PostgresExpositionAdapterTestIT {
 
     private PullRequest buildPullRequest(int id) {
         return PullRequest.builder()
-                .id("fake-platform-name-" + id)
+                .vcsId(faker.dragonBall().character() + id)
                 .number(id)
                 .title(faker.name().title())
                 .lastUpdateDate(faker.date().past(1, TimeUnit.DAYS))

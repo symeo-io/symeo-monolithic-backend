@@ -15,7 +15,7 @@ public class PullRequestHistogram {
     String type;
     int limit;
     @NonNull
-    String organizationAccount;
+    String organization;
     @Builder.Default
     String team = "all";
     @Builder.Default

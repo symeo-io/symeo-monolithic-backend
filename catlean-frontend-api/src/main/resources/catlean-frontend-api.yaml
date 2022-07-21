@@ -444,6 +444,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
         name:
           type: string
     PostCreateTeamsRequestContract:
@@ -460,6 +461,7 @@ components:
           type: array
           items:
             type: integer
+            format: int64
     PostCreateTeamsResponseContract:
       type: object
       properties:
@@ -486,6 +488,7 @@ components:
               type: array
               items:
                 type: integer
+                format: int64
         errors:
           type: array
           items:

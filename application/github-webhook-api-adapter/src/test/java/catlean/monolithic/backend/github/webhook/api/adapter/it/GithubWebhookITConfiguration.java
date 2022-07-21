@@ -5,7 +5,7 @@ import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWe
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -45,7 +45,13 @@ public class GithubWebhookITConfiguration {
         @Override
         public Organization createOrganizationForVcsNameAndExternalId(String vcsOrganizationName, String externalId) throws CatleanException {
             final Organization organization =
-                    Organization.builder().vcsConfiguration(VcsConfiguration.builder().organizationName(vcsOrganizationName).build()).name(vcsOrganizationName).externalId(externalId).build();
+                    Organization.builder()
+                            .vcsOrganization(
+                                    VcsOrganization.builder()
+                                            .name(vcsOrganizationName)
+                                            .externalId(externalId)
+                                            .build())
+                            .name(vcsOrganizationName).build();
             organizations.add(organization);
             return organization;
         }

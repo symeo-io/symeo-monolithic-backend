@@ -2,11 +2,15 @@ package fr.catlean.monolithic.backend.domain.service;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
-import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramService;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
+import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -21,18 +25,18 @@ public class DataProcessingJobServiceTest {
     @Test
     void should_start_data_processing_job_given_an_organisation_name() throws CatleanException {
         // Given
-        final DeliveryProcessorService deliveryProcessorService = mock(DeliveryProcessorService.class);
+        final VcsService vcsService = mock(VcsService.class);
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter = mock(AccountOrganizationStorageAdapter.class);
-        final PullRequestService pullRequestService = mock(PullRequestService.class);
+        final PullRequesHistogramService pullRequesHistogramService = mock(PullRequesHistogramService.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final DataProcessingJobService dataProcessingJobService =
-                new DataProcessingJobService(deliveryProcessorService,
-                        accountOrganizationStorageAdapter, pullRequestService, repositoryService);
+                new DataProcessingJobService(vcsService,
+                        accountOrganizationStorageAdapter, pullRequesHistogramService, repositoryService);
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().name(organisationName)
-                .vcsConfiguration(VcsConfiguration.builder().build()).build();
-        final List<PullRequest> pullRequests = List.of(PullRequest.builder().id(faker.pokemon().name()).build(),
-                PullRequest.builder().id(faker.hacker().abbreviation()).build());
+                .vcsOrganization(VcsOrganization.builder().build()).build();
+        final List<PullRequest> pullRequests = List.of(PullRequest.builder().vcsId(faker.pokemon().name()).build(),
+                PullRequest.builder().vcsId(faker.hacker().abbreviation()).build());
         final List<Repository> repositories = List.of(
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
@@ -40,13 +44,13 @@ public class DataProcessingJobServiceTest {
         );
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationForName(organisationName)).thenReturn(
+        when(accountOrganizationStorageAdapter.findVcsOrganizationForName(organisationName)).thenReturn(
                 organisation
         );
-        when(deliveryProcessorService.collectPullRequestsForOrganization(organisation)).thenReturn(
+        when(vcsService.collectPullRequestsForOrganization(organisation)).thenReturn(
                 pullRequests
         );
-        when(deliveryProcessorService.collectRepositoriesForOrganization(organisation)).thenReturn(
+        when(vcsService.collectRepositoriesForOrganization(organisation)).thenReturn(
                 repositories
         );
         dataProcessingJobService.start(organisationName);
@@ -55,9 +59,9 @@ public class DataProcessingJobServiceTest {
         verify(repositoryService, times(1)).saveRepositories(
                 repositories.stream().map(repository -> repository.toBuilder().organization(organisation).build()).toList()
         );
-        verify(pullRequestService, times(1)).computeAndSavePullRequestSizeHistogram(pullRequests, organisation);
-        verify(pullRequestService, times(1)).computeAndSavePullRequestTimeHistogram(pullRequests, organisation);
-        verify(pullRequestService, times(1)).savePullRequests(pullRequests);
+        verify(pullRequesHistogramService, times(1)).computeAndSavePullRequestSizeHistogram(pullRequests, organisation);
+        verify(pullRequesHistogramService, times(1)).computeAndSavePullRequestTimeHistogram(pullRequests, organisation);
+        verify(pullRequesHistogramService, times(1)).savePullRequests(pullRequests);
 
     }
 }

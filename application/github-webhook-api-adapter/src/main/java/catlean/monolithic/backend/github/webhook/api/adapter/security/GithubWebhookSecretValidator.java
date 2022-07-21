@@ -2,10 +2,6 @@ package catlean.monolithic.backend.github.webhook.api.adapter.security;
 
 import org.apache.commons.codec.digest.HmacUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 public class GithubWebhookSecretValidator {
 
 

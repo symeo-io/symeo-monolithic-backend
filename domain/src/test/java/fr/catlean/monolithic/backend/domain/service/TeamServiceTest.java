@@ -5,9 +5,10 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
+import fr.catlean.monolithic.backend.domain.service.account.TeamService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -29,14 +30,14 @@ public class TeamServiceTest {
         final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
         final TeamService teamService = new TeamService(accountTeamStorage);
         final Organization organization =
-                Organization.builder().id(UUID.randomUUID()).vcsConfiguration(VcsConfiguration.builder().build()).build();
+                Organization.builder().id(UUID.randomUUID()).vcsOrganization(VcsOrganization.builder().build()).build();
         final String teamName1 = faker.name().firstName();
         final String teamName2 = faker.name().lastName();
-        final List<Integer> repositoryIds1 = List.of(1, 2, 3);
-        final List<Integer> repositoryIds2 = List.of(4, 5, 6);
+        final List<Long> repositoryIds1 = List.of(1L, 2L, 3L);
+        final List<Long> repositoryIds2 = List.of(4L, 5L, 6L);
         final Team team1 = Team.builder().name(teamName1).build();
         final Team team2 = Team.builder().name(teamName2).build();
-        final Map<String, List<Integer>> repositoryIdsMappedToTeamName = Map.of(
+        final Map<String, List<Long>> repositoryIdsMappedToTeamName = Map.of(
                 teamName1, repositoryIds1,
                 teamName2, repositoryIds2
         );
@@ -63,7 +64,7 @@ public class TeamServiceTest {
                 User.builder()
                         .organization(
                                 Organization.builder().id(UUID.randomUUID())
-                                        .vcsConfiguration(VcsConfiguration.builder().build())
+                                        .vcsOrganization(VcsOrganization.builder().build())
                                         .build())
                         .build());
 

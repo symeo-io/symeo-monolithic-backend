@@ -2,10 +2,10 @@ package fr.catlean.monolithic.backend.domain.query;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
-import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import org.junit.jupiter.api.Test;
@@ -25,9 +25,9 @@ public class DeliveryQueryTest {
         // Given
         final String organizationName = faker.pokemon().name();
         final String vcsOrganizationName = faker.harryPotter().book();
-        final Organization organizationAccount =
-                Organization.builder().name(organizationName).vcsConfiguration(
-                        VcsConfiguration.builder().organizationName(vcsOrganizationName).build()
+        final Organization organization =
+                Organization.builder().name(organizationName).vcsOrganization(
+                        VcsOrganization.builder().name(vcsOrganizationName).build()
                 ).build();
         final String contentName = faker.animal().name();
 
@@ -48,7 +48,7 @@ public class DeliveryQueryTest {
         when(versionControlSystemAdapter.repositoriesBytesToDomain(dummyBytes)).thenReturn(
                 repositoriesStub
         );
-        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganization(organizationAccount);
+        List<Repository> repositories = deliveryQuery.readRepositoriesForOrganization(organization);
 
         // Then
         assertThat(repositories).isEqualTo(repositoriesStub);
@@ -68,9 +68,9 @@ public class DeliveryQueryTest {
                 Repository.builder().name(repositoryName).vcsOrganizationName(organizationName).build();
         final byte[] dummyBytes = new byte[0];
         final List<PullRequest> pullRequestsStub = List.of(
-                PullRequest.builder().id("github-1").build(),
-                PullRequest.builder().id("github-2").build(),
-                PullRequest.builder().id("github-3").build()
+                PullRequest.builder().vcsId("github-1").build(),
+                PullRequest.builder().vcsId("github-2").build(),
+                PullRequest.builder().vcsId("github-3").build()
         );
 
         // When

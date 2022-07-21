@@ -14,4 +14,8 @@ public class Team {
     String name;
     UUID organizationId;
     List<Repository> repositories;
+    @Builder.Default
+    Integer pullRequestLineNumberLimit = 1000;
+    @Builder.Default
+    Integer pullRequestDayNumberLimit = 5;
 }

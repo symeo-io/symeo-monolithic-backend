@@ -4,15 +4,15 @@ import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
-import fr.catlean.monolithic.backend.domain.model.account.VcsConfiguration;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountUserAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,20 +33,22 @@ public class PostgresAccountUserAdapterTestIT {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private OrganizationRepository organizationRepository;
+    private VcsOrganizationRepository vcsOrganizationRepository;
     @Autowired
-    private OnboardingRepository onboardingRepository;
+    private OrganizationRepository organizationRepository;
 
     @AfterEach
     void tearDown() {
         userRepository.deleteAll();
+        vcsOrganizationRepository.deleteAll();
+        organizationRepository.deleteAll();
     }
 
     @Test
     void should_create_user() {
         // Given
         final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
-                organizationRepository, onboardingRepository);
+                vcsOrganizationRepository);
         final String mail = faker.name().title();
 
         // When
@@ -67,13 +69,14 @@ public class PostgresAccountUserAdapterTestIT {
     void should_read_user() {
         // Given
         final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
-                organizationRepository, onboardingRepository);
+                vcsOrganizationRepository);
         final String mail = faker.name().title();
         postgresAccountUserAdapter.createUserWithMail(mail);
 
         // When
         final Optional<User> existingUser = postgresAccountUserAdapter.getUserFromMail(mail);
-        final Optional<User> notExistingUser = postgresAccountUserAdapter.getUserFromMail(faker.dragonBall().character());
+        final Optional<User> notExistingUser =
+                postgresAccountUserAdapter.getUserFromMail(faker.dragonBall().character());
 
         // Then
         assertThat(existingUser).isPresent();
@@ -88,15 +91,17 @@ public class PostgresAccountUserAdapterTestIT {
     void should_update_user_with_organization() throws CatleanException {
         // Given
         final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
-                organizationRepository, onboardingRepository);
+                vcsOrganizationRepository);
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(organizationRepository);
+                new PostgresAccountOrganizationAdapter(vcsOrganizationRepository);
         final String externalId = faker.name().firstName();
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
-                .externalId(externalId)
                 .name(name)
-                .vcsConfiguration(VcsConfiguration.builder().build())
+                .vcsOrganization(VcsOrganization.builder()
+                        .name(faker.name().bloodGroup())
+                        .vcsId(faker.dragonBall().character())
+                        .externalId(externalId).build())
                 .build();
 
         // When
@@ -108,7 +113,7 @@ public class PostgresAccountUserAdapterTestIT {
 
         // Then
         assertThat(updateUserWithOrganization).isNotNull();
-        assertThat(updateUserWithOrganization.getOrganization()).isEqualTo(expectedOrganization);
+        assertThat(updateUserWithOrganization.getOrganization().getId()).isEqualTo(expectedOrganization.getId());
         assertThat(updateUserWithOrganization.getOnboarding().getHasConnectedToVcs()).isTrue();
     }
 }
