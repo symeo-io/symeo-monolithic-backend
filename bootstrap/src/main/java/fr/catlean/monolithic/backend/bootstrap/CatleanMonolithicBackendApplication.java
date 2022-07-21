@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableConfigurationProperties
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Import;
         WebCorsConfig.class, SentryConfiguration.class, Auth0SecurityConfiguration.class,
         WebCorsPropertiesConfig.class})
 @Slf4j
+@EnableAsync
 @AllArgsConstructor
 public class CatleanMonolithicBackendApplication {
 
