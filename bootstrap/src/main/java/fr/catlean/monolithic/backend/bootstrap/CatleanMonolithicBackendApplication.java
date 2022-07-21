@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class,
         JsonLocalStorageConfiguration.class, PostgresConfiguration.class, RestApiConfiguration.class,
         WebCorsConfig.class, SentryConfiguration.class, Auth0SecurityConfiguration.class,
-        WebCorsPropertiesConfig.class})
+        WebSecurityPropertiesConfig.class})
 @Slf4j
 @EnableAsync
 @AllArgsConstructor

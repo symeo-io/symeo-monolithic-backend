@@ -34,13 +34,6 @@ public class Auth0SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    @ConfigurationProperties("application.auth0")
-    public Auth0SecurityProperties auth0SecurityProperties() {
-        return new Auth0SecurityProperties();
-    }
-
-
-    @Bean
     public AuthenticationContextProvider authenticationContextProvider() {
         return new Auth0ContextProvider();
     }
