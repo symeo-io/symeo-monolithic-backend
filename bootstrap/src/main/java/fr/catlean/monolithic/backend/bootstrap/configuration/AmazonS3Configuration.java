@@ -14,7 +14,7 @@ import static fr.catlean.monolithic.backend.infrastructure.aws.s3.adapter.Amazon
 public class AmazonS3Configuration {
 
     @Bean
-    @ConfigurationProperties(value = "aws")
+    @ConfigurationProperties(value = "infrastructure.aws")
     public AmazonS3Properties amazonS3Properties() {
         return new AmazonS3Properties();
     }

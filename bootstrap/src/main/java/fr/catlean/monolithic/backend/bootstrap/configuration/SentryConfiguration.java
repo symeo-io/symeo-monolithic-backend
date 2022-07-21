@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("!local")
+@Profile({"sentry"})
 public class SentryConfiguration {
 
     @Bean
@@ -17,7 +17,7 @@ public class SentryConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "sentry")
+    @ConfigurationProperties(prefix = "bootstrap.sentry")
     public SentryProperties sentryProperties() {
         return new SentryProperties();
     }

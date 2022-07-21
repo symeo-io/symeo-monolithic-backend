@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Profile;
 public class JsonLocalStorageConfiguration {
 
     @Bean
-    @ConfigurationProperties("json-local-storage")
+    @ConfigurationProperties("infrastructure.json-local-storage")
     public JsonStorageProperties jsonStorageProperties() {
         return new JsonStorageProperties();
     }

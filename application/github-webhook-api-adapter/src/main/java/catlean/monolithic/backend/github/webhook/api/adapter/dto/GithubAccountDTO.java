@@ -7,4 +7,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GithubAccountDTO {
     String login;
+    Long id;
 }

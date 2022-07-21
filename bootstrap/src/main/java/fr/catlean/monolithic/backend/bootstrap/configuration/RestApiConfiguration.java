@@ -48,7 +48,7 @@ public class RestApiConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties("github.webhook")
+    @ConfigurationProperties("application.github.webhook")
     public GithubWebhookProperties githubWebhookProperties() {
         return new GithubWebhookProperties();
     }

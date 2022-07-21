@@ -14,7 +14,8 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties
 @Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class,
         JsonLocalStorageConfiguration.class, PostgresConfiguration.class, RestApiConfiguration.class,
-        WebSecurityConfiguration.class, WebCorsConfig.class, SentryConfiguration.class})
+        WebSecurityConfiguration.class, WebCorsConfig.class, SentryConfiguration.class,
+        Auth0SecurityConfiguration.class})
 @Slf4j
 @AllArgsConstructor
 public class CatleanMonolithicBackendApplication {

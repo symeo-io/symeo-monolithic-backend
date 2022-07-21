@@ -38,7 +38,7 @@ public class OrganizationServiceTest {
                 .build();
 
         // When
-        when(accountOrganizationStorageAdapter.createOrganization(Organization.builder()
+        final Organization organization = Organization.builder()
                 .name(vcsOrganizationName)
                 .vcsOrganization(
                         VcsOrganization.builder()
@@ -46,11 +46,11 @@ public class OrganizationServiceTest {
                                 .name(vcsOrganizationName)
                                 .build()
                 )
-                .build())).thenReturn(
+                .build();
+        when(accountOrganizationStorageAdapter.createOrganization(organization)).thenReturn(
                 expectedOrganization
         );
-        final Organization result = organizationService.createOrganizationForVcsNameAndExternalId(vcsOrganizationName
-                , externalId);
+        final Organization result = organizationService.createOrganization(organization);
 
         // Then
         assertThat(result).isEqualTo(expectedOrganization);
