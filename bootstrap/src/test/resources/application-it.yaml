@@ -7,14 +7,7 @@ infrastructure:
       size: 100
       github-app-id: ${GITHUB_APP_ID}
       private-key-certificate-path: ${GITHUB_PRIVATE_KEY_PATH}
-  aws:
-    raw-bucket-name: ${S3_DATALAKE_BUCKET_NAME}
 
-bootstrap:
-  sentry:
-    dsn: ${SENTRY_DSN}
-    environment: ${SENTRY_ENVIRONMENT}
-    server-name: ${SENTRY_SERVERNAME}
 
 application:
   auth0:
@@ -68,5 +61,4 @@ spring:
     open-in-view: false
     show-sql: false
 
-server:
-  port: 9999
+

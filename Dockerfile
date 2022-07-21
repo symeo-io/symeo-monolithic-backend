@@ -11,4 +11,5 @@ ENV JAVA_OPTS="-server -XX:MaxRAMPercentage=75.0 -XX:MaxMetaspaceSize=256m -XX:+
 CMD java \
     $JAVA_OPTS \
     -jar webapp/catlean-monolithic-backend.jar \
+    --spring.profiles.active=sentry \
     --spring.config.additional-location=webapp/application.yaml
