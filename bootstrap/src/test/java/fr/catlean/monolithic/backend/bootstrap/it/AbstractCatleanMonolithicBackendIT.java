@@ -61,6 +61,9 @@ public abstract class AbstractCatleanMonolithicBackendIT {
     protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
     protected static final String USER_REST_API_GET_ME = "/api/v1/me";
     protected static final String USER_REST_API_POST_ME_ORGANIZATION = "/api/v1/me/organization";
+    protected static final String USER_REST_API_POST_ME_ONBOARDING = "/api/v1/me/onboarding";
+    protected static final String TEAM_REST_API_POST = "/api/v1/teams";
+    protected static final String REPOSITORIES_REST_API_GET = "/api/v1/repositories";
 
     @Autowired
     ITAuthenticationContextProvider authenticationContextProvider;
