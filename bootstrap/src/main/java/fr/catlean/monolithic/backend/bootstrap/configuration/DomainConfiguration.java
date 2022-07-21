@@ -1,11 +1,10 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
+import fr.catlean.monolithic.backend.bootstrap.job.AsyncDataProcessingJobExecutor;
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
+import fr.catlean.monolithic.backend.domain.job.DataProcessingJobExecutor;
 import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
-import fr.catlean.monolithic.backend.domain.port.in.OnboardingFacadeAdapter;
-import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
-import fr.catlean.monolithic.backend.domain.port.in.TeamFacadeAdapter;
-import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
+import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
@@ -73,12 +72,20 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public OrganizationFacadeAdapter organizationFacadeAdapter(final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
-        return new OrganizationService(accountOrganizationStorageAdapter);
+    public DataProcessingJobExecutor dataProcessingJobExecutor() {
+        return new AsyncDataProcessingJobExecutor();
     }
 
     @Bean
-    public TeamFacadeAdapter teamFacadeAdapter(final AccountTeamStorage accountTeamStorage){
+    public OrganizationFacadeAdapter organizationFacadeAdapter(final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
+                                                               final DataProcessingJobAdapter dataProcessingJobAdapter,
+                                                               final DataProcessingJobExecutor dataProcessingJobExecutor) {
+        return new OrganizationService(accountOrganizationStorageAdapter, dataProcessingJobAdapter,
+                dataProcessingJobExecutor);
+    }
+
+    @Bean
+    public TeamFacadeAdapter teamFacadeAdapter(final AccountTeamStorage accountTeamStorage) {
         return new TeamService(accountTeamStorage);
     }
 

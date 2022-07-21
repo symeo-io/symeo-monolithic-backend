@@ -10,10 +10,12 @@ import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogram
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @AllArgsConstructor
+@Slf4j
 public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     private final VcsService vcsService;
@@ -23,6 +25,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     @Override
     public void start(final String vcsOrganizationName) throws CatleanException {
+        LOGGER.info("Starting to collect data for organization {}", vcsOrganizationName);
         final Organization organization =
                 accountOrganizationStorageAdapter.findVcsOrganizationForName(vcsOrganizationName);
         collectRepositories(organization);
