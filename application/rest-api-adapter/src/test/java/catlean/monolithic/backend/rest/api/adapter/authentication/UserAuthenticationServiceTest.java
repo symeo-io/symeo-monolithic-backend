@@ -26,7 +26,8 @@ public class UserAuthenticationServiceTest {
     void should_authenticate_and_get_user() throws CatleanException {
         // Given
         final UserFacadeAdapter userFacadeAdapter = mock(UserFacadeAdapter.class);
-        final AuthenticationService userAuthenticationService = new AuthenticationService(userFacadeAdapter);
+        final AuthenticationService userAuthenticationService = new AuthenticationService(userFacadeAdapter,
+                new Auth0ContextProvider());
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -53,7 +54,8 @@ public class UserAuthenticationServiceTest {
     void should_raise_an_exception_when_missing_mail_in_jwt_token() {
         // Given
         final UserFacadeAdapter userFacadeAdapter = mock(UserFacadeAdapter.class);
-        final AuthenticationService userAuthenticationService = new AuthenticationService(userFacadeAdapter);
+        final AuthenticationService userAuthenticationService = new AuthenticationService(userFacadeAdapter,
+                new Auth0ContextProvider());
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);

@@ -476,23 +476,16 @@ components:
     CreateTeamResponseContract:
       type: object
       properties:
-        team:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-            name:
-              type: string
-            repository_ids:
-              type: array
-              items:
-                type: integer
-                format: int64
-        errors:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        repository_ids:
           type: array
           items:
-            $ref: '#/components/schemas/CatleanErrorContract'
+            type: integer
+            format: int64
     PostOnboardingResponseContract:
       type: object
       properties:

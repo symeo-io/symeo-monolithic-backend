@@ -5,7 +5,6 @@ import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamResponseContract;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamResponseContractTeam;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.PostCreateTeamsResponseContract;
 
 import java.util.HashMap;
@@ -16,11 +15,9 @@ public interface TeamContractMapper {
 
     static CreateTeamResponseContract domainToCreateTeamResponseContract(final Team team) {
         final CreateTeamResponseContract createTeamResponseContract = new CreateTeamResponseContract();
-        final CreateTeamResponseContractTeam createTeamResponseContractTeam = new CreateTeamResponseContractTeam();
-        createTeamResponseContractTeam.setId(team.getId());
-        createTeamResponseContractTeam.setName(team.getName());
-        createTeamResponseContractTeam.setRepositoryIds(team.getRepositories().stream().map(Repository::getId).toList());
-        createTeamResponseContract.setTeam(createTeamResponseContractTeam);
+        createTeamResponseContract.setId(team.getId());
+        createTeamResponseContract.setName(team.getName());
+        createTeamResponseContract.setRepositoryIds(team.getRepositories().stream().map(Repository::getId).toList());
         return createTeamResponseContract;
     }
 

@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.bootstrap.cors;
+package catlean.monolithic.backend.rest.api.adapter.properties;
 
 import lombok.Data;
 

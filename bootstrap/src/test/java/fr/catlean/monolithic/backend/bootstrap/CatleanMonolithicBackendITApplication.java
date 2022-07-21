@@ -31,4 +31,8 @@ public class CatleanMonolithicBackendITApplication {
                 .build();
     }
 
+    @Bean
+    public ITAuthenticationContextProvider authenticationContextProvider() {
+        return new ITAuthenticationContextProvider();
+    }
 }

@@ -1,17 +1,13 @@
 package fr.catlean.monolithic.backend.bootstrap.it;
 
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.bootstrap.CatleanMonolithicBackendITApplication;
+import fr.catlean.monolithic.backend.bootstrap.ITAuthenticationContextProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -22,10 +18,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.URI;
-import java.util.Map;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @ActiveProfiles({"it"})
@@ -53,9 +46,9 @@ public abstract class AbstractCatleanMonolithicBackendIT {
 
     @Autowired
     WebTestClient client;
-    protected final Faker faker = new Faker();
 
-    protected URI getApiURI(final String path, final String... contextPath) {
+
+    protected URI getApiURI(final String path) {
         return UriComponentsBuilder.newInstance()
                 .scheme("http")
                 .host("localhost")
@@ -66,21 +59,15 @@ public abstract class AbstractCatleanMonolithicBackendIT {
     }
 
     protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
+    protected static final String USER_REST_API_GET_ME = "/api/v1/me";
+    protected static final String USER_REST_API_POST_ME_ORGANIZATION = "/api/v1/me/organization";
+    protected static final String USER_REST_API_POST_ME_ONBOARDING = "/api/v1/me/onboarding";
+    protected static final String TEAM_REST_API_POST = "/api/v1/teams";
+    protected static final String REPOSITORIES_REST_API_GET = "/api/v1/repositories";
 
-    protected void authorizedUserForMail(String mail) {
-        Authentication authentication = mock(Authentication.class);
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        final DecodedJWT decodedJWT = mock(DecodedJWT.class);
-        when(authentication.getDetails()).thenReturn(decodedJWT);
-        final Map<String, Claim> claims = mock(Map.class);
-        when(decodedJWT.getClaims()).thenReturn(claims);
-        when(claims.containsKey("https://catlean.fr/email")).thenReturn(true);
-        final Claim claim = mock(Claim.class);
-        when(claims.get("https://catlean.fr/email")).thenReturn(claim);
-        when(claim.asString()).thenReturn(mail);
-        SecurityContextHolder.setContext(securityContext);
-    }
+    @Autowired
+    ITAuthenticationContextProvider authenticationContextProvider;
 
+    static protected final Faker faker = new Faker();
 
 }
