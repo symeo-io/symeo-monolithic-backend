@@ -11,7 +11,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static reactor.netty.http.client.HttpClient.newConnection;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
+        org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration.class}
+)
 @EnableConfigurationProperties
 @Slf4j
 @AllArgsConstructor
@@ -27,4 +30,5 @@ public class CatleanMonolithicBackendITApplication {
                 .clientConnector(new ReactorClientHttpConnector(newConnection().compress(true)))
                 .build();
     }
+
 }

@@ -4,6 +4,8 @@ import catlean.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookEv
 import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +53,18 @@ public class GithubWebhookApiAdapter {
 
     private void handleGithubEvent(GithubWebhookEventDTO githubWebhookEventDTO, String githubEventType) throws CatleanException {
         if (githubWebhookEventDTO.getAction().equals("created") && githubEventType.equals("installation")) {
-            organizationFacadeAdapter.createOrganizationForVcsNameAndExternalId(githubWebhookEventDTO.getInstallation().getAccount().getLogin(),
-                    githubWebhookEventDTO.getInstallation().getId());
+            final String organizationName = githubWebhookEventDTO.getInstallation().getAccount().getLogin();
+            organizationFacadeAdapter.createOrganization(Organization.builder()
+                    .name(organizationName)
+                    .vcsOrganization(
+                            VcsOrganization.builder()
+                                    .externalId(githubWebhookEventDTO.getInstallation().getId())
+                                    .name(organizationName)
+                                    .vcsId("github-" + githubWebhookEventDTO.getInstallation().getAccount().getId())
+                                    .build()
+                    )
+                    .build()
+            );
         } else {
             LOGGER.error("Invalid Github webhook {} for eventType {}", githubWebhookEventDTO, githubEventType);
         }

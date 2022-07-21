@@ -1,13 +1,10 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.Auth0SecurityProperties;
-import fr.catlean.monolithic.backend.bootstrap.cors.WebCorsConfig;
 import fr.catlean.monolithic.backend.bootstrap.cors.WebCorsProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
-@Import(value = {Auth0SecurityConfiguration.class, WebCorsConfig.class})
 public class WebSecurityConfiguration {
 
     @Bean

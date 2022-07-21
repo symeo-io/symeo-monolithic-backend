@@ -1,5 +1,7 @@
 package fr.catlean.monolithic.backend.bootstrap.it;
 
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.bootstrap.CatleanMonolithicBackendITApplication;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -17,7 +22,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.URI;
+import java.util.Map;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @ActiveProfiles({"it"})
@@ -53,9 +61,25 @@ public abstract class AbstractCatleanMonolithicBackendIT {
                 .host("localhost")
                 .port(port)
                 .path(path)
-                .pathSegment(contextPath)
                 .build()
                 .toUri();
+    }
+
+    protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
+
+    protected void authorizedUserForMail(String mail) {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        final DecodedJWT decodedJWT = mock(DecodedJWT.class);
+        when(authentication.getDetails()).thenReturn(decodedJWT);
+        final Map<String, Claim> claims = mock(Map.class);
+        when(decodedJWT.getClaims()).thenReturn(claims);
+        when(claims.containsKey("https://catlean.fr/email")).thenReturn(true);
+        final Claim claim = mock(Claim.class);
+        when(claims.get("https://catlean.fr/email")).thenReturn(claim);
+        when(claim.asString()).thenReturn(mail);
+        SecurityContextHolder.setContext(securityContext);
     }
 
 

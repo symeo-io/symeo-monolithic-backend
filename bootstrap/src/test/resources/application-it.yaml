@@ -11,8 +11,8 @@ infrastructure:
 
 application:
   auth0:
-    api-audience: ${AUTH0_AUDIENCE}
-    api-issuer: ${AUTH0_ISSUER}
+    api-audience: http://0.0.0.0:1080/audience
+    api-issuer: http://0.0.0.0:1080/api-issuer/
   web:
     cors:
       hosts: ${FRONTEND_CORS_HOST}
