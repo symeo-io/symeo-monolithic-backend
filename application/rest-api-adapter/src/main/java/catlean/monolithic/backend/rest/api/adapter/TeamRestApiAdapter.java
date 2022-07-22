@@ -46,4 +46,18 @@ public class TeamRestApiAdapter implements TeamApi {
             return ResponseEntity.internalServerError().body(postCreateTeamsResponseContract);
         }
     }
+
+    @Override
+    public ResponseEntity<PostCreateTeamsResponseContract> getTeams() {
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            final PostCreateTeamsResponseContract postCreateTeamsResponseContract =
+                    getPostCreateTeamsResponseContract(teamFacadeAdapter.getTeamsForOrganization(authenticatedUser.getOrganization()));
+            return ResponseEntity.ok(postCreateTeamsResponseContract);
+        } catch (CatleanException e) {
+            final PostCreateTeamsResponseContract postCreateTeamsResponseContract =
+                    getPostCreateTeamsResponseContractError(e);
+            return ResponseEntity.internalServerError().body(postCreateTeamsResponseContract);
+        }
+    }
 }

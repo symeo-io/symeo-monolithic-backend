@@ -200,7 +200,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
 
         // When
         final WebTestClient.ResponseSpec xxSuccessful = client.post()
-                .uri(getApiURI(TEAM_REST_API_POST))
+                .uri(getApiURI(TEAM_REST_API))
                 .body(BodyInserters.fromValue(List.of(requestContract1, requestContract2)))
                 .exchange()
                 // Then
@@ -228,6 +228,36 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
 
     @Order(7)
     @Test
+    void should_get_teams() {
+        // When
+        final WebTestClient.ResponseSpec xxSuccessful = client.get()
+                .uri(getApiURI(TEAM_REST_API))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful();
+
+        final List<TeamEntity> teams = teamRepository.findAll();
+        assertThat(teams).hasSize(2);
+        xxSuccessful
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.teams[0].id").isEqualTo(teams.get(0).getId())
+                .jsonPath("$.teams[0].name").isEqualTo(teams.get(0).getName())
+                .jsonPath("$.teams[0].repository_ids[0]").isEqualTo(teams.get(0).getRepositoryIds().get(0))
+                .jsonPath("$.teams[0].repository_ids[1]").isEqualTo(teams.get(0).getRepositoryIds().get(1))
+                .jsonPath("$.teams[0].name").isNotEmpty()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.teams[1].id").isEqualTo(teams.get(1).getId())
+                .jsonPath("$.teams[1].name").isEqualTo(teams.get(1).getName())
+                .jsonPath("$.teams[1].repository_ids[0]").isEqualTo(teams.get(1).getRepositoryIds().get(0))
+                .jsonPath("$.teams[1].repository_ids[1]").isEqualTo(teams.get(1).getRepositoryIds().get(1))
+                .jsonPath("$.teams[1].name").isNotEmpty();
+
+    }
+
+    @Order(8)
+    @Test
     void should_get_me_after_team_creation() {
         // Given
         authenticationContextProvider.authorizeUserForMail(mail);
@@ -251,6 +281,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
     }
 
 
+    @Order(9)
     @Test
     void should_update_onboarding() {
         // Given
@@ -273,7 +304,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.onboarding.id").isNotEmpty();
     }
 
-    @Order(8)
+    @Order(10)
     @Test
     void should_return_empty_repositories() {
         // Given
@@ -292,7 +323,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.repositories").isEmpty();
     }
 
-    @Order(9)
+    @Order(11)
     @Test
     void should_return_error_for_not_found_organization_to_link_to_current_user() {
         // Given

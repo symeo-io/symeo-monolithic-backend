@@ -9,6 +9,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
 import fr.catlean.monolithic.backend.domain.service.account.TeamService;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -71,5 +72,23 @@ public class TeamServiceTest {
         // Then
         assertThat(userArgumentCaptor.getValue().getOnboarding().getHasConfiguredTeam()).isTrue();
         assertThat(teamsArgumentCaptor.getValue()).hasSize(2);
+    }
+
+    @SneakyThrows
+    @Test
+    void should_return_teams_for_organization() {
+        // Given
+        final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
+        final TeamService teamService = new TeamService(accountTeamStorage);
+        final Organization organization =
+                Organization.builder().id(UUID.randomUUID()).vcsOrganization(VcsOrganization.builder().build()).build();
+
+        // When
+        final List<Team> teamList = List.of(Team.builder().build(), Team.builder().build());
+        when(accountTeamStorage.findByOrganization(organization)).thenReturn(teamList);
+        final List<Team> teams = teamService.getTeamsForOrganization(organization);
+
+        // Then
+        assertThat(teams).hasSize(teamList.size());
     }
 }

@@ -10,6 +10,8 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountTeam
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
+import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
+import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
@@ -100,6 +102,54 @@ public class PostgresAccountTeamAdapterTestIT {
         assertThat(createdTeams.get(1).getRepositories().size()).isEqualTo(team2.getRepositories().size());
         assertThat(teamRepository.findAll()).hasSize(2);
         assertThat(userRepository.findByMail(user.getMail()).get().getOnboardingEntity().getHasConfiguredTeam()).isTrue();
+    }
+
+    @Test
+    void should_find_all_teams_by_organization_id() throws CatleanException {
+        // Given
+        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
+                new PostgresAccountTeamAdapter(teamRepository, userRepository);
+        final OrganizationEntity organizationEntity = OrganizationEntity.builder()
+                .name(faker.pokemon().name())
+                .id(UUID.randomUUID().toString())
+                .build();
+        organizationRepository.save(organizationEntity);
+        final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
+                RepositoryEntity.builder().name(faker.name().firstName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().lastName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
+        )).stream().map(RepositoryMapper::entityToDomain).toList();
+        final Team team1 = Team.builder()
+                .repositories(repositories1)
+                .name(faker.harryPotter().book())
+                .organizationId(UUID.fromString(organizationEntity.getId()))
+                .build();
+        final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
+                RepositoryEntity.builder().name(faker.name().lastName()).vcsId(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().firstName()).vcsId(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
+        )).stream().map(RepositoryMapper::entityToDomain).toList();
+        final Team team2 = Team.builder()
+                .repositories(repositories2)
+                .name(faker.lordOfTheRings().character())
+                .organizationId(UUID.fromString(organizationEntity.getId()))
+                .build();
+        teamRepository.saveAll(List.of(TeamMapper.domainToEntity(team1), TeamMapper.domainToEntity(team2)));
+
+
+        // When
+        final List<Team> teams =
+                postgresAccountTeamAdapter.findByOrganization(OrganizationMapper.entityToDomain(organizationEntity));
+
+
+        // Then
+        assertThat(teams.get(0).getId()).isNotNull();
+        assertThat(teams.get(0).getName()).isEqualTo(team1.getName());
+        assertThat(teams.get(0).getOrganizationId()).isEqualTo(team1.getOrganizationId());
+        assertThat(teams.get(0).getRepositories().size()).isEqualTo(team1.getRepositories().size());
+        assertThat(teams.get(1).getId()).isNotNull();
+        assertThat(teams.get(1).getName()).isEqualTo(team2.getName());
+        assertThat(teams.get(1).getOrganizationId()).isEqualTo(team2.getOrganizationId());
+        assertThat(teams.get(1).getRepositories().size()).isEqualTo(team2.getRepositories().size());
+        assertThat(teamRepository.findAll()).hasSize(2);
     }
 
     @Test
