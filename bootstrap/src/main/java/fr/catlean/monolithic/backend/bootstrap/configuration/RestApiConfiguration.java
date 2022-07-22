@@ -20,8 +20,9 @@ public class RestApiConfiguration {
     }
 
     @Bean
-    public PullRequestRestApiAdapter pullRequestRestApiAdapter(final HistogramQuery histogramQuery) {
-        return new PullRequestRestApiAdapter(histogramQuery);
+    public PullRequestRestApiAdapter pullRequestRestApiAdapter(final AuthenticationService authenticationService,
+                                                               final HistogramQuery histogramQuery) {
+        return new PullRequestRestApiAdapter(histogramQuery, authenticationService);
     }
 
     @Bean

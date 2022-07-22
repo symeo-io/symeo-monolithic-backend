@@ -9,8 +9,6 @@ import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageA
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import org.junit.jupiter.api.Test;
 
-import static fr.catlean.monolithic.backend.domain.exception.CatleanException.getCatleanException;
-import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.ORGANISATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,8 +23,7 @@ public class HistogramQueryTest {
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final HistogramQuery histogramQuery = new HistogramQuery(expositionStorageAdapter,
-                accountOrganizationStorageAdapter);
+        final HistogramQuery histogramQuery = new HistogramQuery(expositionStorageAdapter);
         final String histogramType = "time-limit";
         final String organizationName = faker.university().name();
         final String teamName = faker.name().name();
@@ -37,43 +34,14 @@ public class HistogramQueryTest {
                 Organization.builder().name(organizationName).vcsOrganization(VcsOrganization.builder().build()).build()
         );
         when(expositionStorageAdapter.readPullRequestHistogram(organizationName, teamName, histogramType)).thenReturn(pullRequestStub);
-        final PullRequestHistogram pullRequestHistogram = histogramQuery.readPullRequestHistogram(organizationName,
-                teamName, histogramType);
+        final PullRequestHistogram pullRequestHistogram =
+                histogramQuery.readPullRequestHistogram(Organization.builder().vcsOrganization(VcsOrganization.builder().name(organizationName).build()).build(),
+                        teamName, histogramType);
 
         // Then
         assertThat(pullRequestHistogram).isEqualTo(pullRequestStub);
     }
 
-    @Test
-    void should_throw_not_found_organisation_exception_when_reading_pull_request_histogram() throws CatleanException {
-        // Given
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
-        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final HistogramQuery histogramQuery = new HistogramQuery(expositionStorageAdapter,
-                accountOrganizationStorageAdapter);
-        final String histogramType = "time-limit";
-        final String organizationName = faker.university().name();
-        final String teamName = faker.name().name();
-        final CatleanException organisationNotFoundException = getCatleanException("Organisation not" +
-                " found", ORGANISATION_NOT_FOUND);
-
-        // When
-        when(accountOrganizationStorageAdapter.findVcsOrganizationForName(organizationName))
-                .thenThrow(organisationNotFoundException);
-
-        // Then
-        CatleanException catleanException = null;
-        try {
-            histogramQuery.readPullRequestHistogram(organizationName,
-                    teamName, histogramType);
-        } catch (CatleanException e) {
-            catleanException = e;
-        }
-        assertThat(catleanException).isNotNull();
-        assertThat(catleanException).isEqualTo(organisationNotFoundException);
-
-    }
 
     private static PullRequestHistogram generatePullRequestStub(String organizationName) {
         return PullRequestHistogram.builder()

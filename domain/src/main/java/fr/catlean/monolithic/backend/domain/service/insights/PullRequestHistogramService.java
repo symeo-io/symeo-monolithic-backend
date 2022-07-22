@@ -34,32 +34,45 @@ public class PullRequestHistogramService {
     }
 
     private void computeAndSavePullRequestHistogram(List<PullRequest> pullRequests,
-                                                    Organization organization, String sizeLimit) {
+                                                    Organization organization, String pullRequestHistogramType) {
         final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
+
         for (Team team : organization.getTeams()) {
 
-            final PullRequestHistogram pullRequestHistogram =
-                    getPullRequestHistogramForVcsTeam(sizeLimit, pullRequests,
+            final List<PullRequestHistogram> pullRequestHistogramsForType =
+                    getPullRequestHistogramsForVcsTeam(pullRequestHistogramType, pullRequests,
                             organization, team);
-            pullRequestHistograms.add(pullRequestHistogram);
+            pullRequestHistograms.addAll(pullRequestHistogramsForType);
 
         }
         expositionStorageAdapter.savePullRequestHistograms(pullRequestHistograms);
     }
 
 
-    private PullRequestHistogram getPullRequestHistogramForVcsTeam(final String pullRequestHistogramType,
-                                                                   List<PullRequest> pullRequests,
-                                                                   final Organization organization,
-                                                                   final Team team) {
+    private List<PullRequestHistogram> getPullRequestHistogramsForVcsTeam(final String pullRequestHistogramType,
+                                                                          List<PullRequest> pullRequests,
+                                                                          final Organization organization,
+                                                                          final Team team) {
+        final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
         int pullRequestLimit;
         if (pullRequestHistogramType.equals(SIZE_LIMIT)) {
             pullRequestLimit = team.getPullRequestLineNumberLimit();
         } else {
             pullRequestLimit = team.getPullRequestDayNumberLimit();
         }
-
+        final Team teamAll = Team.buildTeamAll(organization.getId());
+        pullRequestHistograms.add(getPullRequestHistogram(SIZE_LIMIT, pullRequests, organization, teamAll,
+                teamAll.getPullRequestLineNumberLimit()));
         pullRequests = filterPullRequests(pullRequests, team);
+        pullRequestHistograms.add(getPullRequestHistogram(pullRequestHistogramType, pullRequests, organization, team,
+                pullRequestLimit));
+        return pullRequestHistograms;
+
+    }
+
+    private PullRequestHistogram getPullRequestHistogram(String pullRequestHistogramType,
+                                                         List<PullRequest> pullRequests, Organization organization,
+                                                         Team team, int pullRequestLimit) {
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
         for (Date weekStartDate : getWeekStartDateForTheLastWeekNumber(3 * 4,
                 organization.getTimeZone())) {
@@ -74,7 +87,6 @@ public class PullRequestHistogramService {
                 .dataByWeek(dataCompareToLimits)
                 .limit(pullRequestLimit)
                 .build();
-
     }
 
     private static List<PullRequest> filterPullRequests(List<PullRequest> pullRequests, Team team) {

@@ -91,7 +91,6 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-
   /api/v1/me/onboarding:
     post:
       security:
@@ -149,11 +148,6 @@ paths:
       description: |
         Get PullRequest Histogram
       parameters:
-        - in: query
-          name: organization_name
-          schema:
-            type: string
-            example: armis
         - in: query
           name: team_name
           schema:

@@ -63,9 +63,8 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter,
-                                         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
-        return new HistogramQuery(expositionStorageAdapter, accountOrganizationStorageAdapter);
+    public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new HistogramQuery(expositionStorageAdapter);
     }
 
     @Bean
