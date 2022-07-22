@@ -2,7 +2,6 @@ package fr.catlean.monolithic.backend.domain.service;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
-import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.job.Job;
 import fr.catlean.monolithic.backend.domain.job.JobManager;
 import fr.catlean.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
@@ -73,10 +72,13 @@ public class DataProcessingJobServiceTest {
         dataProcessingJobService.start(organisationName);
 
         // Then
-        verify(jobManager, times(2)).start(jobArgumentCaptor.capture());
-        assertThat(jobArgumentCaptor.getAllValues()).hasSize(2);
+        verify(jobManager, times(1)).start(jobArgumentCaptor.capture());
+        assertThat(jobArgumentCaptor.getAllValues()).hasSize(1);
         assertThat(jobArgumentCaptor.getAllValues().get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
-        assertThat(jobArgumentCaptor.getAllValues().get(1).getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getOrganizationId()).isEqualTo(organisation.getId());
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob()).isNotNull();
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
 
     }
 }

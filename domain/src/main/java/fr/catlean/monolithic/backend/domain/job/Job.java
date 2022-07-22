@@ -3,6 +3,7 @@ package fr.catlean.monolithic.backend.domain.job;
 import lombok.*;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @Data
@@ -23,6 +24,7 @@ public class Job {
     @ToString.Exclude
     JobRunnable jobRunnable;
     Date endDate;
+    Job nextJob;
 
     public String getCode() {
         return this.jobRunnable.getCode();

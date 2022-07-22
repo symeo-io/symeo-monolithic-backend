@@ -1,6 +1,8 @@
-package fr.catlean.monolithic.backend.domain.job;
+package fr.catlean.monolithic.backend.domain.service;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.job.Job;
+import fr.catlean.monolithic.backend.domain.job.JobManager;
 import fr.catlean.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
 import fr.catlean.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
@@ -28,26 +30,12 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         final Organization organization =
                 accountOrganizationStorageAdapter.findVcsOrganizationForName(vcsOrganizationName);
         collectRepositories(organization);
-        collectPullRequests(organization);
-    }
-
-    private void collectPullRequests(Organization organization) throws CatleanException {
-        jobManager.start(
-                Job.builder()
-                        .jobRunnable(CollectPullRequestsJobRunnable.builder()
-                                .organization(organization)
-                                .vcsService(vcsService)
-                                .pullRequestHistogramService(pullRequestHistogramService)
-                                .build())
-                        .organizationId(organization.getId())
-                        .build());
-
-
     }
 
     private void collectRepositories(Organization organization) throws CatleanException {
         jobManager.start(
                 Job.builder()
+                        .organizationId(organization.getId())
                         .jobRunnable(
                                 CollectRepositoriesJobRunnable.builder()
                                         .organization(organization)
@@ -55,9 +43,23 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                         .repositoryService(repositoryService)
                                         .build()
                         )
-                        .organizationId(organization.getId())
+                        .nextJob(getCollectPullRequestsJob(organization))
                         .build()
         );
+    }
+
+    private Job getCollectPullRequestsJob(Organization organization) {
+        return
+                Job.builder()
+                        .jobRunnable(CollectPullRequestsJobRunnable.builder()
+                                .organization(organization)
+                                .vcsService(vcsService)
+                                .pullRequestHistogramService(pullRequestHistogramService)
+                                .build())
+                        .organizationId(organization.getId())
+                        .build();
+
+
     }
 
 }

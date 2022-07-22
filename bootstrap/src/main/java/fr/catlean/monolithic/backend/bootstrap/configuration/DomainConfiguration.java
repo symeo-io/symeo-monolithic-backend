@@ -1,7 +1,7 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
-import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
+import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.job.JobManager;
 import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.port.out.*;

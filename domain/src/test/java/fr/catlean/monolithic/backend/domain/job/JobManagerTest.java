@@ -18,7 +18,7 @@ public class JobManagerTest {
     private final Faker faker = new Faker();
 
     @Test
-    void should_start_job_given_a_job() throws CatleanException {
+    void should_start_job() throws CatleanException {
         // Given
         final Executor executor = Runnable::run;
         final JobStorage jobStorage = mock(JobStorage.class);
@@ -100,4 +100,49 @@ public class JobManagerTest {
     }
 
 
+    @Test
+    void should_start_job_and_next_job_given_a_job() throws CatleanException {
+        // Given
+        final Executor executor = Runnable::run;
+        final JobStorage jobStorage = mock(JobStorage.class);
+        final JobManager jobManager = new JobManager(executor, jobStorage);
+        final UUID organizationId = UUID.randomUUID();
+        final JobRunnable jobRunnableMock = mock(JobRunnable.class);
+        final JobRunnable nextJobRunnableMock = mock(JobRunnable.class);
+        final Job nextJob = Job.builder()
+                .organizationId(organizationId)
+                .jobRunnable(nextJobRunnableMock)
+                .build();
+        final Job job = Job.builder()
+                .organizationId(organizationId)
+                .jobRunnable(jobRunnableMock)
+                .nextJob(nextJob)
+                .build();
+
+        final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+        final Job jobCreated = job.toBuilder().id(UUID.randomUUID()).build();
+        final Job nextJobCreated = nextJob.toBuilder().id(UUID.randomUUID()).build();
+        final Job jobStarted = jobCreated.started();
+        final Job nextJobStarted = nextJobCreated.started();
+
+
+        // When
+        when(jobStorage.createJob(job)).thenReturn(jobCreated);
+        when(jobStorage.createJob(nextJob)).thenReturn(nextJobCreated);
+        when(jobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
+        when(jobStorage.updateJob(nextJobStarted)).thenReturn(nextJobStarted);
+        when(jobStorage.updateJob(jobStarted.finished())).thenReturn(jobStarted.finished());
+        when(jobStorage.updateJob(nextJobStarted.finished())).thenReturn(nextJobStarted.finished());
+        jobManager.start(job);
+
+        // Then
+        verify(jobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
+        verify(jobRunnableMock, times(1)).run();
+        final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
+        assertThat(captorAllValues.get(0)).isEqualTo(jobStarted);
+        assertThat(captorAllValues.get(1).getEndDate()).isNotNull();
+        assertThat(captorAllValues.get(2)).isEqualTo(nextJobStarted);
+        assertThat(captorAllValues.get(3).getEndDate()).isNotNull();
+
+    }
 }
