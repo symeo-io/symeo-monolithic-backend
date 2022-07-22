@@ -5,7 +5,7 @@ import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamResponseContract;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.PostCreateTeamsResponseContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.TeamsResponseContract;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,21 +29,21 @@ public interface TeamContractMapper {
         return repositoryIdsMappedToTeamName;
     }
 
-    static PostCreateTeamsResponseContract getPostCreateTeamsResponseContract(List<Team> teamsForNameAndRepositoriesAndUser) {
+    static TeamsResponseContract getTeamsResponseContract(List<Team> teamsForNameAndRepositoriesAndUser) {
         final List<CreateTeamResponseContract> createTeamResponseContracts =
                 teamsForNameAndRepositoriesAndUser
                         .stream()
                         .map(TeamContractMapper::domainToCreateTeamResponseContract)
                         .toList();
-        final PostCreateTeamsResponseContract postCreateTeamsResponseContract =
-                new PostCreateTeamsResponseContract();
+        final TeamsResponseContract postCreateTeamsResponseContract =
+                new TeamsResponseContract();
         postCreateTeamsResponseContract.setTeams(createTeamResponseContracts);
         return postCreateTeamsResponseContract;
     }
 
-    static PostCreateTeamsResponseContract getPostCreateTeamsResponseContractError(CatleanException e) {
-        final PostCreateTeamsResponseContract postCreateTeamsResponseContract =
-                new PostCreateTeamsResponseContract();
+    static TeamsResponseContract getTeamsResponseContractError(CatleanException e) {
+        final TeamsResponseContract postCreateTeamsResponseContract =
+                new TeamsResponseContract();
         postCreateTeamsResponseContract.setErrors(List.of(CatleanErrorContractMapper.catleanExceptionToContract(e)));
         return postCreateTeamsResponseContract;
     }

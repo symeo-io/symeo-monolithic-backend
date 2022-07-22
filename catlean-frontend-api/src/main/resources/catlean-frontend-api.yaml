@@ -265,7 +265,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PostCreateTeamsResponseContract'
+                $ref: '#/components/schemas/TeamsResponseContract'
               example:
                 teams:
                   - id: 818e351a-0421-11ed-b939-0242ac120002
@@ -300,7 +300,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PostCreateTeamsResponseContract'
+                $ref: '#/components/schemas/TeamsResponseContract'
               example:
                 teams:
                   - id: 818e351a-0421-11ed-b939-0242ac120002
@@ -497,7 +497,7 @@ components:
           items:
             type: integer
             format: int64
-    PostCreateTeamsResponseContract:
+    TeamsResponseContract:
       type: object
       properties:
         teams:
