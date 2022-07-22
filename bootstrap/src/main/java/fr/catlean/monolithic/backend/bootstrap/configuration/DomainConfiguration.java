@@ -52,9 +52,10 @@ public class DomainConfiguration {
                                                              final PullRequestHistogramService pullRequestHistogramService,
                                                              final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService,
-                                                             final JobManager jobManager) {
+                                                             final JobManager jobManager,
+                                                             final AccountTeamStorage accountTeamStorage) {
         return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter, pullRequestHistogramService,
-                repositoryService, jobManager);
+                repositoryService, jobManager, accountTeamStorage);
     }
 
     @Bean

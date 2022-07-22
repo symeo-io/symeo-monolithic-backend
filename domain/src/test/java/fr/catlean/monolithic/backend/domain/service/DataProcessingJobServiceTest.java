@@ -11,6 +11,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -43,10 +44,11 @@ public class DataProcessingJobServiceTest {
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
         final PullRequestHistogramService pullRequestHistogramService = mock(PullRequestHistogramService.class);
+        final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, pullRequestHistogramService, repositoryService, jobManager);
+                        accountOrganizationStorageAdapter, pullRequestHistogramService, repositoryService, jobManager,accountTeamStorage);
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
