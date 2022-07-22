@@ -1,7 +1,9 @@
 package catlean.monolithic.backend.rest.api.adapter;
 
+import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.frontend.contract.api.PullRequestApi;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.HistogramResponseContract;
@@ -18,14 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class PullRequestRestApiAdapter implements PullRequestApi {
 
     private final HistogramQuery histogramQuery;
+    private final AuthenticationService authenticationService;
 
     @Override
-    public ResponseEntity<HistogramResponseContract> getPullRequestHistogram(String organizationName, String teamName
-            , String histogramType) {
+    public ResponseEntity<HistogramResponseContract> getPullRequestHistogram(String teamName, String histogramType) {
         try {
-            return PullRequestHistogramContractMapper.domainToContract(histogramQuery.readPullRequestHistogram(organizationName, teamName, histogramType));
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            return PullRequestHistogramContractMapper.domainToContract(histogramQuery.readPullRequestHistogram(authenticatedUser.getOrganization(), teamName, histogramType));
         } catch (CatleanException e) {
             return PullRequestHistogramContractMapper.errorToContract(e);
         }
     }
+
+
 }

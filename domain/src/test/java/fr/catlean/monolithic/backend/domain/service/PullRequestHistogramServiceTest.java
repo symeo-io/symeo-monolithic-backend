@@ -12,6 +12,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class PullRequestHistogramServiceTest {
@@ -126,7 +128,11 @@ public class PullRequestHistogramServiceTest {
         pullRequestHistogramService.computeAndSavePullRequestSizeHistogram(pullRequests, organization);
 
         // Then
-        verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
+        final ArgumentCaptor<List<PullRequestHistogram>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(listArgumentCaptor.capture());
+        assertThat(listArgumentCaptor.getValue()).hasSize(2);
+        assertThat(listArgumentCaptor.getValue().get(0).getTeam()).isEqualTo(Team.buildTeamAll(UUID.randomUUID()).getName());
+        assertThat(listArgumentCaptor.getValue().get(1)).isEqualTo(pullRequestHistogram);
     }
 
     @Test
@@ -206,7 +212,11 @@ public class PullRequestHistogramServiceTest {
         pullRequestHistogramService.computeAndSavePullRequestTimeHistogram(pullRequests, organization);
 
         // Then
-        verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
+        final ArgumentCaptor<List<PullRequestHistogram>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(listArgumentCaptor.capture());
+        assertThat(listArgumentCaptor.getValue()).hasSize(2);
+        assertThat(listArgumentCaptor.getValue().get(0).getTeam()).isEqualTo(Team.buildTeamAll(UUID.randomUUID()).getName());
+        assertThat(listArgumentCaptor.getValue().get(1)).isEqualTo(pullRequestHistogram);
     }
 
 
