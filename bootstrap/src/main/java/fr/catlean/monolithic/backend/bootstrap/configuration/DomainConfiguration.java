@@ -1,8 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
-import fr.catlean.monolithic.backend.bootstrap.job.AsyncDataProcessingJobExecutor;
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
-import fr.catlean.monolithic.backend.domain.job.DataProcessingJobExecutor;
 import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.port.out.*;
@@ -17,6 +15,8 @@ import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryServi
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.Executor;
 
 @Configuration
 public class DomainConfiguration {
@@ -50,9 +50,10 @@ public class DomainConfiguration {
     public DataProcessingJobService dataProcessingJobService(final VcsService vcsService,
                                                              final PullRequesHistogramService pullRequesHistogramService,
                                                              final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
-                                                             final RepositoryService repositoryService) {
+                                                             final RepositoryService repositoryService,
+                                                             final Executor executor) {
         return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter, pullRequesHistogramService,
-                repositoryService);
+                repositoryService, executor);
     }
 
     @Bean
@@ -72,16 +73,9 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public DataProcessingJobExecutor dataProcessingJobExecutor() {
-        return new AsyncDataProcessingJobExecutor();
-    }
-
-    @Bean
     public OrganizationFacadeAdapter organizationFacadeAdapter(final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
-                                                               final DataProcessingJobAdapter dataProcessingJobAdapter,
-                                                               final DataProcessingJobExecutor dataProcessingJobExecutor) {
-        return new OrganizationService(accountOrganizationStorageAdapter, dataProcessingJobAdapter,
-                dataProcessingJobExecutor);
+                                                               final DataProcessingJobAdapter dataProcessingJobAdapter) {
+        return new OrganizationService(accountOrganizationStorageAdapter, dataProcessingJobAdapter);
     }
 
     @Bean

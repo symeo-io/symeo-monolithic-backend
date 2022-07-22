@@ -65,7 +65,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .header("X-Hub-Signature-256", "sha256=" + hmacSHA256)
                 .exchange()
                 .expectStatus()
-                .is2xxSuccessful();
+                .is5xxServerError();
 
         // Then
         final List<VcsOrganizationEntity> vcsOrganizationEntities = vcsOrganizationRepository.findAll();

@@ -14,24 +14,32 @@ import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import static org.mockito.Mockito.*;
 
 public class DataProcessingJobServiceTest {
 
     private final Faker faker = new Faker();
+    private final Executor executor = new Executor() {
+        @Override
+        public void execute(Runnable command) {
+            command.run();
+        }
+    };
 
     // TODO : add unit test raising CatleanException
     @Test
     void should_start_data_processing_job_given_an_organisation_name() throws CatleanException {
         // Given
         final VcsService vcsService = mock(VcsService.class);
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter = mock(AccountOrganizationStorageAdapter.class);
+        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
+                mock(AccountOrganizationStorageAdapter.class);
         final PullRequesHistogramService pullRequesHistogramService = mock(PullRequesHistogramService.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, pullRequesHistogramService, repositoryService);
+                        accountOrganizationStorageAdapter, pullRequesHistogramService, repositoryService, executor);
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();

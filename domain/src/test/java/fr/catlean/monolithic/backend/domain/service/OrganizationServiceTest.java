@@ -2,7 +2,6 @@ package fr.catlean.monolithic.backend.domain.service;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
-import fr.catlean.monolithic.backend.domain.job.DataProcessingJobExecutor;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
@@ -24,19 +23,11 @@ public class OrganizationServiceTest {
     void should_create_organization_given_a_vcs_organization_name_and_external_id() throws CatleanException {
         // Given
         final DataProcessingJobAdapter dataProcessingJobAdapter = mock(DataProcessingJobAdapter.class);
-        final DataProcessingJobExecutor dataProcessingJobExecutor =
-                (dataProcessingJobAdapter1, vcsOrganizationName) -> {
-            try {
-                dataProcessingJobAdapter1.start(vcsOrganizationName);
-            } catch (CatleanException e) {
-                throw new RuntimeException(e);
-            }
-        };
+
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
         final OrganizationService organizationService =
-                new OrganizationService(accountOrganizationStorageAdapter, dataProcessingJobAdapter,
-                        dataProcessingJobExecutor);
+                new OrganizationService(accountOrganizationStorageAdapter, dataProcessingJobAdapter);
         final String externalId = faker.name().name();
         final String vcsOrganizationName = faker.gameOfThrones().character();
         final Organization expectedOrganization = Organization.builder().id(UUID.randomUUID())
