@@ -1,7 +1,6 @@
 package fr.catlean.monolithic.backend.domain.service.account;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
-import fr.catlean.monolithic.backend.domain.job.DataProcessingJobExecutor;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
@@ -12,12 +11,11 @@ import lombok.AllArgsConstructor;
 public class OrganizationService implements OrganizationFacadeAdapter {
     private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
     private final DataProcessingJobAdapter dataProcessingJobAdapter;
-    private final DataProcessingJobExecutor dataProcessingJobExecutor;
 
     @Override
     public Organization createOrganization(Organization organization) throws CatleanException {
         final Organization createdOrganization = accountOrganizationStorageAdapter.createOrganization(organization);
-        dataProcessingJobExecutor.accept(dataProcessingJobAdapter, createdOrganization.getVcsOrganization().getName());
+        dataProcessingJobAdapter.start(organization.getVcsOrganization().getName());
         return createdOrganization;
     }
 }
