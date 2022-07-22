@@ -38,35 +38,33 @@ public class PullRequestHistogramService {
         final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
 
         for (Team team : organization.getTeams()) {
-
-            final List<PullRequestHistogram> pullRequestHistogramsForType =
+            final PullRequestHistogram pullRequestHistogram =
                     getPullRequestHistogramsForVcsTeam(pullRequestHistogramType, pullRequests,
                             organization, team);
-            pullRequestHistograms.addAll(pullRequestHistogramsForType);
+            pullRequestHistograms.add(pullRequestHistogram);
 
         }
+        final Team teamAll = Team.buildTeamAll(organization.getId());
+        pullRequestHistograms.add(getPullRequestHistogram(pullRequestHistogramType, pullRequests, organization, teamAll,
+                teamAll.getPullRequestLineNumberLimit()));
         expositionStorageAdapter.savePullRequestHistograms(pullRequestHistograms);
     }
 
 
-    private List<PullRequestHistogram> getPullRequestHistogramsForVcsTeam(final String pullRequestHistogramType,
-                                                                          List<PullRequest> pullRequests,
-                                                                          final Organization organization,
-                                                                          final Team team) {
-        final List<PullRequestHistogram> pullRequestHistograms = new ArrayList<>();
+    private PullRequestHistogram getPullRequestHistogramsForVcsTeam(final String pullRequestHistogramType,
+                                                                    List<PullRequest> pullRequests,
+                                                                    final Organization organization,
+                                                                    final Team team) {
         int pullRequestLimit;
         if (pullRequestHistogramType.equals(SIZE_LIMIT)) {
             pullRequestLimit = team.getPullRequestLineNumberLimit();
         } else {
             pullRequestLimit = team.getPullRequestDayNumberLimit();
         }
-        final Team teamAll = Team.buildTeamAll(organization.getId());
-        pullRequestHistograms.add(getPullRequestHistogram(SIZE_LIMIT, pullRequests, organization, teamAll,
-                teamAll.getPullRequestLineNumberLimit()));
+
         pullRequests = filterPullRequests(pullRequests, team);
-        pullRequestHistograms.add(getPullRequestHistogram(pullRequestHistogramType, pullRequests, organization, team,
-                pullRequestLimit));
-        return pullRequestHistograms;
+        return getPullRequestHistogram(pullRequestHistogramType, pullRequests, organization, team,
+                pullRequestLimit);
 
     }
 

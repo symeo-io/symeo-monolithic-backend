@@ -131,8 +131,8 @@ public class PullRequestHistogramServiceTest {
         final ArgumentCaptor<List<PullRequestHistogram>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(listArgumentCaptor.capture());
         assertThat(listArgumentCaptor.getValue()).hasSize(2);
-        assertThat(listArgumentCaptor.getValue().get(0).getTeam()).isEqualTo(Team.buildTeamAll(UUID.randomUUID()).getName());
-        assertThat(listArgumentCaptor.getValue().get(1)).isEqualTo(pullRequestHistogram);
+        assertThat(listArgumentCaptor.getValue().get(1).getTeam()).isEqualTo(Team.buildTeamAll(UUID.randomUUID()).getName());
+        assertThat(listArgumentCaptor.getValue().get(0)).isEqualTo(pullRequestHistogram);
     }
 
     @Test
@@ -215,8 +215,8 @@ public class PullRequestHistogramServiceTest {
         final ArgumentCaptor<List<PullRequestHistogram>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(listArgumentCaptor.capture());
         assertThat(listArgumentCaptor.getValue()).hasSize(2);
-        assertThat(listArgumentCaptor.getValue().get(0).getTeam()).isEqualTo(Team.buildTeamAll(UUID.randomUUID()).getName());
-        assertThat(listArgumentCaptor.getValue().get(1)).isEqualTo(pullRequestHistogram);
+        assertThat(listArgumentCaptor.getValue().get(1).getTeam()).isEqualTo(Team.buildTeamAll(UUID.randomUUID()).getName());
+        assertThat(listArgumentCaptor.getValue().get(0)).isEqualTo(pullRequestHistogram);
     }
 
 
