@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.domain.job;
 
 import lombok.*;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -16,23 +17,26 @@ public class Job {
 
     UUID id;
     @NonNull
-    String code;
-    @NonNull
     @Builder.Default
     String status = CREATED;
     @NonNull UUID organizationId;
     @ToString.Exclude
     JobRunnable jobRunnable;
+    Date endDate;
+
+    public String getCode() {
+        return this.jobRunnable.getCode();
+    }
 
     public Job started() {
         return this.toBuilder().status(STARTED).build();
     }
 
     public Job failed() {
-        return this.toBuilder().status(FAILED).build();
+        return this.toBuilder().status(FAILED).endDate(new Date()).build();
     }
 
     public Job finished() {
-        return this.toBuilder().status(FINISHED).build();
+        return this.toBuilder().status(FINISHED).endDate(new Date()).build();
     }
 }

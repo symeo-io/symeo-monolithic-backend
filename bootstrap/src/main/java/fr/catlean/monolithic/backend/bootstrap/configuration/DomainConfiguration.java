@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
 import fr.catlean.monolithic.backend.domain.job.DataProcessingJobService;
+import fr.catlean.monolithic.backend.domain.job.JobManager;
 import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
@@ -10,13 +11,11 @@ import fr.catlean.monolithic.backend.domain.service.account.OnboardingService;
 import fr.catlean.monolithic.backend.domain.service.account.OrganizationService;
 import fr.catlean.monolithic.backend.domain.service.account.TeamService;
 import fr.catlean.monolithic.backend.domain.service.account.UserService;
-import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramService;
+import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.concurrent.Executor;
 
 @Configuration
 public class DomainConfiguration {
@@ -41,19 +40,19 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public PullRequesHistogramService pullRequestSizeService(final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new PullRequesHistogramService(expositionStorageAdapter);
+    public PullRequestHistogramService pullRequestSizeService(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new PullRequestHistogramService(expositionStorageAdapter);
     }
 
 
     @Bean
     public DataProcessingJobService dataProcessingJobService(final VcsService vcsService,
-                                                             final PullRequesHistogramService pullRequesHistogramService,
+                                                             final PullRequestHistogramService pullRequestHistogramService,
                                                              final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService,
-                                                             final Executor executor) {
-        return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter, pullRequesHistogramService,
-                repositoryService, executor);
+                                                             final JobManager jobManager) {
+        return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter, pullRequestHistogramService,
+                repositoryService, jobManager);
     }
 
     @Bean

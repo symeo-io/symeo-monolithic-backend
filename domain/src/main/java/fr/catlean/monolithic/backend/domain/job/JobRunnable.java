@@ -5,4 +5,6 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 public interface JobRunnable {
 
     void run() throws CatleanException;
+
+    String getCode();
 }

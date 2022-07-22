@@ -24,10 +24,8 @@ public class JobManagerTest {
         final JobStorage jobStorage = mock(JobStorage.class);
         final JobManager jobManager = new JobManager(executor, jobStorage);
         final UUID organizationId = UUID.randomUUID();
-        final String code = faker.dragonBall().character();
         final JobRunnable jobRunnableMock = mock(JobRunnable.class);
         final Job job = Job.builder()
-                .code(code)
                 .organizationId(organizationId)
                 .jobRunnable(jobRunnableMock)
                 .build();
@@ -48,7 +46,11 @@ public class JobManagerTest {
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
         assertThat(captorAllValues.get(0)).isEqualTo(job);
         assertThat(captorAllValues.get(1)).isEqualTo(jobStarted);
-        assertThat(captorAllValues.get(2)).isEqualTo(jobStarted.finished());
+        assertThat(captorAllValues.get(2).getCode()).isEqualTo(jobStarted.finished().getCode());
+        assertThat(captorAllValues.get(2).getStatus()).isEqualTo(jobStarted.finished().getStatus());
+        assertThat(captorAllValues.get(2).getOrganizationId()).isEqualTo(jobStarted.finished().getOrganizationId());
+        assertThat(captorAllValues.get(2).getId()).isEqualTo(jobStarted.finished().getId());
+        assertThat(captorAllValues.get(2).getEndDate()).isNotNull();
     }
 
     @Test
@@ -58,13 +60,19 @@ public class JobManagerTest {
         final JobStorage jobStorage = mock(JobStorage.class);
         final JobManager jobManager = new JobManager(executor, jobStorage);
         final UUID organizationId = UUID.randomUUID();
-        final String code = faker.dragonBall().character();
-        final JobRunnable jobRunnableMock = () -> {
-            throw CatleanException.getCatleanException(faker.gameOfThrones().character(),
-                    faker.dragonBall().character());
+        final JobRunnable jobRunnableMock = new JobRunnable() {
+            @Override
+            public void run() throws CatleanException {
+                throw CatleanException.getCatleanException(faker.gameOfThrones().character(),
+                        faker.dragonBall().character());
+            }
+
+            @Override
+            public String getCode() {
+                return null;
+            }
         };
         final Job job = Job.builder()
-                .code(code)
                 .organizationId(organizationId)
                 .jobRunnable(jobRunnableMock)
                 .build();
@@ -84,7 +92,11 @@ public class JobManagerTest {
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
         assertThat(captorAllValues.get(0)).isEqualTo(job);
         assertThat(captorAllValues.get(1)).isEqualTo(jobStarted);
-        assertThat(captorAllValues.get(2)).isEqualTo(jobStarted.failed());
+        assertThat(captorAllValues.get(2).getCode()).isEqualTo(jobStarted.failed().getCode());
+        assertThat(captorAllValues.get(2).getId()).isEqualTo(jobStarted.failed().getId());
+        assertThat(captorAllValues.get(2).getStatus()).isEqualTo(jobStarted.failed().getStatus());
+        assertThat(captorAllValues.get(2).getOrganizationId()).isEqualTo(jobStarted.failed().getOrganizationId());
+        assertThat(captorAllValues.get(2).getEndDate()).isNotNull();
     }
 
 
