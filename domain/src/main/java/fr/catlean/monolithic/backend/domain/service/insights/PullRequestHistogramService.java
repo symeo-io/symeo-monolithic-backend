@@ -18,7 +18,7 @@ import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHist
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.TIME_LIMIT;
 
 @AllArgsConstructor
-public class PullRequesHistogramService {
+public class PullRequestHistogramService {
 
     private final ExpositionStorageAdapter expositionStorageAdapter;
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");

@@ -10,7 +10,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
-import fr.catlean.monolithic.backend.domain.service.insights.PullRequesHistogramService;
+import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
-public class PullRequesHistogramServiceTest {
+public class PullRequestHistogramServiceTest {
 
     private final Faker faker = Faker.instance();
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
@@ -32,8 +32,8 @@ public class PullRequesHistogramServiceTest {
     void should_compute_collect_all_pull_requests_details_for_a_given_organization_account() throws CatleanException {
         // Given
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequesHistogramService pullRequesHistogramService =
-                new PullRequesHistogramService(expositionStorageAdapter);
+        final PullRequestHistogramService pullRequestHistogramService =
+                new PullRequestHistogramService(expositionStorageAdapter);
         final String repo1Name = faker.pokemon().name() + "1";
         final String repo2Name = faker.pokemon().name() + "2";
 
@@ -46,7 +46,7 @@ public class PullRequesHistogramServiceTest {
         final List<PullRequest> pullRequestList = List.of(pr11, pr12, pr21, pr22);
 
         // When
-        pullRequesHistogramService.savePullRequests(pullRequestList);
+        pullRequestHistogramService.savePullRequests(pullRequestList);
 
         // Then
         verify(expositionStorageAdapter, times(1)).savePullRequestDetails(pullRequestList);
@@ -70,8 +70,8 @@ public class PullRequesHistogramServiceTest {
                 .teams(List.of(team1))
                 .build();
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequesHistogramService pullRequesHistogramService =
-                new PullRequesHistogramService(expositionStorageAdapter);
+        final PullRequestHistogramService pullRequestHistogramService =
+                new PullRequestHistogramService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organization, 100);
         final PullRequestHistogram pullRequestHistogram =
@@ -123,7 +123,7 @@ public class PullRequesHistogramServiceTest {
 
 
         // When
-        pullRequesHistogramService.computeAndSavePullRequestSizeHistogram(pullRequests, organization);
+        pullRequestHistogramService.computeAndSavePullRequestSizeHistogram(pullRequests, organization);
 
         // Then
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
@@ -150,8 +150,8 @@ public class PullRequesHistogramServiceTest {
 
 
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequesHistogramService pullRequesHistogramService =
-                new PullRequesHistogramService(expositionStorageAdapter);
+        final PullRequestHistogramService pullRequestHistogramService =
+                new PullRequestHistogramService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organization, 100);
         final PullRequestHistogram pullRequestHistogram =
@@ -203,7 +203,7 @@ public class PullRequesHistogramServiceTest {
 
 
         // When
-        pullRequesHistogramService.computeAndSavePullRequestTimeHistogram(pullRequests, organization);
+        pullRequestHistogramService.computeAndSavePullRequestTimeHistogram(pullRequests, organization);
 
         // Then
         verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(List.of(pullRequestHistogram));
