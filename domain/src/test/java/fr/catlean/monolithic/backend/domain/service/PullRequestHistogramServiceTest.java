@@ -65,6 +65,7 @@ public class PullRequestHistogramServiceTest {
                 .pullRequestLineNumberLimit(500)
                 .build();
         final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
                 .name("fake-orga-account")
                 .vcsOrganization(
                         VcsOrganization.builder().name("fake-orga-name").build()
@@ -80,7 +81,7 @@ public class PullRequestHistogramServiceTest {
                 PullRequestHistogram.builder().
                         type(PullRequestHistogram.SIZE_LIMIT)
                         .limit(500)
-                        .organization(organization.getName())
+                        .organizationId(organization.getId())
                         .team(organization.getTeams().get(0).getName())
                         .build();
 
@@ -164,7 +165,7 @@ public class PullRequestHistogramServiceTest {
                 PullRequestHistogram.builder().
                         type(PullRequestHistogram.TIME_LIMIT)
                         .limit(5)
-                        .organization(organization.getName())
+                        .organizationId(organization.getId())
                         .team(organization.getTeams().get(0).getName())
                         .build();
 

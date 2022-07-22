@@ -74,15 +74,15 @@ public class PostgresExpositionAdapterTestIT {
     @Test
     void should_save_pull_request_histograms_to_postgres() {
         // Given
-        final String organization1 = faker.name().firstName() + "-1";
-        final String organization2 = faker.name().firstName() + "-2";
-        final String organization3 = faker.name().firstName() + "-3";
+        final UUID organizationId1 = UUID.randomUUID();
+        final UUID organizationId2 = UUID.randomUUID();
+        final UUID organizationId3 = UUID.randomUUID();
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 pullRequestHistogramRepository, repositoryRepository);
         final List<PullRequestHistogram> pullRequestHistograms = List.of(
-                buildPullRequestHistogram(organization1),
-                buildPullRequestHistogram(organization2),
-                buildPullRequestHistogram(organization3)
+                buildPullRequestHistogram(organizationId1),
+                buildPullRequestHistogram(organizationId2),
+                buildPullRequestHistogram(organizationId3)
         );
 
         // When
@@ -97,27 +97,27 @@ public class PostgresExpositionAdapterTestIT {
     @Test
     void should_read_pull_request_histograms_given_an_organization_a_team_a_type() {
         // Given
-        final String organization1 = faker.name().firstName() + "-1";
-        final String organization2 = faker.name().firstName() + "-2";
+        final UUID organizationId1 = UUID.randomUUID();
+        final UUID organizationId2 = UUID.randomUUID();
         final String team1 = faker.name().firstName() + "-1";
         final String team2 = faker.name().firstName() + "-2";
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 pullRequestHistogramRepository, repositoryRepository);
         final List<PullRequestHistogram> pullRequestHistograms = List.of(
-                buildPullRequestHistogramForOrgAndTeam(team1, organization1),
-                buildPullRequestHistogramForOrgAndTeam(team2, organization2)
+                buildPullRequestHistogramForOrgAndTeam(team1, organizationId1),
+                buildPullRequestHistogramForOrgAndTeam(team2, organizationId2)
         );
 
         // When
         postgresExpositionAdapter.savePullRequestHistograms(pullRequestHistograms);
         final PullRequestHistogram pullRequestHistogram =
-                postgresExpositionAdapter.readPullRequestHistogram(organization1,
+                postgresExpositionAdapter.readPullRequestHistogram(organizationId1.toString(),
                         team1, PullRequestHistogram.SIZE_LIMIT);
 
         // Then
         assertThat(pullRequestHistogram).isNotNull();
         assertThat(pullRequestHistogram.getTeam()).isEqualTo(team1);
-        assertThat(pullRequestHistogram.getOrganization()).isEqualTo(organization1);
+        assertThat(pullRequestHistogram.getOrganizationId()).isEqualTo(organizationId1);
         assertThat(pullRequestHistogram.getDataByWeek()).hasSize(5);
     }
 
@@ -178,12 +178,12 @@ public class PostgresExpositionAdapterTestIT {
                 .build();
     }
 
-    private PullRequestHistogram buildPullRequestHistogram(String organizationName) {
+    private PullRequestHistogram buildPullRequestHistogram(UUID organizationId) {
         final String team = faker.name().firstName();
-        return buildPullRequestHistogramForOrgAndTeam(team, organizationName);
+        return buildPullRequestHistogramForOrgAndTeam(team, organizationId);
     }
 
-    private PullRequestHistogram buildPullRequestHistogramForOrgAndTeam(String team, String organizationName) {
+    private PullRequestHistogram buildPullRequestHistogramForOrgAndTeam(String team, UUID organizationId) {
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
         DateHelper.getWeekStartDateForTheLastWeekNumber(5, TimeZone.getTimeZone(ZoneId.systemDefault()))
                 .stream().map(date -> new SimpleDateFormat("dd/MM/yyyy").format(date))
@@ -191,7 +191,7 @@ public class PostgresExpositionAdapterTestIT {
 
 
         return PullRequestHistogram.builder()
-                .organization(organizationName)
+                .organizationId(organizationId)
                 .team(team)
                 .limit(faker.number().randomDigit())
                 .type(PullRequestHistogram.SIZE_LIMIT)

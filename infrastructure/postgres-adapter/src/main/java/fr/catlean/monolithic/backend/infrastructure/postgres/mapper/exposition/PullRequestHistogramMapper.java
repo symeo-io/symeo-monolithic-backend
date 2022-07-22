@@ -6,6 +6,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.P
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.id.HistogramId;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface PullRequestHistogramMapper {
     static List<PullRequestHistogramDataEntity> domainToEntities(final PullRequestHistogram pullRequestHistogram) {
@@ -20,7 +21,7 @@ public interface PullRequestHistogramMapper {
                 .id(
                         HistogramId.builder()
                                 .histogramType(pullRequestHistogram.getType())
-                                .organizationName(pullRequestHistogram.getOrganization())
+                                .organizationId(pullRequestHistogram.getOrganizationId().toString())
                                 .teamName(pullRequestHistogram.getTeam())
                                 .startDateRange(dataCompareToLimit.getDateAsString())
                                 .build()
@@ -33,7 +34,7 @@ public interface PullRequestHistogramMapper {
     static PullRequestHistogram entitiesToDomain(final List<PullRequestHistogramDataEntity> histogramDataEntities) {
         final PullRequestHistogramDataEntity firstData = histogramDataEntities.get(0);
         return PullRequestHistogram.builder()
-                .organization(firstData.getId().getOrganizationName())
+                .organizationId(UUID.fromString(firstData.getId().getOrganizationId()))
                 .team(firstData.getId().getTeamName())
                 .type(firstData.getId().getHistogramType())
                 .dataByWeek(histogramDataEntities.stream().map(PullRequestHistogramMapper::entityToDomain).toList())

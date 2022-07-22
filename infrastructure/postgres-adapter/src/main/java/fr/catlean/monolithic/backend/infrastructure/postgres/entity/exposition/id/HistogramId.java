@@ -18,9 +18,9 @@ public class HistogramId implements Serializable {
     @Column(name = "start_date_range", nullable = false)
     @NotNull
     String startDateRange;
-    @Column(name = "organization", nullable = false)
+    @Column(name = "organization_id", nullable = false)
     @NotNull
-    String organizationName;
+    String organizationId;
     @Column(name = "team", nullable = false)
     @NotNull
     String teamName;

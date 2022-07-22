@@ -40,10 +40,10 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
-    public PullRequestHistogram readPullRequestHistogram(String organizationName, String teamName,
+    public PullRequestHistogram readPullRequestHistogram(String organizationId, String teamName,
                                                          String histogramType) {
         final List<PullRequestHistogramDataEntity> histogramDataEntities =
-                pullRequestHistogramRepository.findByOrganizationNameAndTeamNameAndHistogramType(organizationName,
+                pullRequestHistogramRepository.findByOrganizationIdAndTeamNameAndHistogramType(organizationId,
                         teamName, histogramType);
         return PullRequestHistogramMapper.entitiesToDomain(histogramDataEntities);
     }

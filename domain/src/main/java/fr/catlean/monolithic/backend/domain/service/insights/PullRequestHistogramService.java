@@ -80,7 +80,7 @@ public class PullRequestHistogramService {
         }
         return PullRequestHistogram.builder()
                 .type(pullRequestHistogramType)
-                .organization(organization.getName())
+                .organizationId(organization.getId())
                 .team(team.getName())
                 .dataByWeek(dataCompareToLimits)
                 .limit(pullRequestLimit)

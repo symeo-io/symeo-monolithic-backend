@@ -30,7 +30,7 @@ create table exposition_storage.pull_request
 create table exposition_storage.pull_request_histogram
 (
     start_date_range            varchar(50)                not null,
-    organization                varchar(100)               not null,
+    organization_id             varchar(40)                not null,
     team                        varchar(100)               not null,
     histogram_type              varchar(100)               not null,
     data_below_limit            bigint                     not null,
@@ -38,7 +38,7 @@ create table exposition_storage.pull_request_histogram
 
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null,
-    primary key (start_date_range, organization, team, histogram_type)
+    primary key (start_date_range, organization_id, team, histogram_type)
 );
 
 

@@ -6,6 +6,7 @@ import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Value
 @Builder
@@ -15,7 +16,7 @@ public class PullRequestHistogram {
     String type;
     int limit;
     @NonNull
-    String organization;
+    UUID organizationId;
     @Builder.Default
     String team = "all";
     @Builder.Default

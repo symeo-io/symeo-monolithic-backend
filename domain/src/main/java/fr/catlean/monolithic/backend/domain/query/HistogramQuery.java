@@ -13,7 +13,7 @@ public class HistogramQuery {
 
     public PullRequestHistogram readPullRequestHistogram(final Organization organization, String teamName,
                                                          String histogramType) throws CatleanException {
-        return expositionStorageAdapter.readPullRequestHistogram(organization.getVcsOrganization().getName(),
+        return expositionStorageAdapter.readPullRequestHistogram(organization.getId().toString(),
                 teamName, histogramType);
     }
 }

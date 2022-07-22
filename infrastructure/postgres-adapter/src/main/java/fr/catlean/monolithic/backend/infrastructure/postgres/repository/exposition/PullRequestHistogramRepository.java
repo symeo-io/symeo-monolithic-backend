@@ -10,9 +10,9 @@ import java.util.List;
 public interface PullRequestHistogramRepository extends JpaRepository<PullRequestHistogramDataEntity, Long> {
 
     @Query(nativeQuery = true, value = "select * from exposition_storage.pull_request_histogram where " +
-            "organization = " +
-            ":organisationName and team = :teamName and histogram_type = :histogramType")
-    List<PullRequestHistogramDataEntity> findByOrganizationNameAndTeamNameAndHistogramType(@Param("organisationName") String organizationName,
-                                                                                           @Param("teamName") String teamName,
-                                                                                           @Param("histogramType") String histogramType);
+            "organization_id = " +
+            ":organizationId and team = :teamName and histogram_type = :histogramType")
+    List<PullRequestHistogramDataEntity> findByOrganizationIdAndTeamNameAndHistogramType(@Param("organizationId") String organizationId,
+                                                                                         @Param("teamName") String teamName,
+                                                                                         @Param("histogramType") String histogramType);
 }

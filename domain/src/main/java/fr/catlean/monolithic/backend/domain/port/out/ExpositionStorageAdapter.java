@@ -12,7 +12,7 @@ public interface ExpositionStorageAdapter {
 
     void savePullRequestHistograms(List<PullRequestHistogram> pullRequestHistograms);
 
-    PullRequestHistogram readPullRequestHistogram(String organizationName, String teamName, String histogramType);
+    PullRequestHistogram readPullRequestHistogram(String organizationId, String teamName, String histogramType);
 
     void saveRepositories(List<Repository> repositories);
 

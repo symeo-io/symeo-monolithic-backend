@@ -9,6 +9,8 @@ import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageA
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,25 +29,21 @@ public class HistogramQueryTest {
         final String histogramType = "time-limit";
         final String organizationName = faker.university().name();
         final String teamName = faker.name().name();
-        final PullRequestHistogram pullRequestStub = generatePullRequestStub(organizationName);
+        final UUID organizationId = UUID.randomUUID();
+        final PullRequestHistogram pullRequestStub =
+                PullRequestHistogram.builder().organizationId(organizationId).build();
 
         // When
         when(accountOrganizationStorageAdapter.findVcsOrganizationForName(organizationName)).thenReturn(
                 Organization.builder().name(organizationName).vcsOrganization(VcsOrganization.builder().build()).build()
         );
-        when(expositionStorageAdapter.readPullRequestHistogram(organizationName, teamName, histogramType)).thenReturn(pullRequestStub);
+        when(expositionStorageAdapter.readPullRequestHistogram(organizationId.toString(), teamName, histogramType)).thenReturn(pullRequestStub);
         final PullRequestHistogram pullRequestHistogram =
-                histogramQuery.readPullRequestHistogram(Organization.builder().vcsOrganization(VcsOrganization.builder().name(organizationName).build()).build(),
+                histogramQuery.readPullRequestHistogram(Organization.builder().id(organizationId).vcsOrganization(VcsOrganization.builder().name(organizationName).build()).build(),
                         teamName, histogramType);
 
         // Then
         assertThat(pullRequestHistogram).isEqualTo(pullRequestStub);
     }
 
-
-    private static PullRequestHistogram generatePullRequestStub(String organizationName) {
-        return PullRequestHistogram.builder()
-                .organization(organizationName)
-                .build();
-    }
 }
