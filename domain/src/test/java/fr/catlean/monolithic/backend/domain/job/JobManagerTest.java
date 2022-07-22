@@ -30,7 +30,7 @@ public class JobManagerTest {
                 .jobRunnable(jobRunnableMock)
                 .build();
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
-        final Job jobCreated = job.toBuilder().id(UUID.randomUUID()).build();
+        final Job jobCreated = job.toBuilder().id(faker.number().randomNumber()).build();
         final Job jobStarted = jobCreated.started();
 
 
@@ -77,7 +77,7 @@ public class JobManagerTest {
                 .jobRunnable(jobRunnableMock)
                 .build();
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
-        final Job jobCreated = job.toBuilder().id(UUID.randomUUID()).build();
+        final Job jobCreated = job.toBuilder().id(faker.number().randomNumber()).build();
         final Job jobStarted = jobCreated.started();
 
 
@@ -120,8 +120,8 @@ public class JobManagerTest {
                 .build();
 
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
-        final Job jobCreated = job.toBuilder().id(UUID.randomUUID()).build();
-        final Job nextJobCreated = nextJob.toBuilder().id(UUID.randomUUID()).build();
+        final Job jobCreated = job.toBuilder().id(faker.number().randomNumber()).build();
+        final Job nextJobCreated = nextJob.toBuilder().id(faker.number().randomNumber() - 1L).build();
         final Job jobStarted = jobCreated.started();
         final Job nextJobStarted = nextJobCreated.started();
 

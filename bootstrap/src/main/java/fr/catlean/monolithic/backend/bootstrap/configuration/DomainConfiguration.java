@@ -1,12 +1,12 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
 import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
-import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.job.JobManager;
 import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.port.out.*;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
+import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
 import fr.catlean.monolithic.backend.domain.service.account.OnboardingService;
 import fr.catlean.monolithic.backend.domain.service.account.OrganizationService;
 import fr.catlean.monolithic.backend.domain.service.account.TeamService;
@@ -16,6 +16,8 @@ import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryServi
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.Executor;
 
 @Configuration
 public class DomainConfiguration {
@@ -85,5 +87,10 @@ public class DomainConfiguration {
     @Bean
     public OnboardingFacadeAdapter onboardingFacadeAdapter(final AccountOnboardingStorage accountOnboardingStorage) {
         return new OnboardingService(accountOnboardingStorage);
+    }
+
+    @Bean
+    public JobManager jobManager(final Executor executor, final JobStorage jobStorage) {
+        return new JobManager(executor, jobStorage);
     }
 }

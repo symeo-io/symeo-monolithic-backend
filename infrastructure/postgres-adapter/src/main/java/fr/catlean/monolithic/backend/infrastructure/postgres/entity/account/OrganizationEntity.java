@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "organization", schema = "account")
+@Table(name = "organization", schema = "account_storage")
 public class OrganizationEntity extends AbstractEntity {
 
     @Id

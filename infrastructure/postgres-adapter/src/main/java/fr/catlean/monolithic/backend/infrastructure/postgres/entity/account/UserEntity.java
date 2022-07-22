@@ -11,7 +11,7 @@ import javax.persistence.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "user", schema = "account")
+@Table(name = "user", schema = "account_storage")
 public class UserEntity extends AbstractEntity {
 
 

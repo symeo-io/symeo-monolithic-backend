@@ -3,15 +3,18 @@ package fr.catlean.monolithic.backend.bootstrap.it;
 import catlean.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookEventDTO;
 import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.catlean.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -42,6 +45,8 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
     public RepositoryRepository repositoryRepository;
     @Autowired
     public TeamRepository teamRepository;
+    @Autowired
+    public JobRepository jobRepository;
 
     private static final String mail = faker.name().firstName() + "@" + faker.name().firstName() + ".fr";
 
@@ -65,7 +70,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .header("X-Hub-Signature-256", "sha256=" + hmacSHA256)
                 .exchange()
                 .expectStatus()
-                .is5xxServerError();
+                .is2xxSuccessful();
 
         // Then
         final List<VcsOrganizationEntity> vcsOrganizationEntities = vcsOrganizationRepository.findAll();
@@ -77,6 +82,10 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
         assertThat(vcsOrganizationEntities.get(0).getVcsId()).isEqualTo("github-" + githubWebhookEventDTO.getInstallation().getAccount().getId());
         assertThat(vcsOrganizationEntities.get(0).getExternalId()).isEqualTo(githubWebhookEventDTO.getInstallation().getId());
         assertThat(vcsOrganizationEntities.get(0).getOrganizationEntity().getName()).isEqualTo(organizationName);
+        final List<JobEntity> jobs = jobRepository.findAll();
+        assertThat(jobs).hasSize(1);
+        assertThat(jobs.get(0).getOrganizationId()).isEqualTo(vcsOrganizationEntities.get(0).getOrganizationEntity().getId());
+        assertThat(jobs.get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
     }
 
     @Order(2)

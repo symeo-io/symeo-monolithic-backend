@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "onboarding", schema = "account")
+@Table(name = "onboarding", schema = "account_storage")
 public class OnboardingEntity extends AbstractEntity {
 
     @Id

@@ -16,7 +16,7 @@ public class Job {
     private static final String FAILED = "FAILED";
     private static final String FINISHED = "FINISHED";
 
-    UUID id;
+    Long id;
     @NonNull
     @Builder.Default
     String status = CREATED;

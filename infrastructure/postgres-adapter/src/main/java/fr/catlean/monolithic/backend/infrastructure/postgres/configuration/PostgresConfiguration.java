@@ -8,6 +8,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.expositi
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -56,6 +57,11 @@ public class PostgresConfiguration {
     @Bean
     public PostgresAccountOnboardingAdapter postgresAccountOnboardingAdapter(final OnboardingRepository onboardingRepository) {
         return new PostgresAccountOnboardingAdapter(onboardingRepository);
+    }
+
+    @Bean
+    public PostgresJobAdapter postgresJobAdapter(final JobRepository jobRepository) {
+        return new PostgresJobAdapter(jobRepository);
     }
 
 }

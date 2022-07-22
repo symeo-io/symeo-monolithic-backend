@@ -13,7 +13,7 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "team", schema = "account")
+@Table(name = "team", schema = "account_storage")
 public class TeamEntity extends AbstractEntity {
 
     @Id
