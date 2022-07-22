@@ -358,7 +358,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
     private static RepositoryEntity buildRepository(final Integer vcsId,
                                                     final VcsOrganizationEntity vcsOrganizationEntity) {
         return RepositoryEntity.builder()
-                .vcsId("repo-" + vcsId)
+                .id("repo-" + vcsId)
                 .name("repo-" + vcsId)
                 .vcsOrganizationName(vcsOrganizationEntity.getName())
                 .organizationId(vcsOrganizationEntity.getOrganizationEntity().getId())

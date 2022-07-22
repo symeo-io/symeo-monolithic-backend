@@ -8,9 +8,8 @@ import lombok.Value;
 @Builder(toBuilder = true)
 public class Repository {
     public static final String ALL = "repositories";
-    Long id;
+    String id;
     String name;
     String vcsOrganizationName;
-    String vcsId;
     Organization organization;
 }

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 
-public interface RepositoryRepository extends JpaRepository<RepositoryEntity, Long>,
+public interface RepositoryRepository extends JpaRepository<RepositoryEntity, String>,
         JpaSpecificationExecutor<RepositoryEntity> {
 
     List<RepositoryEntity> findRepositoryEntitiesByOrganizationId(String organizationId);

@@ -7,7 +7,7 @@ public interface RepositoryMapper {
 
     static RepositoryEntity domainToEntity(final Repository repository) {
         return RepositoryEntity.builder()
-                .vcsId(repository.getVcsId())
+                .id(repository.getId())
                 .vcsOrganizationName(repository.getVcsOrganizationName())
                 .name(repository.getName())
                 .organizationId(repository.getOrganization().getId().toString())
@@ -18,7 +18,6 @@ public interface RepositoryMapper {
         return Repository.builder()
                 .name(repositoryEntity.getName())
                 .id(repositoryEntity.getId())
-                .vcsId(repositoryEntity.getVcsId())
                 .vcsOrganizationName(repositoryEntity.getVcsOrganizationName())
                 .build();
     }

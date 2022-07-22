@@ -90,7 +90,7 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
 
 
         // When
-        final Repository repository = GithubMapper.mapRepositoryDtoToDomain(githubRepositoryDTO);
+        final Repository repository = GithubMapper.mapRepositoryDtoToDomain(githubRepositoryDTO, "github");
 
         // Then
         assertThat(repository.getName()).isEqualTo(githubRepositoryDTO.getName());

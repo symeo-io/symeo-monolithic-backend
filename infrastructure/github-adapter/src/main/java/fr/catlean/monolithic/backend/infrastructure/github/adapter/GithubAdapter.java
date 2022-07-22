@@ -9,7 +9,6 @@ import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
-import fr.catlean.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import lombok.AllArgsConstructor;
 
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static fr.catlean.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper.mapPullRequestDtoToDomain;
+import static fr.catlean.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper.mapRepositoryDtoToDomain;
 import static java.util.Objects.isNull;
 
 @AllArgsConstructor
@@ -66,7 +66,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         try {
             GithubRepositoryDTO[] githubRepositoryDTOS = bytesToDto(repositoriesBytes,
                     GithubRepositoryDTO[].class);
-            return Arrays.stream(githubRepositoryDTOS).map(GithubMapper::mapRepositoryDtoToDomain).toList();
+            return Arrays.stream(githubRepositoryDTOS).map(githubRepositoryDTO -> mapRepositoryDtoToDomain(githubRepositoryDTO, getName())).toList();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

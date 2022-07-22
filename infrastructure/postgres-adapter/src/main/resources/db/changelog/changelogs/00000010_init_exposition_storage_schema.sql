@@ -6,7 +6,7 @@ create table exposition_storage.pull_request
 (
     id                          varchar(100)               not null
         constraint pull_request_id primary key,
-    vcs_id                      varchar(100)                     not null
+    vcs_id                      varchar(100)               not null
         constraint vcs_id_pull_request unique,
     commit_number               bigint,
     deleted_line_number         bigint,
@@ -45,14 +45,11 @@ create table exposition_storage.pull_request_histogram
     primary key (start_date_range, organization, team, histogram_type)
 );
 
-create sequence exposition_storage.repository_sequence;
 
 create table exposition_storage.repository
 (
-    id                          bigint                     not null
+    id                          varchar(100)               not null
         constraint repository_id primary key,
-    vcs_id                      varchar(100)               not null
-        constraint vcs_id_repository unique,
     name                        varchar(300)               not null,
     organization_id             varchar(40),
     vcs_organization_name       varchar(100),
@@ -63,7 +60,7 @@ create table exposition_storage.repository
 create table exposition_storage.team_to_repository
 (
     team_id       varchar(40),
-    repository_id bigint not null,
+    repository_id varchar(100) not null,
     constraint fk_team foreign key (team_id) references account_storage.team (id),
     constraint fk_repository foreign key (repository_id) references exposition_storage.repository (id)
 );

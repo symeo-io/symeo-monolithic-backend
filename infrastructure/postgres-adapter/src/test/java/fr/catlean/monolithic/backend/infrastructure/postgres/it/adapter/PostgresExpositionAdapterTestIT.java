@@ -154,12 +154,12 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         final List<RepositoryEntity> repositoryEntities = List.of(
-                new RepositoryEntity(1L, faker.gameOfThrones().character(),
-                        faker.name().firstName(), faker.friends().character(), organization.getId().toString()),
-                new RepositoryEntity(2L, faker.gameOfThrones().character(),
-                        faker.name().firstName(), faker.friends().character(), organization.getId().toString()),
-                new RepositoryEntity(3L, faker.gameOfThrones().character(),
-                        faker.name().firstName(), faker.friends().character(), organization.getId().toString()));
+                new RepositoryEntity("1L", faker.gameOfThrones().character(),
+                        faker.name().firstName(), organization.getId().toString()),
+                new RepositoryEntity("2L", faker.gameOfThrones().character(),
+                        faker.name().firstName(), organization.getId().toString()),
+                new RepositoryEntity("3L", faker.gameOfThrones().character(),
+                        faker.name().firstName(), organization.getId().toString()));
         repositoryRepository.saveAll(repositoryEntities);
 
         // When
@@ -173,7 +173,7 @@ public class PostgresExpositionAdapterTestIT {
         return Repository.builder()
                 .organization(organization)
                 .name(faker.pokemon().name())
-                .vcsId(faker.address().firstName() + faker.ancient().god())
+                .id(faker.address().firstName() + faker.ancient().god())
                 .vcsOrganizationName(organization.getVcsOrganization().getName())
                 .build();
     }

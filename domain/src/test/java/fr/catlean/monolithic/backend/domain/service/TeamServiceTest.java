@@ -34,11 +34,11 @@ public class TeamServiceTest {
                 Organization.builder().id(UUID.randomUUID()).vcsOrganization(VcsOrganization.builder().build()).build();
         final String teamName1 = faker.name().firstName();
         final String teamName2 = faker.name().lastName();
-        final List<Long> repositoryIds1 = List.of(1L, 2L, 3L);
-        final List<Long> repositoryIds2 = List.of(4L, 5L, 6L);
+        final List<String> repositoryIds1 = List.of("1L", "2L", "3L");
+        final List<String> repositoryIds2 = List.of("4L", "5L", "6L");
         final Team team1 = Team.builder().name(teamName1).build();
         final Team team2 = Team.builder().name(teamName2).build();
-        final Map<String, List<Long>> repositoryIdsMappedToTeamName = Map.of(
+        final Map<String, List<String>> repositoryIdsMappedToTeamName = Map.of(
                 teamName1, repositoryIds1,
                 teamName2, repositoryIds2
         );

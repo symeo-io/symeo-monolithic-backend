@@ -19,7 +19,7 @@ public class TeamService implements TeamFacadeAdapter {
     private final AccountTeamStorage accountTeamStorage;
 
     @Override
-    public List<Team> createTeamsForNameAndRepositoriesAndUser(final Map<String, List<Long>> repositoryIdsMappedToTeamName,
+    public List<Team> createTeamsForNameAndRepositoriesAndUser(final Map<String, List<String>> repositoryIdsMappedToTeamName,
                                                                User user) throws CatleanException {
         user.hasConfiguredTeam();
         final List<Team> teams = new ArrayList<>();

@@ -69,8 +69,8 @@ public class PostgresAccountTeamAdapterTestIT {
         user.hasConfiguredTeam();
         organizationRepository.save(organizationEntity);
         final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
-                RepositoryEntity.builder().name(faker.name().firstName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
-                RepositoryEntity.builder().name(faker.name().lastName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
+                RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
         final Team team1 = Team.builder()
                 .repositories(repositories1)
@@ -78,8 +78,8 @@ public class PostgresAccountTeamAdapterTestIT {
                 .organizationId(UUID.fromString(organizationEntity.getId()))
                 .build();
         final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
-                RepositoryEntity.builder().name(faker.name().lastName()).vcsId(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
-                RepositoryEntity.builder().name(faker.name().firstName()).vcsId(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
+                RepositoryEntity.builder().name(faker.name().lastName()).id(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().firstName()).id(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
         final Team team2 = Team.builder()
                 .repositories(repositories2)
@@ -115,8 +115,8 @@ public class PostgresAccountTeamAdapterTestIT {
                 .build();
         organizationRepository.save(organizationEntity);
         final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
-                RepositoryEntity.builder().name(faker.name().firstName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
-                RepositoryEntity.builder().name(faker.name().lastName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
+                RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
         final Team team1 = Team.builder()
                 .repositories(repositories1)
@@ -124,8 +124,8 @@ public class PostgresAccountTeamAdapterTestIT {
                 .organizationId(UUID.fromString(organizationEntity.getId()))
                 .build();
         final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
-                RepositoryEntity.builder().name(faker.name().lastName()).vcsId(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
-                RepositoryEntity.builder().name(faker.name().firstName()).vcsId(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
+                RepositoryEntity.builder().name(faker.name().lastName()).id(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().firstName()).id(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
         final Team team2 = Team.builder()
                 .repositories(repositories2)
@@ -163,8 +163,8 @@ public class PostgresAccountTeamAdapterTestIT {
                 .build();
         organizationRepository.save(organizationEntity);
         final List<Repository> repositories = repositoryRepository.saveAll(List.of(
-                RepositoryEntity.builder().name(faker.name().firstName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
-                RepositoryEntity.builder().name(faker.name().lastName()).vcsId(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
+                RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
         final Team team = Team.builder()
                 .repositories(repositories)

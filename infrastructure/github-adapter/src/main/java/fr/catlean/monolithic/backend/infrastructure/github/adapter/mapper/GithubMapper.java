@@ -7,11 +7,12 @@ import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.repo.Gith
 
 public interface GithubMapper {
 
-    static Repository mapRepositoryDtoToDomain(final GithubRepositoryDTO githubRepositoryDTO) {
+    static Repository mapRepositoryDtoToDomain(final GithubRepositoryDTO githubRepositoryDTO,
+                                               final String githubPlatformName) {
         return Repository.builder()
                 .name(githubRepositoryDTO.getName())
                 .vcsOrganizationName(githubRepositoryDTO.getOwner().getLogin())
-                .vcsId(githubRepositoryDTO.getId().toString())
+                .id(githubPlatformName + "-" + githubRepositoryDTO.getId().toString())
                 .build();
     }
 

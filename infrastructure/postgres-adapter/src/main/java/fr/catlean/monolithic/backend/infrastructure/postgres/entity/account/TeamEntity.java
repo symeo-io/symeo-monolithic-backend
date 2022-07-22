@@ -31,7 +31,7 @@ public class TeamEntity extends AbstractEntity {
     )
     @Column(name = "repository_id")
     @Builder.Default
-    List<Long> repositoryIds = new ArrayList<>();
+    List<String> repositoryIds = new ArrayList<>();
 
 
 }
