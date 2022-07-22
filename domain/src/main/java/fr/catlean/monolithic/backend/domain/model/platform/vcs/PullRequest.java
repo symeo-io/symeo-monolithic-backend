@@ -17,8 +17,7 @@ public class PullRequest {
     private static final String OPEN = "open";
     private static final String CLOSE = "close";
     private static final String MERGE = "merge";
-    Long id;
-    String vcsId;
+    String id;
     Integer commitNumber;
     Integer deletedLineNumber;
     Integer addedLineNumber;

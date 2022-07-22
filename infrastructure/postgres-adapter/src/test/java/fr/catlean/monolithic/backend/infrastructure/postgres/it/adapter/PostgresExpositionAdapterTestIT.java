@@ -210,7 +210,7 @@ public class PostgresExpositionAdapterTestIT {
 
     private PullRequest buildPullRequest(int id) {
         return PullRequest.builder()
-                .vcsId(faker.dragonBall().character() + id)
+                .id(faker.dragonBall().character() + id)
                 .number(id)
                 .title(faker.name().title())
                 .lastUpdateDate(faker.date().past(1, TimeUnit.DAYS))

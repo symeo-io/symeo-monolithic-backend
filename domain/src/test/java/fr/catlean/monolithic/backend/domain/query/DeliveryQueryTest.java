@@ -68,9 +68,9 @@ public class DeliveryQueryTest {
                 Repository.builder().name(repositoryName).vcsOrganizationName(organizationName).build();
         final byte[] dummyBytes = new byte[0];
         final List<PullRequest> pullRequestsStub = List.of(
-                PullRequest.builder().vcsId("github-1").build(),
-                PullRequest.builder().vcsId("github-2").build(),
-                PullRequest.builder().vcsId("github-3").build()
+                PullRequest.builder().id("github-1").build(),
+                PullRequest.builder().id("github-2").build(),
+                PullRequest.builder().id("github-3").build()
         );
 
         // When

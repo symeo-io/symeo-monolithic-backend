@@ -25,11 +25,13 @@ public class CollectPullRequestsJobRunnable implements JobRunnable {
     @Override
     public void run() {
         try {
+            LOGGER.info("Starting to collect PRs and Histograms for organization {}", organization);
             final List<PullRequest> pullRequestList =
                     vcsService.collectPullRequestsForOrganization(organization);
             pullRequestHistogramService.savePullRequests(pullRequestList);
             pullRequestHistogramService.computeAndSavePullRequestSizeHistogram(pullRequestList, organization);
             pullRequestHistogramService.computeAndSavePullRequestTimeHistogram(pullRequestList, organization);
+            LOGGER.info("End of PRs and Histograms collections for organization {}", organization);
         } catch (CatleanException e) {
             LOGGER.error("Error while collection PRs for organization {}", organization, e);
         }

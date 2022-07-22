@@ -1,13 +1,9 @@
 create schema exposition_storage;
 
-create sequence exposition_storage.pull_request_sequence;
-
 create table exposition_storage.pull_request
 (
     id                          varchar(100)               not null
         constraint pull_request_id primary key,
-    vcs_id                      varchar(100)               not null
-        constraint vcs_id_pull_request unique,
     commit_number               bigint,
     deleted_line_number         bigint,
     added_line_number           bigint,

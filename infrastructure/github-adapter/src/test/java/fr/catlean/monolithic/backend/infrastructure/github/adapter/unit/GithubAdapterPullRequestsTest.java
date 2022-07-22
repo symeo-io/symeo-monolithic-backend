@@ -194,7 +194,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         final PullRequest pullRequest = mapPullRequestDtoToDomain(pr80, githubPlatformName);
 
         // Then
-        assertThat(pullRequest.getVcsId()).isEqualTo(githubPlatformName + "-" + pr80.getId());
+        assertThat(pullRequest.getId()).isEqualTo(githubPlatformName + "-" + pr80.getId());
         assertThat(pullRequest.getCommitNumber()).isEqualTo(pr80.getCommits());
         assertThat(pullRequest.getDeletedLineNumber()).isEqualTo(pr80.getDeletions());
         assertThat(pullRequest.getAddedLineNumber()).isEqualTo(pr80.getAdditions());

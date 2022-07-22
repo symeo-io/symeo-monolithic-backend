@@ -41,10 +41,10 @@ public class PullRequestHistogramServiceTest {
 
 
         // When
-        final PullRequest pr11 = PullRequest.builder().vcsId("github-11").repository(repo1Name).build();
-        final PullRequest pr12 = PullRequest.builder().vcsId("github-12").repository(repo1Name).build();
-        final PullRequest pr21 = PullRequest.builder().vcsId("github-21").repository(repo2Name).build();
-        final PullRequest pr22 = PullRequest.builder().vcsId("github-22").repository(repo2Name).build();
+        final PullRequest pr11 = PullRequest.builder().id("github-11").repository(repo1Name).build();
+        final PullRequest pr12 = PullRequest.builder().id("github-12").repository(repo1Name).build();
+        final PullRequest pr21 = PullRequest.builder().id("github-21").repository(repo2Name).build();
+        final PullRequest pr22 = PullRequest.builder().id("github-22").repository(repo2Name).build();
         final List<PullRequest> pullRequestList = List.of(pr11, pr12, pr21, pr22);
 
         // When
@@ -227,7 +227,7 @@ public class PullRequestHistogramServiceTest {
 
 
         final PullRequest pr1Above = PullRequest.builder()
-                .vcsId("pr1-above")
+                .id("pr1-above")
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
@@ -238,7 +238,7 @@ public class PullRequestHistogramServiceTest {
                 .build();
 
         final PullRequest pr1 = PullRequest.builder()
-                .vcsId("pr1")
+                .id("pr1")
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
@@ -248,7 +248,7 @@ public class PullRequestHistogramServiceTest {
                 .deletedLineNumber(halfCodeSize)
                 .build();
         final PullRequest pr1Merged = PullRequest.builder()
-                .vcsId("pr1-merged")
+                .id("pr1-merged")
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
@@ -262,7 +262,7 @@ public class PullRequestHistogramServiceTest {
                 .build();
 
         final PullRequest pr1Draft = PullRequest.builder()
-                .vcsId("pr1-draft")
+                .id("pr1-draft")
                 .repository(repositoryName)
                 .isDraft(true)
                 .creationDate(
@@ -274,7 +274,7 @@ public class PullRequestHistogramServiceTest {
                 .build();
 
         final PullRequest pr2 = PullRequest.builder()
-                .vcsId("pr2")
+                .id("pr2")
                 .repository(repositoryName)
                 .creationDate(
                         Date.valueOf(weekStartDate.toInstant()
@@ -284,7 +284,7 @@ public class PullRequestHistogramServiceTest {
                 .deletedLineNumber(halfCodeSize)
                 .build();
         final PullRequest pr3 = PullRequest.builder()
-                .vcsId("pr3")
+                .id("pr3")
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .repository(repositoryName)
@@ -294,7 +294,7 @@ public class PullRequestHistogramServiceTest {
                                 .minus(15, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr3WeekStart = PullRequest.builder()
-                .vcsId("pr3-week-start")
+                .id("pr3-week-start")
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .repository(repositoryName)
@@ -310,7 +310,7 @@ public class PullRequestHistogramServiceTest {
                 .build();
 
         final PullRequest pr4 = PullRequest.builder()
-                .vcsId("pr4")
+                .id("pr4")
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .repository(repositoryName)
@@ -320,7 +320,7 @@ public class PullRequestHistogramServiceTest {
                                 .minus(6, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr4Draft = PullRequest.builder()
-                .vcsId("pr4-draft")
+                .id("pr4-draft")
                 .addedLineNumber(halfCodeSize)
                 .isDraft(true)
                 .deletedLineNumber(halfCodeSize)
@@ -331,7 +331,7 @@ public class PullRequestHistogramServiceTest {
                                 .minus(6, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr5 = PullRequest.builder()
-                .vcsId("pr5")
+                .id("pr5")
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .repository(repositoryName)
@@ -347,7 +347,7 @@ public class PullRequestHistogramServiceTest {
         mergeDateFewHoursLater = Date.from(Instant.ofEpochMilli(mergeDateFewHoursLater.getTime() + 1000 * 60 * 60 * 6));
 
         final PullRequest pr5OneDay = PullRequest.builder()
-                .vcsId("pr5-one-day")
+                .id("pr5-one-day")
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .repository(repositoryName)
@@ -359,7 +359,7 @@ public class PullRequestHistogramServiceTest {
                         mergeDateFewHoursLater)
                 .build();
         final PullRequest pr6 = PullRequest.builder()
-                .vcsId("pr6")
+                .id("pr6")
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .repository(repositoryName)
@@ -369,7 +369,7 @@ public class PullRequestHistogramServiceTest {
                                 .minus(4, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr7 = PullRequest.builder()
-                .vcsId("pr7")
+                .id("pr7")
                 .addedLineNumber(halfCodeSize)
                 .deletedLineNumber(halfCodeSize)
                 .repository(repositoryName)
@@ -383,7 +383,7 @@ public class PullRequestHistogramServiceTest {
                                 .minus(3, ChronoUnit.DAYS)))
                 .build();
         final PullRequest pr7Above = PullRequest.builder()
-                .vcsId("pr7-above")
+                .id("pr7-above")
                 .addedLineNumber(halfCodeSize * 100)
                 .deletedLineNumber(halfCodeSize * 100)
                 .repository(repositoryName)

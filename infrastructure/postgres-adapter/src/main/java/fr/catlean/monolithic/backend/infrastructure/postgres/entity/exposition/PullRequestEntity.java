@@ -18,13 +18,8 @@ public class PullRequestEntity extends AbstractEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(generator = "pull_request_sequence", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "pull_request_sequence", schema = "exposition_storage", sequenceName =
-            "pull_request_sequence", allocationSize = 1)
-    Long id;
-    @Column(name = "vcs_id", nullable = false)
     @NotNull
-    String vcsId;
+    String id;
     @Column(name = "commit_number")
     int commitNumber;
     @Column(name = "deleted_line_number")

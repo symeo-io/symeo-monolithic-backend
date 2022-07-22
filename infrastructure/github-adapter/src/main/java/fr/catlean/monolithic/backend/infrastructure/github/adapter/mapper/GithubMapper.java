@@ -19,7 +19,7 @@ public interface GithubMapper {
     static PullRequest mapPullRequestDtoToDomain(final GithubPullRequestDTO githubPullRequestDTO,
                                                  final String githubPlatformName) {
         return PullRequest.builder()
-                .vcsId(githubPlatformName + "-" + githubPullRequestDTO.getId().toString())
+                .id(githubPlatformName + "-" + githubPullRequestDTO.getId().toString())
                 .repository(githubPullRequestDTO.getBase().getRepo().getName())
                 .title(githubPullRequestDTO.getTitle())
                 .number(githubPullRequestDTO.getNumber())
