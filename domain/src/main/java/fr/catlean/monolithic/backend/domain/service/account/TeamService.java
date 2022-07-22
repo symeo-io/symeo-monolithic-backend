@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.domain.service.account;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -30,5 +31,10 @@ public class TeamService implements TeamFacadeAdapter {
                         .build()
         ));
         return accountTeamStorage.createTeamsForUser(teams, user);
+    }
+
+    @Override
+    public List<Team> getTeamsForOrganization(Organization organization) throws CatleanException {
+        return accountTeamStorage.findByOrganization(organization);
     }
 }

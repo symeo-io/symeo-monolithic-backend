@@ -7,7 +7,7 @@ import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.in.TeamFacadeAdapter;
 import fr.catlean.monolithic.backend.frontend.contract.api.TeamApi;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.PostCreateTeamsResponseContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.TeamsResponseContract;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class TeamRestApiAdapter implements TeamApi {
     private final TeamFacadeAdapter teamFacadeAdapter;
 
     @Override
-    public ResponseEntity<PostCreateTeamsResponseContract> createTeam(List<CreateTeamRequestContract> createTeamRequestContract) {
+    public ResponseEntity<TeamsResponseContract> createTeam(List<CreateTeamRequestContract> createTeamRequestContract) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
 
@@ -37,12 +37,26 @@ public class TeamRestApiAdapter implements TeamApi {
             final List<Team> teamsForNameAndRepositoriesAndUser =
                     teamFacadeAdapter.createTeamsForNameAndRepositoriesAndUser(repositoryIdsMappedToTeamName,
                             authenticatedUser);
-            final PostCreateTeamsResponseContract postCreateTeamsResponseContract =
-                    getPostCreateTeamsResponseContract(teamsForNameAndRepositoriesAndUser);
+            final TeamsResponseContract postCreateTeamsResponseContract =
+                    getTeamsResponseContract(teamsForNameAndRepositoriesAndUser);
             return ResponseEntity.ok(postCreateTeamsResponseContract);
         } catch (CatleanException e) {
-            final PostCreateTeamsResponseContract postCreateTeamsResponseContract =
-                    getPostCreateTeamsResponseContractError(e);
+            final TeamsResponseContract postCreateTeamsResponseContract =
+                    getTeamsResponseContractError(e);
+            return ResponseEntity.internalServerError().body(postCreateTeamsResponseContract);
+        }
+    }
+
+    @Override
+    public ResponseEntity<TeamsResponseContract> getTeams() {
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            final TeamsResponseContract postCreateTeamsResponseContract =
+                    getTeamsResponseContract(teamFacadeAdapter.getTeamsForOrganization(authenticatedUser.getOrganization()));
+            return ResponseEntity.ok(postCreateTeamsResponseContract);
+        } catch (CatleanException e) {
+            final TeamsResponseContract postCreateTeamsResponseContract =
+                    getTeamsResponseContractError(e);
             return ResponseEntity.internalServerError().body(postCreateTeamsResponseContract);
         }
     }

@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
@@ -39,6 +40,22 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
             throw CatleanException.builder()
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to create teams " + String.join(",", teams.stream().map(Team::getName).toList()))
+                    .build();
+        }
+    }
+
+    @Override
+    public List<Team> findByOrganization(Organization organization) throws CatleanException {
+        try {
+            return teamRepository.findAllByOrganizationId(organization.getId().toString())
+                    .stream()
+                    .map(TeamMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            LOGGER.error("Failed to find teams for organization {}", organization, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message("Failed to find teams by organization " + organization.toString())
                     .build();
         }
     }
