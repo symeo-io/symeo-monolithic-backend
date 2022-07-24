@@ -2,6 +2,8 @@ package fr.catlean.monolithic.backend.domain.job;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.port.out.JobStorage;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -144,5 +146,27 @@ public class JobManagerTest {
         assertThat(captorAllValues.get(2)).isEqualTo(nextJobStarted);
         assertThat(captorAllValues.get(3).getEndDate()).isNotNull();
 
+    }
+
+    @Test
+    void should_find_all_jobs_order_by_update_date_desc_given_a_code_and_organization() throws CatleanException {
+        // Given
+        final Executor executor = Runnable::run;
+        final JobStorage jobStorage = mock(JobStorage.class);
+        final JobManager jobManager = new JobManager(executor, jobStorage);
+        final Organization organization = Organization.builder().build();
+
+        // When
+        final List<Job> allJobsByCodeAndOrganizationOrderByUpdateDate =
+                jobManager.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectRepositoriesJobRunnable.JOB_CODE, organization);
+
+        // Then
+        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        final ArgumentCaptor<Organization> organizationArgumentCaptor = ArgumentCaptor.forClass(Organization.class);
+        verify(jobStorage, times(1))
+                .findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(stringArgumentCaptor.capture(),
+                        organizationArgumentCaptor.capture());
+        assertThat(stringArgumentCaptor.getValue()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
+        assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
     }
 }

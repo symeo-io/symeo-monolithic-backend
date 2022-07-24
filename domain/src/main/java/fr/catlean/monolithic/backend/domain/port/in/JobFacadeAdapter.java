@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.domain.port.out;
+package fr.catlean.monolithic.backend.domain.port.in;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.job.Job;
@@ -6,10 +6,7 @@ import fr.catlean.monolithic.backend.domain.model.account.Organization;
 
 import java.util.List;
 
-public interface JobStorage {
-    Job createJob(Job job) throws CatleanException;
-
-    Job updateJob(Job job) throws CatleanException;
+public interface JobFacadeAdapter {
 
     List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws CatleanException;
 }
