@@ -12,6 +12,7 @@ import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -29,7 +30,7 @@ public class VcsServiceTest {
         final VcsService vcsService = new VcsService(deliveryCommand,
                 deliveryQuery);
         final String organizationName = faker.name().name();
-        final Organization organization = Organization.builder()
+        final Organization organization = Organization.builder().id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().build()).name(organizationName).build();
 
         // When
@@ -44,8 +45,8 @@ public class VcsServiceTest {
                                 repo2
                         )
                 );
-        final PullRequest pr11 = PullRequest.builder().id("github-11").build();
-        final PullRequest pr12 = PullRequest.builder().id("github-12").build();
+        final PullRequest pr11 = PullRequest.builder().id("github-11").organizationId(organization.getId().toString()).build();
+        final PullRequest pr12 = PullRequest.builder().id("github-12").organizationId(organization.getId().toString()).build();
         when(deliveryQuery.readPullRequestsForRepository(repo1))
                 .thenReturn(
                         List.of(
