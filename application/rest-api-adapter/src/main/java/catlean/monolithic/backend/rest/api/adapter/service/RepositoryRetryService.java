@@ -30,6 +30,8 @@ public class RepositoryRetryService {
                     jobFacadeAdapter.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(JOB_CODE, organization);
             retry++;
             if (shouldRetry(jobs, retry)) {
+                LOGGER.info("Retrying to check job {} for retry number {} and organization {}", JOB_CODE,
+                        retry, organization);
                 Thread.sleep(repositoryRetryProperties.getRetryTimeDelayInMillis());
                 retry(organization, retry);
             }

@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.*;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.domainToContract;
 import static catlean.monolithic.backend.rest.api.adapter.validator.PullRequestHistogramValidator.validate;
 
 
@@ -29,9 +31,9 @@ public class PullRequestRestApiAdapter implements PullRequestApi {
         try {
             validate(histogramType);
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return PullRequestHistogramContractMapper.domainToContract(histogramQuery.readPullRequestHistogram(authenticatedUser.getOrganization(), teamName, histogramType));
+            return domainToContract(histogramQuery.readPullRequestHistogram(authenticatedUser.getOrganization(), teamName, histogramType));
         } catch (CatleanException e) {
-            return PullRequestHistogramContractMapper.errorToContract(e);
+            return errorToContract(e);
         }
     }
 
