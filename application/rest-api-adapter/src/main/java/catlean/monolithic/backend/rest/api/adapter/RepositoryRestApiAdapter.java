@@ -2,6 +2,7 @@ package catlean.monolithic.backend.rest.api.adapter;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import catlean.monolithic.backend.rest.api.adapter.mapper.RepositoryContractMapper;
+import catlean.monolithic.backend.rest.api.adapter.service.RepositoryRetryService;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
@@ -23,11 +24,13 @@ public class RepositoryRestApiAdapter implements RepositoryApi {
 
     private final AuthenticationService authenticationService;
     private final RepositoryService repositoryService;
+    private final RepositoryRetryService repositoryRetryService;
 
     @Override
     public ResponseEntity<GetRepositoriesResponseContract> apiV1RepositoriesGet() {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            repositoryRetryService.checkAndRetryOnCollectionJobs(authenticatedUser.getOrganization());
             return ok(domainToGetRepositoriesResponseContract(
                     repositoryService.getRepositoriesForOrganization(authenticatedUser.getOrganization()))
             );

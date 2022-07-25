@@ -11,10 +11,10 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @ToString
 public class Job {
-    private static final String CREATED = "CREATED";
-    private static final String STARTED = "STARTED";
-    private static final String FAILED = "FAILED";
-    private static final String FINISHED = "FINISHED";
+    public static final String CREATED = "CREATED";
+    public static final String STARTED = "STARTED";
+    public static final String FAILED = "FAILED";
+    public static final String FINISHED = "FINISHED";
 
     Long id;
     @NonNull

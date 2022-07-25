@@ -5,6 +5,8 @@ import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWe
 import catlean.monolithic.backend.rest.api.adapter.*;
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationContextProvider;
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
+import catlean.monolithic.backend.rest.api.adapter.properties.RepositoryRetryProperties;
+import catlean.monolithic.backend.rest.api.adapter.service.RepositoryRetryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
@@ -33,9 +35,22 @@ public class RestApiConfiguration {
     }
 
     @Bean
+    @ConfigurationProperties(prefix = "application.frontend.api.repositories")
+    public RepositoryRetryProperties repositoryRetryProperties() {
+        return new RepositoryRetryProperties();
+    }
+
+    @Bean
+    public RepositoryRetryService repositoryRetryService(final RepositoryRetryProperties repositoryRetryProperties,
+                                                         final JobFacadeAdapter jobFacadeAdapter) {
+        return new RepositoryRetryService(jobFacadeAdapter, repositoryRetryProperties);
+    }
+
+    @Bean
     public RepositoryRestApiAdapter repositoryRestApiAdapter(final AuthenticationService authenticationService,
-                                                             final RepositoryService repositoryService) {
-        return new RepositoryRestApiAdapter(authenticationService, repositoryService);
+                                                             final RepositoryService repositoryService,
+                                                             final RepositoryRetryService repositoryRetryService) {
+        return new RepositoryRestApiAdapter(authenticationService, repositoryService, repositoryRetryService);
     }
 
     @Bean

@@ -4,6 +4,8 @@ import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.job.Job;
 import fr.catlean.monolithic.backend.domain.job.JobRunnable;
+import fr.catlean.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresJobAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
@@ -16,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,4 +68,30 @@ public class PostgresJobAdapterTestIT {
         assertThat(jobFinishedUpdated.getEndDate()).isNotNull();
         assertThat(jobCreated.getId()).isEqualTo(jobFinishedUpdated.getId());
     }
+
+    @Test
+    void should_find_all_jobs_order_by_update_date_given_a_code_and_an_organization_id() throws CatleanException {
+        // Given
+        final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
+        final String jobCode = CollectRepositoriesJobRunnable.JOB_CODE;
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId().toString()).build());
+        jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode).organizationId(organization.getId().toString()).build());
+        jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId().toString()).build());
+
+        // When
+        final List<Job> jobs =
+                postgresJobAdapter.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(
+                        jobCode, organization
+                );
+
+        // Then
+        assertThat(jobs).isNotEmpty();
+        assertThat(jobs).hasSize(3);
+        assertThat(jobs.get(0).getStatus()).isEqualTo(Job.STARTED);
+        assertThat(jobs.get(1).getStatus()).isEqualTo(Job.FINISHED);
+        assertThat(jobs.get(2).getStatus()).isEqualTo(Job.FAILED);
+    }
+
+
 }

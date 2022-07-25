@@ -1,17 +1,20 @@
 package fr.catlean.monolithic.backend.domain.job;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.port.in.JobFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.JobStorage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import static java.util.Objects.nonNull;
 
 @AllArgsConstructor
 @Slf4j
-public class JobManager {
+public class JobManager implements JobFacadeAdapter {
 
     private final Executor executor;
     private final JobStorage jobStorage;
@@ -47,5 +50,10 @@ public class JobManager {
             }
 
         };
+    }
+
+    @Override
+    public List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws CatleanException {
+        return jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(code,organization);
     }
 }
