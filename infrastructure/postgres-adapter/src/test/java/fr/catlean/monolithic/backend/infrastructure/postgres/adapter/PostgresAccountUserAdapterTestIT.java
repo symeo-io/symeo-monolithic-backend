@@ -171,12 +171,18 @@ public class PostgresAccountUserAdapterTestIT {
     @Test
     void should_save_users() throws CatleanException {
         // Given
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .name(faker.name().firstName())
+                .build();
+        final OrganizationEntity organizationEntity =
+                organizationRepository.save(OrganizationMapper.domainToEntity(organization));
         final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final List<User> users = List.of(
-                User.builder().id(UUID.randomUUID()).email(faker.rickAndMorty().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build(),
-                User.builder().id(UUID.randomUUID()).email(faker.gameOfThrones().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build(),
-                User.builder().id(UUID.randomUUID()).email(faker.dragonBall().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build()
+                User.builder().id(UUID.randomUUID()).organization(organization).email(faker.rickAndMorty().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build(),
+                User.builder().id(UUID.randomUUID()).organization(organization).email(faker.gameOfThrones().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build(),
+                User.builder().id(UUID.randomUUID()).organization(organization).email(faker.dragonBall().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build()
         );
 
         // When
@@ -186,6 +192,7 @@ public class PostgresAccountUserAdapterTestIT {
         assertThat(usersSaved).hasSize(users.size());
         final List<UserEntity> allUsers = userRepository.findAll();
         assertThat(allUsers).hasSize(users.size());
+        allUsers.forEach(userEntity -> assertThat(userEntity.getOrganizationEntity()).isEqualTo(organizationEntity));
     }
 
     @Test

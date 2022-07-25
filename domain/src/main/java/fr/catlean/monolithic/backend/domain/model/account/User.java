@@ -14,7 +14,7 @@ public class User {
     UUID id;
     Organization organization;
     @Builder.Default
-    Onboarding onboarding = Onboarding.builder().build();
+    Onboarding onboarding = Onboarding.builder().id(UUID.randomUUID()).build();
     @Builder.Default
     String status = PENDING;
 

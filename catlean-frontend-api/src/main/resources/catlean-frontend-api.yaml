@@ -133,7 +133,7 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/organization/users:
+  /api/v1/organizations/users:
     get:
       security:
         - bearerAuth: [ ]
@@ -225,20 +225,21 @@ paths:
       operationId: removeUserFromOrganization
       description: |
         Remove User from Organization
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: string
-              format: uuid
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: User Id
       responses:
         "200":
           description: 'Successfully remove user'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeletedUserResponseContract'
+                $ref: '#/components/schemas/DeleteUserResponseContract'
               example:
                 errors:
                   [ ]
@@ -833,7 +834,7 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/UserRequestContract'
-    DeletedUserResponseContract:
+    DeleteUserResponseContract:
       type: object
       properties:
         errors:

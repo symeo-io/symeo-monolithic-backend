@@ -15,7 +15,7 @@ public interface UserFacadeAdapter {
 
     List<User> getAllUsersForOrganization(Organization organization) throws CatleanException;
 
-    List<User> createUsersForOrganization(Organization organization, List<User> users) throws CatleanException;
+    List<User> inviteUsersForOrganization(Organization organization, List<User> users) throws CatleanException;
 
     void removeUserFromOrganization(UUID id, Organization organization) throws CatleanException;
 }

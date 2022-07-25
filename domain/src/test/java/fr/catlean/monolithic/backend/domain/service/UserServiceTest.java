@@ -179,12 +179,15 @@ public class UserServiceTest {
         final ArgumentCaptor<List<User>> usersCaptor = ArgumentCaptor.forClass(List.class);
         when(userStorageAdapter.saveUsers(usersCaptor.capture()))
                 .thenReturn(users.stream().map(user -> user.toBuilder().id(UUID.randomUUID()).build()).toList());
-        userService.createUsersForOrganization(organization, users);
+        userService.inviteUsersForOrganization(organization, users);
 
         // Then
         verify(emailDeliveryAdapter, times(1)).sendInvitationForUsers(usersCaptor.capture());
         assertThat(usersCaptor.getAllValues()).hasSize(2);
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getId()).isNull());
+        usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOrganization()).isEqualTo(organization));
+        usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOnboarding().getHasConfiguredTeam()).isTrue());
+        usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOnboarding().getHasConnectedToVcs()).isTrue());
         usersCaptor.getAllValues().get(1).forEach(user -> assertThat(user.getStatus()).isEqualTo(User.PENDING));
     }
 

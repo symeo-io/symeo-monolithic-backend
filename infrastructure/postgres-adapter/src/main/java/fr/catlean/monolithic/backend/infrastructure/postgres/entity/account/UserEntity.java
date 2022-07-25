@@ -29,5 +29,7 @@ public class UserEntity extends AbstractEntity {
     private OnboardingEntity onboardingEntity;
     @Column(name = "organization_id", insertable = false,updatable = false)
     private String organizationId;
+    @Column(name = "status",nullable = false)
+    private String status;
 
 }

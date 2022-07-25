@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.domain.service.account;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
+import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
@@ -44,10 +45,18 @@ public class UserService implements UserFacadeAdapter {
     }
 
     @Override
-    public List<User> createUsersForOrganization(Organization organization, List<User> users) throws CatleanException {
-        final List<User> createdUsers = userStorageAdapter.saveUsers(users);
+    public List<User> inviteUsersForOrganization(Organization organization, List<User> users) throws CatleanException {
+        final List<User> createdUsers =
+                userStorageAdapter.saveUsers(users.stream().map(user -> user.toBuilder()
+                        .organization(organization)
+                        .onboarding(
+                                Onboarding.builder()
+                                        .hasConfiguredTeam(true)
+                                        .hasConnectedToVcs(true)
+                                        .build())
+                        .build()).toList());
         emailDeliveryAdapter.sendInvitationForUsers(createdUsers);
-        return users;
+        return createdUsers;
     }
 
     @Override

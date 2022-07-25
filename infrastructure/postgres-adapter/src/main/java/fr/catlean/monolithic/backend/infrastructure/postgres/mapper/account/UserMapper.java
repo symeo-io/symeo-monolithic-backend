@@ -14,6 +14,7 @@ public interface UserMapper {
         User user = User.builder()
                 .id(UUID.fromString(userEntity.getId()))
                 .email(userEntity.getEmail())
+                .status(userEntity.getStatus())
                 .build();
         if (nonNull(userEntity.getOrganizationEntity())) {
             user = user.toBuilder().organization(
@@ -38,6 +39,7 @@ public interface UserMapper {
                         OrganizationMapper.domainToEntity(user.getOrganization()))
                 .onboardingEntity(isNull(user.getOnboarding()) ? null :
                         OnboardingMapper.domainToEntity(user.getOnboarding()))
+                .status(user.getStatus())
                 .build();
     }
 }

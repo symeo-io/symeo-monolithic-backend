@@ -7,7 +7,7 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.frontend.contract.api.OrganizationApi;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.DeletedUserResponseContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.DeleteUserResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.UserRequestContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.UsersResponseContract;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,7 +35,7 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
     public ResponseEntity<UsersResponseContract> createUsersToOrganization(List<UserRequestContract> userRequestContract) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(usersToResponse(userFacadeAdapter.createUsersForOrganization(authenticatedUser.getOrganization(), contractToUsers(userRequestContract))));
+            return ok(usersToResponse(userFacadeAdapter.inviteUsersForOrganization(authenticatedUser.getOrganization(), contractToUsers(userRequestContract))));
         } catch (CatleanException e) {
             return internalServerError().body(usersToError(e));
         }
@@ -52,13 +52,13 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
     }
 
     @Override
-    public ResponseEntity<DeletedUserResponseContract> removeUserFromOrganization(UUID id) {
+    public ResponseEntity<DeleteUserResponseContract> removeUserFromOrganization(UUID id) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             userFacadeAdapter.removeUserFromOrganization(id, authenticatedUser.getOrganization());
-            return ResponseEntity.ok(new DeletedUserResponseContract());
+            return ResponseEntity.ok(new DeleteUserResponseContract());
         } catch (CatleanException e) {
-            final DeletedUserResponseContract deletedUserResponseContract = new DeletedUserResponseContract();
+            final DeleteUserResponseContract deletedUserResponseContract = new DeleteUserResponseContract();
             deletedUserResponseContract.setErrors(List.of(CatleanErrorContractMapper.catleanExceptionToContract(e)));
             return ResponseEntity.internalServerError().body(deletedUserResponseContract);
         }

@@ -58,12 +58,25 @@ public abstract class AbstractCatleanMonolithicBackendIT {
                 .toUri();
     }
 
+    protected URI getApiURI(final String path, String paramName, String paramValue) {
+        return UriComponentsBuilder.newInstance()
+                .scheme("http")
+                .host("localhost")
+                .port(port)
+                .path(path)
+                .queryParam(paramName, paramValue)
+                .build()
+                .toUri();
+    }
+
+
     protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
     protected static final String USER_REST_API_GET_ME = "/api/v1/me";
     protected static final String USER_REST_API_POST_ME_ORGANIZATION = "/api/v1/me/organization";
     protected static final String USER_REST_API_POST_ME_ONBOARDING = "/api/v1/me/onboarding";
     protected static final String TEAM_REST_API = "/api/v1/teams";
     protected static final String REPOSITORIES_REST_API_GET = "/api/v1/repositories";
+    protected static final String ORGANIZATION_REST_API_USERS = "/api/v1/organizations/users";
 
     @Autowired
     ITAuthenticationContextProvider authenticationContextProvider;
