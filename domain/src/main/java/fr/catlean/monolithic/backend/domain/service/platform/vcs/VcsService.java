@@ -24,6 +24,7 @@ public class VcsService {
 
     public List<PullRequest> collectPullRequestsForOrganization(final Organization organization) throws CatleanException {
         return getPullRequestsForOrganizationAccount(organization).stream()
+                .map(pullRequest -> pullRequest.toBuilder().organizationId(organization.getId().toString()).build())
                 .map(pullRequest -> populateWithOrganizationAccount(pullRequest, organization)).toList();
     }
 
@@ -35,7 +36,6 @@ public class VcsService {
                 .map(vcsTeam -> pullRequest.toBuilder()
                         .team(vcsTeam.getName())
                         .vcsOrganization(organization.getName())
-                        .organizationId(organization.getName())
                         .build()
                 ).orElse(pullRequest);
     }
