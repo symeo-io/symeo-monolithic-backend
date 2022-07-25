@@ -24,4 +24,5 @@ public interface CatleanExceptionCode {
     // Auth0 Exception Codes
     String MISSING_MAIL_AUTH0 = "T.MISSING_MAIL_AUTH0";
 
+    String INTERRUPTED_THREAD = "T.INTERRUPTED_THREAD";
 }

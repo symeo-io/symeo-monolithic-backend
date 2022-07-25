@@ -26,6 +26,11 @@ application:
   github:
     webhook:
       secret: ${GITHUB_WEBHOOK_SECRET}
+  frontend:
+    api:
+      repositories:
+        max-retry-number: 10
+        retry-time-delay-in-millis: 1000
 
 
 
