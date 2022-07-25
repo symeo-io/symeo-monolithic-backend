@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import static catlean.monolithic.backend.rest.api.adapter.validator.PullRequestHistogramValidator.validate;
+
 
 @RestController
 @Tags(@Tag(name = "PullRequest"))
@@ -25,6 +27,7 @@ public class PullRequestRestApiAdapter implements PullRequestApi {
     @Override
     public ResponseEntity<HistogramResponseContract> getPullRequestHistogram(String teamName, String histogramType) {
         try {
+            validate(histogramType);
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return PullRequestHistogramContractMapper.domainToContract(histogramQuery.readPullRequestHistogram(authenticatedUser.getOrganization(), teamName, histogramType));
         } catch (CatleanException e) {
