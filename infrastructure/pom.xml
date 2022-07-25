@@ -14,6 +14,7 @@
         <module>json-local-storage</module>
         <module>postgres-adapter</module>
         <module>aws-s3-adapter</module>
+        <module>sendgrid-adapter</module>
     </modules>
     <artifactId>infrastructure</artifactId>
 
