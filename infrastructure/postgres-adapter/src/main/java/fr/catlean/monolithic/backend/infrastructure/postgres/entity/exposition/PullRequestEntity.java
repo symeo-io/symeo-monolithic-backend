@@ -56,7 +56,7 @@ public class PullRequestEntity extends AbstractEntity {
     String vcsRepository;
     @Column(name = "vcs_organization")
     String vcsOrganization;
-    @Column(name = "organization")
-    String organization;
+    @Column(name = "organization_id")
+    String organizationId;
 
 }

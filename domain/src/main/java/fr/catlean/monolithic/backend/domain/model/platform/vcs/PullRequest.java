@@ -35,7 +35,7 @@ public class PullRequest {
     String authorLogin;
     String repository;
     String vcsOrganization;
-    String organization;
+    String organizationId;
     String team;
 
     public static String getNameFromRepository(String repositoryName) {

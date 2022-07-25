@@ -34,7 +34,7 @@ paths:
                     id: 42
                     name: Catlean
                 errors:
-                  { }
+                  []
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -78,7 +78,7 @@ paths:
                     id: 42
                     name: Catlean
                 errors:
-                  { }
+                  []
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -120,7 +120,7 @@ paths:
                   has_connected_to_vcs: true
                   has_configured_team: false
                 errors:
-                  { }
+                  []
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -135,46 +135,42 @@ paths:
                     message: "Failed to open connection with database"
 
 
-
-
-  /api/v1/pull-requests/histogram:
+  /api/v1/time-to-merge/histogram:
     get:
       security:
         - bearerAuth: [ ]
       tags:
-        - PullRequest
-      summary: Get PullRequest Histogram
-      operationId: getPullRequestHistogram
+        - TimeToMerge
+      summary: Get TimeToMerge Histogram
+      operationId: getTimeToMergeHistogram
       description: |
-        Get PullRequest Histogram
+        Get TimeToMerge Histogram
       parameters:
         - in: query
           name: team_name
+          required: false
           schema:
             type: string
-            example: data-team
-        - in: query
-          name: histogram_type
-          schema:
-            type: string
-            example: size-limit
+            example: frontend
       responses:
         "200":
-          description: 'Successfully retrieved pull request histogram'
+          description: 'Successfully retrieved time to merge histogram'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HistogramResponseContract'
+                $ref: '#/components/schemas/GetHistogramResponseContract'
               example:
-                data:
-                  - start_date_range: 12/08/1992
-                    data_above_limit: 11
-                    data_below_limit: 22
-                  - start_date_range: 24/09/1992
-                    data_above_limit: 1
-                    data_below_limit: 10
+                histogram:
+                  data:
+                    - start_date_range: 12/08/1992
+                      data_above_limit: 11
+                      data_below_limit: 22
+                    - start_date_range: 24/09/1992
+                      data_above_limit: 1
+                      data_below_limit: 10
+                  limit: 5
                 errors:
-                  { }
+                  []
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "404":
@@ -193,7 +189,119 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-
+  /api/v1/time-to-merge/histogram/from-pr-table:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - TimeToMerge
+      summary: Get TimeToMerge Histogram
+      operationId: getTimeToMergeHistogramFromPRTable
+      description: |
+        Get TimeToMerge Histogram
+      parameters:
+        - in: query
+          name: team_name
+          required: false
+          schema:
+            type: string
+            example: frontend
+      responses:
+        "200":
+          description: 'Successfully retrieved time to merge histogram'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHistogramResponseContract'
+              example:
+                histogram:
+                  data:
+                    - start_date_range: 12/08/1992
+                      data_above_limit: 11
+                      data_below_limit: 22
+                    - start_date_range: 24/09/1992
+                      data_above_limit: 1
+                      data_below_limit: 10
+                  limit: 5
+                errors:
+                  []
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+  /api/v1/time-to-merge/curve:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - TimeToMerge
+      summary: Get TimeToMerge Curve
+      operationId: getTimeToMergeCurve
+      description: |
+        Get TimeToMerge Curve
+      parameters:
+        - in: query
+          name: team_name
+          required: false
+          schema:
+            type: string
+            example: frontend
+      responses:
+        "200":
+          description: 'Successfully retrieved time to merge curve'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCurveResponseContract'
+              example:
+                curves:
+                  coin_curve:
+                    - date: 12/08/1992
+                      value: 10
+                      coin_open: false
+                    - date: 12/09/1992
+                      value: 22
+                      coin_open: true
+                  average_curve:
+                    - value: 3
+                      date : 12/08/1992
+                    - value: 4
+                      date : 12/00/1992
+                  limit: 5
+                errors:
+                  []
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
 
 
   /api/v1/repositories:
@@ -221,7 +329,7 @@ paths:
                   - id: "33333"
                     name: repo-3
                 errors:
-                  { }
+                  []
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -234,7 +342,6 @@ paths:
                 errors:
                   - code: "F.REPOSITORIES_NOT_FOUND"
                     message: "Failed to find repositories"
-
 
 
   /api/v1/teams:
@@ -266,7 +373,7 @@ paths:
                     name: first-team
                     repository_ids: [ "aaa","bbb","ccc" ]
                 errors:
-                  { }
+                  []
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -301,7 +408,7 @@ paths:
                     name: first-team
                     repository_ids: [ "aaa","bbb","ccc" ]
                 errors:
-                  { }
+                  []
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -365,19 +472,69 @@ components:
         data_below_limit:
           type: integer
           example: 111
+    GetCurveResponseContract:
+      type: object
+      properties:
+        curves:
+          $ref: '#/components/schemas/CurveResponseContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
+    CurveResponseContract:
+      type: object
+      required:
+        - limit
+        - average_curve
+        - piece_curve
+      properties:
+        limit:
+          type: integer
+        average_curve:
+          type: array
+          items:
+            $ref: '#/components/schemas/CurveDataResponseContract'
+        piece_curve:
+          type: array
+          items:
+            $ref: '#/components/schemas/PieceCurveDataResponseContract'
+    CurveDataResponseContract:
+      type: object
+      properties:
+        value:
+          type: integer
+        date:
+          type: string
+    PieceCurveDataResponseContract:
+      type: object
+      properties:
+        value:
+          type: integer
+        date:
+          type: string
+        open:
+          type: boolean
+    GetHistogramResponseContract:
+      type: object
+      properties:
+        histogram:
+          $ref: '#/components/schemas/HistogramResponseContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
     HistogramResponseContract:
       type: object
       required:
         - data
+        - limit
       properties:
         data:
           type: array
           items:
             $ref: '#/components/schemas/HistogramDataResponseContract'
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/CatleanErrorContract'
+        limit:
+          type: integer
     OrganizationContract:
       type: object
       required:

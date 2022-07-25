@@ -21,7 +21,7 @@ import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHist
 public class PullRequestHistogramService {
 
     private final ExpositionStorageAdapter expositionStorageAdapter;
-    private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
+    private final static SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
     public void computeAndSavePullRequestSizeHistogram(List<PullRequest> pullRequests,
                                                        Organization organization) {
@@ -68,7 +68,7 @@ public class PullRequestHistogramService {
 
     }
 
-    private PullRequestHistogram getPullRequestHistogram(String pullRequestHistogramType,
+    public static PullRequestHistogram getPullRequestHistogram(String pullRequestHistogramType,
                                                          List<PullRequest> pullRequests, Organization organization,
                                                          Team team, int pullRequestLimit) {
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
@@ -98,7 +98,7 @@ public class PullRequestHistogramService {
         return pullRequests;
     }
 
-    private DataCompareToLimit getDataCompareToLimit(final String pullRequestHistogramType,
+    private static DataCompareToLimit getDataCompareToLimit(final String pullRequestHistogramType,
                                                      final List<PullRequest> pullRequests, final int pullRequestLimit,
                                                      final Date weekStartDate, final String weekStart) {
         DataCompareToLimit dataCompareToLimit =

@@ -1,5 +1,6 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres;
 
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
@@ -14,11 +15,15 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.expositi
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
 import java.util.List;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.POSTGRES_EXCEPTION;
+
 @AllArgsConstructor
+@Slf4j
 public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     private final PullRequestRepository pullRequestRepository;
@@ -59,5 +64,19 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
                 .stream()
                 .map(RepositoryMapper::entityToDomain)
                 .toList();
+    }
+
+    @Override
+    public List<PullRequest> findAllPullRequestsForOrganization(Organization organization) throws CatleanException {
+        try {
+            return pullRequestRepository.findAllByOrganizationId(organization.getId().toString())
+                    .stream().map(PullRequestMapper::entityToDomain).toList();
+        } catch (Exception e) {
+            LOGGER.error("Failed to find all pull requests for organization {}", organization, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message("Failed to find all pull requests for organization")
+                    .build();
+        }
     }
 }

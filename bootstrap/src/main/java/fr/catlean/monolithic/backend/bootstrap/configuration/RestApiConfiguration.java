@@ -22,9 +22,9 @@ public class RestApiConfiguration {
     }
 
     @Bean
-    public PullRequestRestApiAdapter pullRequestRestApiAdapter(final AuthenticationService authenticationService,
+    public TimeToMergeRestApiAdapter timeToMergeRestApiAdapter(final AuthenticationService authenticationService,
                                                                final HistogramQuery histogramQuery) {
-        return new PullRequestRestApiAdapter(histogramQuery, authenticationService);
+        return new TimeToMergeRestApiAdapter(histogramQuery, authenticationService);
     }
 
     @Bean

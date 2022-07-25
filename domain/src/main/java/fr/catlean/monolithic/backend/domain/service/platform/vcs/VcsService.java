@@ -35,7 +35,7 @@ public class VcsService {
                 .map(vcsTeam -> pullRequest.toBuilder()
                         .team(vcsTeam.getName())
                         .vcsOrganization(organization.getName())
-                        .organization(organization.getName())
+                        .organizationId(organization.getName())
                         .build()
                 ).orElse(pullRequest);
     }
