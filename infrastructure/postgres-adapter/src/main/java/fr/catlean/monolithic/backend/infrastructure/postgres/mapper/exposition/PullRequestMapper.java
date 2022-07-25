@@ -5,6 +5,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.P
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 import static java.util.Objects.isNull;
 
@@ -31,10 +32,31 @@ public interface PullRequestMapper {
                 .vcsRepository(pullRequest.getRepository())
                 .team(pullRequest.getTeam())
                 .vcsOrganization(pullRequest.getVcsOrganization())
-                .organization(pullRequest.getOrganization())
+                .organizationId(pullRequest.getOrganizationId())
                 .size(pullRequest.getSize())
                 .daysOpened(pullRequest.getDaysOpened())
                 .startDateRange(pullRequest.getStartDateRange())
+                .build();
+    }
+
+    static PullRequest entityToDomain(final PullRequestEntity pullRequestEntity) {
+        return PullRequest.builder()
+                .id(pullRequestEntity.getId())
+                .isDraft(pullRequestEntity.getIsDraft())
+                .isMerged(pullRequestEntity.getIsMerged())
+                .commitNumber(pullRequestEntity.getCommitNumber())
+                .addedLineNumber(pullRequestEntity.getAddedLineNumber())
+                .deletedLineNumber(pullRequestEntity.getDeletedLineNumber())
+                .creationDate(Date.from(pullRequestEntity.getCreationDate().toInstant()))
+                .lastUpdateDate(Date.from(pullRequestEntity.getLastUpdateDate().toInstant()))
+                .mergeDate(isNull(pullRequestEntity.getMergeDate()) ? null :
+                        Date.from(pullRequestEntity.getMergeDate().toInstant()))
+                .title(pullRequestEntity.getTitle())
+                .vcsUrl(pullRequestEntity.getVcsUrl())
+                .authorLogin(pullRequestEntity.getAuthorLogin())
+                .vcsOrganization(pullRequestEntity.getVcsOrganization())
+                .organizationId(pullRequestEntity.getOrganizationId())
+                .repository(pullRequestEntity.getVcsRepository())
                 .build();
     }
 }

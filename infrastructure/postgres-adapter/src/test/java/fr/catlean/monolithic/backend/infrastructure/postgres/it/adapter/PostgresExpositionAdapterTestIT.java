@@ -1,6 +1,7 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
 
 import com.github.javafaker.Faker;
+import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
@@ -13,6 +14,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.P
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestHistogramDataEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
+import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
@@ -169,6 +171,32 @@ public class PostgresExpositionAdapterTestIT {
         assertThat(repositories).hasSize(3);
     }
 
+    @Test
+    void should_find_all_pull_requests_given_an_organization() throws CatleanException {
+        // Given
+        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
+                pullRequestHistogramRepository, repositoryRepository);
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .build();
+        pullRequestRepository.saveAll(
+                List.of(
+                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(1, organization)),
+                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(2, organization)),
+                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(3, organization)),
+                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(4, organization))
+                )
+        );
+
+        // When
+        final List<PullRequest> allPullRequestsForOrganization =
+                postgresExpositionAdapter.findAllPullRequestsForOrganization(organization);
+
+        // Then
+        assertThat(allPullRequestsForOrganization).hasSize(4);
+    }
+
     private Repository buildRepository(Organization organization) {
         return Repository.builder()
                 .organization(organization)
@@ -209,6 +237,10 @@ public class PostgresExpositionAdapterTestIT {
     }
 
     private PullRequest buildPullRequest(int id) {
+        return buildPullRequestForOrganization(id, Organization.builder().id(UUID.randomUUID()).build());
+    }
+
+    private PullRequest buildPullRequestForOrganization(final int id, final Organization organization) {
         return PullRequest.builder()
                 .id(faker.dragonBall().character() + id)
                 .number(id)
@@ -223,6 +255,7 @@ public class PostgresExpositionAdapterTestIT {
                 .addedLineNumber(faker.number().numberBetween(0, 20000))
                 .isDraft(true)
                 .isMerged(false)
+                .organizationId(organization.getId().toString())
                 .build();
     }
 }

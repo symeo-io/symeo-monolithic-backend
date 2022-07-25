@@ -4,6 +4,7 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CatleanErrorContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.GetHistogramResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.HistogramDataResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.HistogramResponseContract;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public interface PullRequestHistogramContractMapper {
 
 
-    static ResponseEntity<HistogramResponseContract> domainToContract(final PullRequestHistogram pullRequestHistogram) {
+    static ResponseEntity<GetHistogramResponseContract> domainToContract(final PullRequestHistogram pullRequestHistogram) {
         final HistogramResponseContract histogramResponseContract = new HistogramResponseContract();
         final List<HistogramDataResponseContract> histogramDataResponseContracts = new ArrayList<>();
         for (DataCompareToLimit dataCompareToLimit : pullRequestHistogram.getDataByWeek()) {
@@ -31,14 +32,16 @@ public interface PullRequestHistogramContractMapper {
         histogramResponseContract.setData(
                 histogramDataResponseContracts
         );
-        return ok(histogramResponseContract);
+        final GetHistogramResponseContract getHistogramResponseContract = new GetHistogramResponseContract();
+        getHistogramResponseContract.setHistogram(histogramResponseContract);
+        return ok(getHistogramResponseContract);
     }
 
-    static ResponseEntity<HistogramResponseContract> errorToContract(CatleanException e) {
-        final HistogramResponseContract histogramResponseContract = new HistogramResponseContract();
+    static ResponseEntity<GetHistogramResponseContract> errorToContract(CatleanException e) {
         final CatleanErrorContract catleanErrorContract = catleanExceptionToContract(e);
-        histogramResponseContract.errors(List.of(catleanErrorContract));
-        return internalServerError().body(histogramResponseContract);
+        final GetHistogramResponseContract getHistogramResponseContract = new GetHistogramResponseContract();
+        getHistogramResponseContract.errors(List.of(catleanErrorContract));
+        return internalServerError().body(getHistogramResponseContract);
     }
 
 

@@ -21,7 +21,7 @@ create table exposition_storage.pull_request
     author_login                varchar(100),
     vcs_repository              varchar(100),
     vcs_organization            varchar(100),
-    organization                varchar(100),
+    organization_id             varchar(100),
     team                        varchar(100),
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null
