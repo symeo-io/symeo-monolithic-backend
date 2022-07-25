@@ -7,7 +7,10 @@ import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.in.OnboardingFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import fr.catlean.monolithic.backend.frontend.contract.api.UserApi;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.*;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.CurrentUserResponseContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.PostOnboardingResponseContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.AllArgsConstructor;
@@ -19,7 +22,7 @@ import java.util.List;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper.catleanExceptionToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.OnboardingContractMapper.getOnboarding;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.OnboardingContractMapper.getPostOnboardingResponseContract;
-import static catlean.monolithic.backend.rest.api.adapter.mapper.UserContractMapper.*;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.UserContractMapper.currentUserToResponse;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -72,23 +75,4 @@ public class UserRestApiAdapter implements UserApi {
     }
 
 
-    @Override
-    public ResponseEntity<UsersResponseContract> getUsers() {
-        try {
-            final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(usersToResponse(userFacadeAdapter.getAllUsersForOrganization(authenticatedUser.getOrganization())));
-        } catch (CatleanException e) {
-            return internalServerError().body(usersToError(e));
-        }
-    }
-
-    @Override
-    public ResponseEntity<UsersResponseContract> postUsers(List<UserRequestContract> userRequestContract) {
-        try {
-            final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(usersToResponse(userFacadeAdapter.createUsersForOrganization(authenticatedUser.getOrganization(), contractToUsers(userRequestContract))));
-        } catch (CatleanException e) {
-            return internalServerError().body(usersToError(e));
-        }
-    }
 }

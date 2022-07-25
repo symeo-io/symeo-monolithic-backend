@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @AllArgsConstructor
 public class UserService implements UserFacadeAdapter {
@@ -47,5 +48,10 @@ public class UserService implements UserFacadeAdapter {
         final List<User> createdUsers = userStorageAdapter.saveUsers(users);
         emailDeliveryAdapter.sendInvitationForUsers(createdUsers);
         return users;
+    }
+
+    @Override
+    public void removeUserFromOrganization(UUID id, Organization organization) throws CatleanException {
+        userStorageAdapter.removeOrganizationForUserId(id);
     }
 }

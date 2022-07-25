@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.ORGANISATION_NOT_FOUND;
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.POSTGRES_EXCEPTION;
@@ -33,9 +34,18 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
     }
 
     @Override
-    public User createUserWithEmail(String email) {
-        final UserEntity userEntity = createUserFromMail(email);
-        return entityToDomain(userRepository.save(userEntity));
+    public User createUserWithEmail(String email) throws CatleanException {
+        try {
+            final UserEntity userEntity = createUserFromMail(email);
+            return entityToDomain(userRepository.save(userEntity));
+        } catch (Exception e) {
+            final String message = String.format("Failed to create user for mail %s", email);
+            LOGGER.error(message, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
     }
 
     @Override
@@ -90,6 +100,27 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
             return entityToDomain(userRepository.save(domainToEntity(user)));
         } catch (Exception e) {
             final String message = String.format("Failed to save user %s", user);
+            LOGGER.error(message, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public void removeOrganizationForUserId(UUID id) throws CatleanException {
+        try {
+            final Optional<UserEntity> optionalUserEntity = userRepository.findById(id.toString());
+            if (optionalUserEntity.isPresent()) {
+                final UserEntity userEntity = optionalUserEntity.get();
+                userEntity.setOrganizationEntity(null);
+                userRepository.save(userEntity);
+            } else {
+                LOGGER.warn("User for id {} not found, failed to remove its organization", id);
+            }
+        } catch (Exception e) {
+            final String message = String.format("Failed to remove organization for user id %s", id);
             LOGGER.error(message, e);
             throw CatleanException.builder()
                     .code(POSTGRES_EXCEPTION)

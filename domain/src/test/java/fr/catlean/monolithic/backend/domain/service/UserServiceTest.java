@@ -187,4 +187,21 @@ public class UserServiceTest {
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getId()).isNull());
         usersCaptor.getAllValues().get(1).forEach(user -> assertThat(user.getStatus()).isEqualTo(User.PENDING));
     }
+
+    @Test
+    void should_remove_user_for_id() throws CatleanException {
+        // Given
+        final UserStorageAdapter userStorageAdapter = mock(UserStorageAdapter.class);
+        final EmailDeliveryAdapter emailDeliveryAdapter = mock(EmailDeliveryAdapter.class);
+        final UserService userService = new UserService(userStorageAdapter, emailDeliveryAdapter);
+        final UUID id = UUID.randomUUID();
+
+        // When
+        userService.removeUserFromOrganization(id, Organization.builder().build());
+
+        // Then
+        final ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        verify(userStorageAdapter, times(1)).removeOrganizationForUserId(uuidArgumentCaptor.capture());
+        assertThat(uuidArgumentCaptor.getValue()).isEqualTo(id);
+    }
 }

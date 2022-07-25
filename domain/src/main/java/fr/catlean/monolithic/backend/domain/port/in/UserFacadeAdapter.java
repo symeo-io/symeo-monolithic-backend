@@ -5,6 +5,7 @@ import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserFacadeAdapter {
 
@@ -16,4 +17,5 @@ public interface UserFacadeAdapter {
 
     List<User> createUsersForOrganization(Organization organization, List<User> users) throws CatleanException;
 
+    void removeUserFromOrganization(UUID id, Organization organization) throws CatleanException;
 }
