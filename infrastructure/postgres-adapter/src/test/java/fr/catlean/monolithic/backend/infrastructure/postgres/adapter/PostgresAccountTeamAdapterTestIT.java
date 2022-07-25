@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
+package fr.catlean.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
@@ -7,9 +7,9 @@ import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountTeamAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
-import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper;
@@ -64,7 +64,7 @@ public class PostgresAccountTeamAdapterTestIT {
                 .id(UUID.randomUUID().toString())
                 .build();
         User user =
-                User.builder().mail(faker.dragonBall().character()).onboarding(Onboarding.builder().build()).build();
+                User.builder().email(faker.dragonBall().character()).onboarding(Onboarding.builder().build()).build();
         user = UserMapper.entityToDomain(userRepository.save(UserMapper.domainToEntity(user)));
         user.hasConfiguredTeam();
         organizationRepository.save(organizationEntity);
@@ -101,7 +101,7 @@ public class PostgresAccountTeamAdapterTestIT {
         assertThat(createdTeams.get(1).getOrganizationId()).isEqualTo(team2.getOrganizationId());
         assertThat(createdTeams.get(1).getRepositories().size()).isEqualTo(team2.getRepositories().size());
         assertThat(teamRepository.findAll()).hasSize(2);
-        assertThat(userRepository.findByMail(user.getMail()).get().getOnboardingEntity().getHasConfiguredTeam()).isTrue();
+        assertThat(userRepository.findByEmail(user.getEmail()).get().getOnboardingEntity().getHasConfiguredTeam()).isTrue();
     }
 
     @Test
@@ -172,7 +172,7 @@ public class PostgresAccountTeamAdapterTestIT {
                 .organizationId(UUID.fromString(organizationEntity.getId()))
                 .build();
         final User user =
-                User.builder().mail(faker.dragonBall().character()).onboarding(Onboarding.builder().build()).build();
+                User.builder().email(faker.dragonBall().character()).onboarding(Onboarding.builder().build()).build();
 
         // When
         CatleanException catleanException = null;

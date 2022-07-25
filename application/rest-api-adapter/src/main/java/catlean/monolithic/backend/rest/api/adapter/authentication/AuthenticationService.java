@@ -30,6 +30,6 @@ public class AuthenticationService {
                     .build();
         }
         final String mail = claims.get(CATLEAN_MAIL_KEY).asString();
-        return userFacadeAdapter.getOrCreateUserFromMail(mail);
+        return userFacadeAdapter.getOrCreateUserFromEmail(mail);
     }
 }

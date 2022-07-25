@@ -4,9 +4,12 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.User
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, String>, JpaSpecificationExecutor<UserEntity> {
 
-    Optional<UserEntity> findByMail(String mail);
+    Optional<UserEntity> findByEmail(String mail);
+
+    List<UserEntity> findAllByOrganizationId(String organizationId);
 }

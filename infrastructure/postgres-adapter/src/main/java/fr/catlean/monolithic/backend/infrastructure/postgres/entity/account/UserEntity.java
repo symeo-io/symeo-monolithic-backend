@@ -18,8 +18,8 @@ public class UserEntity extends AbstractEntity {
     @Id
     @Column(name = "id", nullable = false)
     private String id;
-    @Column(name = "mail", nullable = false)
-    private String mail;
+    @Column(name = "email", nullable = false)
+    private String email;
     @ManyToOne
     @JoinColumn(name = "organization_id",
             referencedColumnName = "id")
@@ -27,5 +27,7 @@ public class UserEntity extends AbstractEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "onboarding_id", referencedColumnName = "id")
     private OnboardingEntity onboardingEntity;
+    @Column(name = "organization_id", insertable = false,updatable = false)
+    private String organizationId;
 
 }

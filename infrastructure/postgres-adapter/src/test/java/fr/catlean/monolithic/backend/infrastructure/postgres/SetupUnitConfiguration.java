@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.infrastructure.postgres.it;
+package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;

@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
+package fr.catlean.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
@@ -7,8 +7,8 @@ import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountUserAdapter;
+import fr.catlean.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
-import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
@@ -52,16 +52,16 @@ public class PostgresAccountUserAdapterTestIT {
         final String mail = faker.name().title();
 
         // When
-        final User user = postgresAccountUserAdapter.createUserWithMail(mail);
+        final User user = postgresAccountUserAdapter.createUserWithEmail(mail);
 
         // Then
         assertThat(user).isNotNull();
         assertThat(user.getId()).isNotNull();
-        final Optional<UserEntity> optionalUserEntity = userRepository.findByMail(user.getMail());
+        final Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(user.getEmail());
         assertThat(optionalUserEntity).isPresent();
         final UserEntity userEntity = optionalUserEntity.get();
         assertThat(userEntity.getId()).isEqualTo(user.getId().toString());
-        assertThat(userEntity.getMail()).isEqualTo(user.getMail());
+        assertThat(userEntity.getEmail()).isEqualTo(user.getEmail());
         assertThat(user.getOnboarding()).isEqualTo(OnboardingMapper.entityToDomain(userEntity.getOnboardingEntity()));
     }
 
@@ -71,18 +71,18 @@ public class PostgresAccountUserAdapterTestIT {
         final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final String mail = faker.name().title();
-        postgresAccountUserAdapter.createUserWithMail(mail);
+        postgresAccountUserAdapter.createUserWithEmail(mail);
 
         // When
-        final Optional<User> existingUser = postgresAccountUserAdapter.getUserFromMail(mail);
+        final Optional<User> existingUser = postgresAccountUserAdapter.getUserFromEmail(mail);
         final Optional<User> notExistingUser =
-                postgresAccountUserAdapter.getUserFromMail(faker.dragonBall().character());
+                postgresAccountUserAdapter.getUserFromEmail(faker.dragonBall().character());
 
         // Then
         assertThat(existingUser).isPresent();
         final User user = existingUser.get();
         assertThat(user.getId()).isNotNull();
-        assertThat(user.getMail()).isEqualTo(mail);
+        assertThat(user.getEmail()).isEqualTo(mail);
         assertThat(notExistingUser).isEmpty();
 
     }
@@ -105,7 +105,7 @@ public class PostgresAccountUserAdapterTestIT {
                 .build();
 
         // When
-        final User user = postgresAccountUserAdapter.createUserWithMail(faker.dragonBall().character());
+        final User user = postgresAccountUserAdapter.createUserWithEmail(faker.dragonBall().character());
         final Organization expectedOrganization = postgresOrganizationAdapter.createOrganization(organization);
         final User updateUserWithOrganization = postgresAccountUserAdapter.updateUserWithOrganization(user.toBuilder()
                         .onboarding(user.getOnboarding().toBuilder().hasConnectedToVcs(true).build()).build(),
