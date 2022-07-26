@@ -43,7 +43,7 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
                 UserEntity.builder()
                         .id(UUID.randomUUID())
                         .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
-                        .organizationEntity(organizationEntity)
+                        .organizationEntities(List.of(organizationEntity))
                         .status(User.ACTIVE)
                         .email(faker.gameOfThrones().character())
                         .build()
@@ -51,7 +51,7 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
         final UserEntity pendingUser = userRepository.save(UserEntity.builder()
                 .id(UUID.randomUUID())
                 .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
-                .organizationEntity(organizationEntity)
+                .organizationEntities(List.of(organizationEntity))
                 .status(User.ACTIVE)
                 .email(faker.rickAndMorty().character())
                 .build());
@@ -101,8 +101,10 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
         assertThat(userRepository.findAll()).hasSize(4);
         final UserEntity userCreated1 = userRepository.findByEmail(userRequestContract1.getEmail()).get();
         final UserEntity userCreated2 = userRepository.findByEmail(userRequestContract2.getEmail()).get();
-        assertThat(userCreated1.getOrganizationEntity()).isNotNull();
-        assertThat(userCreated2.getOrganizationEntity()).isNotNull();
+        assertThat(userCreated1.getOrganizationEntities()).isNotNull();
+        assertThat(userCreated1.getOrganizationEntities()).hasSize(1);
+        assertThat(userCreated2.getOrganizationEntities()).isNotNull();
+        assertThat(userCreated2.getOrganizationEntities()).hasSize(1);
         assertThat(userCreated1.getOnboardingEntity().getHasConfiguredTeam()).isTrue();
         assertThat(userCreated1.getOnboardingEntity().getHasConnectedToVcs()).isTrue();
         assertThat(userCreated2.getOnboardingEntity().getHasConfiguredTeam()).isTrue();
@@ -150,6 +152,6 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
                 .expectBody()
                 .jsonPath("$.errors").isEmpty();
         final Optional<UserEntity> user = userRepository.findById(id);
-        assertThat(user.get().getOrganizationEntity()).isNull();
+        assertThat(user.get().getOrganizationEntities()).isEmpty();
     }
 }

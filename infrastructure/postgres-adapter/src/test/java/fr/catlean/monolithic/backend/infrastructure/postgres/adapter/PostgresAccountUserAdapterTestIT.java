@@ -153,11 +153,11 @@ public class PostgresAccountUserAdapterTestIT {
         final OnboardingEntity onboarding5 =
                 OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
         onboardingRepository.saveAll(List.of(onboarding1, onboarding2, onboarding3, onboarding5, onboarding4));
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding1).id(UUID.randomUUID()).organizationEntity(org1).email(faker.gameOfThrones().character()).build());
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding2).id(UUID.randomUUID()).organizationEntity(org1).email(faker.dragonBall().character()).build());
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding3).id(UUID.randomUUID()).organizationEntity(org2).email(faker.harryPotter().character()).build());
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding4).id(UUID.randomUUID()).organizationEntity(org2).email(faker.cat().breed()).build());
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding5).id(UUID.randomUUID()).organizationEntity(org2).email(faker.rickAndMorty().character()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding1).id(UUID.randomUUID()).organizationEntities(List.of(org1)).email(faker.gameOfThrones().character()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding2).id(UUID.randomUUID()).organizationEntities(List.of(org1)).email(faker.dragonBall().character()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding3).id(UUID.randomUUID()).organizationEntities(List.of(org2)).email(faker.harryPotter().character()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding4).id(UUID.randomUUID()).organizationEntities(List.of(org2)).email(faker.cat().breed()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding5).id(UUID.randomUUID()).organizationEntities(List.of(org2)).email(faker.rickAndMorty().character()).build());
 
         // When
         final List<User> allByOrganization1 = postgresAccountUserAdapter.findAllByOrganization(organization1);
@@ -180,9 +180,9 @@ public class PostgresAccountUserAdapterTestIT {
         final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final List<User> users = List.of(
-                User.builder().id(UUID.randomUUID()).organization(organization).email(faker.rickAndMorty().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build(),
-                User.builder().id(UUID.randomUUID()).organization(organization).email(faker.gameOfThrones().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build(),
-                User.builder().id(UUID.randomUUID()).organization(organization).email(faker.dragonBall().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build()
+                User.builder().id(UUID.randomUUID()).organizations(List.of(organization)).email(faker.rickAndMorty().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build(),
+                User.builder().id(UUID.randomUUID()).organizations(List.of(organization)).email(faker.gameOfThrones().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build(),
+                User.builder().id(UUID.randomUUID()).organizations(List.of(organization)).email(faker.dragonBall().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build()
         );
 
         // When
@@ -192,7 +192,7 @@ public class PostgresAccountUserAdapterTestIT {
         assertThat(usersSaved).hasSize(users.size());
         final List<UserEntity> allUsers = userRepository.findAll();
         assertThat(allUsers).hasSize(users.size());
-        allUsers.forEach(userEntity -> assertThat(userEntity.getOrganizationEntity()).isEqualTo(organizationEntity));
+        allUsers.forEach(userEntity -> assertThat(userEntity.getOrganizationEntities().get(0)).isEqualTo(organizationEntity));
     }
 
     @Test
@@ -245,7 +245,7 @@ public class PostgresAccountUserAdapterTestIT {
                 OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
         onboardingRepository.saveAll(List.of(onboarding1));
         final UserEntity userEntity =
-                UserEntity.builder().status("PENDING").onboardingEntity(onboarding1).id(UUID.randomUUID()).organizationEntity(org1).email(faker.gameOfThrones().character()).build();
+                UserEntity.builder().status("PENDING").onboardingEntity(onboarding1).id(UUID.randomUUID()).organizationEntities(List.of(org1)).email(faker.gameOfThrones().character()).build();
         userRepository.save(userEntity);
 
         // When
@@ -254,6 +254,6 @@ public class PostgresAccountUserAdapterTestIT {
         // Then
         final List<UserEntity> allUsers = userRepository.findAll();
         assertThat(allUsers).hasSize(1);
-        assertThat(allUsers.get(0).getOrganizationId()).isNull();
+        assertThat(allUsers.get(0).getOrganizationEntities()).hasSize(0);
     }
 }

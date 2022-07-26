@@ -12,6 +12,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.expositi
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,12 +52,11 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
     @Override
     public User updateUserWithOrganization(User authenticatedUser, String organizationExternalId) throws CatleanException {
         final UserEntity userEntity = domainToEntity(authenticatedUser);
-
         final VcsOrganizationEntity vcsOrganizationEntity =
                 vcsOrganizationRepository.findByExternalId(organizationExternalId)
                         .orElseThrow(() -> CatleanException.builder().code(ORGANISATION_NOT_FOUND).message(
                                 "Organization not found for externalId " + organizationExternalId).build());
-        userEntity.setOrganizationEntity(vcsOrganizationEntity.getOrganizationEntity());
+        userEntity.setOrganizationEntities(List.of(vcsOrganizationEntity.getOrganizationEntity()));
         return entityToDomain(userRepository.save(userEntity));
 
 
@@ -65,7 +65,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
     @Override
     public List<User> findAllByOrganization(Organization organization) throws CatleanException {
         try {
-            return userRepository.findAllByOrganizationId(organization.getId())
+            return userRepository.findAllForOrganizationId(organization.getId())
                     .stream().map(UserMapper::entityToDomain)
                     .toList();
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
             final Optional<UserEntity> optionalUserEntity = userRepository.findById(id);
             if (optionalUserEntity.isPresent()) {
                 final UserEntity userEntity = optionalUserEntity.get();
-                userEntity.setOrganizationEntity(null);
+                userEntity.setOrganizationEntities(new ArrayList<>());
                 userRepository.save(userEntity);
             } else {
                 LOGGER.warn("User for id {} not found, failed to remove its organization", id);
