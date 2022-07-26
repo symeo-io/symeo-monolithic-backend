@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.infrastructure.postgres.it;
+package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;

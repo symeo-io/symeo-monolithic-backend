@@ -133,6 +133,129 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+  /api/v1/organizations/users:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Organization
+      summary: Get Users linked to current Organization
+      operationId: getUsersFromOrganization
+      description: |
+        Get Users linked to current Organization
+      responses:
+        "200":
+          description: 'Successfully get users'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponseContract'
+              example:
+                users:
+                  - id: 818e351a-0421-11ed-b939-0242ac120002
+                    email: john.doe@catlean.fr
+                    status: ACTIVE
+                  - id: fb97c650-1eeb-42a5-88e0-89c549696b15
+                    email: jean-michel.biox@sextan.fr
+                    status: PENDING
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Organization
+      summary: Create Users linked to current Organization
+      operationId: createUsersToOrganization
+      description: |
+        Create Users linked to current Organization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUserRequestContract'
+      responses:
+        "200":
+          description: 'Successfully post users'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponseContract'
+              example:
+                users:
+                  - id: 818e351a-0421-11ed-b939-0242ac120002
+                    email: john.doe@catlean.fr
+                    status: ACTIVE
+                  - id: fb97c650-1eeb-42a5-88e0-89c549696b15
+                    email: jean-michel.biox@sextan.fr
+                    status: PENDING
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Organization
+      summary: Remove User from Organization
+      operationId: removeUserFromOrganization
+      description: |
+        Remove User from Organization
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: User Id
+      responses:
+        "200":
+          description: 'Successfully remove user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteUserResponseContract'
+              example:
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
 
 
   /api/v1/time-to-merge/histogram:
@@ -586,6 +709,7 @@ components:
           example: 16
         email:
           type: string
+          format: email
           example: john.doe@catlean.fr
         organization:
           $ref: '#/components/schemas/OrganizationContract'
@@ -674,6 +798,45 @@ components:
       properties:
         onboarding:
           $ref: '#/components/schemas/OnboardingContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
+    UsersResponseContract:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponseContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
+    UserResponseContract:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+        id:
+          type: string
+          format: uuid
+    UserRequestContract:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+    PostUserRequestContract:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserRequestContract'
+    DeleteUserResponseContract:
+      type: object
+      properties:
         errors:
           type: array
           items:

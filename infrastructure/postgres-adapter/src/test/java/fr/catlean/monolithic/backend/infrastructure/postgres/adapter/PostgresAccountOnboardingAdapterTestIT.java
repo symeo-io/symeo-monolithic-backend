@@ -1,10 +1,10 @@
-package fr.catlean.monolithic.backend.infrastructure.postgres.it.adapter;
+package fr.catlean.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountOnboardingAdapter;
-import fr.catlean.monolithic.backend.infrastructure.postgres.it.SetupConfiguration;
+import fr.catlean.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import org.assertj.core.api.Assertions;

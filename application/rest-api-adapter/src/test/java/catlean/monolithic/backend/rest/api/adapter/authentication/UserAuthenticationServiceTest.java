@@ -41,13 +41,13 @@ public class UserAuthenticationServiceTest {
         final String mail = faker.ancient().god();
         when(claim.asString()).thenReturn(mail);
         SecurityContextHolder.setContext(securityContext);
-        when(userFacadeAdapter.getOrCreateUserFromMail(mail)).thenReturn(User.builder().mail(mail).build());
+        when(userFacadeAdapter.getOrCreateUserFromEmail(mail)).thenReturn(User.builder().email(mail).build());
 
         // When
         final User authenticatedUser = userAuthenticationService.getAuthenticatedUser();
 
         // Then
-        assertThat(authenticatedUser.getMail()).isEqualTo(mail);
+        assertThat(authenticatedUser.getEmail()).isEqualTo(mail);
     }
 
     @Test

@@ -77,4 +77,10 @@ public class RestApiConfiguration {
                                                            final GithubWebhookProperties githubWebhookProperties) {
         return new GithubWebhookApiAdapter(organizationFacadeAdapter, githubWebhookProperties, objectMapper);
     }
+
+    @Bean
+    public OrganizationRestApiAdapter organizationRestApiAdapter(final AuthenticationService authenticationService,
+                                                                 final UserFacadeAdapter userFacadeAdapter){
+        return new OrganizationRestApiAdapter(authenticationService, userFacadeAdapter);
+    }
 }

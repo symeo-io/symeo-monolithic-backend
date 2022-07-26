@@ -22,7 +22,9 @@ import java.util.List;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper.catleanExceptionToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.OnboardingContractMapper.getOnboarding;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.OnboardingContractMapper.getPostOnboardingResponseContract;
-import static catlean.monolithic.backend.rest.api.adapter.mapper.UserContractMapper.userToResponse;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.UserContractMapper.currentUserToResponse;
+import static org.springframework.http.ResponseEntity.internalServerError;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @Tags(@Tag(name = "User"))
@@ -37,11 +39,11 @@ public class UserRestApiAdapter implements UserApi {
     public ResponseEntity<CurrentUserResponseContract> getCurrentUser() {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ResponseEntity.ok(userToResponse(authenticatedUser));
+            return ok(currentUserToResponse(authenticatedUser));
         } catch (CatleanException catleanException) {
             final CurrentUserResponseContract currentUserResponseContract = new CurrentUserResponseContract();
             currentUserResponseContract.setErrors(List.of(catleanExceptionToContract(catleanException)));
-            return ResponseEntity.internalServerError().body(currentUserResponseContract);
+            return internalServerError().body(currentUserResponseContract);
         }
     }
 
@@ -51,11 +53,11 @@ public class UserRestApiAdapter implements UserApi {
             User authenticatedUser = authenticationService.getAuthenticatedUser();
             authenticatedUser = userFacadeAdapter.updateUserWithOrganization(authenticatedUser,
                     linkOrganizationToCurrentUserRequestContract.getExternalId());
-            return ResponseEntity.ok(userToResponse(authenticatedUser));
+            return ok(currentUserToResponse(authenticatedUser));
         } catch (CatleanException catleanException) {
             final CurrentUserResponseContract currentUserResponseContract = new CurrentUserResponseContract();
             currentUserResponseContract.setErrors(List.of(catleanExceptionToContract(catleanException)));
-            return ResponseEntity.internalServerError().body(currentUserResponseContract);
+            return internalServerError().body(currentUserResponseContract);
         }
     }
 
@@ -65,10 +67,10 @@ public class UserRestApiAdapter implements UserApi {
             User authenticatedUser = authenticationService.getAuthenticatedUser();
             Onboarding onboarding = getOnboarding(authenticatedUser.getOnboarding(), updateOnboardingRequestContract);
             onboarding = onboardingFacadeAdapter.updateOnboarding(onboarding);
-            return ResponseEntity.ok(getPostOnboardingResponseContract(onboarding));
+            return ok(getPostOnboardingResponseContract(onboarding));
         } catch (CatleanException catleanException) {
             final PostOnboardingResponseContract postOnboardingResponseContract = new PostOnboardingResponseContract();
-            return ResponseEntity.internalServerError().body(postOnboardingResponseContract);
+            return internalServerError().body(postOnboardingResponseContract);
         }
     }
 

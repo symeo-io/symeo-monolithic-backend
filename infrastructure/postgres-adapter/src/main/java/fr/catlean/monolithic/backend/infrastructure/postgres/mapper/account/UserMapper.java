@@ -13,7 +13,8 @@ public interface UserMapper {
     static User entityToDomain(final UserEntity userEntity) {
         User user = User.builder()
                 .id(UUID.fromString(userEntity.getId()))
-                .mail(userEntity.getMail())
+                .email(userEntity.getEmail())
+                .status(userEntity.getStatus())
                 .build();
         if (nonNull(userEntity.getOrganizationEntity())) {
             user = user.toBuilder().organization(
@@ -33,11 +34,12 @@ public interface UserMapper {
     static UserEntity domainToEntity(final User user) {
         return UserEntity.builder()
                 .id(isNull(user.getId()) ? UUID.randomUUID().toString() : user.getId().toString())
-                .mail(user.getMail())
+                .email(user.getEmail())
                 .organizationEntity(isNull(user.getOrganization()) ? null :
                         OrganizationMapper.domainToEntity(user.getOrganization()))
                 .onboardingEntity(isNull(user.getOnboarding()) ? null :
                         OnboardingMapper.domainToEntity(user.getOnboarding()))
+                .status(user.getStatus())
                 .build();
     }
 }
