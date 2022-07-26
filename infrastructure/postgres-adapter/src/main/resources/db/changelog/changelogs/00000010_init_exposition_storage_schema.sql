@@ -21,7 +21,7 @@ create table exposition_storage.pull_request
     author_login                varchar(100),
     vcs_repository              varchar(100),
     vcs_organization            varchar(100),
-    organization_id             varchar(100),
+    organization_id             uuid,
     team                        varchar(100),
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null
@@ -47,7 +47,7 @@ create table exposition_storage.repository
     id                          varchar(100)               not null
         constraint repository_id primary key,
     name                        varchar(300)               not null,
-    organization_id             varchar(40),
+    organization_id             uuid,
     vcs_organization_name       varchar(100),
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null
@@ -55,7 +55,7 @@ create table exposition_storage.repository
 
 create table exposition_storage.team_to_repository
 (
-    team_id       varchar(40),
+    team_id       uuid,
     repository_id varchar(100) not null,
     constraint fk_team foreign key (team_id) references account_storage.team (id),
     constraint fk_repository foreign key (repository_id) references exposition_storage.repository (id)
@@ -70,7 +70,7 @@ create table exposition_storage.vcs_organization
     vcs_id                      varchar(100)               not null
         constraint vcs_id_vcs_organization unique,
     name                        varchar(300)               not null,
-    organization_id             varchar(40),
+    organization_id             uuid,
     external_id                 varchar(100),
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null

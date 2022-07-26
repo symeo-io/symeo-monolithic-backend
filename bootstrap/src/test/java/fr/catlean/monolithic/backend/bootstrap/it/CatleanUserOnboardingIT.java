@@ -133,7 +133,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.user.id").isNotEmpty()
                 .jsonPath("$.user.onboarding.has_configured_team").isEqualTo(false)
                 .jsonPath("$.user.onboarding.has_connected_to_vcs").isEqualTo(true)
-                .jsonPath("$.user.organization.id").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getId())
+                .jsonPath("$.user.organization.id").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getId().toString())
                 .jsonPath("$.user.organization.name").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getName());
     }
 
@@ -157,7 +157,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.user.id").isNotEmpty()
                 .jsonPath("$.user.onboarding.has_configured_team").isEqualTo(false)
                 .jsonPath("$.user.onboarding.has_connected_to_vcs").isEqualTo(true)
-                .jsonPath("$.user.organization.id").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getId())
+                .jsonPath("$.user.organization.id").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getId().toString())
                 .jsonPath("$.user.organization.name").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getName());
     }
 
@@ -221,13 +221,13 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
         xxSuccessful
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.teams[0].id").isEqualTo(teams.get(0).getId())
+                .jsonPath("$.teams[0].id").isEqualTo(teams.get(0).getId().toString())
                 .jsonPath("$.teams[0].name").isEqualTo(teams.get(0).getName())
                 .jsonPath("$.teams[0].repository_ids[0]").isEqualTo(teams.get(0).getRepositoryIds().get(0))
                 .jsonPath("$.teams[0].repository_ids[1]").isEqualTo(teams.get(0).getRepositoryIds().get(1))
                 .jsonPath("$.teams[0].name").isNotEmpty()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.teams[1].id").isEqualTo(teams.get(1).getId())
+                .jsonPath("$.teams[1].id").isEqualTo(teams.get(1).getId().toString())
                 .jsonPath("$.teams[1].name").isEqualTo(teams.get(1).getName())
                 .jsonPath("$.teams[1].repository_ids[0]").isEqualTo(teams.get(1).getRepositoryIds().get(0))
                 .jsonPath("$.teams[1].repository_ids[1]").isEqualTo(teams.get(1).getRepositoryIds().get(1))
@@ -251,13 +251,13 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
         xxSuccessful
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.teams[0].id").isEqualTo(teams.get(0).getId())
+                .jsonPath("$.teams[0].id").isEqualTo(teams.get(0).getId().toString())
                 .jsonPath("$.teams[0].name").isEqualTo(teams.get(0).getName())
                 .jsonPath("$.teams[0].repository_ids[0]").isEqualTo(teams.get(0).getRepositoryIds().get(0))
                 .jsonPath("$.teams[0].repository_ids[1]").isEqualTo(teams.get(0).getRepositoryIds().get(1))
                 .jsonPath("$.teams[0].name").isNotEmpty()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.teams[1].id").isEqualTo(teams.get(1).getId())
+                .jsonPath("$.teams[1].id").isEqualTo(teams.get(1).getId().toString())
                 .jsonPath("$.teams[1].name").isEqualTo(teams.get(1).getName())
                 .jsonPath("$.teams[1].repository_ids[0]").isEqualTo(teams.get(1).getRepositoryIds().get(0))
                 .jsonPath("$.teams[1].repository_ids[1]").isEqualTo(teams.get(1).getRepositoryIds().get(1))
@@ -285,7 +285,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.user.id").isNotEmpty()
                 .jsonPath("$.user.onboarding.has_configured_team").isEqualTo(true)
                 .jsonPath("$.user.onboarding.has_connected_to_vcs").isEqualTo(true)
-                .jsonPath("$.user.organization.id").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getId())
+                .jsonPath("$.user.organization.id").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getId().toString())
                 .jsonPath("$.user.organization.name").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getName());
     }
 

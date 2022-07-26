@@ -47,7 +47,7 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
     @Override
     public List<Team> findByOrganization(Organization organization) throws CatleanException {
         try {
-            return teamRepository.findAllByOrganizationId(organization.getId().toString())
+            return teamRepository.findAllByOrganizationId(organization.getId())
                     .stream()
                     .map(TeamMapper::entityToDomain)
                     .toList();

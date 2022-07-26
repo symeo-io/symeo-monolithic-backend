@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -27,5 +28,5 @@ public class RepositoryEntity extends AbstractEntity {
     @Column(name = "vcs_organization_name")
     String vcsOrganizationName;
     @Column(name = "organization_id")
-    String organizationId;
+    UUID organizationId;
 }

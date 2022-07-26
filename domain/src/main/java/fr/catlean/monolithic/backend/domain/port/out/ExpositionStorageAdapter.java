@@ -22,5 +22,5 @@ public interface ExpositionStorageAdapter {
 
     List<PullRequest> findAllPullRequestsForOrganization(Organization organization) throws CatleanException;
 
-    List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, String teamName);
+    List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, String teamName) throws CatleanException;
 }

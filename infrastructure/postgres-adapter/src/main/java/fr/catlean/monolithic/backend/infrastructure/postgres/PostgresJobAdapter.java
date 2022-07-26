@@ -35,7 +35,7 @@ public class PostgresJobAdapter implements JobStorage {
     public List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws CatleanException {
         try {
             return jobRepository.findAllByCodeAndAndOrganizationIdOrderByTechnicalModificationDate(code,
-                            organization.getId().toString())
+                            organization.getId())
                     .stream()
                     .map(JobMapper::entityToDomain)
                     .toList();

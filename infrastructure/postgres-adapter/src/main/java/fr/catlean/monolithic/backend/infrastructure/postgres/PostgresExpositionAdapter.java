@@ -3,11 +3,13 @@ package fr.catlean.monolithic.backend.infrastructure.postgres;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestHistogramDataEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestCurveMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestHistogramMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
@@ -60,7 +62,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     public List<Repository> readRepositoriesForOrganization(Organization organization) {
-        return repositoryRepository.findRepositoryEntitiesByOrganizationId(organization.getId().toString())
+        return repositoryRepository.findRepositoryEntitiesByOrganizationId(organization.getId())
                 .stream()
                 .map(RepositoryMapper::entityToDomain)
                 .toList();
@@ -76,6 +78,23 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             throw CatleanException.builder()
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to find all pull requests for organization")
+                    .build();
+        }
+    }
+
+
+    @Override
+    public List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, String teamName) throws CatleanException {
+        try {
+            return pullRequestRepository.findTimeToMergeDTOsByOrganizationId(organization.getId().toString())
+                    .stream()
+                    .map(PullRequestCurveMapper::dtoToView)
+                    .toList();
+        } catch (Exception e) {
+            LOGGER.error("Failed to read all PR time to merge curve for organization {}", organization, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message("Failed to read all PR time to merge curve for organization")
                     .build();
         }
     }

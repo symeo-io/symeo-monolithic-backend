@@ -14,6 +14,12 @@ import java.time.ZonedDateTime;
 @Data
 @Builder
 @Table(name = "pull_request", schema = "exposition_storage")
+@NamedEntityGraph(name = "PullRequestEntity.TimeToMerge",
+        attributeNodes = {
+                @NamedAttributeNode("startDateRange"),
+                @NamedAttributeNode("daysOpened"),
+                @NamedAttributeNode("state")
+        })
 public class PullRequestEntity extends AbstractEntity {
 
     @Id
@@ -29,7 +35,7 @@ public class PullRequestEntity extends AbstractEntity {
     @Column(name = "size")
     int size;
     @Column(name = "days_opened")
-    long daysOpened;
+    int daysOpened;
     @Column(name = "start_date_range")
     String startDateRange;
     @Column(name = "creation_date", nullable = false)
@@ -50,8 +56,6 @@ public class PullRequestEntity extends AbstractEntity {
     String title;
     @Column(name = "author_login", nullable = false)
     String authorLogin;
-    @Column(name = "team")
-    String team;
     @Column(name = "vcs_repository")
     String vcsRepository;
     @Column(name = "vcs_organization")

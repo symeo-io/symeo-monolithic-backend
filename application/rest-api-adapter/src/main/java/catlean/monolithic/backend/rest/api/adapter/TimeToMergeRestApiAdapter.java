@@ -1,9 +1,9 @@
 package catlean.monolithic.backend.rest.api.adapter;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
+import catlean.monolithic.backend.rest.api.adapter.mapper.TimeToMergeCurveMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
-import fr.catlean.monolithic.backend.domain.model.insight.Curve;
 import fr.catlean.monolithic.backend.domain.query.CurveQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.frontend.contract.api.TimeToMergeApi;
@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.domainToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.errorToContract;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.TimeToMergeCurveMapper.curveToContract;
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.SIZE_LIMIT;
+import static org.springframework.http.ResponseEntity.internalServerError;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @Tags(@Tag(name = "TimeToMerge"))
@@ -32,12 +35,11 @@ public class TimeToMergeRestApiAdapter implements TimeToMergeApi {
     public ResponseEntity<GetCurveResponseContract> getTimeToMergeCurve(String teamName) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            Curve curve = curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(), teamName);
+            return ok(curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
+                    teamName)));
         } catch (CatleanException e) {
-            throw new RuntimeException(e);
+            return internalServerError().body(TimeToMergeCurveMapper.errorToContract(e));
         }
-
-
     }
 
     @Override

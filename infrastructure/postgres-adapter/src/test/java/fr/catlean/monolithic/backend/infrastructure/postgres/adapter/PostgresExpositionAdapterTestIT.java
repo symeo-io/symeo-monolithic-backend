@@ -6,6 +6,7 @@ import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -157,11 +158,11 @@ public class PostgresExpositionAdapterTestIT {
                 .build();
         final List<RepositoryEntity> repositoryEntities = List.of(
                 new RepositoryEntity("1L", faker.gameOfThrones().character(),
-                        faker.name().firstName(), organization.getId().toString()),
+                        faker.name().firstName(), organization.getId()),
                 new RepositoryEntity("2L", faker.gameOfThrones().character(),
-                        faker.name().firstName(), organization.getId().toString()),
+                        faker.name().firstName(), organization.getId()),
                 new RepositoryEntity("3L", faker.gameOfThrones().character(),
-                        faker.name().firstName(), organization.getId().toString()));
+                        faker.name().firstName(), organization.getId()));
         repositoryRepository.saveAll(repositoryEntities);
 
         // When
@@ -195,6 +196,33 @@ public class PostgresExpositionAdapterTestIT {
 
         // Then
         assertThat(allPullRequestsForOrganization).hasSize(4);
+    }
+
+    @Test
+    void should_read_pr_time_to_merge_view() throws CatleanException {
+        // Given
+        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
+                pullRequestHistogramRepository, repositoryRepository);
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .build();
+        pullRequestRepository.saveAll(
+                List.of(
+                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(1, organization)),
+                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(2, organization)),
+                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(3, organization)),
+                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(4, organization))
+                )
+        );
+
+        // When
+        final List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews =
+                postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
+                        faker.name().name());
+
+        // Then
+        assertThat(pullRequestTimeToMergeViews).hasSize(4);
     }
 
     private Repository buildRepository(Organization organization) {

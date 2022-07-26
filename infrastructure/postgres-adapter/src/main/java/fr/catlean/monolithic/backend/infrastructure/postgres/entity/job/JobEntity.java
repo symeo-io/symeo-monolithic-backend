@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -24,7 +25,7 @@ public class JobEntity extends AbstractEntity {
     @Column(name = "code", nullable = false)
     private String code;
     @Column(name = "organization_id", nullable = false)
-    private String organizationId;
+    private UUID organizationId;
     @Column(name = "status", nullable = false)
     private String status;
     @Column(name = "end_date")

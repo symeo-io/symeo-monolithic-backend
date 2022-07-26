@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -20,8 +21,7 @@ public class OrganizationEntity extends AbstractEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    @NaturalId
-    private String id;
+    private UUID id;
     @Column(name = "name", nullable = false)
     private String name;
 }

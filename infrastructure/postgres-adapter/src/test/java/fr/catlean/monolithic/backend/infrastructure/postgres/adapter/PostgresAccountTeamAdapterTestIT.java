@@ -61,7 +61,7 @@ public class PostgresAccountTeamAdapterTestIT {
                 new PostgresAccountTeamAdapter(teamRepository, userRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
-                .id(UUID.randomUUID().toString())
+                .id(UUID.randomUUID())
                 .build();
         User user =
                 User.builder().email(faker.dragonBall().character()).onboarding(Onboarding.builder().build()).build();
@@ -75,7 +75,7 @@ public class PostgresAccountTeamAdapterTestIT {
         final Team team1 = Team.builder()
                 .repositories(repositories1)
                 .name(faker.harryPotter().book())
-                .organizationId(UUID.fromString(organizationEntity.getId()))
+                .organizationId(organizationEntity.getId())
                 .build();
         final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
@@ -84,7 +84,7 @@ public class PostgresAccountTeamAdapterTestIT {
         final Team team2 = Team.builder()
                 .repositories(repositories2)
                 .name(faker.lordOfTheRings().character())
-                .organizationId(UUID.fromString(organizationEntity.getId()))
+                .organizationId(organizationEntity.getId())
                 .build();
 
 
@@ -111,7 +111,7 @@ public class PostgresAccountTeamAdapterTestIT {
                 new PostgresAccountTeamAdapter(teamRepository, userRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
-                .id(UUID.randomUUID().toString())
+                .id(UUID.randomUUID())
                 .build();
         organizationRepository.save(organizationEntity);
         final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
@@ -121,7 +121,7 @@ public class PostgresAccountTeamAdapterTestIT {
         final Team team1 = Team.builder()
                 .repositories(repositories1)
                 .name(faker.harryPotter().book())
-                .organizationId(UUID.fromString(organizationEntity.getId()))
+                .organizationId(organizationEntity.getId())
                 .build();
         final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
@@ -130,7 +130,7 @@ public class PostgresAccountTeamAdapterTestIT {
         final Team team2 = Team.builder()
                 .repositories(repositories2)
                 .name(faker.lordOfTheRings().character())
-                .organizationId(UUID.fromString(organizationEntity.getId()))
+                .organizationId(organizationEntity.getId())
                 .build();
         teamRepository.saveAll(List.of(TeamMapper.domainToEntity(team1), TeamMapper.domainToEntity(team2)));
 
@@ -159,7 +159,7 @@ public class PostgresAccountTeamAdapterTestIT {
                 new PostgresAccountTeamAdapter(teamRepository, userRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
-                .id(UUID.randomUUID().toString())
+                .id(UUID.randomUUID())
                 .build();
         organizationRepository.save(organizationEntity);
         final List<Repository> repositories = repositoryRepository.saveAll(List.of(
@@ -169,7 +169,7 @@ public class PostgresAccountTeamAdapterTestIT {
         final Team team = Team.builder()
                 .repositories(repositories)
                 .name(faker.harryPotter().book())
-                .organizationId(UUID.fromString(organizationEntity.getId()))
+                .organizationId(organizationEntity.getId())
                 .build();
         final User user =
                 User.builder().email(faker.dragonBall().character()).onboarding(Onboarding.builder().build()).build();

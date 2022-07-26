@@ -10,7 +10,7 @@ public interface RepositoryMapper {
                 .id(repository.getId())
                 .vcsOrganizationName(repository.getVcsOrganizationName())
                 .name(repository.getName())
-                .organizationId(repository.getOrganization().getId().toString())
+                .organizationId(repository.getOrganization().getId())
                 .build();
     }
 
