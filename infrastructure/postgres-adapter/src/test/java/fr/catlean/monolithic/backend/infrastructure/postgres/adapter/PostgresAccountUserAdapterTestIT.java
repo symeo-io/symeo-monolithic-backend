@@ -71,7 +71,7 @@ public class PostgresAccountUserAdapterTestIT {
         final Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(user.getEmail());
         assertThat(optionalUserEntity).isPresent();
         final UserEntity userEntity = optionalUserEntity.get();
-        assertThat(userEntity.getId()).isEqualTo(user.getId().toString());
+        assertThat(userEntity.getId()).isEqualTo(user.getId());
         assertThat(userEntity.getEmail()).isEqualTo(user.getEmail());
         assertThat(user.getOnboarding()).isEqualTo(OnboardingMapper.entityToDomain(userEntity.getOnboardingEntity()));
     }
@@ -143,21 +143,21 @@ public class PostgresAccountUserAdapterTestIT {
         final OrganizationEntity org1 = organizationRepository.save(OrganizationMapper.domainToEntity(organization1));
         final OrganizationEntity org2 = organizationRepository.save(OrganizationMapper.domainToEntity(organization2));
         final OnboardingEntity onboarding1 =
-                OnboardingEntity.builder().id(UUID.randomUUID().toString()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
+                OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
         final OnboardingEntity onboarding2 =
-                OnboardingEntity.builder().id(UUID.randomUUID().toString()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
+                OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
         final OnboardingEntity onboarding3 =
-                OnboardingEntity.builder().id(UUID.randomUUID().toString()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
+                OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
         final OnboardingEntity onboarding4 =
-                OnboardingEntity.builder().id(UUID.randomUUID().toString()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
+                OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
         final OnboardingEntity onboarding5 =
-                OnboardingEntity.builder().id(UUID.randomUUID().toString()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
+                OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
         onboardingRepository.saveAll(List.of(onboarding1, onboarding2, onboarding3, onboarding5, onboarding4));
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding1).id(UUID.randomUUID().toString()).organizationEntity(org1).email(faker.gameOfThrones().character()).build());
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding2).id(UUID.randomUUID().toString()).organizationEntity(org1).email(faker.dragonBall().character()).build());
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding3).id(UUID.randomUUID().toString()).organizationEntity(org2).email(faker.harryPotter().character()).build());
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding4).id(UUID.randomUUID().toString()).organizationEntity(org2).email(faker.cat().breed()).build());
-        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding5).id(UUID.randomUUID().toString()).organizationEntity(org2).email(faker.rickAndMorty().character()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding1).id(UUID.randomUUID()).organizationEntity(org1).email(faker.gameOfThrones().character()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding2).id(UUID.randomUUID()).organizationEntity(org1).email(faker.dragonBall().character()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding3).id(UUID.randomUUID()).organizationEntity(org2).email(faker.harryPotter().character()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding4).id(UUID.randomUUID()).organizationEntity(org2).email(faker.cat().breed()).build());
+        userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding5).id(UUID.randomUUID()).organizationEntity(org2).email(faker.rickAndMorty().character()).build());
 
         // When
         final List<User> allByOrganization1 = postgresAccountUserAdapter.findAllByOrganization(organization1);
@@ -242,14 +242,14 @@ public class PostgresAccountUserAdapterTestIT {
                 .build();
         final OrganizationEntity org1 = organizationRepository.save(OrganizationMapper.domainToEntity(organization1));
         final OnboardingEntity onboarding1 =
-                OnboardingEntity.builder().id(UUID.randomUUID().toString()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
+                OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(false).hasConnectedToVcs(false).build();
         onboardingRepository.saveAll(List.of(onboarding1));
         final UserEntity userEntity =
-                UserEntity.builder().status("PENDING").onboardingEntity(onboarding1).id(UUID.randomUUID().toString()).organizationEntity(org1).email(faker.gameOfThrones().character()).build();
+                UserEntity.builder().status("PENDING").onboardingEntity(onboarding1).id(UUID.randomUUID()).organizationEntity(org1).email(faker.gameOfThrones().character()).build();
         userRepository.save(userEntity);
 
         // When
-        postgresAccountUserAdapter.removeOrganizationForUserId(UUID.fromString(userEntity.getId()));
+        postgresAccountUserAdapter.removeOrganizationForUserId(userEntity.getId());
 
         // Then
         final List<UserEntity> allUsers = userRepository.findAll();

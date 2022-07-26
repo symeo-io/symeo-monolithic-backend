@@ -312,14 +312,14 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/time-to-merge/histogram/from-pr-table:
+  /histogram/from-histogram-table:
     get:
       security:
         - bearerAuth: [ ]
       tags:
         - TimeToMerge
       summary: Get TimeToMerge Histogram
-      operationId: getTimeToMergeHistogramFromPRTable
+      operationId: getTimeToMergeHistogramFromHistogramTable
       description: |
         Get TimeToMerge Histogram
       parameters:
@@ -392,13 +392,13 @@ paths:
                 $ref: '#/components/schemas/GetCurveResponseContract'
               example:
                 curves:
-                  coin_curve:
+                  piece_curve:
                     - date: 12/08/1992
                       value: 10
-                      coin_open: false
+                      piece_open: false
                     - date: 12/09/1992
                       value: 22
-                      coin_open: true
+                      piece_open: true
                   average_curve:
                     - value: 3
                       date : 12/08/1992

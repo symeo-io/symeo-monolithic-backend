@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<UserEntity, String>, JpaSpecificationExecutor<UserEntity> {
+public interface UserRepository extends JpaRepository<UserEntity, UUID>, JpaSpecificationExecutor<UserEntity> {
 
     Optional<UserEntity> findByEmail(String email);
 
-    List<UserEntity> findAllByOrganizationId(String organizationId);
+    List<UserEntity> findAllByOrganizationId(UUID organizationId);
 }

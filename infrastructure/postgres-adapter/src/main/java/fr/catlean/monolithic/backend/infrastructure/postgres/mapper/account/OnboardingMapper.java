@@ -11,7 +11,7 @@ public interface OnboardingMapper {
 
     static OnboardingEntity domainToEntity(final Onboarding onboarding) {
         return OnboardingEntity.builder()
-                .id(isNull(onboarding.getId()) ? UUID.randomUUID().toString() : onboarding.getId().toString())
+                .id(isNull(onboarding.getId()) ? UUID.randomUUID() : onboarding.getId())
                 .hasConnectedToVcs(onboarding.getHasConnectedToVcs())
                 .hasConfiguredTeam(onboarding.getHasConfiguredTeam())
                 .build();
@@ -19,7 +19,7 @@ public interface OnboardingMapper {
 
     static Onboarding entityToDomain(final OnboardingEntity onboardingEntity) {
         return Onboarding.builder()
-                .id(UUID.fromString(onboardingEntity.getId()))
+                .id(onboardingEntity.getId())
                 .hasConnectedToVcs(onboardingEntity.getHasConnectedToVcs())
                 .hasConfiguredTeam(onboardingEntity.getHasConfiguredTeam())
                 .build();

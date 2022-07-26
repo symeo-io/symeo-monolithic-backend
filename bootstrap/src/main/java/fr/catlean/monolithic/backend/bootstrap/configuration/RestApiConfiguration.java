@@ -9,6 +9,7 @@ import catlean.monolithic.backend.rest.api.adapter.properties.RepositoryRetryPro
 import catlean.monolithic.backend.rest.api.adapter.service.RepositoryRetryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.port.in.*;
+import fr.catlean.monolithic.backend.domain.query.CurveQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -23,8 +24,9 @@ public class RestApiConfiguration {
 
     @Bean
     public TimeToMergeRestApiAdapter timeToMergeRestApiAdapter(final AuthenticationService authenticationService,
-                                                               final HistogramQuery histogramQuery) {
-        return new TimeToMergeRestApiAdapter(histogramQuery, authenticationService);
+                                                               final HistogramQuery histogramQuery,
+                                                               final CurveQuery curveQuery) {
+        return new TimeToMergeRestApiAdapter(histogramQuery, authenticationService, curveQuery);
     }
 
     @Bean
@@ -80,7 +82,7 @@ public class RestApiConfiguration {
 
     @Bean
     public OrganizationRestApiAdapter organizationRestApiAdapter(final AuthenticationService authenticationService,
-                                                                 final UserFacadeAdapter userFacadeAdapter){
+                                                                 final UserFacadeAdapter userFacadeAdapter) {
         return new OrganizationRestApiAdapter(authenticationService, userFacadeAdapter);
     }
 }

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DirtiesContext
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT {
 
@@ -37,22 +35,22 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
         // Given
         final OrganizationEntity organizationEntity = organizationRepository.save(
                 OrganizationEntity.builder()
-                        .id(UUID.randomUUID().toString())
+                        .id(UUID.randomUUID())
                         .name(faker.rickAndMorty().character())
                         .build()
         );
         final UserEntity activeUser = userRepository.save(
                 UserEntity.builder()
-                        .id(UUID.randomUUID().toString())
-                        .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID().toString()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
+                        .id(UUID.randomUUID())
+                        .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
                         .organizationEntity(organizationEntity)
                         .status(User.ACTIVE)
                         .email(faker.gameOfThrones().character())
                         .build()
         );
         final UserEntity pendingUser = userRepository.save(UserEntity.builder()
-                .id(UUID.randomUUID().toString())
-                .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID().toString()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
+                .id(UUID.randomUUID())
+                .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
                 .organizationEntity(organizationEntity)
                 .status(User.ACTIVE)
                 .email(faker.rickAndMorty().character())
@@ -67,10 +65,10 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
                 .expectStatus()
                 .is2xxSuccessful()
                 .expectBody()
-                .jsonPath("$.users[0].id").isEqualTo(activeUser.getId())
+                .jsonPath("$.users[0].id").isEqualTo(activeUser.getId().toString())
                 .jsonPath("$.users[0].email").isEqualTo(activeUser.getEmail())
                 .jsonPath("$.users[0].status").isEqualTo(activeUser.getStatus())
-                .jsonPath("$.users[1].id").isEqualTo(pendingUser.getId())
+                .jsonPath("$.users[1].id").isEqualTo(pendingUser.getId().toString())
                 .jsonPath("$.users[1].email").isEqualTo(pendingUser.getEmail())
                 .jsonPath("$.users[1].status").isEqualTo(pendingUser.getStatus());
     }
@@ -129,7 +127,7 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.user.email").isEqualTo(pendingUser.getEmail())
-                .jsonPath("$.user.id").isEqualTo(pendingUser.getId())
+                .jsonPath("$.user.id").isEqualTo(pendingUser.getId().toString())
                 .jsonPath("$.user.onboarding.has_configured_team").isEqualTo(true)
                 .jsonPath("$.user.onboarding.has_connected_to_vcs").isEqualTo(true)
                 .jsonPath("$.user.organization").isNotEmpty();
@@ -140,11 +138,11 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
     @Test
     void should_remove_a_user_from_an_organization_given_an_id() {
         // Given
-        final String id = userRepository.findAll().get(0).getId();
+        final UUID id = userRepository.findAll().get(0).getId();
 
         // When
         client.delete()
-                .uri(getApiURI(ORGANIZATION_REST_API_USERS, "id", id))
+                .uri(getApiURI(ORGANIZATION_REST_API_USERS, "id", id.toString()))
                 .exchange()
                 // Then
                 .expectStatus()

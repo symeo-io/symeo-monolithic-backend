@@ -13,7 +13,7 @@ public interface OrganizationMapper {
 
     static OrganizationEntity domainToEntity(final Organization organization) {
         return OrganizationEntity.builder()
-                .id(isNull(organization.getId()) ? UUID.randomUUID().toString() : organization.getId().toString())
+                .id(isNull(organization.getId()) ? UUID.randomUUID() : organization.getId())
                 .name(organization.getName())
                 .build();
     }
@@ -21,7 +21,7 @@ public interface OrganizationMapper {
     static Organization entityToDomain(final OrganizationEntity organizationEntity) {
         return Organization.builder()
                 .name(organizationEntity.getName())
-                .id(UUID.fromString(organizationEntity.getId()))
+                .id(organizationEntity.getId())
                 .build();
 
     }
@@ -30,7 +30,7 @@ public interface OrganizationMapper {
     static Organization entityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
         final OrganizationEntity organizationEntity = vcsOrganizationEntity.getOrganizationEntity();
         return Organization.builder()
-                .id(UUID.fromString(organizationEntity.getId()))
+                .id(organizationEntity.getId())
                 .name(organizationEntity.getName())
                 .vcsOrganization(vcsEntityToDomain(vcsOrganizationEntity))
                 .build();

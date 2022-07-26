@@ -12,9 +12,9 @@ public interface TeamMapper {
 
     static TeamEntity domainToEntity(final Team team) {
         return TeamEntity.builder()
-                .id(isNull(team.getId()) ? UUID.randomUUID().toString() : team.getId().toString())
+                .id(isNull(team.getId()) ? UUID.randomUUID() : team.getId())
                 .name(team.getName())
-                .organizationId(team.getOrganizationId().toString())
+                .organizationId(team.getOrganizationId())
                 .repositoryIds(team.getRepositories().stream().map(Repository::getId).toList())
                 .build();
     }
@@ -25,8 +25,8 @@ public interface TeamMapper {
                 .repositories(
                         teamEntity.getRepositoryIds().stream().map(id -> Repository.builder().id(id).build()).toList()
                 )
-                .id(UUID.fromString(teamEntity.getId()))
-                .organizationId(UUID.fromString(teamEntity.getOrganizationId()))
+                .id(teamEntity.getId())
+                .organizationId(teamEntity.getOrganizationId())
                 .build();
     }
 }

@@ -6,7 +6,7 @@ create table job_storage.job
 (
     id                          bigint                     not null
         constraint job_id primary key,
-    organization_id             varchar(40)                not null,
+    organization_id             uuid                       not null,
     code                        varchar(200)               not null,
     status                      varchar(50)                not null,
     end_date                    timestamp(6),

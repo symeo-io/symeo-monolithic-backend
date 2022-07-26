@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Math.toIntExact;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -14,9 +15,9 @@ import static java.util.Objects.nonNull;
 @Builder(toBuilder = true)
 public class PullRequest {
     private static final String ALL = "pull_requests";
-    private static final String OPEN = "open";
-    private static final String CLOSE = "close";
-    private static final String MERGE = "merge";
+    public static final String OPEN = "open";
+    public static final String CLOSE = "close";
+    public static final String MERGE = "merge";
     String id;
     Integer commitNumber;
     Integer deletedLineNumber;
@@ -56,17 +57,17 @@ public class PullRequest {
         return this.addedLineNumber + this.deletedLineNumber;
     }
 
-    public long getDaysOpened() {
+    public int getDaysOpened() {
         if (isNull(this.mergeDate) && isNull(this.closeDate)) {
-            return TimeUnit.DAYS.convert(new Date().getTime() - creationDate.getTime(),
-                    TimeUnit.MILLISECONDS);
+            return toIntExact(TimeUnit.DAYS.convert(new Date().getTime() - creationDate.getTime(),
+                    TimeUnit.MILLISECONDS));
         }
         if (isNull(this.mergeDate)) {
-            return TimeUnit.DAYS.convert(closeDate.getTime() - this.creationDate.getTime(),
-                    TimeUnit.MILLISECONDS);
+            return toIntExact(TimeUnit.DAYS.convert(closeDate.getTime() - this.creationDate.getTime(),
+                    TimeUnit.MILLISECONDS));
         }
-        return TimeUnit.DAYS.convert(mergeDate.getTime() - this.creationDate.getTime(),
-                TimeUnit.MILLISECONDS);
+        return toIntExact(TimeUnit.DAYS.convert(mergeDate.getTime() - this.creationDate.getTime(),
+                TimeUnit.MILLISECONDS));
     }
 
     public String getStartDateRange() {

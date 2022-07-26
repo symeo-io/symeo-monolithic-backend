@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -18,11 +19,11 @@ public class TeamEntity extends AbstractEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    private String id;
+    private UUID id;
     @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "organization_id", nullable = false)
-    private String organizationId;
+    private UUID organizationId;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(

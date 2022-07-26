@@ -4,6 +4,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.AbstractEnti
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class UserEntity extends AbstractEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    private String id;
+    private UUID id;
     @Column(name = "email", nullable = false)
     private String email;
     @ManyToOne
@@ -28,7 +29,7 @@ public class UserEntity extends AbstractEntity {
     @JoinColumn(name = "onboarding_id", referencedColumnName = "id")
     private OnboardingEntity onboardingEntity;
     @Column(name = "organization_id", insertable = false,updatable = false)
-    private String organizationId;
+    private UUID organizationId;
     @Column(name = "status",nullable = false)
     private String status;
 

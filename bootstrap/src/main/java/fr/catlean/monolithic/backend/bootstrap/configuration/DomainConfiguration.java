@@ -4,6 +4,7 @@ import fr.catlean.monolithic.backend.domain.command.DeliveryCommand;
 import fr.catlean.monolithic.backend.domain.job.JobManager;
 import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.port.out.*;
+import fr.catlean.monolithic.backend.domain.query.CurveQuery;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
@@ -93,5 +94,10 @@ public class DomainConfiguration {
     @Bean
     public JobManager jobManager(final Executor executor, final JobStorage jobStorage) {
         return new JobManager(executor, jobStorage);
+    }
+
+    @Bean
+    public CurveQuery curveQuery(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new CurveQuery(expositionStorageAdapter);
     }
 }

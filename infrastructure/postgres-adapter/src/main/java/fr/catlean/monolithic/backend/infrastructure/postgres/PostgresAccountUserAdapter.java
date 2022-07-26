@@ -65,7 +65,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
     @Override
     public List<User> findAllByOrganization(Organization organization) throws CatleanException {
         try {
-            return userRepository.findAllByOrganizationId(organization.getId().toString())
+            return userRepository.findAllByOrganizationId(organization.getId())
                     .stream().map(UserMapper::entityToDomain)
                     .toList();
         } catch (Exception e) {
@@ -111,7 +111,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
     @Override
     public void removeOrganizationForUserId(UUID id) throws CatleanException {
         try {
-            final Optional<UserEntity> optionalUserEntity = userRepository.findById(id.toString());
+            final Optional<UserEntity> optionalUserEntity = userRepository.findById(id);
             if (optionalUserEntity.isPresent()) {
                 final UserEntity userEntity = optionalUserEntity.get();
                 userEntity.setOrganizationEntity(null);

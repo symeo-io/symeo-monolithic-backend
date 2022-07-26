@@ -75,9 +75,9 @@ public class PostgresJobAdapterTestIT {
         final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
         final String jobCode = CollectRepositoriesJobRunnable.JOB_CODE;
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
-        jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId().toString()).build());
-        jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode).organizationId(organization.getId().toString()).build());
-        jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId().toString()).build());
+        jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId()).build());
+        jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode).organizationId(organization.getId()).build());
+        jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId()).build());
 
         // When
         final List<Job> jobs =

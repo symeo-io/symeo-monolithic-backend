@@ -30,7 +30,6 @@ public interface PullRequestMapper {
                 .state(pullRequest.getState())
                 .authorLogin(pullRequest.getAuthorLogin())
                 .vcsRepository(pullRequest.getRepository())
-                .team(pullRequest.getTeam())
                 .vcsOrganization(pullRequest.getVcsOrganization())
                 .organizationId(pullRequest.getOrganizationId())
                 .size(pullRequest.getSize())

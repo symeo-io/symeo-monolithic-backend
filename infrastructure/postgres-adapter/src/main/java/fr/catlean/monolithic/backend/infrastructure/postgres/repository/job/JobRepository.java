@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface JobRepository extends JpaRepository<JobEntity, Long>, JpaSpecificationExecutor<JobEntity> {
 
@@ -16,5 +17,5 @@ public interface JobRepository extends JpaRepository<JobEntity, Long>, JpaSpecif
                     "technical_modification_date desc"
     )
     List<JobEntity> findAllByCodeAndAndOrganizationIdOrderByTechnicalModificationDate(@Param("code") String code,
-                                                                                      @Param("organizationId") String organizationId);
+                                                                                      @Param("organizationId") UUID organizationId);
 }
