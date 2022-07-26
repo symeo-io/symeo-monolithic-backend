@@ -4,6 +4,8 @@ import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.bootstrap.CatleanMonolithicBackendITApplication;
 import fr.catlean.monolithic.backend.bootstrap.ITAuthenticationContextProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +30,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Testcontainers
 @Slf4j
 @DirtiesContext
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class AbstractCatleanMonolithicBackendIT {
 
     @Container
@@ -79,6 +82,7 @@ public abstract class AbstractCatleanMonolithicBackendIT {
     protected static final String TEAM_REST_API = "/api/v1/teams";
     protected static final String REPOSITORIES_REST_API_GET = "/api/v1/repositories";
     protected static final String ORGANIZATION_REST_API_USERS = "/api/v1/organizations/users";
+    protected static final String TIME_TO_MERGE_REST_API_HISTOGRAM = "/api/v1/time-to-merge/histogram";
 
     @Autowired
     ITAuthenticationContextProvider authenticationContextProvider;

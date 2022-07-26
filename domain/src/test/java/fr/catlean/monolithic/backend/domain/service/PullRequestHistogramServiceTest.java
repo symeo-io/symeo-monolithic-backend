@@ -221,7 +221,7 @@ public class PullRequestHistogramServiceTest {
     }
 
 
-    private static List<PullRequest> getPullRequestsStubsWithSizeLimitToTestWeekRange(final String repositoryName,
+    public static List<PullRequest> getPullRequestsStubsWithSizeLimitToTestWeekRange(final String repositoryName,
                                                                                       final Organization organization,
                                                                                       final Integer halfCodeSize) {
         final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organization.getTimeZone());

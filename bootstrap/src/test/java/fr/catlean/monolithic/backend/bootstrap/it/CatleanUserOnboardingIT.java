@@ -16,10 +16,8 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.expositi
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import org.apache.commons.codec.digest.HmacUtils;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -32,7 +30,6 @@ import java.util.List;
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.ORGANISATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestMethodOrder(OrderAnnotation.class)
 public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT {
 
     @Autowired
