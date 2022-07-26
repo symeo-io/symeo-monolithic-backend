@@ -3,6 +3,8 @@ package catlean.monolithic.backend.rest.api.adapter;
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
+import fr.catlean.monolithic.backend.domain.model.insight.Curve;
+import fr.catlean.monolithic.backend.domain.query.CurveQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.frontend.contract.api.TimeToMergeApi;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.GetCurveResponseContract;
@@ -24,14 +26,22 @@ public class TimeToMergeRestApiAdapter implements TimeToMergeApi {
 
     private final HistogramQuery histogramQuery;
     private final AuthenticationService authenticationService;
+    private final CurveQuery curveQuery;
 
     @Override
     public ResponseEntity<GetCurveResponseContract> getTimeToMergeCurve(String teamName) {
-        return TimeToMergeApi.super.getTimeToMergeCurve(teamName);
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            Curve curve = curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(), teamName);
+        } catch (CatleanException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
     @Override
-    public ResponseEntity<GetHistogramResponseContract> getTimeToMergeHistogram(String teamName) {
+    public ResponseEntity<GetHistogramResponseContract> getTimeToMergeHistogramFromHistogramTable(String teamName) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return domainToContract(histogramQuery.readPullRequestHistogram(authenticatedUser.getOrganization(),
@@ -42,7 +52,7 @@ public class TimeToMergeRestApiAdapter implements TimeToMergeApi {
     }
 
     @Override
-    public ResponseEntity<GetHistogramResponseContract> getTimeToMergeHistogramFromPRTable(String teamName) {
+    public ResponseEntity<GetHistogramResponseContract> getTimeToMergeHistogram(String teamName) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return domainToContract(histogramQuery.computePullRequestHistogram(authenticatedUser.getOrganization(),

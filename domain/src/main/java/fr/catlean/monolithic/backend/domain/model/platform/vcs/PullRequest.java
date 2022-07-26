@@ -14,9 +14,9 @@ import static java.util.Objects.nonNull;
 @Builder(toBuilder = true)
 public class PullRequest {
     private static final String ALL = "pull_requests";
-    private static final String OPEN = "open";
-    private static final String CLOSE = "close";
-    private static final String MERGE = "merge";
+    public static final String OPEN = "open";
+    public static final String CLOSE = "close";
+    public static final String MERGE = "merge";
     String id;
     Integer commitNumber;
     Integer deletedLineNumber;

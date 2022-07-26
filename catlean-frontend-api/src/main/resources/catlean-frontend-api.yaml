@@ -312,14 +312,14 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/time-to-merge/histogram/from-pr-table:
+  /histogram/from-histogram-table:
     get:
       security:
         - bearerAuth: [ ]
       tags:
         - TimeToMerge
       summary: Get TimeToMerge Histogram
-      operationId: getTimeToMergeHistogramFromPRTable
+      operationId: getTimeToMergeHistogramFromHistogramTable
       description: |
         Get TimeToMerge Histogram
       parameters:

@@ -3,6 +3,7 @@ package fr.catlean.monolithic.backend.domain.port.out;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 
@@ -20,4 +21,6 @@ public interface ExpositionStorageAdapter {
     List<Repository> readRepositoriesForOrganization(Organization organization);
 
     List<PullRequest> findAllPullRequestsForOrganization(Organization organization) throws CatleanException;
+
+    List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, String teamName);
 }
