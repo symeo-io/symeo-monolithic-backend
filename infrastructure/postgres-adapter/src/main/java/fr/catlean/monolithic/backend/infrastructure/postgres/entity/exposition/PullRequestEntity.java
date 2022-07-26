@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -61,6 +62,6 @@ public class PullRequestEntity extends AbstractEntity {
     @Column(name = "vcs_organization")
     String vcsOrganization;
     @Column(name = "organization_id")
-    String organizationId;
+    UUID organizationId;
 
 }

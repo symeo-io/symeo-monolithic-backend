@@ -5,6 +5,7 @@ import lombok.Value;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Math.toIntExact;
@@ -36,7 +37,7 @@ public class PullRequest {
     String authorLogin;
     String repository;
     String vcsOrganization;
-    String organizationId;
+    UUID organizationId;
     String team;
 
     public static String getNameFromRepository(String repositoryName) {

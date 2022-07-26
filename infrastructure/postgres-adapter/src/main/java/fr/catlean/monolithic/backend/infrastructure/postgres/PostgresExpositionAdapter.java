@@ -71,7 +71,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     @Override
     public List<PullRequest> findAllPullRequestsForOrganization(Organization organization) throws CatleanException {
         try {
-            return pullRequestRepository.findAllByOrganizationId(organization.getId().toString())
+            return pullRequestRepository.findAllByOrganizationId(organization.getId())
                     .stream().map(PullRequestMapper::entityToDomain).toList();
         } catch (Exception e) {
             LOGGER.error("Failed to find all pull requests for organization {}", organization, e);
@@ -86,7 +86,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     @Override
     public List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, String teamName) throws CatleanException {
         try {
-            return pullRequestRepository.findTimeToMergeDTOsByOrganizationId(organization.getId().toString())
+            return pullRequestRepository.findTimeToMergeDTOsByOrganizationId(organization.getId())
                     .stream()
                     .map(PullRequestCurveMapper::dtoToView)
                     .toList();

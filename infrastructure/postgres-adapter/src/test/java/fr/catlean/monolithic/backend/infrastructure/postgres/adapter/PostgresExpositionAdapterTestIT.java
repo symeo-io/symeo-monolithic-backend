@@ -283,7 +283,7 @@ public class PostgresExpositionAdapterTestIT {
                 .addedLineNumber(faker.number().numberBetween(0, 20000))
                 .isDraft(true)
                 .isMerged(false)
-                .organizationId(organization.getId().toString())
+                .organizationId(organization.getId())
                 .build();
     }
 }

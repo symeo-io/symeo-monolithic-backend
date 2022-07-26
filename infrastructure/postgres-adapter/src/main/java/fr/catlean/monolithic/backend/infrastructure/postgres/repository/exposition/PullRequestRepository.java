@@ -9,12 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface PullRequestRepository extends JpaRepository<PullRequestEntity, String>,
         JpaSpecificationExecutor<PullRequestEntity> {
 
-    List<PullRequestEntity> findAllByOrganizationId(String organizationId);
+    List<PullRequestEntity> findAllByOrganizationId(UUID organizationId);
 
     @EntityGraph(value = "PullRequestEntity.TimeToMerge")
-    List<PullRequestTimeToMergeDTO> findTimeToMergeDTOsByOrganizationId(@Param("organizationId") String organizationId);
+    List<PullRequestTimeToMergeDTO> findTimeToMergeDTOsByOrganizationId(@Param("organizationId") UUID organizationId);
 }
