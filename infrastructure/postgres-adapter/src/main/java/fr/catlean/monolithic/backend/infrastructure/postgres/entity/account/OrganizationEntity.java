@@ -2,12 +2,9 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.entity.account;
 
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.AbstractEntity;
 import lombok.*;
-import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,4 +21,6 @@ public class OrganizationEntity extends AbstractEntity {
     private UUID id;
     @Column(name = "name", nullable = false)
     private String name;
+    @ManyToMany(mappedBy = "organizationEntities")
+    List<UserEntity> userEntities;
 }

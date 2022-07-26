@@ -48,7 +48,7 @@ public class UserService implements UserFacadeAdapter {
     public List<User> inviteUsersForOrganization(Organization organization, List<User> users) throws CatleanException {
         final List<User> createdUsers =
                 userStorageAdapter.saveUsers(users.stream().map(user -> user.toBuilder()
-                        .organization(organization)
+                        .organizations(List.of(organization))
                         .onboarding(
                                 Onboarding.builder()
                                         .hasConfiguredTeam(true)

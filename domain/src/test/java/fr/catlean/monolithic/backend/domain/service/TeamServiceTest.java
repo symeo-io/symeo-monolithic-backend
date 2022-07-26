@@ -63,10 +63,11 @@ public class TeamServiceTest {
                 .thenReturn(List.of(expectedTeam1, expectedTeam2));
         teamService.createTeamsForNameAndRepositoriesAndUser(repositoryIdsMappedToTeamName,
                 User.builder()
-                        .organization(
-                                Organization.builder().id(UUID.randomUUID())
-                                        .vcsOrganization(VcsOrganization.builder().build())
-                                        .build())
+                        .organizations(
+                                List.of(
+                                        Organization.builder().id(UUID.randomUUID())
+                                                .vcsOrganization(VcsOrganization.builder().build())
+                                                .build()))
                         .build());
 
         // Then

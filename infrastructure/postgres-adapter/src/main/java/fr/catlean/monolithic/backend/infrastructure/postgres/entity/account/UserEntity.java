@@ -4,6 +4,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.AbstractEnti
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,16 +22,18 @@ public class UserEntity extends AbstractEntity {
     private UUID id;
     @Column(name = "email", nullable = false)
     private String email;
-    @ManyToOne
-    @JoinColumn(name = "organization_id",
-            referencedColumnName = "id")
-    private OrganizationEntity organizationEntity;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_to_organization",
+            schema = "account_storage",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "organization_id")
+    )
+    private List<OrganizationEntity> organizationEntities;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "onboarding_id", referencedColumnName = "id")
     private OnboardingEntity onboardingEntity;
-    @Column(name = "organization_id", insertable = false,updatable = false)
-    private UUID organizationId;
-    @Column(name = "status",nullable = false)
+    @Column(name = "status", nullable = false)
     private String status;
 
 }

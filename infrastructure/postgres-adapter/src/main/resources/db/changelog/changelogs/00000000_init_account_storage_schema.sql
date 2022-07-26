@@ -6,7 +6,6 @@ create table account_storage.user
         constraint user_id primary key,
     email                       varchar(200)               not null
         constraint unique_email unique,
-    organization_id             uuid,
     onboarding_id               uuid                       not null,
     status                      varchar(40)                not null,
     technical_creation_date     timestamp(6) default now() not null,
@@ -45,3 +44,11 @@ create table account_storage.onboarding
 );
 
 
+
+create table account_storage.user_to_organization
+(
+    user_id         uuid not null,
+    organization_id uuid not null,
+    constraint fk_user foreign key (user_id) references account_storage.user (id),
+    constraint fk_organization foreign key (organization_id) references account_storage.organization (id)
+);

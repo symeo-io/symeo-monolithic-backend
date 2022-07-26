@@ -116,7 +116,7 @@ public class UserServiceTest {
         ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
         ArgumentCaptor<String> externalIdCaptor = ArgumentCaptor.forClass(String.class);
         when(userStorageAdapter.updateUserWithOrganization(userArgumentCaptor.capture(), externalIdCaptor.capture()))
-                .thenReturn(authenticatedUser.toBuilder().organization(expectedOrganization).build());
+                .thenReturn(authenticatedUser.toBuilder().organizations(List.of(expectedOrganization)).build());
         userService.updateUserWithOrganization(authenticatedUser,
                 externalId);
 

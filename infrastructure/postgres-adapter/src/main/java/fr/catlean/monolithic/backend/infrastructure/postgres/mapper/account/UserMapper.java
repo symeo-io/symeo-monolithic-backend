@@ -3,6 +3,7 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
 
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -16,9 +17,11 @@ public interface UserMapper {
                 .email(userEntity.getEmail())
                 .status(userEntity.getStatus())
                 .build();
-        if (nonNull(userEntity.getOrganizationEntity())) {
-            user = user.toBuilder().organization(
-                    OrganizationMapper.entityToDomain(userEntity.getOrganizationEntity())
+        if (nonNull(userEntity.getOrganizationEntities()) && !userEntity.getOrganizationEntities().isEmpty()) {
+            user = user.toBuilder().organizations(
+                    List.of(
+                            OrganizationMapper.entityToDomain(userEntity.getOrganizationEntities().get(0))
+                    )
             ).build();
         }
         if (nonNull(userEntity.getOnboardingEntity())) {
@@ -35,8 +38,8 @@ public interface UserMapper {
         return UserEntity.builder()
                 .id(isNull(user.getId()) ? UUID.randomUUID() : user.getId())
                 .email(user.getEmail())
-                .organizationEntity(isNull(user.getOrganization()) ? null :
-                        OrganizationMapper.domainToEntity(user.getOrganization()))
+                .organizationEntities(isNull(user.getOrganization()) ? null :
+                        List.of(OrganizationMapper.domainToEntity(user.getOrganization())))
                 .onboardingEntity(isNull(user.getOnboarding()) ? null :
                         OnboardingMapper.domainToEntity(user.getOnboarding()))
                 .status(user.getStatus())
