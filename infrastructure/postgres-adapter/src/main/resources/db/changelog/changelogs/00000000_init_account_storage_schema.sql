@@ -7,7 +7,7 @@ create table account_storage.user
     email                       varchar(200)               not null
         constraint unique_email unique,
     organization_id             varchar(40),
-    status                      varchar(40),
+    status                      varchar(40)                not null,
     technical_creation_date     timestamp(6) default now() not null,
     technical_modification_date timestamp(6) default now() not null
 );
