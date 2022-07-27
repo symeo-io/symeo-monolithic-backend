@@ -219,7 +219,7 @@ public class PostgresExpositionAdapterTestIT {
         // When
         final List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews =
                 postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
-                        faker.name().name());
+                        UUID.randomUUID());
 
         // Then
         assertThat(pullRequestTimeToMergeViews).hasSize(4);

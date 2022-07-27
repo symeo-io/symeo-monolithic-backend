@@ -24,7 +24,7 @@ public class PieceCurveWithAverageQueryTest {
         // Given
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final CurveQuery curveQuery = new CurveQuery(expositionStorageAdapter);
-        final String teamName = faker.dragonBall().character();
+        final UUID teamId = UUID.randomUUID();
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final String startDateRange1 = "startDateRange1";
         final String startDateRange2 = "startDateRange2";
@@ -39,9 +39,9 @@ public class PieceCurveWithAverageQueryTest {
         );
 
         // When
-        when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamName))
+        when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamId))
                 .thenReturn(pullRequestTimeToMergeViews);
-        final PieceCurveWithAverage pieceCurveWithAverage = curveQuery.computeTimeToMergeCurve(organization, teamName);
+        final PieceCurveWithAverage pieceCurveWithAverage = curveQuery.computeTimeToMergeCurve(organization, teamId);
 
         // Then
         assertThat(pieceCurveWithAverage.getAverageCurve().getData()).hasSize(3);
@@ -49,8 +49,8 @@ public class PieceCurveWithAverageQueryTest {
     }
 
     public static PullRequestTimeToMergeView buildPullRequestTimeToMergeView(final Integer daysOpen,
-                                                                       final String startDateRange,
-                                                                       final String status) {
+                                                                             final String startDateRange,
+                                                                             final String status) {
         return PullRequestTimeToMergeView.builder()
                 .daysOpen(daysOpen)
                 .startDateRange(startDateRange)

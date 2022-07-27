@@ -34,7 +34,7 @@ paths:
                     id: 42
                     name: Catlean
                 errors:
-                  []
+                  [ ]
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -78,7 +78,7 @@ paths:
                     id: 42
                     name: Catlean
                 errors:
-                  []
+                  [ ]
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -120,7 +120,7 @@ paths:
                   has_connected_to_vcs: true
                   has_configured_team: false
                 errors:
-                  []
+                  [ ]
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -256,177 +256,6 @@ paths:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
 
-
-
-  /api/v1/time-to-merge/histogram:
-    get:
-      security:
-        - bearerAuth: [ ]
-      tags:
-        - TimeToMerge
-      summary: Get TimeToMerge Histogram
-      operationId: getTimeToMergeHistogram
-      description: |
-        Get TimeToMerge Histogram
-      parameters:
-        - in: query
-          name: team_name
-          required: false
-          schema:
-            type: string
-            example: frontend
-      responses:
-        "200":
-          description: 'Successfully retrieved time to merge histogram'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetHistogramResponseContract'
-              example:
-                histogram:
-                  data:
-                    - start_date_range: 12/08/1992
-                      data_above_limit: 11
-                      data_below_limit: 22
-                    - start_date_range: 24/09/1992
-                      data_above_limit: 1
-                      data_below_limit: 10
-                  limit: 5
-                errors:
-                  []
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
-        "404":
-          description: Not found error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CatleanErrorsContract'
-        "500":
-          description: An internal error has occurred
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CatleanErrorsContract'
-              example:
-                errors:
-                  - code: "T.POSTGRES_TIMEOUT"
-                    message: "Failed to open connection with database"
-  /histogram/from-histogram-table:
-    get:
-      security:
-        - bearerAuth: [ ]
-      tags:
-        - TimeToMerge
-      summary: Get TimeToMerge Histogram
-      operationId: getTimeToMergeHistogramFromHistogramTable
-      description: |
-        Get TimeToMerge Histogram
-      parameters:
-        - in: query
-          name: team_name
-          required: false
-          schema:
-            type: string
-            example: frontend
-      responses:
-        "200":
-          description: 'Successfully retrieved time to merge histogram'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetHistogramResponseContract'
-              example:
-                histogram:
-                  data:
-                    - start_date_range: 12/08/1992
-                      data_above_limit: 11
-                      data_below_limit: 22
-                    - start_date_range: 24/09/1992
-                      data_above_limit: 1
-                      data_below_limit: 10
-                  limit: 5
-                errors:
-                  []
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
-        "404":
-          description: Not found error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CatleanErrorsContract'
-        "500":
-          description: An internal error has occurred
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CatleanErrorsContract'
-              example:
-                errors:
-                  - code: "T.POSTGRES_TIMEOUT"
-                    message: "Failed to open connection with database"
-  /api/v1/time-to-merge/curve:
-    get:
-      security:
-        - bearerAuth: [ ]
-      tags:
-        - TimeToMerge
-      summary: Get TimeToMerge Curve
-      operationId: getTimeToMergeCurve
-      description: |
-        Get TimeToMerge Curve
-      parameters:
-        - in: query
-          name: team_name
-          required: false
-          schema:
-            type: string
-            example: frontend
-      responses:
-        "200":
-          description: 'Successfully retrieved time to merge curve'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetCurveResponseContract'
-              example:
-                curves:
-                  piece_curve:
-                    - date: 12/08/1992
-                      value: 10
-                      piece_open: false
-                    - date: 12/09/1992
-                      value: 22
-                      piece_open: true
-                  average_curve:
-                    - value: 3
-                      date : 12/08/1992
-                    - value: 4
-                      date : 12/00/1992
-                  limit: 5
-                errors:
-                  []
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
-        "404":
-          description: Not found error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CatleanErrorsContract'
-        "500":
-          description: An internal error has occurred
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CatleanErrorsContract'
-              example:
-                errors:
-                  - code: "T.POSTGRES_TIMEOUT"
-                    message: "Failed to open connection with database"
-
-
   /api/v1/repositories:
     get:
       security:
@@ -452,7 +281,7 @@ paths:
                   - id: "33333"
                     name: repo-3
                 errors:
-                  []
+                  [ ]
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -496,7 +325,7 @@ paths:
                     name: first-team
                     repository_ids: [ "aaa","bbb","ccc" ]
                 errors:
-                  []
+                  [ ]
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "500":
@@ -531,9 +360,154 @@ paths:
                     name: first-team
                     repository_ids: [ "aaa","bbb","ccc" ]
                 errors:
-                  []
+                  [ ]
         "401":
           $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+  /api/v1/teams/goals:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Goals
+      summary: Create a team goal linked to a team
+      operationId: createTeamGoal
+      description: |
+        Create a team goal linked to a team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCreateTeamGoalsRequest'
+      responses:
+        "200":
+          description: 'Successfully create team goal'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+  /api/v1/teams/goals/time-to-merge/histogram:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Goals
+      summary: Get TimeToMerge Histogram
+      operationId: getTimeToMergeHistogram
+      description: |
+        Get TimeToMerge Histogram
+      parameters:
+        - in: query
+          name: team_id
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: 'Successfully retrieved time to merge histogram'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHistogramResponseContract'
+              example:
+                histogram:
+                  data:
+                    - start_date_range: 12/08/1992
+                      data_above_limit: 11
+                      data_below_limit: 22
+                    - start_date_range: 24/09/1992
+                      data_above_limit: 1
+                      data_below_limit: 10
+                  limit: 5
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+  /api/v1/teams/goals/time-to-merge/curves:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Goals
+      summary: Get TimeToMerge Curve
+      operationId: getTimeToMergeCurve
+      description: |
+        Get TimeToMerge Curve
+      parameters:
+        - in: query
+          name: team_id
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: 'Successfully retrieved time to merge curve'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCurveResponseContract'
+              example:
+                curves:
+                  piece_curve:
+                    - date: 12/08/1992
+                      value: 10
+                      piece_open: false
+                    - date: 12/09/1992
+                      value: 22
+                      piece_open: true
+                  average_curve:
+                    - value: 3
+                      date: 12/08/1992
+                    - value: 4
+                      date: 12/00/1992
+                  limit: 5
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
         "500":
           description: An internal error has occurred
           content:
@@ -841,3 +815,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CatleanErrorContract'
+    PostCreateTeamGoalsRequest:
+      type: object
+      required:
+        - standard_code
+        - team_id
+        - value
+      properties:
+        standard_code:
+          type: string
+        team_id:
+          type: string
+          format: uuid
+        value:
+          type: integer

@@ -8,6 +8,7 @@ import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 import static fr.catlean.monolithic.backend.domain.model.insight.curve.PieceCurveWithAverage.buildTimeToMergeCurve;
 
@@ -15,9 +16,9 @@ import static fr.catlean.monolithic.backend.domain.model.insight.curve.PieceCurv
 public class CurveQuery {
     private final ExpositionStorageAdapter expositionStorageAdapter;
 
-    public PieceCurveWithAverage computeTimeToMergeCurve(Organization organization, String teamName) throws CatleanException {
+    public PieceCurveWithAverage computeTimeToMergeCurve(Organization organization, UUID teamId) throws CatleanException {
         final List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews =
-                expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamName);
+                expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamId);
         return buildTimeToMergeCurve(pullRequestTimeToMergeViews);
     }
 }

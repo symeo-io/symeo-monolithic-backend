@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.POSTGRES_EXCEPTION;
 
@@ -84,7 +85,8 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
 
     @Override
-    public List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, String teamName) throws CatleanException {
+    public List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization,
+                                                                                                  UUID teamId) throws CatleanException {
         try {
             return pullRequestRepository.findTimeToMergeDTOsByOrganizationId(organization.getId())
                     .stream()
