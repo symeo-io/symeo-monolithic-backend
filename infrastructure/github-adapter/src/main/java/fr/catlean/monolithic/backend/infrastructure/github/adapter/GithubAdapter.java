@@ -11,6 +11,7 @@ import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.pr.Github
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import static fr.catlean.monolithic.backend.infrastructure.github.adapter.mapper
 import static java.util.Objects.isNull;
 
 @AllArgsConstructor
+@Slf4j
 public class GithubAdapter implements VersionControlSystemAdapter {
 
     private GithubHttpClient githubHttpClient;
@@ -95,11 +97,8 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         try {
             List<GithubPullRequestDTO> githubDetailedPullRequests = null;
             if (alreadyRawCollectedPullRequests == null || alreadyRawCollectedPullRequests.length == 0) {
-                githubDetailedPullRequests = new ArrayList<>();
-                for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestDTOList) {
-                    githubDetailedPullRequests.add(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
-                            repository.getName(), githubPullRequestDTO.getNumber()));
-                }
+                githubDetailedPullRequests = new ArrayList<>(getGithubPullRequestDTOsWithParallelStream(repository,
+                        githubPullRequestDTOList));
             } else {
                 githubDetailedPullRequests = getIncrementalGithubPullRequests(repository,
                         alreadyRawCollectedPullRequests,
@@ -107,9 +106,29 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             }
 
             return dtoToBytes(githubDetailedPullRequests.toArray());
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    private List<GithubPullRequestDTO> getGithubPullRequestDTOsWithParallelStream(Repository repository,
+                                                                                  List<GithubPullRequestDTO> githubPullRequestDTOList) {
+        return githubPullRequestDTOList.parallelStream()
+                .map(githubPullRequestDTO -> {
+                    try {
+                        return Optional.of(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                                repository.getName(), githubPullRequestDTO.getNumber()));
+                    } catch (CatleanException ex) {
+                        LOGGER.error("Error while getting PR from github", ex);
+                    }
+                    return Optional.empty();
+
+                })
+                .filter(Optional::isPresent)
+                .map(o -> (GithubPullRequestDTO) o.get())
+                .toList();
     }
 
     private List<GithubPullRequestDTO> getIncrementalGithubPullRequests(Repository repository,
