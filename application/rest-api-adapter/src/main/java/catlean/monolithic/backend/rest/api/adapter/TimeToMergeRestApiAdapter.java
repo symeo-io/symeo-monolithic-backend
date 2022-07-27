@@ -19,6 +19,7 @@ import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHist
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.errorToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.TimeToMergeCurveMapper.curveToContract;
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.SIZE_LIMIT;
+import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.TIME_LIMIT;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -58,7 +59,7 @@ public class TimeToMergeRestApiAdapter implements TimeToMergeApi {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return domainToContract(histogramQuery.computePullRequestHistogram(authenticatedUser.getOrganization(),
-                    teamName, SIZE_LIMIT));
+                    teamName, TIME_LIMIT));
         } catch (CatleanException e) {
             return errorToContract(e);
         }
