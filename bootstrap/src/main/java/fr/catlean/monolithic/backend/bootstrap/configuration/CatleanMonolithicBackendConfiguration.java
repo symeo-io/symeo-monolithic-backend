@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @EnableAspectJAutoProxy
 @Aspect
-public class CatleanDeliveryProcessorConfiguration {
+public class CatleanMonolithicBackendConfiguration {
 
     @Around(
             "execution(* fr.catlean.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient.getRepositoriesForOrganizationName(..)) || execution(* fr.catlean.monolithic.backend" +

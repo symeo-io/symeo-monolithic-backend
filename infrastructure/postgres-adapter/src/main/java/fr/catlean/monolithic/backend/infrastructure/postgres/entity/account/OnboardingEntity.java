@@ -1,12 +1,12 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.entity.account;
 
-import fr.catlean.monolithic.backend.infrastructure.postgres.entity.AbstractEntity;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +16,8 @@ import java.util.UUID;
 @Data
 @Builder
 @Table(name = "onboarding", schema = "account_storage")
-public class OnboardingEntity extends AbstractEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class OnboardingEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -25,4 +26,10 @@ public class OnboardingEntity extends AbstractEntity {
     private Boolean hasConnectedToVcs;
     @Column(name = "has_configured_team", nullable = false)
     private Boolean hasConfiguredTeam;
+    @Column(name = "technical_creation_date", updatable = false)
+    @CreationTimestamp
+    ZonedDateTime technicalCreationDate;
+    @UpdateTimestamp
+    @Column(name = "technical_modification_date")
+    ZonedDateTime technicalModificationDate;
 }

@@ -157,12 +157,12 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         final List<RepositoryEntity> repositoryEntities = List.of(
-                new RepositoryEntity("1L", faker.gameOfThrones().character(),
-                        faker.name().firstName(), organization.getId()),
-                new RepositoryEntity("2L", faker.gameOfThrones().character(),
-                        faker.name().firstName(), organization.getId()),
-                new RepositoryEntity("3L", faker.gameOfThrones().character(),
-                        faker.name().firstName(), organization.getId()));
+                RepositoryEntity.builder().id("1L").name(faker.gameOfThrones().character())
+                        .vcsOrganizationName(faker.name().firstName()).organizationId(organization.getId()).build(),
+                RepositoryEntity.builder().id("2L").name(faker.gameOfThrones().character())
+                        .vcsOrganizationName(faker.name().firstName()).organizationId(organization.getId()).build(),
+                RepositoryEntity.builder().id("3L").name(faker.gameOfThrones().character())
+                        .vcsOrganizationName(faker.name().firstName()).organizationId(organization.getId()).build());
         repositoryRepository.saveAll(repositoryEntities);
 
         // When

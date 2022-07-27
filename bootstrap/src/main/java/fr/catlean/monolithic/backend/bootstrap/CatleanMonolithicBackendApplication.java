@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@Import(value = {DomainConfiguration.class, CatleanDeliveryProcessorConfiguration.class, GithubConfiguration.class,
+@Import(value = {DomainConfiguration.class, CatleanMonolithicBackendConfiguration.class, GithubConfiguration.class,
         JsonLocalStorageConfiguration.class, PostgresConfiguration.class, RestApiConfiguration.class,
         WebCorsConfig.class, SentryConfiguration.class, Auth0SecurityConfiguration.class,
         WebSecurityPropertiesConfig.class})
