@@ -14,6 +14,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.User
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,6 +37,7 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
     private Organization organization;
     private User activeUser;
 
+    @Order(1)
     @Test
     void should_get_time_to_merge_histogram_for_all_teams() {
         // Given
@@ -103,9 +105,20 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.histogram.data[11].data_above_limit").isEqualTo(9)
                 .jsonPath("$.histogram.data[11].data_below_limit").isEqualTo(0)
                 .jsonPath("$.histogram.data[11].start_date_range").isEqualTo("25/07/2022");
-
     }
 
+    @Test
+    void should_get_time_to_merge_curves_for_all_teams() {
+        // When
+        client.get()
+                .uri(getApiURI(TIME_TO_MERGE_REST_API_CURVE))
+                // Then
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty();
+    }
 
     private static List<PullRequestEntity> generatePullRequestsStubsForOrganization(final Organization organization) {
         final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organization.getTimeZone());

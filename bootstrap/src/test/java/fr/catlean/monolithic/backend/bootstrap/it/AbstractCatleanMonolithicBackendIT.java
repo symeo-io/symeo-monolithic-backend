@@ -83,6 +83,7 @@ public abstract class AbstractCatleanMonolithicBackendIT {
     protected static final String REPOSITORIES_REST_API_GET = "/api/v1/repositories";
     protected static final String ORGANIZATION_REST_API_USERS = "/api/v1/organizations/users";
     protected static final String TIME_TO_MERGE_REST_API_HISTOGRAM = "/api/v1/time-to-merge/histogram";
+    protected static final String TIME_TO_MERGE_REST_API_CURVE = "/api/v1/time-to-merge/curve";
 
     @Autowired
     ITAuthenticationContextProvider authenticationContextProvider;
