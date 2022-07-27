@@ -29,7 +29,7 @@ public interface TimeToMergeCurveMapper {
         for (Curve.CurvePoint curvePoint : pieceCurveWithAverage.getAverageCurve().getData()) {
             final CurveDataResponseContract curveDataResponseContract = new CurveDataResponseContract();
             curveDataResponseContract.setDate(curvePoint.getDate());
-            curveDataResponseContract.setValue(curvePoint.getValue());
+            curveDataResponseContract.setValue(curvePoint.getValue() == 0 ? 1 : curvePoint.getValue());
             curveDataResponseContractList.add(curveDataResponseContract);
         }
         curveResponseContract.setAverageCurve(curveDataResponseContractList);
