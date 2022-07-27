@@ -44,7 +44,7 @@ public class PullRequest {
         return ALL + "_" + repositoryName;
     }
 
-    public String getState() {
+    public String getStatus() {
         if (isNull(this.closeDate) && isNull(this.mergeDate)) {
             return OPEN;
         }
