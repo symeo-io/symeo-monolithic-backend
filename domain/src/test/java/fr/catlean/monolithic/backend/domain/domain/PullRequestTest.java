@@ -31,10 +31,10 @@ public class PullRequestTest {
 
 
         // When
-        final String open = openPR.getState();
-        final String merge1 = mergedPR.getState();
-        final String merge2 = mergedPRWithCloseDate.getState();
-        final String close = closedPR.getState();
+        final String open = openPR.getStatus();
+        final String merge1 = mergedPR.getStatus();
+        final String merge2 = mergedPRWithCloseDate.getStatus();
+        final String close = closedPR.getStatus();
 
         // Then
         assertThat(open).isEqualTo("open");

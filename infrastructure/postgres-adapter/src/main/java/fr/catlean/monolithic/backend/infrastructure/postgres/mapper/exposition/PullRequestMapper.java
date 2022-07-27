@@ -27,7 +27,7 @@ public interface PullRequestMapper {
                         ZonedDateTime.ofInstant(pullRequest.getMergeDate().toInstant(), ZoneId.systemDefault()))
                 .title(pullRequest.getTitle())
                 .vcsUrl(pullRequest.getVcsUrl())
-                .state(pullRequest.getState())
+                .state(pullRequest.getStatus())
                 .authorLogin(pullRequest.getAuthorLogin())
                 .vcsRepository(pullRequest.getRepository())
                 .vcsOrganization(pullRequest.getVcsOrganization())

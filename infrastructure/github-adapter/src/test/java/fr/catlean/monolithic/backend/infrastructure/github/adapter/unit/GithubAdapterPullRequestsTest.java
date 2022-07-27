@@ -203,7 +203,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         assertThat(pullRequest.getMergeDate()).isEqualTo(pr80.getMergedAt());
         assertThat(pullRequest.getIsMerged()).isEqualTo(pr80.getMerged());
         assertThat(pullRequest.getIsDraft()).isEqualTo(pr80.getDraft());
-        assertThat(pullRequest.getState()).isEqualTo(pr80.getState());
+        assertThat(pullRequest.getStatus()).isEqualTo(pr80.getState());
         assertThat(pullRequest.getNumber()).isEqualTo(pr80.getNumber());
         assertThat(pullRequest.getVcsUrl()).isEqualTo(pr80.getHtmlUrl());
         assertThat(pullRequest.getTitle()).isEqualTo(pr80.getTitle());

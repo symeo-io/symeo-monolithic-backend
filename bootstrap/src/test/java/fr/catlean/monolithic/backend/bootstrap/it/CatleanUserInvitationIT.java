@@ -20,7 +20,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT {
 
     @Autowired
