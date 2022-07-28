@@ -4,9 +4,11 @@ import catlean.monolithic.backend.rest.api.adapter.authentication.Authentication
 import catlean.monolithic.backend.rest.api.adapter.mapper.TimeToMergeCurveMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
+import fr.catlean.monolithic.backend.domain.port.in.TeamGoalFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.query.CurveQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.frontend.contract.api.GoalsApi;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.CatleanErrorsContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.GetCurveResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.GetHistogramResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.PostCreateTeamGoalsRequest;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper.catleanExceptionToContracts;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.domainToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.errorToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.TimeToMergeCurveMapper.curveToContract;
@@ -33,10 +36,17 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
     private final HistogramQuery histogramQuery;
     private final AuthenticationService authenticationService;
     private final CurveQuery curveQuery;
+    private final TeamGoalFacadeAdapter teamGoalFacadeAdapter;
 
     @Override
-    public ResponseEntity<Void> createTeamGoal(PostCreateTeamGoalsRequest postCreateTeamGoalsRequest) {
-        return GoalsApi.super.createTeamGoal(postCreateTeamGoalsRequest);
+    public ResponseEntity<CatleanErrorsContract> createTeamGoal(PostCreateTeamGoalsRequest postCreateTeamGoalsRequest) {
+        try {
+            teamGoalFacadeAdapter.createTeamGoalForTeam(postCreateTeamGoalsRequest.getTeamId(),
+                    postCreateTeamGoalsRequest.getStandardCode(), postCreateTeamGoalsRequest.getValue());
+            return ResponseEntity.ok().build();
+        } catch (CatleanException e) {
+            return ResponseEntity.internalServerError().body(catleanExceptionToContracts(e));
+        }
     }
 
     @Override
