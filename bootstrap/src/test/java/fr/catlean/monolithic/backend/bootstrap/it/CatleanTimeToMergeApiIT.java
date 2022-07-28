@@ -67,7 +67,7 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
 
         // When
         client.get()
-                .uri(getApiURI(TIME_TO_MERGE_REST_API_HISTOGRAM))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -117,7 +117,7 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
     void should_get_time_to_merge_curves_for_all_teams() {
         // When
         client.get()
-                .uri(getApiURI(TIME_TO_MERGE_REST_API_CURVE))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES))
                 // Then
                 .exchange()
                 .expectStatus()

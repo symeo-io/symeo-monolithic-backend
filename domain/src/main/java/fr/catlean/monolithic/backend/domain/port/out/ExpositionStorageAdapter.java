@@ -8,6 +8,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ExpositionStorageAdapter {
     void savePullRequestDetails(List<PullRequest> pullRequests);
@@ -22,5 +23,5 @@ public interface ExpositionStorageAdapter {
 
     List<PullRequest> findAllPullRequestsForOrganization(Organization organization) throws CatleanException;
 
-    List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, String teamName) throws CatleanException;
+    List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, UUID teamId) throws CatleanException;
 }

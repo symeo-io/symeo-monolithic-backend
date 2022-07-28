@@ -23,10 +23,11 @@ public class RestApiConfiguration {
     }
 
     @Bean
-    public TimeToMergeRestApiAdapter timeToMergeRestApiAdapter(final AuthenticationService authenticationService,
-                                                               final HistogramQuery histogramQuery,
-                                                               final CurveQuery curveQuery) {
-        return new TimeToMergeRestApiAdapter(histogramQuery, authenticationService, curveQuery);
+    public TeamGoalRestApiAdapter teamGoalRestApiAdapter(final AuthenticationService authenticationService,
+                                                         final HistogramQuery histogramQuery,
+                                                         final CurveQuery curveQuery,
+                                                         final TeamGoalFacadeAdapter teamGoalFacadeAdapter) {
+        return new TeamGoalRestApiAdapter(histogramQuery, authenticationService, curveQuery, teamGoalFacadeAdapter);
     }
 
     @Bean

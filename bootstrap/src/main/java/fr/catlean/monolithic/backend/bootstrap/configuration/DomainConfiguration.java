@@ -8,13 +8,11 @@ import fr.catlean.monolithic.backend.domain.query.CurveQuery;
 import fr.catlean.monolithic.backend.domain.query.DeliveryQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.domain.service.DataProcessingJobService;
-import fr.catlean.monolithic.backend.domain.service.account.OnboardingService;
-import fr.catlean.monolithic.backend.domain.service.account.OrganizationService;
-import fr.catlean.monolithic.backend.domain.service.account.TeamService;
-import fr.catlean.monolithic.backend.domain.service.account.UserService;
+import fr.catlean.monolithic.backend.domain.service.account.*;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
+import fr.catlean.monolithic.backend.domain.storage.TeamStandardInMemoryStorage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -99,5 +97,16 @@ public class DomainConfiguration {
     @Bean
     public CurveQuery curveQuery(final ExpositionStorageAdapter expositionStorageAdapter) {
         return new CurveQuery(expositionStorageAdapter);
+    }
+
+    @Bean
+    public TeamStandardStorage teamStandardStorage() {
+        return new TeamStandardInMemoryStorage();
+    }
+
+    @Bean
+    public TeamGoalFacadeAdapter teamGoalFacadeAdapter(final TeamStandardStorage teamStandardStorage,
+                                                       final TeamGoalStorage teamGoalStorage) {
+        return new TeamGoalService(teamStandardStorage, teamGoalStorage);
     }
 }

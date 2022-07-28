@@ -10,6 +10,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Team> findByOrganization(Organization organization) throws CatleanException {
         try {
             return teamRepository.findAllByOrganizationId(organization.getId())

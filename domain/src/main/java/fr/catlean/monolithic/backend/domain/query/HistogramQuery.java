@@ -17,13 +17,7 @@ public class HistogramQuery {
 
     private final ExpositionStorageAdapter expositionStorageAdapter;
 
-    public PullRequestHistogram readPullRequestHistogram(final Organization organization, String teamName,
-                                                         String histogramType) throws CatleanException {
-        return expositionStorageAdapter.readPullRequestHistogram(organization.getId().toString(),
-                teamName, histogramType);
-    }
-
-    public PullRequestHistogram computePullRequestHistogram(Organization organization, String teamName,
+    public PullRequestHistogram computePullRequestHistogram(Organization organization, UUID teamId,
                                                             String histogramType) throws CatleanException {
         final List<PullRequest> pullRequests =
                 expositionStorageAdapter.findAllPullRequestsForOrganization(organization);

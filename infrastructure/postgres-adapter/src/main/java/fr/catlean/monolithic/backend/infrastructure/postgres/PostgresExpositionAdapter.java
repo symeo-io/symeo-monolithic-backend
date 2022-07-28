@@ -19,9 +19,11 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.expositi
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.POSTGRES_EXCEPTION;
 
@@ -49,6 +51,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PullRequestHistogram readPullRequestHistogram(String organizationId, String teamName,
                                                          String histogramType) {
         final List<PullRequestHistogramDataEntity> histogramDataEntities =
@@ -63,6 +66,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Repository> readRepositoriesForOrganization(Organization organization) {
         return repositoryRepository.findRepositoryEntitiesByOrganizationId(organization.getId())
                 .stream()
@@ -71,6 +75,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PullRequest> findAllPullRequestsForOrganization(Organization organization) throws CatleanException {
         try {
             return pullRequestRepository.findAllByOrganizationId(organization.getId())
@@ -86,7 +91,9 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
 
     @Override
-    public List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, String teamName) throws CatleanException {
+    @Transactional(readOnly = true)
+    public List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization,
+                                                                                                  UUID teamId) throws CatleanException {
         try {
             return pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationId(organization.getId())
                     .stream()

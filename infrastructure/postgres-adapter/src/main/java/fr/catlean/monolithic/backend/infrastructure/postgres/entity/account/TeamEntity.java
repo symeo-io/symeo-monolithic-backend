@@ -37,6 +37,7 @@ public class TeamEntity {
     @Column(name = "repository_id")
     @Builder.Default
     List<String> repositoryIds = new ArrayList<>();
+
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

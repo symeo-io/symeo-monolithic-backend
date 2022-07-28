@@ -1,5 +1,16 @@
 create schema if not exists account_storage;
 
+create table account_storage.onboarding
+(
+    id                          uuid                                      not null
+        constraint onboarding_id primary key,
+    has_connected_to_vcs        boolean                                   not null,
+    has_configured_team         boolean                                   not null,
+    technical_creation_date     timestamp(6) with time zone default now() not null,
+    technical_modification_date timestamp(6) with time zone default now() not null
+);
+
+
 create table account_storage.user
 (
     id                          uuid                                      not null
@@ -9,9 +20,9 @@ create table account_storage.user
     onboarding_id               uuid                                      not null,
     status                      varchar(40)                               not null,
     technical_creation_date     timestamp(6) with time zone default now() not null,
-    technical_modification_date timestamp(6) with time zone default now() not null
+    technical_modification_date timestamp(6) with time zone default now() not null,
+    constraint fk_user_onboarding_id foreign key (onboarding_id) references account_storage.onboarding (id)
 );
-
 
 create table account_storage.organization
 (
@@ -30,25 +41,27 @@ create table account_storage.team
     organization_id             uuid,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null,
-    constraint name_organization_id_unique unique (name, organization_id)
+    constraint name_organization_id_unique unique (name, organization_id),
+    constraint fk_team_organization_id foreign key (organization_id) references account_storage.organization (id)
 );
-
-create table account_storage.onboarding
-(
-    id                          uuid                                      not null
-        constraint onboarding_id primary key,
-    has_connected_to_vcs        boolean                                   not null,
-    has_configured_team         boolean                                   not null,
-    technical_creation_date     timestamp(6) with time zone default now() not null,
-    technical_modification_date timestamp(6) with time zone default now() not null
-);
-
 
 
 create table account_storage.user_to_organization
 (
     user_id         uuid not null,
     organization_id uuid not null,
-    constraint fk_user foreign key (user_id) references account_storage.user (id),
-    constraint fk_organization foreign key (organization_id) references account_storage.organization (id)
+    constraint fk_user_to_organization_user_id foreign key (user_id) references account_storage.user (id),
+    constraint fk_user_to_organization_organization_id foreign key (organization_id) references account_storage.organization (id)
 );
+
+create table account_storage.team_goal
+(
+    id                          uuid                                      not null
+        constraint team_goal_id primary key,
+    standard_code               varchar(200)                              not null,
+    value                       varchar(100)                              not null,
+    team_id                     uuid                                      not null,
+    technical_creation_date     timestamp(6) with time zone default now() not null,
+    technical_modification_date timestamp(6) with time zone default now() not null,
+    constraint fk_team_goal_team_id foreign key (team_id) references account_storage.team (id)
+)

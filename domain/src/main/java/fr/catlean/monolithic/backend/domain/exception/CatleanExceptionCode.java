@@ -24,9 +24,10 @@ public interface CatleanExceptionCode {
     // Auth0 Exception Codes
     String MISSING_MAIL_AUTH0 = "T.MISSING_MAIL_AUTH0";
 
-    // Thread
+    // Thread Exception Codes
     String INTERRUPTED_THREAD = "T.INTERRUPTED_THREAD";
 
-    // API validation
-    String INVALID_HISTOGRAM_TYPE = "F.INVALID_HISTOGRAM_TYPE";
+    // TeamGoal Exception Codes
+    String INVALID_TEAM_STANDARD_CODE = "F.INVALID_TEAM_STANDARD_NAME";
+
 }
