@@ -7,10 +7,8 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.Orga
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.BodyInserters;
 
@@ -58,7 +56,7 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
 
         // When
         client.get()
-                .uri(getApiURI(ORGANIZATION_REST_API_USERS))
+                .uri(getApiURI(ORGANIZATIONS_REST_API_USERS))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -83,7 +81,7 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
 
         // When
         client.post()
-                .uri(getApiURI(ORGANIZATION_REST_API_USERS))
+                .uri(getApiURI(ORGANIZATIONS_REST_API_USERS))
                 .body(BodyInserters.fromValue(List.of(userRequestContract1, userRequestContract2)))
                 .exchange()
                 // Then
@@ -143,7 +141,7 @@ public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT 
 
         // When
         client.delete()
-                .uri(getApiURI(ORGANIZATION_REST_API_USERS, "id", id.toString()))
+                .uri(getApiURI(ORGANIZATIONS_REST_API_USERS, "id", id.toString()))
                 .exchange()
                 // Then
                 .expectStatus()
