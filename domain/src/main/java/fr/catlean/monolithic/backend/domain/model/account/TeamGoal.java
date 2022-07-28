@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class TeamGoal {
-
+    UUID id;
     @NonNull
     String standardCode;
     @NonNull

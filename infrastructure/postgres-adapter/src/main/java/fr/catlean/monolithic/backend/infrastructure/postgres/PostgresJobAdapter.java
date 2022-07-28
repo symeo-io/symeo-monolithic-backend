@@ -8,6 +8,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.job.JobMappe
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class PostgresJobAdapter implements JobStorage {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws CatleanException {
         try {
             return jobRepository.findAllByCodeAndAndOrganizationIdOrderByTechnicalModificationDate(code,

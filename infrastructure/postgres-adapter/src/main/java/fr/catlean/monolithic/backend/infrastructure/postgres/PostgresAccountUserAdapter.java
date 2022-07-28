@@ -11,6 +11,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
     private final VcsOrganizationRepository vcsOrganizationRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> getUserFromEmail(String email) {
         return userRepository.findByEmail(email).map(UserMapper::entityToDomain);
     }
@@ -63,6 +65,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> findAllByOrganization(Organization organization) throws CatleanException {
         try {
             return userRepository.findAllForOrganizationId(organization.getId())

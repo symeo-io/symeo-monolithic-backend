@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.configuration;
 
 import fr.catlean.monolithic.backend.infrastructure.postgres.*;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
@@ -64,4 +65,9 @@ public class PostgresConfiguration {
         return new PostgresJobAdapter(jobRepository);
     }
 
+    @Bean
+    public PostgresTeamGoalAdapter postgresTeamGoalAdapter(final TeamRepository teamRepository,
+                                                           final TeamGoalRepository teamGoalRepository) {
+        return new PostgresTeamGoalAdapter(teamRepository, teamGoalRepository);
+    }
 }

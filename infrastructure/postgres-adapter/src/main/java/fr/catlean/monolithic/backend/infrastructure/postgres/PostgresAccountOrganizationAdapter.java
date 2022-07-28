@@ -8,6 +8,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.Orga
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.ORGANIZATION_NAME_NOT_FOUND;
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.POSTGRES_EXCEPTION;
@@ -21,6 +22,7 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
     private final VcsOrganizationRepository vcsOrganizationRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Organization findVcsOrganizationForName(String organizationName) throws CatleanException {
 
         return vcsOrganizationRepository.findByName(organizationName)
