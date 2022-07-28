@@ -12,6 +12,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.Team
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +38,7 @@ public class PostgresTeamGoalAdapterTestIT {
     public TeamGoalRepository teamGoalRepository;
     private final Faker faker = new Faker();
 
-    @BeforeEach
+    @AfterEach
     public void setUp() {
         teamGoalRepository.deleteAll();
         teamRepository.deleteAll();
