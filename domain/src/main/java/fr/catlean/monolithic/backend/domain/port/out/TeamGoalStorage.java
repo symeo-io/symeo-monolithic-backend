@@ -13,4 +13,6 @@ public interface TeamGoalStorage {
     List<TeamGoal> readForTeamId(UUID teamId) throws CatleanException;
 
     void deleteForId(UUID teamGoalId) throws CatleanException;
+
+    void updateForIdAndValue(UUID id, Integer value) throws CatleanException;
 }

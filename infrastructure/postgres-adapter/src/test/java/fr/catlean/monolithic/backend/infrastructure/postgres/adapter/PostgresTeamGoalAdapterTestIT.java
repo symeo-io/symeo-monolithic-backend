@@ -13,7 +13,6 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,5 +156,39 @@ public class PostgresTeamGoalAdapterTestIT {
         final List<TeamGoalEntity> all = teamGoalRepository.findAll();
         assertThat(all).hasSize(1);
         assertThat(all.get(0)).isEqualTo(teamGoalToKeep);
+    }
+
+    @Test
+    void should_update_team_goal_value_given_an_id() throws CatleanException {
+        // Given
+        final UUID organizationId = UUID.randomUUID();
+        final OrganizationEntity organizationEntity = OrganizationEntity.builder()
+                .id(organizationId)
+                .name(faker.pokemon().name())
+                .build();
+        organizationRepository.save(organizationEntity);
+        final TeamEntity teamEntity = TeamEntity.builder()
+                .name(faker.name().firstName())
+                .id(UUID.randomUUID())
+                .organizationId(organizationId)
+                .build();
+        teamRepository.save(teamEntity);
+        final TeamGoalEntity teamGoalEntity =
+                TeamGoalEntity.builder().teamId(teamEntity.getId()).value(faker.pokemon().name()).standardCode(faker.dragonBall().character()).id(UUID.randomUUID()).build();
+        teamGoalRepository.save(teamGoalEntity);
+        final PostgresTeamGoalAdapter postgresTeamGoalAdapter = new PostgresTeamGoalAdapter(teamRepository,
+                teamGoalRepository);
+        final int newValue = faker.number().randomDigit();
+
+
+        // When
+        postgresTeamGoalAdapter.updateForIdAndValue(teamGoalEntity.getId(), newValue);
+
+        // Then
+        final TeamGoalEntity teamGoalEntityUpdated = teamGoalRepository.findAll().get(0);
+        assertThat(teamGoalEntityUpdated.getId()).isEqualTo(teamGoalEntity.getId());
+        assertThat(teamGoalEntityUpdated.getTeamId()).isEqualTo(teamGoalEntity.getTeamId());
+        assertThat(teamGoalEntityUpdated.getValue()).isEqualTo(Integer.toString(newValue));
+        assertThat(teamGoalEntityUpdated.getStandardCode()).isEqualTo(teamGoalEntity.getStandardCode());
     }
 }

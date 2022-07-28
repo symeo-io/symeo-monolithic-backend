@@ -3,6 +3,7 @@ package fr.catlean.monolithic.backend.bootstrap.it;
 import fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode;
 import fr.catlean.monolithic.backend.domain.model.account.TeamStandard;
 import fr.catlean.monolithic.backend.domain.model.account.User;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.PatchTeamGoalsRequest;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.PostCreateTeamGoalsRequest;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.*;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper;
@@ -137,6 +138,32 @@ public class CatleanTeamGoalsIT extends AbstractCatleanMonolithicBackendIT {
                 .jsonPath("$.team_goals[1].current_value").isEqualTo(2.12);
     }
 
+    @Order(4)
+    @Test
+    void should_update_team_goal_value_given_an_id() {
+        // Given
+        final TeamGoalEntity teamGoalEntityToUpdate = teamGoalRepository.findAll().get(0);
+        final PatchTeamGoalsRequest patchTeamGoalsRequest = new PatchTeamGoalsRequest();
+        patchTeamGoalsRequest.setId(teamGoalEntityToUpdate.getId());
+        final int newValue = faker.number().randomDigit();
+        patchTeamGoalsRequest.setValue(newValue);
+
+        // When
+        client.patch()
+                .uri(getApiURI(TEAMS_GOALS_REST_API))
+                .body(BodyInserters.fromValue(patchTeamGoalsRequest))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful();
+        final TeamGoalEntity updatedTeamGoalEntity = teamGoalRepository.findById(teamGoalEntityToUpdate.getId()).get();
+        assertThat(updatedTeamGoalEntity.getId()).isEqualTo(teamGoalEntityToUpdate.getId());
+        assertThat(updatedTeamGoalEntity.getValue()).isEqualTo(Integer.toString(newValue));
+        assertThat(updatedTeamGoalEntity.getStandardCode()).isEqualTo(teamGoalEntityToUpdate.getStandardCode());
+        assertThat(updatedTeamGoalEntity.getTeamId()).isEqualTo(teamGoalEntityToUpdate.getTeamId());
+    }
+
+    @Order(5)
     @Test
     void should_delete_a_team_goal_given_an_id() {
         // Given

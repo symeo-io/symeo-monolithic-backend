@@ -36,4 +36,9 @@ class TeamGoalService implements TeamGoalFacadeAdapter {
     public void deleteTeamGoalForId(UUID teamGoalId) throws CatleanException {
         teamGoalStorage.deleteForId(teamGoalId);
     }
+
+    @Override
+    public void updateTeamGoalForTeam(UUID id, Integer value) throws CatleanException {
+        teamGoalStorage.updateForIdAndValue(id, value);
+    }
 }

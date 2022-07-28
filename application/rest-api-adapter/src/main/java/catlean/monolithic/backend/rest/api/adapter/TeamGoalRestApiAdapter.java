@@ -88,4 +88,15 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return internalServerError().body(CatleanErrorContractMapper.catleanExceptionToContracts(e));
         }
     }
+
+    @Override
+    public ResponseEntity<CatleanErrorsContract> updateTeamGoal(PatchTeamGoalsRequest patchTeamGoalsRequest) {
+        try {
+            teamGoalFacadeAdapter.updateTeamGoalForTeam(patchTeamGoalsRequest.getId(),
+                    patchTeamGoalsRequest.getValue());
+            return ok().build();
+        } catch (CatleanException e) {
+            return internalServerError().body(catleanExceptionToContracts(e));
+        }
+    }
 }
