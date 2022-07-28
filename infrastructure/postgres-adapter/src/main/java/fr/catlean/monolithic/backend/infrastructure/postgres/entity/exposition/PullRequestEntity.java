@@ -17,12 +17,6 @@ import java.util.UUID;
 @Data
 @Builder
 @Table(name = "pull_request", schema = "exposition_storage")
-@NamedEntityGraph(name = "PullRequestEntity.TimeToMerge",
-        attributeNodes = {
-                @NamedAttributeNode("startDateRange"),
-                @NamedAttributeNode("daysOpened"),
-                @NamedAttributeNode("state")
-        })
 @EntityListeners(AuditingEntityListener.class)
 public class PullRequestEntity {
 

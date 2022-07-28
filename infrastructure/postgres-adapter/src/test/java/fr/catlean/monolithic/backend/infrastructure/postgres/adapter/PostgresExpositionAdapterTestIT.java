@@ -18,6 +18,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.R
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestTimeToMergeRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,8 @@ public class PostgresExpositionAdapterTestIT {
     private PullRequestHistogramRepository pullRequestHistogramRepository;
     @Autowired
     private RepositoryRepository repositoryRepository;
+    @Autowired
+    private PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository;
 
 
     @AfterEach
@@ -58,7 +61,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_save_pull_requests_to_postgres() {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository, repositoryRepository);
+                pullRequestHistogramRepository, repositoryRepository, pullRequestTimeToMergeRepository);
         final List<PullRequest> pullRequestsToSave = List.of(
                 buildPullRequest(1),
                 buildPullRequest(2),
@@ -81,7 +84,7 @@ public class PostgresExpositionAdapterTestIT {
         final UUID organizationId2 = UUID.randomUUID();
         final UUID organizationId3 = UUID.randomUUID();
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository, repositoryRepository);
+                pullRequestHistogramRepository, repositoryRepository, pullRequestTimeToMergeRepository);
         final List<PullRequestHistogram> pullRequestHistograms = List.of(
                 buildPullRequestHistogram(organizationId1),
                 buildPullRequestHistogram(organizationId2),
@@ -105,7 +108,7 @@ public class PostgresExpositionAdapterTestIT {
         final String team1 = faker.name().firstName() + "-1";
         final String team2 = faker.name().firstName() + "-2";
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository, repositoryRepository);
+                pullRequestHistogramRepository, repositoryRepository, pullRequestTimeToMergeRepository);
         final List<PullRequestHistogram> pullRequestHistograms = List.of(
                 buildPullRequestHistogramForOrgAndTeam(team1, organizationId1),
                 buildPullRequestHistogramForOrgAndTeam(team2, organizationId2)
@@ -128,7 +131,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_save_repositories() {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository, repositoryRepository);
+                pullRequestHistogramRepository, repositoryRepository, pullRequestTimeToMergeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -151,7 +154,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_read_repositories_for_an_organization() {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository, repositoryRepository);
+                pullRequestHistogramRepository, repositoryRepository, pullRequestTimeToMergeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -176,7 +179,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_find_all_pull_requests_given_an_organization() throws CatleanException {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository, repositoryRepository);
+                pullRequestHistogramRepository, repositoryRepository, pullRequestTimeToMergeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -202,7 +205,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_read_pr_time_to_merge_view() throws CatleanException {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                pullRequestHistogramRepository, repositoryRepository);
+                pullRequestHistogramRepository, repositoryRepository, pullRequestTimeToMergeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())

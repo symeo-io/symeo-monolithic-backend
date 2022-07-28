@@ -15,6 +15,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.P
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestTimeToMergeRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestRepository pullRequestRepository;
     private final PullRequestHistogramRepository pullRequestHistogramRepository;
     private final RepositoryRepository repositoryRepository;
+    private final PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository;
 
     @Override
     public void savePullRequestDetails(List<PullRequest> pullRequests) {
@@ -86,7 +88,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     @Override
     public List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization, String teamName) throws CatleanException {
         try {
-            return pullRequestRepository.findTimeToMergeDTOsByOrganizationId(organization.getId())
+            return pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationId(organization.getId())
                     .stream()
                     .map(PullRequestCurveMapper::dtoToView)
                     .toList();
