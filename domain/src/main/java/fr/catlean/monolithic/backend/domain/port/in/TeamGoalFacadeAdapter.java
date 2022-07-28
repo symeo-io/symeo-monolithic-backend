@@ -12,4 +12,6 @@ public interface TeamGoalFacadeAdapter {
     List<TeamGoal> readForTeamId(UUID teamId) throws CatleanException;
 
     void deleteTeamGoalForId(UUID teamGoalId) throws CatleanException;
+
+    void updateTeamGoalForTeam(UUID id, Integer value) throws CatleanException;
 }

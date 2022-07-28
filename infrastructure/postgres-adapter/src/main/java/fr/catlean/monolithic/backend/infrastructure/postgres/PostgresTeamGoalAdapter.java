@@ -70,4 +70,18 @@ public class PostgresTeamGoalAdapter implements TeamGoalStorage {
                     .build();
         }
     }
+
+    @Override
+    public void updateForIdAndValue(UUID id, Integer value) throws CatleanException {
+        try {
+            teamGoalRepository.updateValueForId(id, value.toString());
+        } catch (Exception e) {
+            final String message = String.format("Failed to update team goal for id %s and value %s", id, value);
+            LOGGER.error(message, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
 }

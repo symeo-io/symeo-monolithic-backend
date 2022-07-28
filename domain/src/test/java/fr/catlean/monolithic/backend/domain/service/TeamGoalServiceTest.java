@@ -79,4 +79,26 @@ public class TeamGoalServiceTest {
         verify(teamGoalStorage, times(1)).deleteForId(uuidArgumentCaptor.capture());
         assertThat(uuidArgumentCaptor.getValue()).isEqualTo(teamId);
     }
+
+    @Test
+    void should_update_team_goal_given_an_id_and_a_value() throws CatleanException {
+        // Given
+        final TeamStandardStorage teamStandardStorage = mock(TeamStandardStorage.class);
+        final TeamGoalStorage teamGoalStorage = mock(TeamGoalStorage.class);
+        final TeamGoalService teamGoalService = new TeamGoalService(teamStandardStorage, teamGoalStorage);
+        final UUID id = UUID.randomUUID();
+        final int value = faker.number().randomDigit();
+
+
+        // When
+        teamGoalService.updateTeamGoalForTeam(id, value);
+
+        // Then
+        final ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        final ArgumentCaptor<Integer> integerArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(teamGoalStorage, times(1)).updateForIdAndValue(uuidArgumentCaptor.capture(),
+                integerArgumentCaptor.capture());
+        assertThat(uuidArgumentCaptor.getValue()).isEqualTo(id);
+        assertThat(integerArgumentCaptor.getValue()).isEqualTo(value);
+    }
 }

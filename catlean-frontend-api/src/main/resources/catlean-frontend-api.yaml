@@ -459,7 +459,44 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-
+    patch:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Goals
+      summary: Update TeamGoal
+      operationId: updateTeamGoal
+      description: |
+        Update TeamGoal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchTeamGoalsRequest'
+      responses:
+        "200":
+          description: 'Successfully update team goal'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
     delete:
       security:
         - bearerAuth: [ ]
@@ -959,4 +996,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TeamGoalResponse'
-
+    PatchTeamGoalsRequest:
+      type: object
+      required:
+        - id
+        - value
+      properties:
+        id:
+          type: string
+          format: uuid
+        value:
+          type: integer
