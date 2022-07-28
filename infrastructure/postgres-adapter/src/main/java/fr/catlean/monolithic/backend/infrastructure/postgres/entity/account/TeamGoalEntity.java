@@ -4,7 +4,10 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -22,9 +25,10 @@ public class TeamGoalEntity {
     private UUID id;
     @Column(name = "standard_code", nullable = false)
     private String standardCode;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "team_id", referencedColumnName = "id")
-    private TeamEntity teamEntity;
+    @Column(name = "value", nullable = false)
+    private String value;
+    @Column(name = "team_id", nullable = false)
+    private UUID teamId;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

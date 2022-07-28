@@ -14,8 +14,15 @@ public class TeamGoal {
     String standardCode;
     @NonNull
     UUID teamId;
+    String value;
 
-    public static TeamGoal fromTeamStandardAndTeamId(TeamStandard teamStandard, UUID teamId) {
-        return TeamGoal.builder().standardCode(teamStandard.code).teamId(teamId).build();
+    public static TeamGoal fromTeamStandardAndTeamId(final TeamStandard teamStandard,
+                                                     final UUID teamId,
+                                                     final Integer value) {
+        return TeamGoal.builder()
+                .standardCode(teamStandard.code)
+                .teamId(teamId)
+                .value(value.toString())
+                .build();
     }
 }

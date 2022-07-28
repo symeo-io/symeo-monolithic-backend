@@ -59,6 +59,7 @@ create table account_storage.team_goal
     id                          uuid                                      not null
         constraint team_goal_id primary key,
     standard_code               varchar(200)                              not null,
+    value                       varchar(100)                              not null,
     team_id                     uuid                                      not null,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null,

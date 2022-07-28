@@ -7,5 +7,6 @@ import lombok.Data;
 @Data
 public class TeamStandard {
 
+    public static final String TIME_TO_MERGE = "time-to-merge";
     String code;
 }

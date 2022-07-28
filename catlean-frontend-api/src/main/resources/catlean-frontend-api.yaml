@@ -413,6 +413,95 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Goals
+      summary: Get TeamGoals linked to Team Id
+      operationId: getTeamGoals
+      description: |
+        Get TeamGoals linked to Team Id
+      parameters:
+        - in: query
+          name: team_id
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: 'Successfully get team goals'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamGoalsResponseContract'
+              example:
+                errors: {}
+                team_goals:
+                  - id: 7742114f-4a11-4e83-a83a-50a5b36a0d9b
+                    code: time-to-merge
+                    value: 10
+                    current_value: 13.2
+                  - id: 02399ee4-776b-4c16-aced-6f239749b1ad
+                    code: maximum-size-to-merge
+                    value: 1000
+                    current_value: 2129.5
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Goals
+      summary: Delete TeamGoal
+      operationId: deleteTeamGoal
+      description: |
+        Delete TeamGoal
+      parameters:
+        - in: query
+          name: team_goal_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: 'Successfully delete team goal'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+
   /api/v1/teams/goals/time-to-merge/histogram:
     get:
       security:
@@ -837,3 +926,37 @@ components:
           format: uuid
         value:
           type: integer
+    TeamGoalResponse:
+      type: object
+      required:
+        - id
+        - standard_code
+        - team_id
+        - value
+        - current_value
+      properties:
+        id:
+          type: string
+          format: uuid
+        standard_code:
+          type: string
+        team_id:
+          type: string
+          format: uuid
+        value:
+          type: integer
+        current_value:
+          type: number
+          format: double
+    TeamGoalsResponseContract:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
+        team_goals:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamGoalResponse'
+

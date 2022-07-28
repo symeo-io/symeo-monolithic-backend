@@ -1,6 +1,8 @@
 package catlean.monolithic.backend.rest.api.adapter;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
+import catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper;
+import catlean.monolithic.backend.rest.api.adapter.mapper.TeamGoalContractMapper;
 import catlean.monolithic.backend.rest.api.adapter.mapper.TimeToMergeCurveMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
@@ -8,10 +10,7 @@ import fr.catlean.monolithic.backend.domain.port.in.TeamGoalFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.query.CurveQuery;
 import fr.catlean.monolithic.backend.domain.query.HistogramQuery;
 import fr.catlean.monolithic.backend.frontend.contract.api.GoalsApi;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.CatleanErrorsContract;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.GetCurveResponseContract;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.GetHistogramResponseContract;
-import fr.catlean.monolithic.backend.frontend.contract.api.model.PostCreateTeamGoalsRequest;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.AllArgsConstructor;
@@ -43,9 +42,9 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
         try {
             teamGoalFacadeAdapter.createTeamGoalForTeam(postCreateTeamGoalsRequest.getTeamId(),
                     postCreateTeamGoalsRequest.getStandardCode(), postCreateTeamGoalsRequest.getValue());
-            return ResponseEntity.ok().build();
+            return ok().build();
         } catch (CatleanException e) {
-            return ResponseEntity.internalServerError().body(catleanExceptionToContracts(e));
+            return internalServerError().body(catleanExceptionToContracts(e));
         }
     }
 
@@ -68,6 +67,25 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                     teamId, TIME_LIMIT));
         } catch (CatleanException e) {
             return errorToContract(e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<TeamGoalsResponseContract> getTeamGoals(UUID teamId) {
+        try {
+            return ok(TeamGoalContractMapper.domainToContract(teamGoalFacadeAdapter.readForTeamId(teamId)));
+        } catch (CatleanException e) {
+            return internalServerError().body(TeamGoalContractMapper.errorToContract(e));
+        }
+    }
+
+    @Override
+    public ResponseEntity<CatleanErrorsContract> deleteTeamGoal(UUID teamGoalId) {
+        try {
+            teamGoalFacadeAdapter.deleteTeamGoalForId(teamGoalId);
+            return ok().build();
+        } catch (CatleanException e) {
+            return internalServerError().body(CatleanErrorContractMapper.catleanExceptionToContracts(e));
         }
     }
 }

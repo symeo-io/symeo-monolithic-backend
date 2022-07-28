@@ -38,10 +38,6 @@ public class TeamEntity {
     @Builder.Default
     List<String> repositoryIds = new ArrayList<>();
 
-    @OneToMany(mappedBy = "teamEntity")
-    @Builder.Default
-    List<TeamGoalEntity> teamGoalEntities = new ArrayList<>();
-
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

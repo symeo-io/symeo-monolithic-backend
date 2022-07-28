@@ -14,6 +14,17 @@ public interface TeamGoalMapper {
                 .builder()
                 .id(isNull(teamGoal.getId()) ? UUID.randomUUID() : teamGoal.getId())
                 .standardCode(teamGoal.getStandardCode())
+                .value(teamGoal.getValue())
+                .teamId(teamGoal.getTeamId())
+                .build();
+    }
+
+    static TeamGoal entityToDomain(final TeamGoalEntity teamGoalEntity) {
+        return TeamGoal.builder()
+                .teamId(teamGoalEntity.getTeamId())
+                .standardCode(teamGoalEntity.getStandardCode())
+                .value(teamGoalEntity.getValue())
+                .id(teamGoalEntity.getId())
                 .build();
     }
 }
