@@ -2,18 +2,14 @@ package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
-import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestHistogramDataEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestCurveMapper;
-import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestHistogramMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestHistogramRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestTimeToMergeRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
@@ -21,18 +17,17 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.POSTGRES_EXCEPTION;
+import static java.util.Optional.ofNullable;
 
 @AllArgsConstructor
 @Slf4j
 public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     private final PullRequestRepository pullRequestRepository;
-    private final PullRequestHistogramRepository pullRequestHistogramRepository;
     private final RepositoryRepository repositoryRepository;
     private final PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository;
 
@@ -41,23 +36,6 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
         final List<PullRequestEntity> pullRequestEntities = pullRequests.stream().map(PullRequestMapper::domainToEntity)
                 .toList();
         pullRequestRepository.saveAll(pullRequestEntities);
-    }
-
-    @Override
-    public void savePullRequestHistograms(List<PullRequestHistogram> pullRequestHistograms) {
-        final List<PullRequestHistogramDataEntity> pullRequestHistogramDataEntities =
-                pullRequestHistograms.stream().map(PullRequestHistogramMapper::domainToEntities).flatMap(Collection::stream).toList();
-        pullRequestHistogramRepository.saveAll(pullRequestHistogramDataEntities);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public PullRequestHistogram readPullRequestHistogram(String organizationId, String teamName,
-                                                         String histogramType) {
-        final List<PullRequestHistogramDataEntity> histogramDataEntities =
-                pullRequestHistogramRepository.findByOrganizationIdAndTeamNameAndHistogramType(organizationId,
-                        teamName, histogramType);
-        return PullRequestHistogramMapper.entitiesToDomain(histogramDataEntities);
     }
 
     @Override
@@ -76,9 +54,11 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PullRequest> findAllPullRequestsForOrganization(Organization organization) throws CatleanException {
+    public List<PullRequest> findAllPullRequestsForOrganizationAndTeamId(Organization organization, UUID teamId) throws CatleanException {
         try {
-            return pullRequestRepository.findAllByOrganizationId(organization.getId())
+            return ofNullable(teamId)
+                    .map(uuid -> pullRequestRepository.findAllByOrganizationIdAndTeamId(organization.getId(), uuid))
+                    .orElseGet(() -> pullRequestRepository.findAllByOrganizationId(organization.getId()))
                     .stream().map(PullRequestMapper::entityToDomain).toList();
         } catch (Exception e) {
             LOGGER.error("Failed to find all pull requests for organization {}", organization, e);
@@ -95,7 +75,9 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     public List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization,
                                                                                                   UUID teamId) throws CatleanException {
         try {
-            return pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationId(organization.getId())
+            return ofNullable(teamId)
+                    .map(uuid -> pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamId(organization.getId(), uuid))
+                    .orElseGet(() -> pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationId(organization.getId()))
                     .stream()
                     .map(PullRequestCurveMapper::dtoToView)
                     .toList();

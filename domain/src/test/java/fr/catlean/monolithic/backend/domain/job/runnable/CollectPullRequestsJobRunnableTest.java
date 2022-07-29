@@ -44,9 +44,5 @@ public class CollectPullRequestsJobRunnableTest {
 
         // Then
         verify(pullRequestHistogramService, times(1)).savePullRequests(pullRequests);
-        verify(pullRequestHistogramService, times(1)).computeAndSavePullRequestSizeHistogram(pullRequests,
-                organisation);
-        verify(pullRequestHistogramService, times(1)).computeAndSavePullRequestTimeHistogram(pullRequests,
-                organisation);
     }
 }

@@ -14,6 +14,7 @@ public class PieceCurveWithAverage {
     PieceCurve pieceCurve = PieceCurve.builder().build();
     @Builder.Default
     Curve averageCurve = Curve.builder().build();
+    int limit;
 
     private void addPoint(final PullRequestTimeToMergeView pullRequestTimeToMergeView) {
         this.pieceCurve.addPoint(pullRequestTimeToMergeView.getStartDateRange(),
@@ -24,8 +25,8 @@ public class PieceCurveWithAverage {
     }
 
 
-    public static PieceCurveWithAverage buildTimeToMergeCurve(List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews) {
-        final PieceCurveWithAverage pieceCurveWithAverage = PieceCurveWithAverage.builder().build();
+    public static PieceCurveWithAverage buildTimeToMergeCurve(final List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews, final int limit) {
+        final PieceCurveWithAverage pieceCurveWithAverage = PieceCurveWithAverage.builder().limit(limit).build();
         pullRequestTimeToMergeViews.forEach(pieceCurveWithAverage::addPoint);
         return pieceCurveWithAverage;
     }

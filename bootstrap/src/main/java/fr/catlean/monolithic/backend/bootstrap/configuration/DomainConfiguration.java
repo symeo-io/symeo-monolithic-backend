@@ -63,8 +63,10 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new HistogramQuery(expositionStorageAdapter);
+    public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter,
+                                         final TeamGoalFacadeAdapter teamGoalFacadeAdapter,
+                                         final PullRequestHistogramService pullRequestHistogramService) {
+        return new HistogramQuery(expositionStorageAdapter, teamGoalFacadeAdapter, pullRequestHistogramService);
     }
 
     @Bean
@@ -95,8 +97,9 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public CurveQuery curveQuery(final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new CurveQuery(expositionStorageAdapter);
+    public CurveQuery curveQuery(final ExpositionStorageAdapter expositionStorageAdapter,
+                                 final TeamGoalFacadeAdapter teamGoalFacadeAdapter) {
+        return new CurveQuery(expositionStorageAdapter, teamGoalFacadeAdapter);
     }
 
     @Bean
@@ -108,5 +111,10 @@ public class DomainConfiguration {
     public TeamGoalFacadeAdapter teamGoalFacadeAdapter(final TeamStandardStorage teamStandardStorage,
                                                        final TeamGoalStorage teamGoalStorage) {
         return new TeamGoalService(teamStandardStorage, teamGoalStorage);
+    }
+
+    @Bean
+    public PullRequestHistogramService pullRequestHistogramService(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new PullRequestHistogramService(expositionStorageAdapter);
     }
 }

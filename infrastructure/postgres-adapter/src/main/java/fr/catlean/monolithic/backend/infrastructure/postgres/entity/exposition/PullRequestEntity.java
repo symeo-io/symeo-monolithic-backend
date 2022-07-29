@@ -56,6 +56,8 @@ public class PullRequestEntity {
     String authorLogin;
     @Column(name = "vcs_repository")
     String vcsRepository;
+    @Column(name = "vcs_repository_id")
+    String vcsRepositoryId;
     @Column(name = "vcs_organization")
     String vcsOrganization;
     @Column(name = "organization_id")

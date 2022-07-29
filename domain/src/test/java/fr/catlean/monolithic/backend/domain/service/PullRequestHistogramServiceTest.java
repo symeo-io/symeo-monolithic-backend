@@ -5,6 +5,8 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
+import fr.catlean.monolithic.backend.domain.model.account.TeamGoal;
+import fr.catlean.monolithic.backend.domain.model.account.TeamStandard;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -12,7 +14,6 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -57,12 +58,13 @@ public class PullRequestHistogramServiceTest {
     @Test
     void should_compute_and_save_pull_request_size_histogram_given_simple_pull_request_cases() {
         // Given
+        final PullRequestHistogramService pullRequestHistogramService =
+                new PullRequestHistogramService(mock(ExpositionStorageAdapter.class));
         final String repositoryName1 = faker.pokemon().name() + "-1";
-        final Team team1 = Team.builder()
+        final Team team = Team.builder()
+                .id(UUID.randomUUID())
                 .name("team1")
                 .repositories(List.of(Repository.builder().name(repositoryName1).build()))
-                .pullRequestDayNumberLimit(5)
-                .pullRequestLineNumberLimit(500)
                 .build();
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
@@ -70,19 +72,17 @@ public class PullRequestHistogramServiceTest {
                 .vcsOrganization(
                         VcsOrganization.builder().name("fake-orga-name").build()
                 )
-                .teams(List.of(team1))
+                .teams(List.of(team))
                 .build();
-        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequestHistogramService pullRequestHistogramService =
-                new PullRequestHistogramService(expositionStorageAdapter);
+        final TeamGoal teamGoal = TeamGoal.fromTeamStandardAndTeamId(TeamStandard.buildMaximumSizeToMerge(),
+                team.getId(), 500);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organization, 100);
         final PullRequestHistogram pullRequestHistogram =
                 PullRequestHistogram.builder().
                         type(PullRequestHistogram.SIZE_LIMIT)
-                        .limit(500)
+                        .limit(teamGoal.getValueAsInteger())
                         .organizationId(organization.getId())
-                        .team(organization.getTeams().get(0).getName())
                         .build();
 
         final List<java.util.Date> weekStartDates =
@@ -112,61 +112,57 @@ public class PullRequestHistogramServiceTest {
                 0, 0, SDF.format(weekStartDates.get(7))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                2, 1, SDF.format(weekStartDates.get(8))
+                3, 1, SDF.format(weekStartDates.get(8))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                6, 1, SDF.format(weekStartDates.get(9))
+                7, 1, SDF.format(weekStartDates.get(9))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                5, 2, SDF.format(weekStartDates.get(10))
+                6, 2, SDF.format(weekStartDates.get(10))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                6, 1, SDF.format(weekStartDates.get(11))
+                8, 1, SDF.format(weekStartDates.get(11))
         );
 
 
         // When
-        pullRequestHistogramService.computeAndSavePullRequestSizeHistogram(pullRequests, organization);
+        PullRequestHistogram pullRequestHistogramResult =
+                pullRequestHistogramService.getPullRequestHistogram(PullRequestHistogram.SIZE_LIMIT,
+                        pullRequests, organization, teamGoal);
 
         // Then
-        final ArgumentCaptor<List<PullRequestHistogram>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
-        verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(listArgumentCaptor.capture());
-        assertThat(listArgumentCaptor.getValue()).hasSize(2);
-        assertThat(listArgumentCaptor.getValue().get(1).getTeam()).isEqualTo(Team.buildTeamAll(UUID.randomUUID()).getName());
-        assertThat(listArgumentCaptor.getValue().get(0)).isEqualTo(pullRequestHistogram);
+        assertThat(pullRequestHistogramResult).isEqualTo(pullRequestHistogram);
     }
 
     @Test
     void should_compute_and_save_pull_request_time_histogram_given_simple_pull_request_cases() {
         // Given
+        final PullRequestHistogramService pullRequestHistogramService =
+                new PullRequestHistogramService(mock(ExpositionStorageAdapter.class));
         final String repositoryName1 = faker.pokemon().name() + "-1";
-        final Team team1 = Team.builder()
+        final Team team = Team.builder()
+                .id(UUID.randomUUID())
                 .name("team1")
                 .repositories(List.of(Repository.builder().name(repositoryName1).build()))
-                .pullRequestDayNumberLimit(5)
-                .pullRequestLineNumberLimit(500)
                 .build();
+        final TeamGoal teamGoal = TeamGoal.fromTeamStandardAndTeamId(
+                TeamStandard.buildTimeToMerge(), team.getId(), 5
+        );
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name("fake-orga-account")
                 .vcsOrganization(
                         VcsOrganization.builder().name("fake-orga-name").build()
                 )
-                .teams(List.of(team1))
+                .teams(List.of(team))
                 .build();
-
-
-        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequestHistogramService pullRequestHistogramService =
-                new PullRequestHistogramService(expositionStorageAdapter);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organization, 100);
         final PullRequestHistogram pullRequestHistogram =
                 PullRequestHistogram.builder().
                         type(PullRequestHistogram.TIME_LIMIT)
-                        .limit(5)
+                        .limit(teamGoal.getValueAsInteger())
                         .organizationId(organization.getId())
-                        .team(organization.getTeams().get(0).getName())
                         .build();
 
         final List<java.util.Date> weekStartDates =
@@ -196,34 +192,32 @@ public class PullRequestHistogramServiceTest {
                 0, 0, SDF.format(weekStartDates.get(7))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                3, 0, SDF.format(weekStartDates.get(8))
+                4, 0, SDF.format(weekStartDates.get(8))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                4, 3, SDF.format(weekStartDates.get(9))
+                4, 4, SDF.format(weekStartDates.get(9))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                3, 4, SDF.format(weekStartDates.get(10))
+                3, 5, SDF.format(weekStartDates.get(10))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                1, 6, SDF.format(weekStartDates.get(11))
+                1, 8, SDF.format(weekStartDates.get(11))
         );
 
 
         // When
-        pullRequestHistogramService.computeAndSavePullRequestTimeHistogram(pullRequests, organization);
+        PullRequestHistogram pullRequestHistogramResult =
+                pullRequestHistogramService.getPullRequestHistogram(PullRequestHistogram.TIME_LIMIT,
+                        pullRequests, organization, teamGoal);
 
         // Then
-        final ArgumentCaptor<List<PullRequestHistogram>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
-        verify(expositionStorageAdapter, times(1)).savePullRequestHistograms(listArgumentCaptor.capture());
-        assertThat(listArgumentCaptor.getValue()).hasSize(2);
-        assertThat(listArgumentCaptor.getValue().get(1).getTeam()).isEqualTo(Team.buildTeamAll(UUID.randomUUID()).getName());
-        assertThat(listArgumentCaptor.getValue().get(0)).isEqualTo(pullRequestHistogram);
+        assertThat(pullRequestHistogramResult).isEqualTo(pullRequestHistogram);
     }
 
 
     public static List<PullRequest> getPullRequestsStubsWithSizeLimitToTestWeekRange(final String repositoryName,
-                                                                                      final Organization organization,
-                                                                                      final Integer halfCodeSize) {
+                                                                                     final Organization organization,
+                                                                                     final Integer halfCodeSize) {
         final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organization.getTimeZone());
 
 

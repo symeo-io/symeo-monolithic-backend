@@ -34,8 +34,6 @@ public class CollectPullRequestsJobRunnable implements JobRunnable {
             final List<PullRequest> pullRequestList =
                     vcsService.collectPullRequestsForOrganization(organizationWithTeams);
             pullRequestHistogramService.savePullRequests(pullRequestList);
-            pullRequestHistogramService.computeAndSavePullRequestSizeHistogram(pullRequestList, organizationWithTeams);
-            pullRequestHistogramService.computeAndSavePullRequestTimeHistogram(pullRequestList, organizationWithTeams);
             LOGGER.info("End of PRs and Histograms collections for organization {}", organizationWithTeams);
         } catch (CatleanException e) {
             LOGGER.error("Error while collection PRs for organization {}", organization, e);

@@ -36,6 +36,7 @@ public class PullRequest {
     String title;
     String authorLogin;
     String repository;
+    String repositoryId;
     String vcsOrganization;
     UUID organizationId;
     String team;
@@ -101,10 +102,6 @@ public class PullRequest {
             }
         }
         return false;
-    }
-
-    public boolean isValid() {
-        return !this.getIsDraft() && !(isNull(this.getMergeDate()) && nonNull(this.getCloseDate()));
     }
 
     public boolean isAboveSizeLimit(int pullRequestLimit) {

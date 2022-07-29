@@ -63,8 +63,8 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
     public ResponseEntity<GetHistogramResponseContract> getTimeToMergeHistogram(UUID teamId) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return domainToContract(histogramQuery.computePullRequestHistogram(authenticatedUser.getOrganization(),
-                    teamId, TIME_LIMIT));
+            return domainToContract(histogramQuery.computePullRequestTimeToMergeHistogram(authenticatedUser.getOrganization(),
+                    teamId));
         } catch (CatleanException e) {
             return errorToContract(e);
         }
