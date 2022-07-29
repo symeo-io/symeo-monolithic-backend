@@ -7,6 +7,7 @@ import fr.catlean.monolithic.backend.domain.job.runnable.CollectRepositoriesJobR
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.UpdateTeamRequestContract;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
@@ -312,6 +313,58 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
 
     @Order(10)
     @Test
+    void should_delete_on_team() {
+        // Given
+        final List<TeamEntity> teams = teamRepository.findAll();
+        final TeamEntity teamToDelete = teams.get(0);
+
+        // When
+        client.delete()
+                .uri(getApiURI(TEAM_REST_API, "team_id", teamToDelete.getId().toString()))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .isEmpty();
+        final List<TeamEntity> teamsAfterDelete = teamRepository.findAll();
+        assertThat(teamsAfterDelete).hasSize(1);
+        assertThat(teamsAfterDelete.get(0).getId()).isNotEqualTo(teamToDelete.getId());
+    }
+
+    @Order(11)
+    @Test
+    void should_update_team() {
+        // Given
+        final List<TeamEntity> teams = teamRepository.findAll();
+        final TeamEntity teamEntity = teams.get(0);
+        final UpdateTeamRequestContract updateTeamRequestContract = new UpdateTeamRequestContract();
+        updateTeamRequestContract.setId(teamEntity.getId());
+        final String newName = faker.pokemon().name();
+        updateTeamRequestContract.setName(newName);
+        final List<String> newRepositoryIds = teamEntity.getRepositoryIds().subList(0, 1);
+        updateTeamRequestContract.setRepositoryIds(newRepositoryIds);
+
+        // When
+        client.patch()
+                .uri(getApiURI(TEAM_REST_API))
+                .body(BodyInserters.fromValue(updateTeamRequestContract))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .isEmpty();
+        final List<TeamEntity> teamsAfterUpdate = teamRepository.findAll();
+        assertThat(teamsAfterUpdate).hasSize(1);
+        assertThat(teamsAfterUpdate.get(0).getId()).isEqualTo(teamEntity.getId());
+        assertThat(teamsAfterUpdate.get(0).getName()).isEqualTo(newName);
+        assertThat(teamsAfterUpdate.get(0).getRepositoryIds()).hasSize(newRepositoryIds.size());
+        teamsAfterUpdate.get(0).getRepositoryIds().forEach(repositoryId -> assertThat(newRepositoryIds.contains(repositoryId)).isTrue());
+    }
+
+    @Order(12)
+    @Test
     void should_return_empty_repositories() {
         // Given
         teamRepository.deleteAll();
@@ -329,7 +382,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.repositories").isEmpty();
     }
 
-    @Order(11)
+    @Order(13)
     @Test
     void should_return_error_for_not_found_organization_to_link_to_current_user() {
         // Given
@@ -351,6 +404,7 @@ public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.errors[0].message").isEqualTo("Organization not found for externalId " + externalId)
                 .jsonPath("$.user").isEmpty();
     }
+
 
     private static RepositoryEntity buildRepository(final Integer vcsId,
                                                     final VcsOrganizationEntity vcsOrganizationEntity) {

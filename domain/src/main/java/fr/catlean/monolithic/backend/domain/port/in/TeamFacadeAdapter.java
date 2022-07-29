@@ -7,6 +7,7 @@ import fr.catlean.monolithic.backend.domain.model.account.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface TeamFacadeAdapter {
 
@@ -14,4 +15,8 @@ public interface TeamFacadeAdapter {
                                                         User user) throws CatleanException;
 
     List<Team> getTeamsForOrganization(Organization organization) throws CatleanException;
+
+    void deleteForId(UUID teamId) throws CatleanException;
+
+    void update(Team team) throws CatleanException;
 }

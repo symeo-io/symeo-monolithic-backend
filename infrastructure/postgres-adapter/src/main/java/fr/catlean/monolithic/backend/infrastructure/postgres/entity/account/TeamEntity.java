@@ -26,9 +26,8 @@ public class TeamEntity {
     private UUID id;
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "organization_id", nullable = false)
+    @Column(name = "organization_id", nullable = false, updatable = false)
     private UUID organizationId;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "team_to_repository", schema = "exposition_storage",
@@ -37,7 +36,6 @@ public class TeamEntity {
     @Column(name = "repository_id")
     @Builder.Default
     List<String> repositoryIds = new ArrayList<>();
-
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;
