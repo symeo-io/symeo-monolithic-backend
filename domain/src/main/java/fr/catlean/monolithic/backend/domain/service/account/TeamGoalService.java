@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.UUID;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.TEAM_NOT_FOUND;
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.TEAM_STANDARD_NOT_FOUND;
 import static fr.catlean.monolithic.backend.domain.model.account.TeamGoal.fromTeamStandardAndTeamId;
 
@@ -44,12 +45,24 @@ class TeamGoalService implements TeamGoalFacadeAdapter {
     }
 
     @Override
-    public TeamGoal getTeamGoalForTeamIdAndTeamStandard(UUID teamId, final TeamStandard teamStandard) throws CatleanException {
-        return teamGoalStorage.readForTeamId(teamId)
-                .stream().filter(teamGoal -> teamGoal.getStandardCode().equals(TeamStandard.TIME_TO_MERGE)).findFirst()
+    public TeamGoal getTeamGoalForTeamIdAndTeamStandard(final UUID teamId, final TeamStandard teamStandard) throws CatleanException {
+        final List<TeamGoal> teamGoals = teamGoalStorage.readForTeamId(teamId);
+        validateTeamGoals(teamGoals, teamId);
+        return teamGoals
+                .stream().filter(teamGoal -> teamGoal.getStandardCode().equals(TeamStandard.TIME_TO_MERGE))
+                .findFirst()
                 .orElseThrow(() -> CatleanException.builder()
                         .code(TEAM_STANDARD_NOT_FOUND)
                         .message(String.format("Team standard not found for code %s", teamStandard.getCode()))
                         .build());
+    }
+
+    private static void validateTeamGoals(final List<TeamGoal> teamGoals, final UUID teamId) throws CatleanException {
+        if (teamGoals.isEmpty()) {
+            throw CatleanException.builder()
+                    .code(TEAM_NOT_FOUND)
+                    .message(String.format("Team not found for id %s", teamId))
+                    .build();
+        }
     }
 }

@@ -3,19 +3,21 @@ package fr.catlean.monolithic.backend.bootstrap.it;
 import fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.Team;
+import fr.catlean.monolithic.backend.domain.model.account.TeamStandard;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
-import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OnboardingEntity;
-import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
-import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.*;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +38,41 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
     public OrganizationRepository organizationRepository;
     @Autowired
     public UserRepository userRepository;
-    private Organization organization;
-    private User activeUser;
+    @Autowired
+    public TeamRepository teamRepository;
+    @Autowired
+    public RepositoryRepository repositoryRepository;
+    @Autowired
+    public TeamGoalRepository teamGoalRepository;
+    private static final UUID organizationId = UUID.randomUUID();
+    private static final UUID activeUserId = UUID.randomUUID();
+    private final static UUID currentTeamId = UUID.randomUUID();
     private final List<Date> dates = DateHelper.getWeekStartDateForTheLastWeekNumber(3 * 4,
             TimeZone.getTimeZone(ZoneId.systemDefault()));
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 
+    @Order(1)
     @Test
     void should_return_an_error_for_team_not_existing() {
         // Given
+        final OrganizationEntity organizationEntity = organizationRepository.save(
+                OrganizationEntity.builder()
+                        .id(organizationId)
+                        .name(faker.rickAndMorty().character())
+                        .build()
+        );
+        final String email = faker.gameOfThrones().character();
+        UserMapper.entityToDomain(userRepository.save(
+                UserEntity.builder()
+                        .id(activeUserId)
+                        .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
+                        .organizationEntities(List.of(organizationEntity))
+                        .status(User.ACTIVE)
+                        .email(email)
+                        .build()
+        ));
+        authenticationContextProvider.authorizeUserForMail(email);
         final UUID teamId = UUID.randomUUID();
         // When
         client.get()
@@ -55,38 +82,28 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                 .expectStatus()
                 .is5xxServerError()
                 .expectBody()
-                .jsonPath("$.errors[0].code").isEqualTo(CatleanExceptionCode.TEAM_STANDARD_NOT_FOUND)
+                .jsonPath("$.errors[0].code").isEqualTo(CatleanExceptionCode.TEAM_NOT_FOUND)
                 .jsonPath("$.errors[0].message").isEqualTo(String.format("Team not found for id %s",
                         teamId));
     }
 
-    @Order(1)
+    @Order(2)
     @Test
-    void should_get_time_to_merge_histogram_for_all_teams() {
+    void should_get_time_to_merge_histogram_given_a_team_id() {
         // Given
-        final OrganizationEntity organizationEntity = organizationRepository.save(
-                OrganizationEntity.builder()
-                        .id(UUID.randomUUID())
-                        .name(faker.rickAndMorty().character())
-                        .build()
-        );
-        organization = OrganizationMapper.entityToDomain(organizationEntity);
-        activeUser = UserMapper.entityToDomain(userRepository.save(
-                UserEntity.builder()
-                        .id(UUID.randomUUID())
-                        .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
-                        .organizationEntities(List.of(organizationEntity))
-                        .status(User.ACTIVE)
-                        .email(faker.gameOfThrones().character())
-                        .build()
-        ));
-        authenticationContextProvider.authorizeUserForMail(activeUser.getEmail());
-        pullRequestRepository.saveAll(generatePullRequestsStubsForOrganization(organization));
+        final List<RepositoryEntity> repositoryEntities = generateRepositoriesStubsForOrganization();
+        repositoryRepository.saveAll(repositoryEntities);
+        teamRepository.save(
+                TeamEntity.builder().id(currentTeamId).name(faker.dragonBall().character())
+                        .organizationId(organizationId).repositoryIds(List.of(repositoryEntities.get(0).getId())).build());
+        teamGoalRepository.save(TeamGoalEntity.builder().teamId(currentTeamId).id(UUID.randomUUID()).standardCode(TeamStandard.TIME_TO_MERGE).value("5").build());
+        pullRequestRepository.saveAll(
+                generatePullRequestsStubsForOrganization(OrganizationMapper.entityToDomain(organizationRepository.findById(organizationId).get())));
 
 
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM, "team_id", currentTeamId.toString()))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -132,11 +149,12 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.histogram.data[11].start_date_range").isEqualTo(simpleDateFormat.format(dates.get(11)));
     }
 
+    @Order(3)
     @Test
-    void should_get_time_to_merge_curves_for_all_teams() {
+    void should_get_time_to_merge_curves_given_a_team_id() {
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES, "team_id", currentTeamId.toString()))
                 // Then
                 .exchange()
                 .expectStatus()
@@ -167,9 +185,21 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
 
     }
 
+    private static List<RepositoryEntity> generateRepositoriesStubsForOrganization() {
+        return List.of(
+                RepositoryEntity.builder().vcsOrganizationName(faker.rickAndMorty().character())
+                        .name(faker.name().firstName()).organizationId(organizationId)
+                        .id("repository-1")
+                        .build(),
+                RepositoryEntity.builder().vcsOrganizationName(faker.rickAndMorty().character())
+                        .name(faker.name().firstName()).organizationId(organizationId)
+                        .id("repository-2")
+                        .build()
+        );
+    }
+
     private static List<PullRequestEntity> generatePullRequestsStubsForOrganization(final Organization organization) {
         final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organization.getTimeZone());
-        final Team teamAll = Team.buildTeamAll(organization.getId());
         final ArrayList<PullRequestEntity> pullRequests = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
 
@@ -192,6 +222,7 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                     .vcsUrl(faker.pokemon().name())
                     .organizationId(organization.getId())
                     .authorLogin(faker.dragonBall().character())
+                    .vcsRepositoryId("repository-1")
                     .lastUpdateDate(ZonedDateTime.now())
                     .build());
             pullRequests.add(PullRequestEntity.builder()
@@ -208,6 +239,7 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                     .deletedLineNumber(300)
                     .commitNumber(0)
                     .daysOpened(i + 1)
+                    .vcsRepositoryId("repository-1")
                     .state(PullRequest.MERGE)
                     .isMerged(true)
                     .title(faker.name().title())
@@ -239,6 +271,33 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                     .title(faker.name().title())
                     .vcsOrganization(organization.getName())
                     .isDraft(false)
+                    .vcsRepositoryId("repository-1")
+                    .vcsUrl(faker.pokemon().name())
+                    .organizationId(organization.getId())
+                    .authorLogin(faker.dragonBall().character())
+                    .lastUpdateDate(ZonedDateTime.now())
+                    .build());
+            pullRequests.add(PullRequestEntity.builder()
+                    .id("pr-4-" + i)
+                    .creationDate(
+                            weekStartDate.toInstant()
+                                    .atZone(organization.getTimeZone().toZoneId())
+                                    .minus(i * 8, ChronoUnit.DAYS))
+                    .mergeDate(
+                            weekStartDate.toInstant()
+                                    .atZone(organization.getTimeZone().toZoneId())
+                                    .minus(8, ChronoUnit.DAYS))
+                    .addedLineNumber(500)
+                    .deletedLineNumber(500)
+                    .commitNumber(0)
+                    .daysOpened(i + 2)
+                    .startDateRange("01/06/2022")
+                    .state(PullRequest.MERGE)
+                    .isMerged(true)
+                    .title(faker.name().title())
+                    .vcsOrganization(organization.getName())
+                    .isDraft(false)
+                    .vcsRepositoryId("repository-2")
                     .vcsUrl(faker.pokemon().name())
                     .organizationId(organization.getId())
                     .authorLogin(faker.dragonBall().character())
