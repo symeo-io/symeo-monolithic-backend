@@ -12,6 +12,7 @@ public interface CatleanExceptionCode {
     String ORGANISATION_NOT_FOUND = "F.ORGANISATION_NOT_FOUND";
     String ORGANIZATION_NAME_NOT_FOUND = "F.ORGANIZATION_NAME_NOT_FOUND";
     String POSTGRES_EXCEPTION = "T.POSTGRES_EXCEPTION";
+    String TEAM_NOT_FOUND = "F.TEAM_NOT_FOUND";
 
 
     // Github Exception Codes

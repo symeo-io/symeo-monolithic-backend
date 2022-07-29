@@ -36,6 +36,7 @@ public class PullRequest {
     String title;
     String authorLogin;
     String repository;
+    String repositoryId;
     String vcsOrganization;
     UUID organizationId;
     String team;

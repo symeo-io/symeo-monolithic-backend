@@ -18,8 +18,6 @@ public class PullRequestHistogram {
     @NonNull
     UUID organizationId;
     @Builder.Default
-    String team = "all";
-    @Builder.Default
     List<DataCompareToLimit> dataByWeek = new ArrayList<>();
 
     public void addDataBelowAndAboveLimitForWeek(int dataBelowLimit, int dataAboveLimit, String week) {
