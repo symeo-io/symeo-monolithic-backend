@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @AllArgsConstructor
 public class TeamService implements TeamFacadeAdapter {
@@ -36,5 +37,15 @@ public class TeamService implements TeamFacadeAdapter {
     @Override
     public List<Team> getTeamsForOrganization(Organization organization) throws CatleanException {
         return accountTeamStorage.findByOrganization(organization);
+    }
+
+    @Override
+    public void deleteForId(UUID teamId) throws CatleanException {
+        accountTeamStorage.deleteById(teamId);
+    }
+
+    @Override
+    public void update(Team team) throws CatleanException {
+        accountTeamStorage.update(team);
     }
 }

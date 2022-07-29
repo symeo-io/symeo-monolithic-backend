@@ -13,8 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.POSTGRES_EXCEPTION;
+import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper.domainToEntity;
 import static fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper.domainToEntity;
 
 @AllArgsConstructor
@@ -58,6 +60,34 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
             throw CatleanException.builder()
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to find teams by organization " + organization.toString())
+                    .build();
+        }
+    }
+
+    @Override
+    public void deleteById(UUID teamId) throws CatleanException {
+        try {
+            teamRepository.deleteById(teamId);
+        } catch (Exception e) {
+            final String message = String.format("Failed to delete team for id %s", teamId);
+            LOGGER.error(message, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public void update(Team team) throws CatleanException {
+        try {
+            teamRepository.save(domainToEntity(team));
+        } catch (Exception e) {
+            final String message = String.format("Failed to update team %s", team);
+            LOGGER.error(message, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
                     .build();
         }
     }

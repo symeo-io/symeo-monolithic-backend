@@ -9,6 +9,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountTeamAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper;
@@ -187,6 +188,79 @@ public class PostgresAccountTeamAdapterTestIT {
         assertThat(catleanException).isNotNull();
         assertThat(catleanException.getCode()).isEqualTo(POSTGRES_EXCEPTION);
         assertThat(catleanException.getMessage()).isEqualTo("Failed to create teams " + team.getName());
+    }
+
+    @Test
+    void should_delete_team_given_a_team_id() throws CatleanException {
+        // Given
+        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
+                new PostgresAccountTeamAdapter(teamRepository, userRepository);
+        final OrganizationEntity organizationEntity = OrganizationEntity.builder()
+                .name(faker.pokemon().name())
+                .id(UUID.randomUUID())
+                .build();
+        organizationRepository.save(organizationEntity);
+        final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
+                RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
+        )).stream().map(RepositoryMapper::entityToDomain).toList();
+        final Team team = Team.builder()
+                .id(UUID.randomUUID())
+                .repositories(repositories1)
+                .name(faker.harryPotter().book())
+                .organizationId(organizationEntity.getId())
+                .build();
+        teamRepository.save(TeamMapper.domainToEntity(team));
+
+        // When
+        postgresAccountTeamAdapter.deleteById(team.getId());
+
+        // Then
+        assertThat(teamRepository.findAll()).hasSize(0);
+    }
+
+    @Test
+    void should_update_team_given_update_team() throws CatleanException {
+        // Given
+        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
+                new PostgresAccountTeamAdapter(teamRepository, userRepository);
+        final OrganizationEntity organizationEntity = OrganizationEntity.builder()
+                .name(faker.pokemon().name())
+                .id(UUID.randomUUID())
+                .build();
+        User user =
+                User.builder().email(faker.dragonBall().character()).onboarding(Onboarding.builder().build()).build();
+        user = UserMapper.entityToDomain(userRepository.save(UserMapper.domainToEntity(user)));
+        user.hasConfiguredTeam();
+        organizationRepository.save(organizationEntity);
+        final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
+                RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
+        )).stream().map(RepositoryMapper::entityToDomain).toList();
+        final Team team1 = Team.builder()
+                .id(UUID.randomUUID())
+                .repositories(repositories1)
+                .name(faker.harryPotter().book())
+                .organizationId(organizationEntity.getId())
+                .build();
+        teamRepository.save(TeamMapper.domainToEntity(team1));
+        final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
+                RepositoryEntity.builder().name(faker.name().lastName()).id(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
+                RepositoryEntity.builder().name(faker.name().firstName()).id(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
+        )).stream().map(RepositoryMapper::entityToDomain).toList();
+        final Team teamUpdate =
+                team1.toBuilder().name(faker.dragonBall().character()).repositories(repositories2).build();
+
+        // When
+        postgresAccountTeamAdapter.update(teamUpdate);
+
+        // Then
+        final TeamEntity teamEntity = teamRepository.findById(teamUpdate.getId()).get();
+        assertThat(teamEntity.getId()).isEqualTo(teamUpdate.getId());
+        assertThat(teamEntity.getName()).isEqualTo(teamUpdate.getName());
+        assertThat(teamEntity.getOrganizationId()).isEqualTo(teamUpdate.getOrganizationId());
+        assertThat(teamEntity.getRepositoryIds()).hasSize(teamUpdate.getRepositories().size());
+        teamEntity.getRepositoryIds().forEach(repositoryId -> assertThat(teamUpdate.getRepositories().stream().map(Repository::getId).toList().contains(repositoryId)).isTrue());
     }
 }
 

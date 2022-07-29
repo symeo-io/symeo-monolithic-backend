@@ -18,8 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class TeamServiceTest {
 
@@ -75,9 +74,8 @@ public class TeamServiceTest {
         assertThat(teamsArgumentCaptor.getValue()).hasSize(2);
     }
 
-    @SneakyThrows
     @Test
-    void should_return_teams_for_organization() {
+    void should_return_teams_for_organization() throws CatleanException {
         // Given
         final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
         final TeamService teamService = new TeamService(accountTeamStorage);
@@ -91,5 +89,33 @@ public class TeamServiceTest {
 
         // Then
         assertThat(teams).hasSize(teamList.size());
+    }
+
+    @Test
+    void should_delete_team_given_a_team_id() throws CatleanException {
+        // Given
+        final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
+        final TeamService teamService = new TeamService(accountTeamStorage);
+        final UUID teamId = UUID.randomUUID();
+
+        // When
+        teamService.deleteForId(teamId);
+
+        // Then
+        verify(accountTeamStorage, times(1)).deleteById(teamId);
+    }
+
+    @Test
+    void should_update_team_given_a_team() throws CatleanException {
+        // Given
+        final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
+        final TeamService teamService = new TeamService(accountTeamStorage);
+        final Team team = Team.builder().id(UUID.randomUUID()).build();
+
+        // When
+        teamService.update(team);
+
+        // Then
+        verify(accountTeamStorage,times(1)).update(team);
     }
 }

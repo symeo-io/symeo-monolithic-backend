@@ -6,6 +6,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamResponseContract;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.TeamsResponseContract;
+import fr.catlean.monolithic.backend.frontend.contract.api.model.UpdateTeamRequestContract;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,5 +47,13 @@ public interface TeamContractMapper {
                 new TeamsResponseContract();
         postCreateTeamsResponseContract.setErrors(List.of(CatleanErrorContractMapper.catleanExceptionToContract(e)));
         return postCreateTeamsResponseContract;
+    }
+
+    static Team getTeamToPatch(UpdateTeamRequestContract updateTeamRequestContract) {
+        return Team.builder()
+                .id(updateTeamRequestContract.getId())
+                .name(updateTeamRequestContract.getName())
+                .repositories(updateTeamRequestContract.getRepositoryIds().stream().map(s -> Repository.builder().id(s).build()).toList())
+                .build();
     }
 }
