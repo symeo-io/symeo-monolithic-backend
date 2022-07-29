@@ -55,7 +55,7 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                 .expectStatus()
                 .is5xxServerError()
                 .expectBody()
-                .jsonPath("$.errors[0].code").isEqualTo(CatleanExceptionCode.TEAM_NOT_FOUND)
+                .jsonPath("$.errors[0].code").isEqualTo(CatleanExceptionCode.TEAM_STANDARD_NOT_FOUND)
                 .jsonPath("$.errors[0].message").isEqualTo(String.format("Team not found for id %s",
                         teamId));
     }

@@ -112,16 +112,16 @@ public class PullRequestHistogramServiceTest {
                 0, 0, SDF.format(weekStartDates.get(7))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                2, 1, SDF.format(weekStartDates.get(8))
+                3, 1, SDF.format(weekStartDates.get(8))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                6, 1, SDF.format(weekStartDates.get(9))
+                7, 1, SDF.format(weekStartDates.get(9))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                5, 2, SDF.format(weekStartDates.get(10))
+                6, 2, SDF.format(weekStartDates.get(10))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                6, 1, SDF.format(weekStartDates.get(11))
+                8, 1, SDF.format(weekStartDates.get(11))
         );
 
 
@@ -192,16 +192,16 @@ public class PullRequestHistogramServiceTest {
                 0, 0, SDF.format(weekStartDates.get(7))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                3, 0, SDF.format(weekStartDates.get(8))
+                4, 0, SDF.format(weekStartDates.get(8))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                4, 3, SDF.format(weekStartDates.get(9))
+                4, 4, SDF.format(weekStartDates.get(9))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                3, 4, SDF.format(weekStartDates.get(10))
+                3, 5, SDF.format(weekStartDates.get(10))
         );
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(
-                1, 6, SDF.format(weekStartDates.get(11))
+                1, 8, SDF.format(weekStartDates.get(11))
         );
 
 

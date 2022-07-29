@@ -104,10 +104,6 @@ public class PullRequest {
         return false;
     }
 
-    public boolean isValid() {
-        return !this.getIsDraft() && !(isNull(this.getMergeDate()) && nonNull(this.getCloseDate()));
-    }
-
     public boolean isAboveSizeLimit(int pullRequestLimit) {
         return this.getAddedLineNumber() + this.getDeletedLineNumber() >= pullRequestLimit;
     }

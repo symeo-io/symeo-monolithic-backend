@@ -13,6 +13,7 @@ import org.mockito.ArgumentCaptor;
 import java.util.List;
 import java.util.UUID;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.TEAM_STANDARD_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -103,11 +104,58 @@ public class TeamGoalServiceTest {
     }
 
     @Test
-    void should_return_team_goal_for() {
+    void should_return_team_goal_given_a_team_id_and_a_team_standard_code() throws CatleanException {
         // Given
+        final TeamStandardStorage teamStandardStorage = mock(TeamStandardStorage.class);
+        final TeamGoalStorage teamGoalStorage = mock(TeamGoalStorage.class);
+        final TeamGoalService teamGoalService = new TeamGoalService(teamStandardStorage, teamGoalStorage);
+        final UUID teamId = UUID.randomUUID();
+        final TeamGoal expectedTeamGoal =
+                TeamGoal.builder().teamId(teamId).standardCode(TeamStandard.TIME_TO_MERGE).build();
 
         // When
+        when(teamGoalStorage.readForTeamId(teamId))
+                .thenReturn(
+                        List.of(
+                                expectedTeamGoal,
+                                TeamGoal.builder().teamId(teamId).standardCode(faker.dragonBall().character()).build()
+                        ));
+        final TeamGoal teamGoal = teamGoalService.getTeamGoalForTeamIdAndTeamStandard(teamId,
+                TeamStandard.buildTimeToMerge());
 
         // Then
+        assertThat(teamGoal).isEqualTo(expectedTeamGoal);
+    }
+
+    @Test
+    void should_raise_an_exception_for_team_standard_not_found() throws CatleanException {
+        // Given
+        final TeamStandardStorage teamStandardStorage = mock(TeamStandardStorage.class);
+        final TeamGoalStorage teamGoalStorage = mock(TeamGoalStorage.class);
+        final TeamGoalService teamGoalService = new TeamGoalService(teamStandardStorage, teamGoalStorage);
+        final UUID teamId = UUID.randomUUID();
+        final TeamStandard teamStandard = TeamStandard.buildTimeToMerge();
+
+        // When
+        when(teamGoalStorage.readForTeamId(teamId))
+                .thenReturn(
+                        List.of(
+                                TeamGoal.builder().teamId(teamId).standardCode(faker.dragonBall().character()).build(),
+                                TeamGoal.builder().teamId(teamId).standardCode(faker.dragonBall().character()).build(),
+                                TeamGoal.builder().teamId(teamId).standardCode(faker.dragonBall().character()).build()
+                        ));
+        CatleanException catleanException = null;
+        try {
+
+            teamGoalService.getTeamGoalForTeamIdAndTeamStandard(teamId, teamStandard);
+        } catch (CatleanException exception) {
+            catleanException = exception;
+        }
+
+        // Then
+        assertThat(catleanException).isNotNull();
+        assertThat(catleanException.getCode()).isEqualTo(TEAM_STANDARD_NOT_FOUND);
+        assertThat(catleanException.getMessage()).isEqualTo(String.format("Team standard not found for code %s",
+                teamStandard.getCode()));
     }
 }
