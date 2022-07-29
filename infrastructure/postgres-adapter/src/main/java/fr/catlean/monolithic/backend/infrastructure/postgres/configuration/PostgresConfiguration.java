@@ -51,8 +51,9 @@ public class PostgresConfiguration {
 
     @Bean
     public PostgresAccountTeamAdapter postgresTeamAdapter(final TeamRepository teamRepository,
-                                                          final UserRepository userRepository) {
-        return new PostgresAccountTeamAdapter(teamRepository, userRepository);
+                                                          final UserRepository userRepository,
+                                                          final TeamGoalRepository teamGoalRepository) {
+        return new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
     }
 
     @Bean

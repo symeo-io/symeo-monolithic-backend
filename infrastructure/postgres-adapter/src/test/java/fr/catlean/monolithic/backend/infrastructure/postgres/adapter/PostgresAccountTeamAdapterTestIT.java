@@ -4,18 +4,21 @@ import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Onboarding;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
+import fr.catlean.monolithic.backend.domain.model.account.TeamStandard;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresAccountTeamAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.TeamGoalEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
@@ -46,9 +49,12 @@ public class PostgresAccountTeamAdapterTestIT {
     private RepositoryRepository repositoryRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TeamGoalRepository teamGoalRepository;
 
     @AfterEach
     void tearDown() {
+        teamGoalRepository.deleteAll();
         teamRepository.deleteAll();
         userRepository.deleteAll();
         repositoryRepository.deleteAll();
@@ -59,7 +65,7 @@ public class PostgresAccountTeamAdapterTestIT {
     void should_create_team_given_existing_repositories_and_organization() throws CatleanException {
         // Given
         final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository);
+                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())
@@ -109,7 +115,7 @@ public class PostgresAccountTeamAdapterTestIT {
     void should_find_all_teams_by_organization_id() throws CatleanException {
         // Given
         final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository);
+                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())
@@ -157,7 +163,7 @@ public class PostgresAccountTeamAdapterTestIT {
     void should_raise_an_exception_for_duplicated_team_name_and_organization() {
         // Given
         final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository);
+                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())
@@ -191,10 +197,10 @@ public class PostgresAccountTeamAdapterTestIT {
     }
 
     @Test
-    void should_delete_team_given_a_team_id() throws CatleanException {
+    void should_delete_team_and_linked_team_goals_given_a_team_id() throws CatleanException {
         // Given
         final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository);
+                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())
@@ -211,19 +217,26 @@ public class PostgresAccountTeamAdapterTestIT {
                 .organizationId(organizationEntity.getId())
                 .build();
         teamRepository.save(TeamMapper.domainToEntity(team));
+        teamGoalRepository.save(TeamGoalEntity.builder()
+                .value(faker.pokemon().name())
+                .teamId(team.getId())
+                .standardCode(TeamStandard.TIME_TO_MERGE)
+                .id(UUID.randomUUID())
+                .build());
 
         // When
         postgresAccountTeamAdapter.deleteById(team.getId());
 
         // Then
         assertThat(teamRepository.findAll()).hasSize(0);
+        assertThat(teamGoalRepository.findAll()).hasSize(0);
     }
 
     @Test
     void should_update_team_given_update_team() throws CatleanException {
         // Given
         final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository);
+                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())

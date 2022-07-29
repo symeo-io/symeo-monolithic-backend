@@ -20,4 +20,7 @@ public interface TeamGoalRepository extends JpaRepository<TeamGoalEntity, UUID>,
     @Query(value = "update TeamGoalEntity tge set tge.value = :value where tge.id = :id")
     @Transactional
     void updateValueForId(@Param("id") UUID id, @Param("value") String value);
+
+    @Transactional
+    void deleteAllByTeamId(UUID teamId);
 }

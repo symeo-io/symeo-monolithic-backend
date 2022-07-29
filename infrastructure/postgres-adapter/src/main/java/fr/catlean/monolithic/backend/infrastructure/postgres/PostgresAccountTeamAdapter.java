@@ -6,6 +6,7 @@ import fr.catlean.monolithic.backend.domain.model.account.Team;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final TeamGoalRepository teamGoalRepository;
 
     @Override
     public List<Team> createTeamsForUser(final List<Team> teams, final User user) throws CatleanException {
@@ -67,6 +69,7 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
     @Override
     public void deleteById(UUID teamId) throws CatleanException {
         try {
+            teamGoalRepository.deleteAllByTeamId(teamId);
             teamRepository.deleteById(teamId);
         } catch (Exception e) {
             final String message = String.format("Failed to delete team for id %s", teamId);
