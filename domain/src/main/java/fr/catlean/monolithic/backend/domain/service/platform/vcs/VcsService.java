@@ -24,26 +24,17 @@ public class VcsService {
 
     public List<PullRequest> collectPullRequestsForOrganization(final Organization organization) throws CatleanException {
         return getPullRequestsForOrganizationAccount(organization).stream()
-                .map(pullRequest -> pullRequest.toBuilder().organizationId(organization.getId()).build())
-                .map(pullRequest -> populateWithOrganizationAccount(pullRequest, organization)).toList();
-    }
-
-    private PullRequest populateWithOrganizationAccount(final PullRequest pullRequest,
-                                                        final Organization organization) {
-        return organization.getTeams().stream()
-                .filter(team -> team.getRepositories().stream().map(Repository::getName).toList().contains(pullRequest.getRepository()))
-                .findFirst()
-                .map(vcsTeam -> pullRequest.toBuilder()
-                        .team(vcsTeam.getName())
-                        .vcsOrganization(organization.getName())
+                .map(pullRequest -> pullRequest.toBuilder()
+                        .organizationId(organization.getId())
+                        .vcsOrganization(organization.getVcsOrganization().getName())
                         .build()
-                ).orElse(pullRequest);
+                )
+                .toList();
     }
 
     private List<PullRequest> getPullRequestsForOrganizationAccount(final Organization organization) throws CatleanException {
         List<Repository> repositories = deliveryQuery.readRepositoriesForOrganization(organization);
         return repositories.parallelStream()
-                .filter(repository -> filterRepositoryForOrganizationAccount(organization, repository))
                 .map(
                         repo -> {
                             try {
@@ -55,13 +46,6 @@ public class VcsService {
                             return new ArrayList<PullRequest>();
                         }
                 ).flatMap(Collection::stream).toList();
-    }
-
-    private static boolean filterRepositoryForOrganizationAccount(final Organization organization,
-                                                                  final Repository repository) {
-        final List<String> allTeamsRepositories =
-                organization.getAllTeamsRepositories();
-        return allTeamsRepositories.isEmpty() || allTeamsRepositories.contains(repository.getName());
     }
 
     private List<PullRequest> collectPullRequestForRepository(final Repository repository) throws CatleanException {
