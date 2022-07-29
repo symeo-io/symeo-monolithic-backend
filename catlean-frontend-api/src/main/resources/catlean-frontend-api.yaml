@@ -425,7 +425,7 @@ paths:
       parameters:
         - in: query
           name: team_id
-          required: false
+          required: true
           schema:
             type: string
             format: uuid
@@ -552,7 +552,7 @@ paths:
       parameters:
         - in: query
           name: team_id
-          required: false
+          required: true
           schema:
             type: string
             format: uuid
@@ -606,7 +606,7 @@ paths:
       parameters:
         - in: query
           name: team_id
-          required: false
+          required: true
           schema:
             type: string
             format: uuid

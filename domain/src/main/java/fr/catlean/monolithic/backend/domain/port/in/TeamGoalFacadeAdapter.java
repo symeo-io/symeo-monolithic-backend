@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.domain.port.in;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.TeamGoal;
+import fr.catlean.monolithic.backend.domain.model.account.TeamStandard;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,4 +15,6 @@ public interface TeamGoalFacadeAdapter {
     void deleteTeamGoalForId(UUID teamGoalId) throws CatleanException;
 
     void updateTeamGoalForTeam(UUID id, Integer value) throws CatleanException;
+
+    TeamGoal getTeamGoalForTeamIdAndTeamStandard(UUID teamId, TeamStandard teamStandard) throws CatleanException;
 }

@@ -3,9 +3,12 @@ package fr.catlean.monolithic.backend.domain.query;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.account.TeamGoal;
+import fr.catlean.monolithic.backend.domain.model.account.TeamStandard;
 import fr.catlean.monolithic.backend.domain.model.insight.curve.PieceCurveWithAverage;
 import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import fr.catlean.monolithic.backend.domain.port.in.TeamGoalFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +26,8 @@ public class PieceCurveWithAverageQueryTest {
     void should_compute_pull_request_time_to_merge_curve_for_organization_and_team() throws CatleanException {
         // Given
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final CurveQuery curveQuery = new CurveQuery(expositionStorageAdapter);
+        final TeamGoalFacadeAdapter teamGoalFacadeAdapter = mock(TeamGoalFacadeAdapter.class);
+        final CurveQuery curveQuery = new CurveQuery(expositionStorageAdapter, teamGoalFacadeAdapter);
         final UUID teamId = UUID.randomUUID();
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final String startDateRange1 = "startDateRange1";
@@ -37,8 +41,15 @@ public class PieceCurveWithAverageQueryTest {
                 buildPullRequestTimeToMergeView(3, startDateRange3, PullRequest.OPEN),
                 buildPullRequestTimeToMergeView(3, startDateRange3, PullRequest.OPEN)
         );
+        final TeamGoal teamGoal = TeamGoal.builder()
+                .value(Integer.toString(faker.number().randomDigit()))
+                .standardCode(TeamStandard.TIME_TO_MERGE)
+                .teamId(teamId)
+                .build();
 
         // When
+        when(teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildTimeToMerge()))
+                .thenReturn(teamGoal);
         when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamId))
                 .thenReturn(pullRequestTimeToMergeViews);
         final PieceCurveWithAverage pieceCurveWithAverage = curveQuery.computeTimeToMergeCurve(organization, teamId);
@@ -46,6 +57,7 @@ public class PieceCurveWithAverageQueryTest {
         // Then
         assertThat(pieceCurveWithAverage.getAverageCurve().getData()).hasSize(3);
         assertThat(pieceCurveWithAverage.getPieceCurve().getData()).hasSize(6);
+        assertThat(pieceCurveWithAverage.getLimit()).isEqualTo(Integer.parseInt(teamGoal.getValue()));
     }
 
     public static PullRequestTimeToMergeView buildPullRequestTimeToMergeView(final Integer daysOpen,

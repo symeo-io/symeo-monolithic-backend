@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.UUID;
 
+import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.TEAM_NOT_FOUND;
 import static fr.catlean.monolithic.backend.domain.model.account.TeamGoal.fromTeamStandardAndTeamId;
 
 @AllArgsConstructor
@@ -40,5 +41,15 @@ class TeamGoalService implements TeamGoalFacadeAdapter {
     @Override
     public void updateTeamGoalForTeam(UUID id, Integer value) throws CatleanException {
         teamGoalStorage.updateForIdAndValue(id, value);
+    }
+
+    @Override
+    public TeamGoal getTeamGoalForTeamIdAndTeamStandard(UUID teamId, final TeamStandard teamStandard) throws CatleanException {
+        return teamGoalStorage.readForTeamId(teamId)
+                .stream().filter(teamGoal -> teamGoal.getStandardCode().equals(TeamStandard.TIME_TO_MERGE)).findFirst()
+                .orElseThrow(() -> CatleanException.builder()
+                        .code(TEAM_NOT_FOUND)
+                        .message(String.format("Team not found for id %s", teamId))
+                        .build());
     }
 }

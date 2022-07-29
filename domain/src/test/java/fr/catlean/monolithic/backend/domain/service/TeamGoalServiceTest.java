@@ -101,4 +101,13 @@ public class TeamGoalServiceTest {
         assertThat(uuidArgumentCaptor.getValue()).isEqualTo(id);
         assertThat(integerArgumentCaptor.getValue()).isEqualTo(value);
     }
+
+    @Test
+    void should_return_team_goal_for() {
+        // Given
+
+        // When
+
+        // Then
+    }
 }

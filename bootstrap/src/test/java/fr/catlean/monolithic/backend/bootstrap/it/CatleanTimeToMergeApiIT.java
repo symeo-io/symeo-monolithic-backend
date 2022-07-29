@@ -1,5 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap.it;
 
+import fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
@@ -40,6 +41,24 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
     private final List<Date> dates = DateHelper.getWeekStartDateForTheLastWeekNumber(3 * 4,
             TimeZone.getTimeZone(ZoneId.systemDefault()));
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+
+    @Test
+    void should_return_an_error_for_team_not_existing() {
+        // Given
+        final UUID teamId = UUID.randomUUID();
+        // When
+        client.get()
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM, "team_id", teamId.toString()))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is5xxServerError()
+                .expectBody()
+                .jsonPath("$.errors[0].code").isEqualTo(CatleanExceptionCode.TEAM_NOT_FOUND)
+                .jsonPath("$.errors[0].message").isEqualTo(String.format("Team not found for id %s",
+                        teamId));
+    }
 
     @Order(1)
     @Test
@@ -146,8 +165,6 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                 .jsonPath("$.curves.piece_curve[4].open").isEqualTo(false);
 
 
-
-
     }
 
     private static List<PullRequestEntity> generatePullRequestsStubsForOrganization(final Organization organization) {
@@ -162,8 +179,8 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                             weekStartDate.toInstant()
                                     .atZone(organization.getTimeZone().toZoneId())
                                     .minus(i * 8, ChronoUnit.DAYS))
-                    .addedLineNumber(teamAll.getPullRequestLineNumberLimit() * 2)
-                    .deletedLineNumber(teamAll.getPullRequestLineNumberLimit() * 2)
+                    .addedLineNumber(800)
+                    .deletedLineNumber(900)
                     .commitNumber(0)
                     .state(PullRequest.OPEN)
                     .startDateRange("01/06/2022")
@@ -187,8 +204,8 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                             weekStartDate.toInstant()
                                     .atZone(organization.getTimeZone().toZoneId())
                                     .minus(i * 8, ChronoUnit.DAYS))
-                    .addedLineNumber(teamAll.getPullRequestLineNumberLimit() * 2)
-                    .deletedLineNumber(teamAll.getPullRequestLineNumberLimit() * 2)
+                    .addedLineNumber(0)
+                    .deletedLineNumber(300)
                     .commitNumber(0)
                     .daysOpened(i + 1)
                     .state(PullRequest.MERGE)
@@ -212,8 +229,8 @@ public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT 
                             weekStartDate.toInstant()
                                     .atZone(organization.getTimeZone().toZoneId())
                                     .minus(8, ChronoUnit.DAYS))
-                    .addedLineNumber(teamAll.getPullRequestLineNumberLimit() * 2)
-                    .deletedLineNumber(teamAll.getPullRequestLineNumberLimit() * 2)
+                    .addedLineNumber(500)
+                    .deletedLineNumber(500)
                     .commitNumber(0)
                     .daysOpened(i + 2)
                     .startDateRange("01/06/2022")

@@ -23,22 +23,22 @@ public class PullRequestHistogramService {
     private final static SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
     public PullRequestHistogram getPullRequestHistogram(String pullRequestHistogramType,
-                                                               List<PullRequest> pullRequests,
-                                                               Organization organization,
-                                                               TeamGoal teamGoal) {
+                                                        List<PullRequest> pullRequests,
+                                                        Organization organization,
+                                                        TeamGoal teamGoal) {
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
-        final int limit = Integer.parseInt(teamGoal.getValue());
         for (Date weekStartDate : getWeekStartDateForTheLastWeekNumber(3 * 4,
                 organization.getTimeZone())) {
             final String weekStart = SDF.format(weekStartDate);
-            dataCompareToLimits.add(getDataCompareToLimit(pullRequestHistogramType, pullRequests, limit,
+            dataCompareToLimits.add(getDataCompareToLimit(pullRequestHistogramType, pullRequests,
+                    teamGoal.getValueAsInteger(),
                     weekStartDate, weekStart));
         }
         return PullRequestHistogram.builder()
                 .type(pullRequestHistogramType)
                 .organizationId(organization.getId())
                 .dataByWeek(dataCompareToLimits)
-                .limit(limit)
+                .limit(teamGoal.getValueAsInteger())
                 .build();
     }
 

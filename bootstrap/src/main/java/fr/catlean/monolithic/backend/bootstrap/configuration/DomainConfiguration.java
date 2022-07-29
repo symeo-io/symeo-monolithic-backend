@@ -64,8 +64,9 @@ public class DomainConfiguration {
 
     @Bean
     public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter,
-                                         final TeamGoalStorage teamGoalStorage) {
-        return new HistogramQuery(expositionStorageAdapter, teamGoalStorage);
+                                         final TeamGoalStorage teamGoalStorage,
+                                         final PullRequestHistogramService pullRequestHistogramService) {
+        return new HistogramQuery(expositionStorageAdapter, teamGoalStorage, pullRequestHistogramService);
     }
 
     @Bean
@@ -109,5 +110,10 @@ public class DomainConfiguration {
     public TeamGoalFacadeAdapter teamGoalFacadeAdapter(final TeamStandardStorage teamStandardStorage,
                                                        final TeamGoalStorage teamGoalStorage) {
         return new TeamGoalService(teamStandardStorage, teamGoalStorage);
+    }
+
+    @Bean
+    public PullRequestHistogramService pullRequestHistogramService(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new PullRequestHistogramService(expositionStorageAdapter);
     }
 }

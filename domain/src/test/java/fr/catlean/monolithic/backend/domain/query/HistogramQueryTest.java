@@ -5,9 +5,10 @@ import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.TeamGoal;
 import fr.catlean.monolithic.backend.domain.model.account.TeamStandard;
+import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import fr.catlean.monolithic.backend.domain.port.in.TeamGoalFacadeAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
-import fr.catlean.monolithic.backend.domain.port.out.TeamGoalStorage;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,12 +27,12 @@ public class HistogramQueryTest {
     void should_compute_pull_request_histogram_given_an_organization_a_team_id_an_histogram_type() throws CatleanException {
         // Given
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final TeamGoalStorage teamGoalStorage = mock(TeamGoalStorage.class);
+        final TeamGoalFacadeAdapter teamGoalFacadeAdapter = mock(TeamGoalFacadeAdapter.class);
         final PullRequestHistogramService pullRequestHistogramService = mock(PullRequestHistogramService.class);
-        final HistogramQuery histogramQuery = new HistogramQuery(expositionStorageAdapter, teamGoalStorage,
+        final HistogramQuery histogramQuery = new HistogramQuery(expositionStorageAdapter, teamGoalFacadeAdapter,
                 pullRequestHistogramService);
         final Organization organization = Organization.builder().build();
-        final String histogramType = TeamStandard.TIME_TO_MERGE;
+        final String histogramType = PullRequestHistogram.TIME_LIMIT;
         final UUID teamId = UUID.randomUUID();
         final TeamGoal teamGoal =
                 TeamGoal.builder().teamId(teamId).standardCode(histogramType).id(UUID.randomUUID()).build();
@@ -42,11 +43,11 @@ public class HistogramQueryTest {
         );
 
         // When
-        when(teamGoalStorage.readForTeamId(teamId))
-                .thenReturn(List.of(teamGoal));
+        when(teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildTimeToMerge()))
+                .thenReturn(teamGoal);
         when(expositionStorageAdapter.findAllPullRequestsForOrganizationAndTeamId(organization, teamId))
                 .thenReturn(pullRequests);
-        histogramQuery.computePullRequestHistogram(organization, teamId, histogramType);
+        histogramQuery.computePullRequestTimeToMergeHistogram(organization, teamId);
 
         // Then
         final ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);

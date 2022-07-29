@@ -25,4 +25,8 @@ public class TeamGoal {
                 .value(value.toString())
                 .build();
     }
+
+    public Integer getValueAsInteger() {
+        return Integer.parseInt(this.value);
+    }
 }

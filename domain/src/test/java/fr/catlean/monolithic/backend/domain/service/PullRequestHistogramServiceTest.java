@@ -58,6 +58,8 @@ public class PullRequestHistogramServiceTest {
     @Test
     void should_compute_and_save_pull_request_size_histogram_given_simple_pull_request_cases() {
         // Given
+        final PullRequestHistogramService pullRequestHistogramService =
+                new PullRequestHistogramService(mock(ExpositionStorageAdapter.class));
         final String repositoryName1 = faker.pokemon().name() + "-1";
         final Team team = Team.builder()
                 .id(UUID.randomUUID())
@@ -79,7 +81,7 @@ public class PullRequestHistogramServiceTest {
         final PullRequestHistogram pullRequestHistogram =
                 PullRequestHistogram.builder().
                         type(PullRequestHistogram.SIZE_LIMIT)
-                        .limit(500)
+                        .limit(teamGoal.getValueAsInteger())
                         .organizationId(organization.getId())
                         .build();
 
@@ -125,7 +127,7 @@ public class PullRequestHistogramServiceTest {
 
         // When
         PullRequestHistogram pullRequestHistogramResult =
-                PullRequestHistogramService.getPullRequestHistogram(PullRequestHistogram.SIZE_LIMIT,
+                pullRequestHistogramService.getPullRequestHistogram(PullRequestHistogram.SIZE_LIMIT,
                         pullRequests, organization, teamGoal);
 
         // Then
@@ -135,6 +137,8 @@ public class PullRequestHistogramServiceTest {
     @Test
     void should_compute_and_save_pull_request_time_histogram_given_simple_pull_request_cases() {
         // Given
+        final PullRequestHistogramService pullRequestHistogramService =
+                new PullRequestHistogramService(mock(ExpositionStorageAdapter.class));
         final String repositoryName1 = faker.pokemon().name() + "-1";
         final Team team = Team.builder()
                 .id(UUID.randomUUID())
@@ -157,7 +161,7 @@ public class PullRequestHistogramServiceTest {
         final PullRequestHistogram pullRequestHistogram =
                 PullRequestHistogram.builder().
                         type(PullRequestHistogram.TIME_LIMIT)
-                        .limit(5)
+                        .limit(teamGoal.getValueAsInteger())
                         .organizationId(organization.getId())
                         .build();
 
@@ -203,7 +207,7 @@ public class PullRequestHistogramServiceTest {
 
         // When
         PullRequestHistogram pullRequestHistogramResult =
-                PullRequestHistogramService.getPullRequestHistogram(PullRequestHistogram.TIME_LIMIT,
+                pullRequestHistogramService.getPullRequestHistogram(PullRequestHistogram.TIME_LIMIT,
                         pullRequests, organization, teamGoal);
 
         // Then
