@@ -3,7 +3,6 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.adapter;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -267,24 +266,17 @@ public class PostgresExpositionAdapterTestIT {
 
     private Repository buildRepository(Organization organization) {
         return Repository.builder()
-                .organization(organization)
                 .name(faker.pokemon().name())
                 .id(faker.address().firstName() + faker.ancient().god())
                 .vcsOrganizationName(organization.getVcsOrganization().getName())
-                .build();
-    }
-
-
-    private DataCompareToLimit buildDataCompareToLimit(final String dateAsString) {
-        return DataCompareToLimit.builder()
-                .dateAsString(dateAsString)
-                .numberAboveLimit(faker.number().randomDigit())
-                .numberBelowLimit(faker.number().randomDigit())
+                .vcsOrganizationId(organization.getVcsOrganization().getVcsId())
+                .organizationId(organization.getId())
                 .build();
     }
 
     private PullRequest buildPullRequest(int id) {
-        return buildPullRequestForOrganization(id, Organization.builder().id(UUID.randomUUID()).build());
+        return buildPullRequestForOrganization(id,
+                Organization.builder().id(UUID.randomUUID()).vcsOrganization(VcsOrganization.builder().vcsId(faker.rickAndMorty().character()).name(faker.ancient().god()).build()).build());
     }
 
     private PullRequest buildPullRequestForOrganization(final int id, final Organization organization) {
@@ -304,6 +296,7 @@ public class PostgresExpositionAdapterTestIT {
                 .isDraft(true)
                 .isMerged(false)
                 .organizationId(organization.getId())
+                .vcsOrganizationId(organization.getVcsOrganization().getVcsId())
                 .build();
     }
 }

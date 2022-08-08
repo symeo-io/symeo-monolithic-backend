@@ -20,10 +20,10 @@ public class DeliveryCommandTest {
     void should_collect_all_repositories_given_an_organization() throws CatleanException {
         // Given
         final String organizationName = faker.pokemon().name();
-        final String vcsOrganizationName = faker.pokemon().location();
+        final String vcsId = faker.rickAndMorty().character();
         final Organization organization = Organization.builder()
                 .name(organizationName)
-                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
+                .vcsOrganization(VcsOrganization.builder().vcsId(vcsId).name(faker.pokemon().location()).build())
                 .build();
         final String vcsAdapterName = faker.animal().name();
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
@@ -32,13 +32,13 @@ public class DeliveryCommandTest {
         final byte[] bytes = new byte[0];
 
         // When
-        when(rawStorageAdapter.exists(vcsOrganizationName, vcsAdapterName, Repository.ALL)).thenReturn(false);
-        when(versionControlSystemAdapter.getRawRepositories(vcsOrganizationName)).thenReturn(bytes);
+        when(rawStorageAdapter.exists(vcsId, vcsAdapterName, Repository.ALL)).thenReturn(false);
+        when(versionControlSystemAdapter.getRawRepositories(vcsId)).thenReturn(bytes);
         when(versionControlSystemAdapter.getName()).thenReturn(vcsAdapterName);
         deliveryCommand.collectRepositoriesForOrganization(organization);
 
         // Then
-        verify(rawStorageAdapter, times(1)).save(vcsOrganizationName, vcsAdapterName, Repository.ALL, bytes);
+        verify(rawStorageAdapter, times(1)).save(vcsId, vcsAdapterName, Repository.ALL, bytes);
     }
 
 
@@ -49,18 +49,20 @@ public class DeliveryCommandTest {
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
         final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
         final Repository repository =
-                Repository.builder().name(faker.pokemon().name()).vcsOrganizationName(faker.name().firstName()).build();
+                Repository.builder().name(faker.pokemon().name()).id(faker.animal().name()).vcsOrganizationId(
+                        faker.rickAndMorty().character()
+                ).build();
         final byte[] bytes = new byte[0];
 
         // When
         when(versionControlSystemAdapter.getRawPullRequestsForRepository(repository, null)).thenReturn(bytes);
-        when(rawStorageAdapter.exists(repository.getVcsOrganizationName(),
-                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()))).thenReturn(false);
+        when(rawStorageAdapter.exists(repository.getVcsOrganizationId(),
+                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getId()))).thenReturn(false);
         deliveryCommand.collectPullRequestsForRepository(repository);
 
         // Then
-        verify(rawStorageAdapter, times(1)).save(repository.getVcsOrganizationName(),
-                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()), bytes);
+        verify(rawStorageAdapter, times(1)).save(repository.getVcsOrganizationId(),
+                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getId()), bytes);
     }
 
 
@@ -71,24 +73,28 @@ public class DeliveryCommandTest {
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
         final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
         final Repository repository =
-                Repository.builder().name(faker.pokemon().name()).vcsOrganizationName(faker.name().firstName()).build();
+                Repository.builder()
+                        .name(faker.pokemon().name())
+                        .id(faker.rickAndMorty().character())
+                        .vcsOrganizationId(faker.rickAndMorty().character())
+                        .build();
         final byte[] bytes = new byte[0];
         final byte[] pullRequestsBytes = faker.name().name().getBytes();
 
         // When
         when(versionControlSystemAdapter.getRawPullRequestsForRepository(repository, pullRequestsBytes)).thenReturn(bytes);
-        when(rawStorageAdapter.exists(repository.getVcsOrganizationName(),
-                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()))).thenReturn(true);
-        when(rawStorageAdapter.read(repository.getVcsOrganizationName(), versionControlSystemAdapter.getName(),
-                PullRequest.getNameFromRepository(repository.getName())))
+        when(rawStorageAdapter.exists(repository.getVcsOrganizationId(),
+                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getId()))).thenReturn(true);
+        when(rawStorageAdapter.read(repository.getId(), versionControlSystemAdapter.getName(),
+                PullRequest.getNameFromRepository(repository.getId())))
                 .thenReturn(pullRequestsBytes);
         deliveryCommand.collectPullRequestsForRepository(repository);
 
         // Then
-        verify(rawStorageAdapter, times(1)).save(repository.getVcsOrganizationName(),
-                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()), bytes);
-        verify(rawStorageAdapter, times(1)).exists(repository.getVcsOrganizationName(),
-                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()));
+        verify(rawStorageAdapter, times(1)).save(repository.getVcsOrganizationId(),
+                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getId()), bytes);
+        verify(rawStorageAdapter, times(1)).exists(repository.getVcsOrganizationId(),
+                versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getId()));
 
     }
 

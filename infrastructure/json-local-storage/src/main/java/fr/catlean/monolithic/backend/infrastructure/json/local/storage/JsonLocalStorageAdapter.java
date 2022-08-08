@@ -17,8 +17,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
 
     @Override
     public void save(
-            String organization, String adapterName, String contentName, byte[] bytes) {
-        final Path jsonPath = buildJsonPath(organization, adapterName, contentName);
+            String organizationId, String adapterName, String contentName, byte[] bytes) {
+        final Path jsonPath = buildJsonPath(organizationId, adapterName, contentName);
         try {
             if (!Files.exists(jsonPath)) {
                 Files.createDirectories(jsonPath.getParent());
@@ -30,8 +30,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public byte[] read(String organization, String adapterName, String contentName) {
-        final Path jsonPath = buildJsonPath(organization, adapterName, contentName);
+    public byte[] read(String organizationId, String adapterName, String contentName) {
+        final Path jsonPath = buildJsonPath(organizationId, adapterName, contentName);
         try {
             return Files.readAllBytes(jsonPath);
         } catch (IOException e) {
@@ -40,8 +40,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public boolean exists(String organization, String adapterName, String contentName) {
-        final Path jsonPath = buildJsonPath(organization, adapterName, contentName);
+    public boolean exists(String organizationId, String adapterName, String contentName) {
+        final Path jsonPath = buildJsonPath(organizationId, adapterName, contentName);
         return Files.exists(jsonPath);
     }
 

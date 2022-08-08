@@ -31,7 +31,7 @@ public interface PullRequestMapper {
                 .vcsRepositoryId(pullRequest.getRepositoryId())
                 .authorLogin(pullRequest.getAuthorLogin())
                 .vcsRepository(pullRequest.getRepository())
-                .vcsOrganization(pullRequest.getVcsOrganization())
+                .vcsOrganizationId(pullRequest.getVcsOrganizationId())
                 .organizationId(pullRequest.getOrganizationId())
                 .size(pullRequest.getSize())
                 .daysOpened(pullRequest.getDaysOpened())
@@ -55,7 +55,7 @@ public interface PullRequestMapper {
                 .vcsUrl(pullRequestEntity.getVcsUrl())
                 .repositoryId(pullRequestEntity.getVcsRepositoryId())
                 .authorLogin(pullRequestEntity.getAuthorLogin())
-                .vcsOrganization(pullRequestEntity.getVcsOrganization())
+                .vcsOrganizationId(pullRequestEntity.getVcsOrganizationId())
                 .organizationId(pullRequestEntity.getOrganizationId())
                 .repository(pullRequestEntity.getVcsRepository())
                 .build();
