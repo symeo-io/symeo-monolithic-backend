@@ -77,9 +77,6 @@ aws ecs register-task-definition \
   {
     \"name\":\"CatleanBackendContainer-${ENV}\",
     \"image\":\"${CatleanBackendRepository}:${TAG}\",
-    \"cpu\":1024,
-    \"memory\":\"2GB\",
-    \"portMappings\":[{\"containerPort\":9999}],
     \"portMappings\":[{\"containerPort\":9999}],
     \"environment\":[
       {\"name\":\"AWS_REGION\",\"value\":\"${REGION}\"},
