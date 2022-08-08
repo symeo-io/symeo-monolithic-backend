@@ -115,14 +115,10 @@ workflows:
     when:
       and:
         - matches:
-            pattern: "^infrastructure-.+$"
+            pattern: "^infrastructure-staging-.+$"
             value: << pipeline.git.tag >>
     jobs:
       - build-aws-infrastructure:
           context:
             - staging
             - slack-notifications
-          filters:
-            branches:
-              only:
-                - staging
