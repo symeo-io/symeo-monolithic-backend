@@ -3,7 +3,6 @@ package fr.catlean.monolithic.backend.domain.query;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
@@ -54,36 +53,4 @@ public class DeliveryQueryTest {
         assertThat(repositories).isEqualTo(repositoriesStub);
     }
 
-    @Test
-    void should_read_pull_requests_given_an_organization_and_a_repository() throws CatleanException {
-        // Given
-        final VersionControlSystemAdapter versionControlSystemAdapter =
-                mock(VersionControlSystemAdapter.class);
-        final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
-        final DeliveryQuery deliveryQuery = new DeliveryQuery(rawStorageAdapter,
-                versionControlSystemAdapter);
-        final String organizationName = faker.name().lastName();
-        final String repositoryName = faker.name().firstName();
-        final Repository repository =
-                Repository.builder().name(repositoryName).vcsOrganizationName(organizationName).build();
-        final byte[] dummyBytes = new byte[0];
-        final List<PullRequest> pullRequestsStub = List.of(
-                PullRequest.builder().id("github-1").build(),
-                PullRequest.builder().id("github-2").build(),
-                PullRequest.builder().id("github-3").build()
-        );
-
-        // When
-        when(versionControlSystemAdapter.getName()).thenReturn(faker.name().username());
-        when(rawStorageAdapter.read(organizationName,
-                versionControlSystemAdapter.getName(),
-                PullRequest.getNameFromRepository(repositoryName))).thenReturn(dummyBytes);
-        when(versionControlSystemAdapter.pullRequestsBytesToDomain(dummyBytes)).thenReturn(pullRequestsStub);
-        final List<PullRequest> pullRequests =
-                deliveryQuery.readPullRequestsForRepository(repository);
-
-        // Then
-        assertThat(pullRequests).isEqualTo(pullRequestsStub);
-
-    }
 }

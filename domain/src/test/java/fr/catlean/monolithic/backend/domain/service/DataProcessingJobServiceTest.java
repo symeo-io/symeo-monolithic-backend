@@ -7,12 +7,9 @@ import fr.catlean.monolithic.backend.domain.job.JobManager;
 import fr.catlean.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
 import fr.catlean.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
-import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
-import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
@@ -43,17 +40,13 @@ public class DataProcessingJobServiceTest {
         final VcsService vcsService = mock(VcsService.class);
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
-        final PullRequestHistogramService pullRequestHistogramService = mock(PullRequestHistogramService.class);
-        final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, pullRequestHistogramService, repositoryService, jobManager,accountTeamStorage);
+                        accountOrganizationStorageAdapter, repositoryService, jobManager);
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
-        final List<PullRequest> pullRequests = List.of(PullRequest.builder().id(faker.pokemon().name()).build(),
-                PullRequest.builder().id(faker.hacker().abbreviation()).build());
         final List<Repository> repositories = List.of(
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
@@ -64,9 +57,6 @@ public class DataProcessingJobServiceTest {
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
         when(accountOrganizationStorageAdapter.findVcsOrganizationForName(organisationName)).thenReturn(
                 organisation
-        );
-        when(vcsService.collectPullRequestsForOrganization(organisation)).thenReturn(
-                pullRequests
         );
         when(vcsService.collectRepositoriesForOrganization(organisation)).thenReturn(
                 repositories

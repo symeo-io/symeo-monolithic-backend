@@ -46,4 +46,29 @@ public class CollectRepositoriesJobRunnableTest {
         assertThat(listArgumentCaptor.getValue()).hasSize(repositories.size());
         listArgumentCaptor.getValue().forEach(repository -> assertThat(repository.getOrganization()).isNotNull());
     }
+
+    @Test
+    void should_raise_an_exception() throws CatleanException {
+        // Given
+        final VcsService vcsService = mock(VcsService.class);
+        final RepositoryService repositoryService = mock(RepositoryService.class);
+        final String organisationName = faker.name().username();
+        final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
+                .vcsOrganization(VcsOrganization.builder().build()).build();
+        final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
+                new CollectRepositoriesJobRunnable(vcsService, organisation, repositoryService);
+
+        // When
+        doThrow(CatleanException.class)
+                .when(vcsService)
+                .collectRepositoriesForOrganization(organisation);
+        CatleanException catleanException = null;
+        try {
+            collectRepositoriesJobRunnable.run();
+        } catch (CatleanException e) {
+            catleanException = e;
+        }
+        // Then
+        assertThat(catleanException).isNotNull();
+    }
 }
