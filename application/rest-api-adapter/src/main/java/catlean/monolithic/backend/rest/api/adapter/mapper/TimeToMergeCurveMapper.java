@@ -34,7 +34,7 @@ public interface TimeToMergeCurveMapper {
         }
         curveResponseContract.setAverageCurve(curveDataResponseContractList);
         curveResponseContract.setPieceCurve(pieceCurve);
-        curveResponseContract.setLimit(5);
+        curveResponseContract.setLimit(pieceCurveWithAverage.getLimit());
         getCurveResponseContract.setCurves(curveResponseContract);
         return getCurveResponseContract;
     }

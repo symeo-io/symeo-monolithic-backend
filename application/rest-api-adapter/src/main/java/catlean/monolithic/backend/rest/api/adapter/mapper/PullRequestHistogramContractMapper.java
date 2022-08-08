@@ -32,7 +32,7 @@ public interface PullRequestHistogramContractMapper {
         histogramResponseContract.setData(
                 histogramDataResponseContracts
         );
-        histogramResponseContract.setLimit(5);
+        histogramResponseContract.setLimit(pullRequestHistogram.getLimit());
         final GetHistogramResponseContract getHistogramResponseContract = new GetHistogramResponseContract();
         getHistogramResponseContract.setHistogram(histogramResponseContract);
         return ok(getHistogramResponseContract);
