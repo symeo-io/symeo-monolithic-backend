@@ -28,6 +28,10 @@ case $key in
     DB_PASSWORD="$2"
     shift # past argument
     ;;
+    -ddk|--datadog-api-key)
+    DATADOG_API_KEY="$2"
+    shift # past argument
+    ;;
     -k|--key-name)
     PEM_KEY="$2"
     shift # past argument
@@ -228,6 +232,7 @@ aws cloudformation deploy \
       ECSTaskRole=${CatleanBackendTaskRole} \
       ECSExecutionRole=${CatleanBackendECSExecutionRole} \
       Env=${ENV} \
+      DataDogApiKey=${DATADOG_API_KEY} \
       DatalakeS3Bucket=${DatalakeS3Bucket} \
       DBUsername=${DBUsername} \
       DBPassword=${DB_PASSWORD} \

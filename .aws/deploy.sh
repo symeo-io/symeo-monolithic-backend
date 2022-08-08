@@ -28,6 +28,10 @@ case $key in
     DB_PASSWORD="$2"
     shift # past argument
     ;;
+    -ddk|--datadog-api-key)
+    DATADOG_API_KEY="$2"
+    shift # past argument
+    ;;
     -p|--profile)
     PROFILE="$2"
     shift # past argument
@@ -73,6 +77,9 @@ aws ecs register-task-definition \
   {
     \"name\":\"CatleanBackendContainer-${ENV}\",
     \"image\":\"${CatleanBackendRepository}:${TAG}\",
+    \"cpu\":1024,
+    \"memory\":\"2GB\",
+    \"portMappings\":[{\"containerPort\":9999}],
     \"portMappings\":[{\"containerPort\":9999}],
     \"environment\":[
       {\"name\":\"AWS_REGION\",\"value\":\"${REGION}\"},
@@ -97,6 +104,16 @@ aws ecs register-task-definition \
         \"awslogs-stream-prefix\":\"catlean-backend\"
       }
     }
+  },
+  {
+    \"name\":\"DataDogAgent-${ENV}\",
+    \"image\":\"public.ecr.aws/datadog/agent:latest\",
+    \"cpu\":100,
+    \"memory\":\"256MB\",
+    \"environment\":[
+      {\"name\":\"DD_API_KEY\",\"value\":\"${DATADOG_API_KEY}\"},
+      {\"name\":\"ECS_FARGATE\",\"value\":true}
+    ]
   }
 ]"
 
