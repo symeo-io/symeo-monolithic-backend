@@ -73,6 +73,11 @@ jobs:
       - restore_cache:
           key: build-{{ .Environment.CIRCLE_SHA1 }}
       - run:
+          name: Prepare Github App private key
+          command: |
+            source .aws/prepare_github_certificate.sh
+            prepare_github_private_key $PWD
+      - run:
           name: Build infrastructure
           command: |
             cd .aws && ./build_infrastructure.sh \
