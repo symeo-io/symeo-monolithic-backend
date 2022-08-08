@@ -32,4 +32,6 @@ public interface CatleanExceptionCode {
     // TeamGoal Exception Codes
     String INVALID_TEAM_STANDARD_CODE = "F.INVALID_TEAM_STANDARD_NAME";
 
+    // Sendgrid Exception Codes
+    String SENDGRID_EXCEPTION = "T.SEND_GRID_EMAIL_EXCEPTION";
 }
