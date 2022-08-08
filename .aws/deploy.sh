@@ -106,7 +106,7 @@ aws ecs register-task-definition \
     \"name\":\"DataDogAgent-${ENV}\",
     \"image\":\"public.ecr.aws/datadog/agent:latest\",
     \"cpu\":100,
-    \"memory\":\"256MB\",
+    \"memory\":256,
     \"environment\":[
       {\"name\":\"DD_API_KEY\",\"value\":\"${DATADOG_API_KEY}\"},
       {\"name\":\"ECS_FARGATE\",\"value\":true}
