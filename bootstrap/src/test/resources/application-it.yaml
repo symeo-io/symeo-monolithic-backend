@@ -7,7 +7,12 @@ infrastructure:
       size: 100
       github-app-id: ${GITHUB_APP_ID}
       private-key-certificate-path: ${GITHUB_PRIVATE_KEY_PATH}
-
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
+    catlean-email: ${CATLEAN_EMAIL}
+    invitation-template-id: ${SENDGRID_TEMPLATE_ID}
+    invitation-email-placeholder: "-email-"
+    invitation-subject: "Catlean SaaS new user invitation"
 
 application:
   auth0:

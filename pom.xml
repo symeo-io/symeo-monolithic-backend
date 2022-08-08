@@ -43,6 +43,7 @@
         <logback-core.version>1.2.6</logback-core.version>
         <sentry-logback.version>6.2.1</sentry-logback.version>
         <test-container.version>1.17.3</test-container.version>
+        <sendgrid-java.version>4.9.3</sendgrid-java.version>
     </properties>
 
     <dependencyManagement>
@@ -84,6 +85,11 @@
                 <groupId>io.sentry</groupId>
                 <artifactId>sentry-logback</artifactId>
                 <version>${sentry-logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sendgrid</groupId>
+                <artifactId>sendgrid-java</artifactId>
+                <version>${sendgrid-java.version}</version>
             </dependency>
 
             <!-- Test -->
