@@ -7,6 +7,5 @@ public class SendgridProperties {
     private String apiKey;
     private String catleanEmail;
     private String invitationTemplateId;
-    private String invitationSubject;
     private String invitationEmailPlaceholder;
 }

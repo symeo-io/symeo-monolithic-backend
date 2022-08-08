@@ -91,7 +91,10 @@ aws ecs register-task-definition \
       {\"name\":\"SENTRY_ENVIRONMENT\",\"value\":\"${SENTRY_ENVIRONMENT}\"},
       {\"name\":\"SENTRY_SERVERNAME\",\"value\":\"${SENTRY_SERVERNAME}\"},
       {\"name\":\"FRONTEND_CORS_HOST\",\"value\":\"${FRONTEND_CORS_HOST}\"},
-      {\"name\":\"DATABASE_URL\",\"value\":\"jdbc:postgresql://${ClusterEndpoint}:${DBPort}/${DBName}?rewriteBatchedStatements=true\"}
+      {\"name\":\"DATABASE_URL\",\"value\":\"jdbc:postgresql://${ClusterEndpoint}:${DBPort}/${DBName}?rewriteBatchedStatements=true\"},
+      {\"name\":\"CATLEAN_EMAIL\",\"value\":\"${CATLEAN_EMAIL}\"},
+      {\"name\":\"SENDGRID_TEMPLATE_ID\",\"value\":\"${SENDGRID_TEMPLATE_ID}\"},
+      {\"name\":\"SENDGRID_API_KEY\",\"value\":\"${SENDGRID_API_KEY}\"}
     ],
     \"logConfiguration\":{
       \"logDriver\":\"awslogs\",

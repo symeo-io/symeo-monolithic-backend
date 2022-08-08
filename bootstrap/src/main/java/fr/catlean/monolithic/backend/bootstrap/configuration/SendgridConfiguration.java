@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class SendgridConfiguration {
 
     @Bean
-    @ConfigurationProperties(prefix = "sendgrid")
+    @ConfigurationProperties(prefix = "infrastructure.sendgrid")
     public SendgridProperties sendgridProperties() {
         return new SendgridProperties();
     }

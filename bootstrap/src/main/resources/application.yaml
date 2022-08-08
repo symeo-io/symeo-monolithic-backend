@@ -13,8 +13,7 @@ infrastructure:
     api-key: ${SENDGRID_API_KEY}
     catlean-email: ${CATLEAN_EMAIL}
     invitation-template-id: ${SENDGRID_TEMPLATE_ID}
-    invitation-email-placeholder: "-email-"
-    invitation-subject: "Catlean SaaS new user invitation"
+    invitation-email-placeholder: "email"
 
 bootstrap:
   sentry:
