@@ -116,12 +116,14 @@ workflows:
       - build-and-test:
           context:
             - slack-notifications
-      - build-aws-infrastructure:
-          context:
-            - staging
-            - slack-notifications
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /^infrastructure-staging-.+$/
+      - build-aws-infrastructure:
+          requires:
+            - build-and-test
+          context:
+            - staging
+            - slack-notifications
