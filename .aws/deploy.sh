@@ -109,7 +109,7 @@ aws ecs register-task-definition \
     \"memory\":256,
     \"environment\":[
       {\"name\":\"DD_API_KEY\",\"value\":\"${DATADOG_API_KEY}\"},
-      {\"name\":\"ECS_FARGATE\",\"value\":true}
+      {\"name\":\"ECS_FARGATE\",\"value\":\"true\"}
     ]
   }
 ]"
