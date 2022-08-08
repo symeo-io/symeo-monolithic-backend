@@ -25,13 +25,13 @@ public class CollectRepositoriesJobRunnableTest {
         // Given
         final VcsService vcsService = mock(VcsService.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
-        final String organisationName = faker.name().username();
-        final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
+        final String vcsOrganizationId = faker.name().username();
+        final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(faker.name().firstName())
                 .vcsOrganization(VcsOrganization.builder().build()).build();
         final List<Repository> repositories = List.of(
-                Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
-                Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
-                Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build()
+                Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build(),
+                Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build(),
+                Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build()
         );
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
                 new CollectRepositoriesJobRunnable(vcsService, organisation, repositoryService);
@@ -44,7 +44,7 @@ public class CollectRepositoriesJobRunnableTest {
         ArgumentCaptor<List<Repository>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(repositoryService, times(1)).saveRepositories(listArgumentCaptor.capture());
         assertThat(listArgumentCaptor.getValue()).hasSize(repositories.size());
-        listArgumentCaptor.getValue().forEach(repository -> assertThat(repository.getOrganization()).isNotNull());
+        listArgumentCaptor.getValue().forEach(repository -> assertThat(repository.getOrganizationId()).isNotNull());
     }
 
     @Test

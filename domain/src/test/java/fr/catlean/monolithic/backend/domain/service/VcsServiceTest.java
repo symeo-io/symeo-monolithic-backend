@@ -32,15 +32,15 @@ public class VcsServiceTest {
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final VcsService vcsService = new VcsService(deliveryCommand,
                 deliveryQuery, expositionStorageAdapter);
-        final String organizationName = faker.name().name();
+        final String vcsOrganizationId = faker.name().name();
         final Organization organization = Organization.builder()
-                .vcsOrganization(VcsOrganization.builder().build()).name(organizationName).build();
+                .vcsOrganization(VcsOrganization.builder().build()).name(faker.name().firstName()).build();
 
         // When
         final Repository repo1 =
-                Repository.builder().name(faker.pokemon().name() + "1").vcsOrganizationName(organizationName).build();
+                Repository.builder().name(faker.pokemon().name() + "1").vcsOrganizationId(vcsOrganizationId).build();
         final Repository repo2 =
-                Repository.builder().name(faker.pokemon().name() + "2").vcsOrganizationName(organizationName).build();
+                Repository.builder().name(faker.pokemon().name() + "2").vcsOrganizationId(vcsOrganizationId).build();
         final List<Repository> expectedRepositories = List.of(
                 repo1,
                 repo2
@@ -63,18 +63,20 @@ public class VcsServiceTest {
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final VcsService vcsService = new VcsService(deliveryCommand,
                 deliveryQuery, expositionStorageAdapter);
-        final String organizationName = faker.pokemon().name();
+        final String vcsOrganizationId = faker.pokemon().name();
         final Organization organization = Organization.builder()
-                .name(organizationName)
+                .name(faker.name().firstName())
                 .id(UUID.randomUUID())
                 .vcsOrganization(
                         VcsOrganization.builder().name(faker.dragonBall().character()).build()
                 )
                 .build();
         final Repository repo1 =
-                Repository.builder().name(organizationName + "1").vcsOrganizationName(organizationName).build();
+                Repository.builder().id(faker.pokemon().name()).name(vcsOrganizationId + "1")
+                        .vcsOrganizationId(vcsOrganizationId + "id-1").build();
         final Repository repo2 =
-                Repository.builder().name(organizationName + "2").vcsOrganizationName(organizationName).build();
+                Repository.builder().id(faker.rickAndMorty().character()).name(vcsOrganizationId + "2")
+                        .vcsOrganizationId(vcsOrganizationId + "id-2").build();
         final List<Repository> expectedRepositories = List.of(
                 repo1,
                 repo2
@@ -103,8 +105,6 @@ public class VcsServiceTest {
         verify(expositionStorageAdapter, times(2)).savePullRequestDetails(prArgumentCaptor.capture());
         final List<List<PullRequest>> prArgumentCaptorAllValues = prArgumentCaptor.getAllValues();
         assertThat(prArgumentCaptorAllValues).hasSize(2);
-        assertThat(prArgumentCaptorAllValues.get(0)).hasSize(3);
-        assertThat(prArgumentCaptorAllValues.get(1)).hasSize(2);
         prArgumentCaptorAllValues.stream().flatMap(Collection::stream)
                 .forEach(pullRequest -> assertThat(pullRequest.getOrganizationId()).isEqualTo(organization.getId()));
     }

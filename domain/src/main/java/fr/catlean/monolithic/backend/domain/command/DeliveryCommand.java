@@ -23,9 +23,9 @@ public class DeliveryCommand {
 
     public List<Repository> collectRepositoriesForOrganization(Organization organization) throws CatleanException {
         final byte[] rawRepositories =
-                versionControlSystemAdapter.getRawRepositories(organization.getVcsOrganization().getName());
+                versionControlSystemAdapter.getRawRepositories(organization.getVcsOrganization().getVcsId());
         rawStorageAdapter.save(
-                organization.getVcsOrganization().getName(),
+                organization.getVcsOrganization().getVcsId(),
                 versionControlSystemAdapter.getName(),
                 Repository.ALL,
                 rawRepositories);
@@ -34,18 +34,19 @@ public class DeliveryCommand {
 
     public List<PullRequest> collectPullRequestsForRepository(Repository repository) throws CatleanException {
         byte[] alreadyRawPullRequestsCollected = null;
-        if (rawStorageAdapter.exists(repository.getVcsOrganizationName(), versionControlSystemAdapter.getName(),
-                PullRequest.getNameFromRepository(repository.getName()))) {
-            alreadyRawPullRequestsCollected = rawStorageAdapter.read(repository.getVcsOrganizationName(),
-                    versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getName()));
+        if (rawStorageAdapter.exists(repository.getVcsOrganizationId(),
+                versionControlSystemAdapter.getName(),
+                PullRequest.getNameFromRepository(repository.getId()))) {
+            alreadyRawPullRequestsCollected = rawStorageAdapter.read(repository.getId(),
+                    versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getId()));
         }
         final byte[] rawPullRequestsForRepository =
                 versionControlSystemAdapter.getRawPullRequestsForRepository(repository,
                         alreadyRawPullRequestsCollected);
         rawStorageAdapter.save(
-                repository.getVcsOrganizationName(),
+                repository.getVcsOrganizationId(),
                 versionControlSystemAdapter.getName(),
-                PullRequest.getNameFromRepository(repository.getName()),
+                PullRequest.getNameFromRepository(repository.getId()),
                 rawPullRequestsForRepository);
         return versionControlSystemAdapter.pullRequestsBytesToDomain(rawPullRequestsForRepository);
     }

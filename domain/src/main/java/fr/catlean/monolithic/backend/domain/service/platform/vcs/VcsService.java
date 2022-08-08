@@ -34,7 +34,7 @@ public class VcsService {
                                         .stream()
                                         .map(pullRequest -> pullRequest.toBuilder()
                                                 .organizationId(organization.getId())
-                                                .vcsOrganization(organization.getVcsOrganization().getName())
+                                                .vcsOrganizationId(organization.getVcsOrganization().getId())
                                                 .build()
                                         )
                                         .toList());

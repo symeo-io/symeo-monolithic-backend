@@ -23,10 +23,10 @@ public class DeliveryQueryTest {
     void should_read_repositories_given_an_organization() throws CatleanException {
         // Given
         final String organizationName = faker.pokemon().name();
-        final String vcsOrganizationName = faker.harryPotter().book();
+        final String vcsId = faker.dragonBall().character();
         final Organization organization =
                 Organization.builder().name(organizationName).vcsOrganization(
-                        VcsOrganization.builder().name(vcsOrganizationName).build()
+                        VcsOrganization.builder().vcsId(vcsId).name(faker.rickAndMorty().character()).build()
                 ).build();
         final String contentName = faker.animal().name();
 
@@ -37,12 +37,12 @@ public class DeliveryQueryTest {
                 versionControlSystemAdapter);
         final byte[] dummyBytes = new byte[0];
         final List<Repository> repositoriesStub =
-                List.of(Repository.builder().name(faker.harryPotter().character()).build(),
-                        Repository.builder().name(faker.harryPotter().book()).build());
+                List.of(Repository.builder().name(faker.harryPotter().character()).id(faker.animal().name()).build(),
+                        Repository.builder().name(faker.harryPotter().book()).id(faker.pokemon().name()).build());
 
         // When
         when(versionControlSystemAdapter.getName()).thenReturn(contentName);
-        when(rawStorageAdapter.read(vcsOrganizationName, contentName, Repository.ALL))
+        when(rawStorageAdapter.read(vcsId, contentName, Repository.ALL))
                 .thenReturn(dummyBytes);
         when(versionControlSystemAdapter.repositoriesBytesToDomain(dummyBytes)).thenReturn(
                 repositoriesStub
