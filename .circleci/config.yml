@@ -73,6 +73,9 @@ jobs:
       - restore_cache:
           key: build-{{ .Environment.CIRCLE_SHA1 }}
       - run:
+          name: Build
+          command: mvn -B -DskipTests clean package -T 6
+      - run:
           name: Build infrastructure
           command: |
             cd .aws && ./build_infrastructure.sh \
