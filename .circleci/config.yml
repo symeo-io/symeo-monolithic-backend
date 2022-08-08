@@ -112,13 +112,13 @@ workflows:
               only:
                 - staging
   build-infrastructure:
-    when:
-      and:
-        - matches:
-            pattern: "^infrastructure-staging-.+$"
-            value: << pipeline.git.tag >>
     jobs:
       - build-aws-infrastructure:
           context:
             - staging
             - slack-notifications
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^infrastructure-staging-.+$/
