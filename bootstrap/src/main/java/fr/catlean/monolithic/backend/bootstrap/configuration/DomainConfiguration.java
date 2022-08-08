@@ -36,25 +36,19 @@ public class DomainConfiguration {
 
     @Bean
     public VcsService deliveryProcessorService(final DeliveryCommand deliveryCommand,
-                                               final DeliveryQuery deliveryQuery) {
-        return new VcsService(deliveryCommand, deliveryQuery);
-    }
-
-    @Bean
-    public PullRequestHistogramService pullRequestSizeService(final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new PullRequestHistogramService(expositionStorageAdapter);
+                                               final DeliveryQuery deliveryQuery,
+                                               final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new VcsService(deliveryCommand, deliveryQuery, expositionStorageAdapter);
     }
 
 
     @Bean
     public DataProcessingJobService dataProcessingJobService(final VcsService vcsService,
-                                                             final PullRequestHistogramService pullRequestHistogramService,
                                                              final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService,
-                                                             final JobManager jobManager,
-                                                             final AccountTeamStorage accountTeamStorage) {
-        return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter, pullRequestHistogramService,
-                repositoryService, jobManager, accountTeamStorage);
+                                                             final JobManager jobManager) {
+        return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter,
+                repositoryService, jobManager);
     }
 
     @Bean
@@ -114,7 +108,7 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public PullRequestHistogramService pullRequestHistogramService(final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new PullRequestHistogramService(expositionStorageAdapter);
+    public PullRequestHistogramService pullRequestHistogramService() {
+        return new PullRequestHistogramService();
     }
 }
