@@ -27,10 +27,15 @@ public class CollectRepositoriesJobRunnable implements JobRunnable {
 
     @Override
     public void run() throws CatleanException {
-        List<Repository> repositories = vcsService.collectRepositoriesForOrganization(organization);
-        repositories =
-                repositories.parallelStream().map(repository -> repository.toBuilder().organization(organization).build()).toList();
-        repositoryService.saveRepositories(repositories);
+        try {
+            List<Repository> repositories = vcsService.collectRepositoriesForOrganization(organization);
+            repositories =
+                    repositories.parallelStream().map(repository -> repository.toBuilder().organization(organization).build()).toList();
+            repositoryService.saveRepositories(repositories);
+        } catch (CatleanException e) {
+            LOGGER.error("Error while collecting repositories for organization {}", organization);
+            throw e;
+        }
     }
 
     @Override

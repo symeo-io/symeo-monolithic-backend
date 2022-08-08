@@ -1,7 +1,6 @@
 package fr.catlean.monolithic.backend.domain.service;
 
 import com.github.javafaker.Faker;
-import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.Team;
@@ -11,7 +10,6 @@ import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +22,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 public class PullRequestHistogramServiceTest {
 
@@ -32,34 +29,10 @@ public class PullRequestHistogramServiceTest {
     private final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
     @Test
-    void should_compute_collect_all_pull_requests_details_for_a_given_organization_account() throws CatleanException {
-        // Given
-        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final PullRequestHistogramService pullRequestHistogramService =
-                new PullRequestHistogramService(expositionStorageAdapter);
-        final String repo1Name = faker.pokemon().name() + "1";
-        final String repo2Name = faker.pokemon().name() + "2";
-
-
-        // When
-        final PullRequest pr11 = PullRequest.builder().id("github-11").repository(repo1Name).build();
-        final PullRequest pr12 = PullRequest.builder().id("github-12").repository(repo1Name).build();
-        final PullRequest pr21 = PullRequest.builder().id("github-21").repository(repo2Name).build();
-        final PullRequest pr22 = PullRequest.builder().id("github-22").repository(repo2Name).build();
-        final List<PullRequest> pullRequestList = List.of(pr11, pr12, pr21, pr22);
-
-        // When
-        pullRequestHistogramService.savePullRequests(pullRequestList);
-
-        // Then
-        verify(expositionStorageAdapter, times(1)).savePullRequestDetails(pullRequestList);
-    }
-
-    @Test
     void should_compute_and_save_pull_request_size_histogram_given_simple_pull_request_cases() {
         // Given
         final PullRequestHistogramService pullRequestHistogramService =
-                new PullRequestHistogramService(mock(ExpositionStorageAdapter.class));
+                new PullRequestHistogramService();
         final String repositoryName1 = faker.pokemon().name() + "-1";
         final Team team = Team.builder()
                 .id(UUID.randomUUID())
@@ -138,7 +111,7 @@ public class PullRequestHistogramServiceTest {
     void should_compute_and_save_pull_request_time_histogram_given_simple_pull_request_cases() {
         // Given
         final PullRequestHistogramService pullRequestHistogramService =
-                new PullRequestHistogramService(mock(ExpositionStorageAdapter.class));
+                new PullRequestHistogramService();
         final String repositoryName1 = faker.pokemon().name() + "-1";
         final Team team = Team.builder()
                 .id(UUID.randomUUID())

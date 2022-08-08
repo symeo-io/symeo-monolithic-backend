@@ -1,19 +1,14 @@
 package fr.catlean.monolithic.backend.domain.job.runnable;
 
+import com.github.javafaker.Cat;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.job.JobRunnable;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.account.Team;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
-import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @AllArgsConstructor
 @Value
@@ -22,21 +17,16 @@ import java.util.List;
 public class CollectPullRequestsJobRunnable implements JobRunnable {
     VcsService vcsService;
     Organization organization;
-    PullRequestHistogramService pullRequestHistogramService;
-    AccountTeamStorage accountTeamStorage;
 
     @Override
-    public void run() {
+    public void run() throws CatleanException {
         try {
             LOGGER.info("Starting to collect PRs and Histograms for organization {}", organization);
-            final List<Team> teams = accountTeamStorage.findByOrganization(organization);
-            final Organization organizationWithTeams = organization.toBuilder().teams(teams).build();
-            final List<PullRequest> pullRequestList =
-                    vcsService.collectPullRequestsForOrganization(organizationWithTeams);
-            pullRequestHistogramService.savePullRequests(pullRequestList);
-            LOGGER.info("End of PRs and Histograms collections for organization {}", organizationWithTeams);
+            vcsService.collectPullRequestsForOrganization(organization);
+            LOGGER.info("End of PRs and Histograms collections for organization {}", organization);
         } catch (CatleanException e) {
-            LOGGER.error("Error while collection PRs for organization {}", organization, e);
+            LOGGER.error("Error while collecting PRs for organization {}", organization, e);
+            throw e;
         }
 
     }

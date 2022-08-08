@@ -7,6 +7,8 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.port.out.RawStorageAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 
+import java.util.List;
+
 public class DeliveryCommand {
 
     private final RawStorageAdapter rawStorageAdapter;
@@ -19,7 +21,7 @@ public class DeliveryCommand {
         this.versionControlSystemAdapter = versionControlSystemAdapter;
     }
 
-    public void collectRepositoriesForOrganization(Organization organization) throws CatleanException {
+    public List<Repository> collectRepositoriesForOrganization(Organization organization) throws CatleanException {
         final byte[] rawRepositories =
                 versionControlSystemAdapter.getRawRepositories(organization.getVcsOrganization().getName());
         rawStorageAdapter.save(
@@ -27,9 +29,10 @@ public class DeliveryCommand {
                 versionControlSystemAdapter.getName(),
                 Repository.ALL,
                 rawRepositories);
+        return versionControlSystemAdapter.repositoriesBytesToDomain(rawRepositories);
     }
 
-    public void collectPullRequestsForRepository(Repository repository) throws CatleanException {
+    public List<PullRequest> collectPullRequestsForRepository(Repository repository) throws CatleanException {
         byte[] alreadyRawPullRequestsCollected = null;
         if (rawStorageAdapter.exists(repository.getVcsOrganizationName(), versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()))) {
@@ -44,5 +47,6 @@ public class DeliveryCommand {
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getName()),
                 rawPullRequestsForRepository);
+        return versionControlSystemAdapter.pullRequestsBytesToDomain(rawPullRequestsForRepository);
     }
 }

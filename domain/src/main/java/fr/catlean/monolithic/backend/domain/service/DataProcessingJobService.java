@@ -8,8 +8,6 @@ import fr.catlean.monolithic.backend.domain.job.runnable.CollectRepositoriesJobR
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import fr.catlean.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
-import fr.catlean.monolithic.backend.domain.port.out.AccountTeamStorage;
-import fr.catlean.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import fr.catlean.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
@@ -21,10 +19,8 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     private final VcsService vcsService;
     private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
-    private final PullRequestHistogramService pullRequestHistogramService;
     private final RepositoryService repositoryService;
     private final JobManager jobManager;
-    private final AccountTeamStorage accountTeamStorage;
 
     @Override
     public void start(final String vcsOrganizationName) throws CatleanException {
@@ -56,8 +52,6 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                         .jobRunnable(CollectPullRequestsJobRunnable.builder()
                                 .organization(organization)
                                 .vcsService(vcsService)
-                                .pullRequestHistogramService(pullRequestHistogramService)
-                                .accountTeamStorage(accountTeamStorage)
                                 .build())
                         .organizationId(organization.getId())
                         .build();
