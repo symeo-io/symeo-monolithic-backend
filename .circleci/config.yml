@@ -127,3 +127,8 @@ workflows:
           context:
             - staging
             - slack-notifications
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^infrastructure-staging-.+$/
