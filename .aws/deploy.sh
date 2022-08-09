@@ -58,10 +58,17 @@ export_stack_outputs catlean-backend-iam-${ENV} ${REGION}
 export_stack_outputs catlean-backend-ecs-repository-${ENV} ${REGION}
 export_stack_outputs catlean-backend-ecs-cluster-${ENV} ${REGION}
 export_stack_outputs catlean-backend-ecs-services-${ENV} ${REGION}
-export_stack_outputs catlean-backend-aurora-${ENV} ${REGION}
-export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
 
 AccountId=$(get_aws_account_id)
+
+ENV_FILE_PATH="./.env"
+
+./build_env_file.sh \
+  --file ${ENV_FILE_PATH} \
+  --region ${REGION} \
+  --env ${ENV} \
+  --db-password ${DB_PASSWORD} \
+  --profile ${PROFILE}
 
 aws ecs register-task-definition \
   --task-role-arn arn:aws:iam::${AccountId}:role/${CatleanBackendTaskRole} \
@@ -78,21 +85,7 @@ aws ecs register-task-definition \
     \"name\":\"CatleanBackendContainer-${ENV}\",
     \"image\":\"${CatleanBackendRepository}:${TAG}\",
     \"portMappings\":[{\"containerPort\":9999}],
-    \"environment\":[
-      {\"name\":\"AWS_REGION\",\"value\":\"${REGION}\"},
-      {\"name\":\"S3_DATALAKE_BUCKET_NAME\",\"value\":\"${DatalakeS3Bucket}\"},
-      {\"name\":\"DATABASE_USERNAME\",\"value\":\"${DBUsername}\"},
-      {\"name\":\"DATABASE_PASSWORD\",\"value\":\"${DB_PASSWORD}\"},
-      {\"name\":\"AUTH0_AUDIENCE\",\"value\":\"${AUTH0_AUDIENCE}\"},
-      {\"name\":\"AUTH0_ISSUER\",\"value\":\"${AUTH0_ISSUER}\"},
-      {\"name\":\"GITHUB_APP_ID\",\"value\":\"${GITHUB_APP_ID}\"},
-      {\"name\":\"GITHUB_WEBHOOK_SECRET\",\"value\":\"${GITHUB_WEBHOOK_SECRET}\"},
-      {\"name\":\"SENTRY_DSN\",\"value\":\"${SENTRY_DSN}\"},
-      {\"name\":\"SENTRY_ENVIRONMENT\",\"value\":\"${SENTRY_ENVIRONMENT}\"},
-      {\"name\":\"SENTRY_SERVERNAME\",\"value\":\"${SENTRY_SERVERNAME}\"},
-      {\"name\":\"FRONTEND_CORS_HOST\",\"value\":\"${FRONTEND_CORS_HOST}\"},
-      {\"name\":\"DATABASE_URL\",\"value\":\"jdbc:postgresql://${ClusterEndpoint}:${DBPort}/${DBName}?rewriteBatchedStatements=true\"}
-    ],
+    \"environmentFiles\": [\"${ENV_FILE_PATH}\"],
     \"logConfiguration\":{
       \"logDriver\":\"awslogs\",
       \"options\":{
