@@ -208,6 +208,16 @@ else
   ./build_docker.sh -r ${REGION} -e ${ENV} -t ${MY_TAG} -p ${PROFILE}
 fi
 
+ENV_FILE_PATH="./.env"
+
+./build_env_file.sh \
+  --file ${ENV_FILE_PATH} \
+  --region ${REGION} \
+  --env ${ENV} \
+  --db-password ${DB_PASSWORD} \
+  --profile ${PROFILE}
+
+aws s3 cp $ENV_FILE_PATH s3://${EnvFilesS3Bucket}
 
 ## ECS Cluster
 aws cloudformation deploy \
@@ -233,10 +243,7 @@ aws cloudformation deploy \
       ECSExecutionRole=${CatleanBackendECSExecutionRole} \
       Env=${ENV} \
       DataDogApiKey=${DATADOG_API_KEY} \
-      DatalakeS3Bucket=${DatalakeS3Bucket} \
-      DBUsername=${DBUsername} \
-      DBPassword=${DB_PASSWORD} \
-      DBUrl="jdbc:postgresql://${ClusterEndpoint}:${DBPort}/${DBName}?rewriteBatchedStatements=true" \
+      EnvFilesS3Bucket=${EnvFilesS3Bucket} \
       Tag=${MY_TAG} \
       TargetGroup=${TargetGroup} \
       TargetGroupName=${TargetGroupName} \
