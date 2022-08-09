@@ -58,6 +58,7 @@ export_stack_outputs catlean-backend-iam-${ENV} ${REGION}
 export_stack_outputs catlean-backend-ecs-repository-${ENV} ${REGION}
 export_stack_outputs catlean-backend-ecs-cluster-${ENV} ${REGION}
 export_stack_outputs catlean-backend-ecs-services-${ENV} ${REGION}
+export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
 
 AccountId=$(get_aws_account_id)
 
@@ -69,6 +70,8 @@ ENV_FILE_PATH="./.env"
   --env ${ENV} \
   --db-password ${DB_PASSWORD} \
   --profile ${PROFILE}
+
+aws s3 cp $ENV_FILE_PATH s3://${EnvFilesS3Bucket}
 
 aws ecs register-task-definition \
   --task-role-arn arn:aws:iam::${AccountId}:role/${CatleanBackendTaskRole} \
@@ -85,7 +88,10 @@ aws ecs register-task-definition \
     \"name\":\"CatleanBackendContainer-${ENV}\",
     \"image\":\"${CatleanBackendRepository}:${TAG}\",
     \"portMappings\":[{\"containerPort\":9999}],
-    \"environmentFiles\": [\"${ENV_FILE_PATH}\"],
+    \"environmentFiles\": [{
+      \"type\":\"s3\",
+      \"value\":\"arn:aws:s3:::${EnvFilesS3Bucket}/.env\"
+    }],
     \"logConfiguration\":{
       \"logDriver\":\"awslogs\",
       \"options\":{
