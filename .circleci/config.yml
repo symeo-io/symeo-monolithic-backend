@@ -84,6 +84,7 @@ jobs:
               --region ${AWS_REGION} \
               --env ${ENVIRONMENT} \
               --datadog-api-key ${DATADOG_API_KEY} \
+              --datadog-app-key ${DATADOG_APP_KEY} \
               --db-password ${DB_PASSWORD} \
               --key-name catlean-backend-${ENVIRONMENT} \
               --domain ${DOMAIN} \
