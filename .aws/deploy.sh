@@ -58,6 +58,7 @@ export_stack_outputs catlean-backend-iam-${ENV} ${REGION}
 export_stack_outputs catlean-backend-ecs-repository-${ENV} ${REGION}
 export_stack_outputs catlean-backend-ecs-cluster-${ENV} ${REGION}
 export_stack_outputs catlean-backend-ecs-services-${ENV} ${REGION}
+export_stack_outputs catlean-backend-aurora-${ENV} ${REGION}
 export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
 
 AccountId=$(get_aws_account_id)
@@ -116,6 +117,11 @@ aws ecs register-task-definition \
       \"protocol\":\"tcp\",
       \"containerPort\":8126
     }],
+    \"dockerLabels\": {
+      \"com.datadoghq.ad.instances\": \"[{\\\"dbm\\\":true,\\\"host\\\":\\\"${ClusterEndpoint}\\\",\\\"username\\\":\\\"datadog\\\"\\\"password\\\": \\\"${DB_PASSWORD}\\\"\\\"port\\\": 9999}]\",
+      \"com.datadoghq.ad.check_names\": \"[\\\"postgres\\\"]\",
+      \"com.datadoghq.ad.init_configs\": \"[{}]\"
+    },
     \"environment\":[
       {\"name\":\"DD_API_KEY\",\"value\":\"${DATADOG_API_KEY}\"},
       {\"name\":\"DD_SITE\",\"value\":\"datadoghq.eu\"},
