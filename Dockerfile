@@ -1,14 +1,22 @@
 FROM openjdk:17-alpine
 
+ENV DD_SERVICE="catlean-api"
+ENV DD_ENV="staging"
+
 WORKDIR webapp/
 ADD bootstrap/target/catlean-monolithic-backend.jar webapp/catlean-monolithic-backend.jar
 ADD bootstrap/src/main/resources/application.yaml webapp/application.yaml
-ADD catlean-io.private-key.der webapp/catlean-io.private-key.der
-ENV GITHUB_PRIVATE_KEY_PATH=/webapp/webapp/catlean-io.private-key.der
+ADD catlean-io.private-key.der catlean-io.private-key.der
+ENV GITHUB_PRIVATE_KEY_PATH=/webapp/catlean-io.private-key.der
+RUN wget -O dd-java-agent.jar https://dtdg.co/latest-java-tracer
 
-ENV JAVA_OPTS="-server -XX:MaxRAMPercentage=75.0 -XX:MaxMetaspaceSize=256m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dliquibase.changelogLockPollRate=1"
+
+ENV JAVA_OPTS="-server -XX:MaxRAMPercentage=75.0 -XX:MaxMetaspaceSize=256m -XX:+UseG1GC \
+-XX:FlightRecorderOptions=stackdepth=256 -Djava.security.egd=file:/dev/urandom \
+ -Dliquibase.changelogLockPollRate=1 -Ddd.profiling.enabled=true -Ddd.logs.injection=true"
 
 CMD java \
+    -javaagent:/webapp/dd-java-agent.jar \
     $JAVA_OPTS \
     -jar webapp/catlean-monolithic-backend.jar \
     --spring.profiles.active=sentry \
