@@ -266,6 +266,7 @@ aws cloudformation deploy \
   --region ${REGION} \
   --stack-name catlean-datadog-integration-${ENV} \
   --capabilities CAPABILITY_IAM \
+  --capabilities CAPABILITY_NAMED_IAM \
   --template-file cloudformation/datadog-aws-integration.yml
 
 echo "DONE"
