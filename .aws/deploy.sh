@@ -97,14 +97,6 @@ aws ecs register-task-definition \
       \"type\":\"s3\",
       \"value\":\"arn:aws:s3:::${EnvFilesS3Bucket}/.env\"
     }],
-    \"logConfiguration\":{
-      \"logDriver\":\"awslogs\",
-      \"options\":{
-        \"awslogs-group\":\"${CloudwatchLogsGroup}\",
-        \"awslogs-region\":\"${REGION}\",
-        \"awslogs-stream-prefix\":\"catlean-backend\"
-      }
-    }
   },
   {
     \"name\":\"DataDogAgent-${ENV}\",
