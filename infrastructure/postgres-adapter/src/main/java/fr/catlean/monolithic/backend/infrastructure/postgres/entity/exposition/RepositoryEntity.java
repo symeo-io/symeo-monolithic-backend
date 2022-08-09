@@ -26,6 +26,8 @@ public class RepositoryEntity {
     @Column(name = "name", nullable = false)
     @NotNull
     String name;
+    @Column(name = "vcs_organization_id")
+    String vcsOrganizationId;
     @Column(name = "vcs_organization_name")
     String vcsOrganizationName;
     @Column(name = "organization_id")

@@ -58,8 +58,8 @@ public class PullRequestEntity {
     String vcsRepository;
     @Column(name = "vcs_repository_id")
     String vcsRepositoryId;
-    @Column(name = "vcs_organization")
-    String vcsOrganization;
+    @Column(name = "vcs_organization_id")
+    String vcsOrganizationId;
     @Column(name = "organization_id")
     UUID organizationId;
     @Column(name = "technical_creation_date", updatable = false)

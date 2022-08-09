@@ -21,9 +21,8 @@ create table exposition_storage.pull_request
     author_login                varchar(100),
     vcs_repository              varchar(100),
     vcs_repository_id           varchar(100),
-    vcs_organization            varchar(100),
+    vcs_organization_id         varchar(100),
     organization_id             uuid,
-    team                        varchar(100),
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null
 );
@@ -34,6 +33,7 @@ create table exposition_storage.repository
         constraint repository_id primary key,
     name                        varchar(300)                              not null,
     organization_id             uuid,
+    vcs_organization_id         varchar(100),
     vcs_organization_name       varchar(100),
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null

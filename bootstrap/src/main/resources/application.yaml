@@ -9,6 +9,11 @@ infrastructure:
       private-key-certificate-path: ${GITHUB_PRIVATE_KEY_PATH}
   aws:
     raw-bucket-name: ${S3_DATALAKE_BUCKET_NAME}
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
+    catlean-email: ${CATLEAN_EMAIL}
+    invitation-template-id: ${SENDGRID_TEMPLATE_ID}
+    invitation-email-placeholder: "email"
 
 bootstrap:
   sentry:

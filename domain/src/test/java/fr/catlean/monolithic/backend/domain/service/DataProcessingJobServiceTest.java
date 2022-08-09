@@ -45,12 +45,13 @@ public class DataProcessingJobServiceTest {
                 new DataProcessingJobService(vcsService,
                         accountOrganizationStorageAdapter, repositoryService, jobManager);
         final String organisationName = faker.name().username();
+        final String vcsOrganizationId = faker.rickAndMorty().character();
         final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
         final List<Repository> repositories = List.of(
-                Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
-                Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build(),
-                Repository.builder().name(faker.name().firstName()).vcsOrganizationName(organisationName).build()
+                Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build(),
+                Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build(),
+                Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build()
         );
 
         // When

@@ -30,7 +30,11 @@ public class CollectRepositoriesJobRunnable implements JobRunnable {
         try {
             List<Repository> repositories = vcsService.collectRepositoriesForOrganization(organization);
             repositories =
-                    repositories.parallelStream().map(repository -> repository.toBuilder().organization(organization).build()).toList();
+                    repositories.parallelStream()
+                            .map(repository -> repository.toBuilder()
+                                    .organizationId(organization.getId())
+                                    .vcsOrganizationName(organization.getVcsOrganization().getName())
+                                    .build()).toList();
             repositoryService.saveRepositories(repositories);
         } catch (CatleanException e) {
             LOGGER.error("Error while collecting repositories for organization {}", organization);

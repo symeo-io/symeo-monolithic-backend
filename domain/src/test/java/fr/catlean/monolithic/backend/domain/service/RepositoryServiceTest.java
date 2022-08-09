@@ -23,9 +23,9 @@ public class RepositoryServiceTest {
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final RepositoryService repositoryService = new RepositoryService(expositionStorageAdapter);
         final List<Repository> repositories = List.of(
-                Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build(),
-                Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build(),
-                Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build()
+                Repository.builder().name(faker.name().firstName()).build(),
+                Repository.builder().name(faker.name().firstName()).build(),
+                Repository.builder().name(faker.name().firstName()).build()
         );
 
         // When
@@ -46,9 +46,9 @@ public class RepositoryServiceTest {
                 .vcsOrganization(VcsOrganization.builder().build())
                 .build();
         final List<Repository> repositories = List.of(
-                Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build(),
-                Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build(),
-                Repository.builder().vcsOrganizationName(faker.name().name()).name(faker.name().firstName()).build()
+                Repository.builder().name(faker.name().firstName()).build(),
+                Repository.builder().name(faker.name().firstName()).build(),
+                Repository.builder().name(faker.name().firstName()).build()
         );
 
         // When
