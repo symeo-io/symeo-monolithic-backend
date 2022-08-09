@@ -97,7 +97,15 @@ aws ecs register-task-definition \
     \"environmentFiles\": [{
       \"type\":\"s3\",
       \"value\":\"arn:aws:s3:::${EnvFilesS3Bucket}/.env\"
-    }]
+    }],
+    \"logConfiguration\":{
+          \"logDriver\":\"awslogs\",
+          \"options\":{
+            \"awslogs-group\":\"${CloudwatchLogsGroup}\",
+            \"awslogs-region\":\"${REGION}\",
+            \"awslogs-stream-prefix\":\"catlean-backend\"
+          }
+        }
   },
   {
     \"name\":\"DataDogAgent-${ENV}\",
@@ -122,32 +130,9 @@ aws ecs register-task-definition \
       {\"name\":\"ECS_FARGATE\",\"value\":\"true\"},
       {\"name\":\"DD_LOGS_ENABLED\",\"value\":\"true\"},
       {\"name\":\"DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL\",\"value\":\"true\"}
-    ],
-    \"mountPoints\":[
-        {
-            \"containerPath\": \"/opt/datadog-agent/run\",
-            \"sourceVolume\": \"pointdir\",
-            \"readOnly\": true
-        },
-        {
-            \"containerPath\": \"/var/lib/docker/containers\",
-            \"sourceVolume\": \"containers_root\",
-            \"readOnly\": true
-        }
     ]
   }
-]" \
-   --volumes " [
-    {
-        \"host\": {},
-        \"name\": \"pointdir\"
-    },
-    {
-        \"host\": {},
-        \"name\": \"containers_root\"
-    }
-  ]
-"
+]"
 
 aws ecs update-service --cluster ${ECSCluster} --service ${ServiceName} --task-definition ${FamilyName} --region ${REGION}
 
