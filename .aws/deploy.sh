@@ -113,10 +113,39 @@ aws ecs register-task-definition \
       {\"name\":\"DD_SITE\",\"value\":\"datadoghq.eu\"},
       {\"name\":\"DD_APM_ENABLED\",\"value\":\"true\"},
       {\"name\":\"DD_APM_NON_LOCAL_TRAFFIC\",\"value\":\"true\"},
-      {\"name\":\"ECS_FARGATE\",\"value\":\"true\"}
+      {\"name\":\"ECS_FARGATE\",\"value\":\"true\"},
+      {\"name\":\"DD_LOGS_ENABLED\",\"value\":\"true\"},
+      {\"name\":\"DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL\",\"value\":\"true\"}
+    ],
+    \"mountPoints"\:[
+        {
+            \"containerPath\": \"/opt/datadog-agent/run\",
+            \"sourceVolume\": \"pointdir\",
+            \"readOnly\": \"true\",
+        },
+        {
+            \"containerPath\": \"/var/lib/docker/containers\",
+            \"sourceVolume\": \"containers_root\",
+            \"readOnly\": \"true\",
+        }
     ]
   }
-]"
+]" \
+   --volumes " [
+    {
+        \"host\": {
+            \"sourcePath\":\"/opt/datadog-agent/run\"
+        },
+        \"name\": \"pointdir\"
+    },
+    {
+        \"host\": {
+            \"sourcePath\":\"/var/lib/docker/containers/\"
+        },
+        \"name\": \"containers_root\"
+    }
+  ]
+"
 
 aws ecs update-service --cluster ${ECSCluster} --service ${ServiceName} --task-definition ${FamilyName} --region ${REGION}
 
