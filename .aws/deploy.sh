@@ -88,6 +88,11 @@ aws ecs register-task-definition \
     \"name\":\"CatleanBackendContainer-${ENV}\",
     \"image\":\"${CatleanBackendRepository}:${TAG}\",
     \"portMappings\":[{\"containerPort\":9999}],
+    \"dockerLabels\": {
+      \"com.datadoghq.ad.instances\": \"[{\\\"host\\\": \\\"%%host%%\\\", \\\"port\\\": 6379}]\",
+      \"com.datadoghq.ad.check_names\": \"[\\\"catlean-api-${ENV}\\\"]\",
+      \"com.datadoghq.ad.init_configs\": \"[{}]\"
+    },
     \"environmentFiles\": [{
       \"type\":\"s3\",
       \"value\":\"arn:aws:s3:::${EnvFilesS3Bucket}/.env\"
@@ -106,9 +111,16 @@ aws ecs register-task-definition \
     \"image\":\"public.ecr.aws/datadog/agent:latest\",
     \"cpu\":100,
     \"memory\":256,
+    \"portMappings\":[{
+      \"hostPort\":8126,
+      \"protocol\":\"tcp\",
+      \"containerPort\":8126
+    }],
     \"environment\":[
       {\"name\":\"DD_API_KEY\",\"value\":\"${DATADOG_API_KEY}\"},
       {\"name\":\"DD_SITE\",\"value\":\"datadoghq.eu\"},
+      {\"name\":\"DD_APM_ENABLED\",\"value\":\"true\"},
+      {\"name\":\"DD_APM_NON_LOCAL_TRAFFIC\",\"value\":\"true\"},
       {\"name\":\"ECS_FARGATE\",\"value\":\"true\"}
     ]
   }
