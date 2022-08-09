@@ -7,7 +7,7 @@ import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import java.util.List;
 
 public interface VersionControlSystemAdapter {
-    byte[] getRawRepositories(String organization) throws CatleanException;
+    byte[] getRawRepositories(String vcsOrganizationName) throws CatleanException;
 
     String getName();
 

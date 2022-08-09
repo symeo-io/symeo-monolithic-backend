@@ -23,7 +23,7 @@ public class DeliveryCommand {
 
     public List<Repository> collectRepositoriesForOrganization(Organization organization) throws CatleanException {
         final byte[] rawRepositories =
-                versionControlSystemAdapter.getRawRepositories(organization.getVcsOrganization().getVcsId());
+                versionControlSystemAdapter.getRawRepositories(organization.getVcsOrganization().getName());
         rawStorageAdapter.save(
                 organization.getVcsOrganization().getVcsId(),
                 versionControlSystemAdapter.getName(),
