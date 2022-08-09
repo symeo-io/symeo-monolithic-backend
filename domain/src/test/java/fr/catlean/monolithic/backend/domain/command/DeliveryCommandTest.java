@@ -21,9 +21,10 @@ public class DeliveryCommandTest {
         // Given
         final String organizationName = faker.pokemon().name();
         final String vcsId = faker.rickAndMorty().character();
+        final String vcsName = faker.pokemon().location();
         final Organization organization = Organization.builder()
                 .name(organizationName)
-                .vcsOrganization(VcsOrganization.builder().vcsId(vcsId).name(faker.pokemon().location()).build())
+                .vcsOrganization(VcsOrganization.builder().vcsId(vcsId).name(vcsName).build())
                 .build();
         final String vcsAdapterName = faker.animal().name();
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
@@ -33,7 +34,7 @@ public class DeliveryCommandTest {
 
         // When
         when(rawStorageAdapter.exists(vcsId, vcsAdapterName, Repository.ALL)).thenReturn(false);
-        when(versionControlSystemAdapter.getRawRepositories(vcsId)).thenReturn(bytes);
+        when(versionControlSystemAdapter.getRawRepositories(vcsName)).thenReturn(bytes);
         when(versionControlSystemAdapter.getName()).thenReturn(vcsAdapterName);
         deliveryCommand.collectRepositoriesForOrganization(organization);
 

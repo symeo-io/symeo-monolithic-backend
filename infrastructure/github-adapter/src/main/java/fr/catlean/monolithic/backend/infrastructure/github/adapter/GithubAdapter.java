@@ -32,11 +32,11 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     private ObjectMapper objectMapper;
 
     @Override
-    public byte[] getRawRepositories(final String organization) throws CatleanException {
+    public byte[] getRawRepositories(final String vcsOrganizationName) throws CatleanException {
         int page = 1;
         GithubRepositoryDTO[] githubRepositoryDTOS =
                 this.githubHttpClient.getRepositoriesForOrganizationName(
-                        organization, page, properties.getSize());
+                        vcsOrganizationName, page, properties.getSize());
         if (isNull(githubRepositoryDTOS) || githubRepositoryDTOS.length == 0) {
             return new byte[0];
         }
@@ -46,7 +46,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             page += 1;
             githubRepositoryDTOS =
                     this.githubHttpClient.getRepositoriesForOrganizationName(
-                            organization, page, properties.getSize());
+                            vcsOrganizationName, page, properties.getSize());
             githubRepositoryDTOList.addAll(Arrays.stream(githubRepositoryDTOS).toList());
         }
 
