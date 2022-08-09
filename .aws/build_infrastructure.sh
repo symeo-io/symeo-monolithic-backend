@@ -265,6 +265,7 @@ aws cloudformation deploy \
        APPKey=${DATADOG_APP_KEY} \
   --region ${REGION} \
   --stack-name catlean-datadog-integration-${ENV} \
+  --capabilities CAPABILITY_IAM \
   --template-file cloudformation/datadog-aws-integration.yml
 
 echo "DONE"
