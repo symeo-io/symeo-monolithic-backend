@@ -89,7 +89,7 @@ aws ecs register-task-definition \
     \"image\":\"${CatleanBackendRepository}:${TAG}\",
     \"portMappings\":[{\"containerPort\":9999}],
     \"dockerLabels\": {
-      \"com.datadoghq.ad.instances\": \"[{\\\"host\\\": \\\"%%host%%\\\", \\\"port\\\": 6379}]\",
+      \"com.datadoghq.ad.instances\": \"[{\\\"host\\\": \\\"%%host%%\\\", \\\"port\\\": 9999}]\",
       \"com.datadoghq.ad.check_names\": \"[\\\"catlean-api-${ENV}\\\"]\",
       \"com.datadoghq.ad.init_configs\": \"[{}]\"
     },
