@@ -28,8 +28,12 @@ case $key in
     DB_PASSWORD="$2"
     shift # past argument
     ;;
-    -ddk|--datadog-api-key)
+    -ddik|--datadog-api-key)
     DATADOG_API_KEY="$2"
+    shift # past argument
+    ;;
+    -ddpk|--datadog-app-key)
+    DATADOG_APP_KEY="$2"
     shift # past argument
     ;;
     -k|--key-name)
@@ -252,5 +256,15 @@ aws cloudformation deploy \
   --region ${REGION} \
   --stack-name catlean-backend-ecs-services-${ENV} \
   --template-file cloudformation/ecs-services.yml
+
+## Datadog integration
+aws cloudformation deploy \
+--no-fail-on-empty-changeset \
+  --parameter-overrides \
+       APIKey=${DATADOG_API_KEY} \
+       APPKey=${DATADOG_APP_KEY} \
+  --region ${REGION} \
+  --stack-name catlean-datadog-integration-${ENV} \
+  --template-file cloudformation/datadog-aws-integration.yml
 
 echo "DONE"
