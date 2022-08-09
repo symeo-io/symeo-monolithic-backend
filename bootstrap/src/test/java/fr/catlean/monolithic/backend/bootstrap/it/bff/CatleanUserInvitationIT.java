@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.bootstrap.it;
+package fr.catlean.monolithic.backend.bootstrap.it.bff;
 
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.UserRequestContract;
@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CatleanUserInvitationIT extends AbstractCatleanMonolithicBackendIT {
+public class CatleanUserInvitationIT extends AbstractCatleanBackForFrontendApiIT {
 
     @Autowired
     public OrganizationRepository organizationRepository;

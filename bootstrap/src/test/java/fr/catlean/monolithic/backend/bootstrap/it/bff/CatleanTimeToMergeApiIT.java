@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.bootstrap.it;
+package fr.catlean.monolithic.backend.bootstrap.it.bff;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode;
 import fr.catlean.monolithic.backend.domain.helper.DateHelper;
@@ -29,7 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 
-public class CatleanTimeToMergeApiIT extends AbstractCatleanMonolithicBackendIT {
+public class CatleanTimeToMergeApiIT extends AbstractCatleanBackForFrontendApiIT {
     @Autowired
     public PullRequestHistogramService pullRequestHistogramService;
     @Autowired
