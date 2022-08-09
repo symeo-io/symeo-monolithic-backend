@@ -97,7 +97,7 @@ aws ecs register-task-definition \
     \"environmentFiles\": [{
       \"type\":\"s3\",
       \"value\":\"arn:aws:s3:::${EnvFilesS3Bucket}/.env\"
-    }],
+    }]
   },
   {
     \"name\":\"DataDogAgent-${ENV}\",
@@ -123,31 +123,27 @@ aws ecs register-task-definition \
       {\"name\":\"DD_LOGS_ENABLED\",\"value\":\"true\"},
       {\"name\":\"DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL\",\"value\":\"true\"}
     ],
-    \"mountPoints"\:[
+    \"mountPoints\":[
         {
             \"containerPath\": \"/opt/datadog-agent/run\",
             \"sourceVolume\": \"pointdir\",
-            \"readOnly\": \"true\",
+            \"readOnly\": true
         },
         {
             \"containerPath\": \"/var/lib/docker/containers\",
             \"sourceVolume\": \"containers_root\",
-            \"readOnly\": \"true\",
+            \"readOnly\": true
         }
     ]
   }
 ]" \
    --volumes " [
     {
-        \"host\": {
-            \"sourcePath\":\"/opt/datadog-agent/run\"
-        },
+        \"host\": {},
         \"name\": \"pointdir\"
     },
     {
-        \"host\": {
-            \"sourcePath\":\"/var/lib/docker/containers/\"
-        },
+        \"host\": {},
         \"name\": \"containers_root\"
     }
   ]
