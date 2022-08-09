@@ -38,12 +38,12 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles({"it"})
 @AutoConfigureWebTestClient(timeout = "36000")
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = CatleanMonolithicBackendITApplication.class)
-@ContextConfiguration(initializers = AbstractCatleanDataCollectionIT.WireMockInitializer.class)
 @Testcontainers
 @Slf4j
 @DirtiesContext
+@ContextConfiguration(initializers = AbstractCatleanDataCollectionAndApiIT.WireMockInitializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public abstract class AbstractCatleanDataCollectionIT {
+public abstract class AbstractCatleanDataCollectionAndApiIT {
 
     @Container
     static PostgreSQLContainer postgresSQLContainer =
@@ -112,7 +112,7 @@ public abstract class AbstractCatleanDataCollectionIT {
                     });
 
             TestPropertyValues.of(
-                            "github.app.api:http://localhost:" + wireMockServer.port() + "/")
+                            "infrastructure.github.app.api:http://localhost:" + wireMockServer.port() + "/")
                     .applyTo(configurableApplicationContext);
         }
 
