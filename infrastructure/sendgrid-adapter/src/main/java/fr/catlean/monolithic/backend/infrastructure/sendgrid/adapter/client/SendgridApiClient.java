@@ -5,7 +5,6 @@ import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
@@ -27,12 +26,15 @@ public class SendgridApiClient {
     }
 
 
-    public void sendInvitationEmail(final String email) throws CatleanException {
+    public void sendInvitationEmail(final String organizationName, final String fromUserEmail, final String email) throws CatleanException {
         final Email to = new Email(email);
         final Mail mail = new Mail();
-        mail.setFrom(new Email(sendgridProperties.getCatleanEmail(),"Catlean Support"));
+        mail.setFrom(new Email(sendgridProperties.getCatleanEmail(), "Catlean Support"));
         final Personalization personalization = new Personalization();
-        personalization.addDynamicTemplateData(sendgridProperties.getInvitationEmailPlaceholder(), email);
+        personalization.addDynamicTemplateData(sendgridProperties.getInvitationFromUserEmailPlaceholder(),
+                fromUserEmail);
+        personalization.addDynamicTemplateData(sendgridProperties.getInvitationOrganizationNamePlaceholder(),
+                organizationName);
         personalization.addTo(to);
         mail.addPersonalization(personalization);
         mail.setTemplateId(sendgridProperties.getInvitationTemplateId());

@@ -159,6 +159,7 @@ public class UserServiceTest {
     @Test
     void should_create_users_and_send_mail() throws CatleanException {
         // Given
+        final User authenticatedUser = User.builder().id(UUID.randomUUID()).build();
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UserStorageAdapter userStorageAdapter = mock(UserStorageAdapter.class);
         final EmailDeliveryAdapter emailDeliveryAdapter = mock(EmailDeliveryAdapter.class);
@@ -177,13 +178,18 @@ public class UserServiceTest {
 
         // When
         final ArgumentCaptor<List<User>> usersCaptor = ArgumentCaptor.forClass(List.class);
+        final ArgumentCaptor<Organization> organizationArgumentCaptor = ArgumentCaptor.forClass(Organization.class);
+        final ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
         when(userStorageAdapter.saveUsers(usersCaptor.capture()))
                 .thenReturn(users.stream().map(user -> user.toBuilder().id(UUID.randomUUID()).build()).toList());
-        userService.inviteUsersForOrganization(organization, users);
+        userService.inviteUsersForOrganization(organization, authenticatedUser, users);
 
         // Then
-        verify(emailDeliveryAdapter, times(1)).sendInvitationForUsers(usersCaptor.capture());
+        verify(emailDeliveryAdapter, times(1)).sendInvitationForUsers(organizationArgumentCaptor.capture(),
+                userArgumentCaptor.capture(), usersCaptor.capture());
         assertThat(usersCaptor.getAllValues()).hasSize(2);
+        assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
+        assertThat(userArgumentCaptor.getValue()).isEqualTo(authenticatedUser);
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getId()).isNull());
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOrganization()).isEqualTo(organization));
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOnboarding().getHasConfiguredTeam()).isTrue());

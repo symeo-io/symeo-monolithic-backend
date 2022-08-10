@@ -35,7 +35,8 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
     public ResponseEntity<UsersResponseContract> createUsersToOrganization(List<UserRequestContract> userRequestContract) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(usersToResponse(userFacadeAdapter.inviteUsersForOrganization(authenticatedUser.getOrganization(), contractToUsers(userRequestContract))));
+            return ok(usersToResponse(userFacadeAdapter.inviteUsersForOrganization(authenticatedUser.getOrganization(),
+                    authenticatedUser, contractToUsers(userRequestContract))));
         } catch (CatleanException e) {
             return internalServerError().body(usersToError(e));
         }
