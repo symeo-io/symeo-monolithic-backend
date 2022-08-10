@@ -45,7 +45,8 @@ public class UserService implements UserFacadeAdapter {
     }
 
     @Override
-    public List<User> inviteUsersForOrganization(Organization organization, List<User> users) throws CatleanException {
+    public List<User> inviteUsersForOrganization(final Organization organization, final User authenticatedUser,
+                                                 final List<User> users) throws CatleanException {
         final List<User> createdUsers =
                 userStorageAdapter.saveUsers(users.stream().map(user -> user.toBuilder()
                         .organizations(List.of(organization))
@@ -55,7 +56,7 @@ public class UserService implements UserFacadeAdapter {
                                         .hasConnectedToVcs(true)
                                         .build())
                         .build()).toList());
-        emailDeliveryAdapter.sendInvitationForUsers(createdUsers);
+        emailDeliveryAdapter.sendInvitationForUsers(organization, authenticatedUser, createdUsers);
         return createdUsers;
     }
 
