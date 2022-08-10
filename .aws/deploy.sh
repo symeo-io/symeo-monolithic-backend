@@ -130,8 +130,7 @@ aws ecs register-task-definition \
       {\"name\":\"DD_APM_ENABLED\",\"value\":\"true\"},
       {\"name\":\"DD_APM_NON_LOCAL_TRAFFIC\",\"value\":\"true\"},
       {\"name\":\"ECS_FARGATE\",\"value\":\"true\"},
-      {\"name\":\"DD_LOGS_ENABLED\",\"value\":\"true\"},
-      {\"name\":\"DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL\",\"value\":\"true\"}
+      {\"name\":\"DD_APM_IGNORE_RESOURCES\",\"value\":\"GET /actuator/health\"}
     ]
   }
 ]"
