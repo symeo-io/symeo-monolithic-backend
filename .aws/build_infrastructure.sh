@@ -263,6 +263,7 @@ aws cloudformation deploy \
   --parameter-overrides \
        APIKey=${DATADOG_API_KEY} \
        APPKey=${DATADOG_APP_KEY} \
+       CloudwatchLogsGroup=${CloudwatchLogsGroup} \
   --region ${REGION} \
   --stack-name catlean-datadog-integration-${ENV} \
   --capabilities CAPABILITY_IAM \
