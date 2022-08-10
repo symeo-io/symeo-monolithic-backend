@@ -257,6 +257,8 @@ aws cloudformation deploy \
   --stack-name catlean-backend-ecs-services-${ENV} \
   --template-file cloudformation/ecs-services.yml
 
+export_stack_outputs catlean-backend-ecs-services-${ENV} ${REGION}
+
 ## Datadog integration
 aws cloudformation deploy \
 --no-fail-on-empty-changeset \
