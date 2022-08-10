@@ -40,8 +40,6 @@
         <wiremock-jre8.version>2.33.2</wiremock-jre8.version>
         <reactor-netty.version>1.0.21</reactor-netty.version>
         <jjwt-jackson.version>0.11.2</jjwt-jackson.version>
-        <logback-core.version>1.2.6</logback-core.version>
-        <sentry-logback.version>6.2.1</sentry-logback.version>
         <test-container.version>1.17.3</test-container.version>
         <sendgrid-java.version>4.9.3</sendgrid-java.version>
     </properties>
@@ -80,11 +78,6 @@
                 <artifactId>jjwt-jackson</artifactId>
                 <version>${jjwt-jackson.version}</version>
                 <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.sentry</groupId>
-                <artifactId>sentry-logback</artifactId>
-                <version>${sentry-logback.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sendgrid</groupId>
@@ -134,16 +127,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback-core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback-core.version}</version>
         </dependency>
 
         <!-- Test -->
