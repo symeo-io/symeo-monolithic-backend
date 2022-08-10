@@ -255,7 +255,7 @@ aws cloudformation deploy \
       Subnets=${SUBNETS} \
   --region ${REGION} \
   --stack-name catlean-backend-ecs-services-${ENV} \
-  --template-file cloudformation/ecs-services.yml
+  --template-file cloudformation/ecs-services.yml \
 
 export_stack_outputs catlean-backend-ecs-services-${ENV} ${REGION}
 
