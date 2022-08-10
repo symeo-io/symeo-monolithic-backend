@@ -80,6 +80,8 @@ aws ecs register-task-definition \
   --family ${FamilyName} \
   --region ${REGION} \
   --requires-compatibilities FARGATE \
+  --cpu 1124 \
+  --memory 2304MB \
   --network-mode awsvpc \
   --container-definitions "
 [
