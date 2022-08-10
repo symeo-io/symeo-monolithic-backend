@@ -80,8 +80,8 @@ aws ecs register-task-definition \
   --family ${FamilyName} \
   --region ${REGION} \
   --requires-compatibilities FARGATE \
-  --cpu 1124 \
-  --memory 2304 \
+  --cpu 2048 \
+  --memory 4096 \
   --network-mode awsvpc \
   --container-definitions "
 [
@@ -89,8 +89,8 @@ aws ecs register-task-definition \
     \"name\":\"CatleanBackendContainer-${ENV}\",
     \"image\":\"${CatleanBackendRepository}:${TAG}\",
     \"portMappings\":[{\"containerPort\":9999}],
-    \"cpu\":1024,
-    \"memory\":2048,
+    \"cpu\":1948,
+    \"memory\":3840,
     \"dockerLabels\": {
       \"com.datadoghq.ad.instances\": \"[{\\\"host\\\": \\\"%%host%%\\\", \\\"port\\\": 9999}]\",
       \"com.datadoghq.ad.check_names\": \"[\\\"catlean-api-${ENV}\\\"]\",
