@@ -15,12 +15,6 @@ infrastructure:
     invitation-template-id: ${SENDGRID_TEMPLATE_ID}
     invitation-email-placeholder: "email"
 
-bootstrap:
-  sentry:
-    dsn: ${SENTRY_DSN}
-    environment: ${SENTRY_ENVIRONMENT}
-    server-name: ${SENTRY_SERVERNAME}
-
 application:
   auth0:
     api-audience: ${AUTH0_AUDIENCE}
