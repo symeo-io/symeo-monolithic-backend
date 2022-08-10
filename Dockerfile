@@ -21,5 +21,4 @@ CMD java \
     -javaagent:/webapp/dd-java-agent.jar \
     $JAVA_OPTS \
     -jar webapp/catlean-monolithic-backend.jar \
-    --spring.profiles.active=sentry \
     --spring.config.additional-location=webapp/application.yaml
