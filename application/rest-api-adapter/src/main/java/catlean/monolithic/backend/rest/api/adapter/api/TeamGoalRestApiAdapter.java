@@ -1,9 +1,9 @@
-package catlean.monolithic.backend.rest.api.adapter;
+package catlean.monolithic.backend.rest.api.adapter.api;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper;
 import catlean.monolithic.backend.rest.api.adapter.mapper.TeamGoalContractMapper;
-import catlean.monolithic.backend.rest.api.adapter.mapper.TimeToMergeCurveMapper;
+import catlean.monolithic.backend.rest.api.adapter.mapper.CurveMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.in.TeamGoalFacadeAdapter;
@@ -22,8 +22,7 @@ import java.util.UUID;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper.catleanExceptionToContracts;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.domainToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.errorToContract;
-import static catlean.monolithic.backend.rest.api.adapter.mapper.TimeToMergeCurveMapper.curveToContract;
-import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.TIME_LIMIT;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.CurveMapper.curveToContract;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -55,7 +54,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return ok(curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
                     teamId)));
         } catch (CatleanException e) {
-            return internalServerError().body(TimeToMergeCurveMapper.errorToContract(e));
+            return internalServerError().body(CurveMapper.errorToContract(e));
         }
     }
 
@@ -64,6 +63,28 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return domainToContract(histogramQuery.computePullRequestTimeToMergeHistogram(authenticatedUser.getOrganization(),
+                    teamId));
+        } catch (CatleanException e) {
+            return errorToContract(e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<GetCurveResponseContract> getPullRequestSizeCurve(UUID teamId) {
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            return ok(curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
+                    teamId)));
+        } catch (CatleanException e) {
+            return internalServerError().body(CurveMapper.errorToContract(e));
+        }
+    }
+
+    @Override
+    public ResponseEntity<GetHistogramResponseContract> getPullRequestSizeHistogram(UUID teamId) {
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            return domainToContract(histogramQuery.computePullRequestSizeHistogram(authenticatedUser.getOrganization(),
                     teamId));
         } catch (CatleanException e) {
             return errorToContract(e);

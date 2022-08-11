@@ -2,6 +2,7 @@ package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestSizeView;
 import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -11,6 +12,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.P
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestSizeRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestTimeToMergeRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import lombok.AllArgsConstructor;
@@ -30,6 +32,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestRepository pullRequestRepository;
     private final RepositoryRepository repositoryRepository;
     private final PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository;
+    private final PullRequestSizeRepository pullRequestSizeRepository;
 
     @Override
     public void savePullRequestDetails(List<PullRequest> pullRequests) {
@@ -78,6 +81,26 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             return ofNullable(teamId)
                     .map(uuid -> pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamId(organization.getId(), uuid))
                     .orElseGet(() -> pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationId(organization.getId()))
+                    .stream()
+                    .map(PullRequestCurveMapper::dtoToView)
+                    .toList();
+        } catch (Exception e) {
+            LOGGER.error("Failed to read all PR time to merge curve for organization {}", organization, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message("Failed to read all PR time to merge curve for organization")
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PullRequestSizeView> readPullRequestsSizeViewForOrganizationAndTeam(Organization organization,
+                                                                                    UUID teamId) throws CatleanException {
+        try {
+            return ofNullable(teamId)
+                    .map(uuid -> pullRequestSizeRepository.findPullRequestSizeDTOsByOrganizationIdAndTeamId(organization.getId(), uuid))
+                    .orElseGet(() -> pullRequestSizeRepository.findPullRequestSizeDTOsByOrganizationId(organization.getId()))
                     .stream()
                     .map(PullRequestCurveMapper::dtoToView)
                     .toList();

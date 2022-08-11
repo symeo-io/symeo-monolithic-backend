@@ -1,4 +1,4 @@
-package catlean.monolithic.backend.rest.api.adapter;
+package catlean.monolithic.backend.rest.api.adapter.api;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import catlean.monolithic.backend.rest.api.adapter.mapper.RepositoryContractMapper;

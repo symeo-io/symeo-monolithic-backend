@@ -47,7 +47,7 @@ public class PullRequestHistogramServiceTest {
                 )
                 .teams(List.of(team))
                 .build();
-        final TeamGoal teamGoal = TeamGoal.fromTeamStandardAndTeamId(TeamStandard.buildMaximumSizeToMerge(),
+        final TeamGoal teamGoal = TeamGoal.fromTeamStandardAndTeamId(TeamStandard.buildPullRequestSize(),
                 team.getId(), 500);
         final List<PullRequest> pullRequests = getPullRequestsStubsWithSizeLimitToTestWeekRange(repositoryName1,
                 organization, 100);

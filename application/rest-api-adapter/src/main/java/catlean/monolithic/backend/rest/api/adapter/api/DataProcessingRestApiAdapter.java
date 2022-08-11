@@ -1,4 +1,4 @@
-package catlean.monolithic.backend.rest.api.adapter;
+package catlean.monolithic.backend.rest.api.adapter.api;
 
 import fr.catlean.monolithic.backend.data.processing.contract.api.DataProcessingJobApi;
 import fr.catlean.monolithic.backend.domain.port.in.DataProcessingJobAdapter;

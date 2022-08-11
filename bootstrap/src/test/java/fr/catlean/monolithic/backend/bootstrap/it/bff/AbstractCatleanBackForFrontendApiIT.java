@@ -84,6 +84,8 @@ public abstract class AbstractCatleanBackForFrontendApiIT {
     protected static final String ORGANIZATIONS_REST_API_USERS = "/api/v1/organizations/users";
     protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM = "/api/v1/teams/goals/time-to-merge/histogram";
     protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES = "/api/v1/teams/goals/time-to-merge/curves";
+    protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_HISTOGRAM = "/api/v1/teams/goals/pull-request-size/histogram";
+    protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES = "/api/v1/teams/goals/pull-request-size/curves";
     protected static final String TEAMS_GOALS_REST_API = "/api/v1/teams/goals";
 
     @Autowired
