@@ -278,7 +278,7 @@ export_stack_outputs catlean-datadog-integration-${ENV} ${REGION}
 aws cloudformation deploy \
 --no-fail-on-empty-changeset \
   --parameter-overrides \
-       DatadogForwarderArn=${DatadogForwarderArn} \
+       DatadogForwarderArn=${ARN} \
        CloudwatchLogsGroup=${CloudwatchLogsGroup} \
   --region ${REGION} \
   --stack-name catlean-datadog-log-forwarder-${ENV} \
