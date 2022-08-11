@@ -295,7 +295,6 @@ paths:
                   - code: "F.REPOSITORIES_NOT_FOUND"
                     message: "Failed to find repositories"
 
-
   /api/v1/teams:
     post:
       security:
@@ -448,7 +447,6 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-
   /api/v1/teams/goals:
     post:
       security:
@@ -612,7 +610,6 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-
 
   /api/v1/teams/goals/time-to-merge/histogram:
     get:
@@ -842,7 +839,52 @@ paths:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
 
-
+  /api/v1/jobs/last-two:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Job
+      parameters:
+        - in: query
+          name: job_code
+          required: true
+          schema:
+            type: string
+      summary: Get last two jobs linked to job code
+      operationId: getLastTwoJobsForCode
+      description: |
+        Get last two jobs linked to job code
+      responses:
+        "200":
+          description: 'Successfully get last two jobs for code'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LastTwoJobsResponseContract'
+              example:
+                jobs:
+                  last_job:
+                    - id: 49b377f1-9533-488c-ba29-e1f6224a333c
+                      status: STARTED
+                      code: COLLECT_PULL_REQUESTS_FOR_ORGANIZATION_JOB
+                      creation_date: 2022-07-21T17:32:28Z
+                      end_date: null
+                  previous_last_job: null
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
 
 components:
   securitySchemes:
@@ -1210,3 +1252,42 @@ components:
           format: uuid
         value:
           type: integer
+    JobContract:
+      type: object
+      required:
+        - id
+        - status
+        - code
+        - creation_date
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        status:
+          type: string
+        creation_date:
+          type: number
+          format: date-time
+        end_date:
+          type: number
+          format: date-time
+    LastTwoJobsContract:
+      type: object
+      required:
+        - last_job
+      properties:
+        last_job:
+          $ref: '#/components/schemas/JobContract'
+        previous_last_job:
+          $ref: '#/components/schemas/JobContract'
+    LastTwoJobsResponseContract:
+      type: object
+      properties:
+        jobs:
+          $ref: '#/components/schemas/LastTwoJobsContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatleanErrorContract'
