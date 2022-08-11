@@ -10,6 +10,7 @@ import fr.catlean.monolithic.backend.domain.port.out.VersionControlSystemAdapter
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -23,10 +24,9 @@ public class DeliveryQueryTest {
     void should_read_repositories_given_an_organization() throws CatleanException {
         // Given
         final String organizationName = faker.pokemon().name();
-        final String vcsId = faker.dragonBall().character();
         final Organization organization =
-                Organization.builder().name(organizationName).vcsOrganization(
-                        VcsOrganization.builder().vcsId(vcsId).name(faker.rickAndMorty().character()).build()
+                Organization.builder().id(UUID.randomUUID()).name(organizationName).vcsOrganization(
+                        VcsOrganization.builder().name(faker.rickAndMorty().character()).build()
                 ).build();
         final String contentName = faker.animal().name();
 
@@ -42,7 +42,7 @@ public class DeliveryQueryTest {
 
         // When
         when(versionControlSystemAdapter.getName()).thenReturn(contentName);
-        when(rawStorageAdapter.read(vcsId, contentName, Repository.ALL))
+        when(rawStorageAdapter.read(organization.getId(), contentName, Repository.ALL))
                 .thenReturn(dummyBytes);
         when(versionControlSystemAdapter.repositoriesBytesToDomain(dummyBytes)).thenReturn(
                 repositoriesStub

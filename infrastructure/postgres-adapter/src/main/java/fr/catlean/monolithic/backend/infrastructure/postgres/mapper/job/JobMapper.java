@@ -25,6 +25,7 @@ public interface JobMapper {
     static Job entityToDomain(final JobEntity jobEntity) {
         return Job.builder()
                 .id(jobEntity.getId())
+                .code(jobEntity.getCode())
                 .status(jobEntity.getStatus())
                 .organizationId(jobEntity.getOrganizationId())
                 .endDate(nonNull(jobEntity.getEndDate()) ? Date.from(jobEntity.getEndDate().toInstant()) : null)

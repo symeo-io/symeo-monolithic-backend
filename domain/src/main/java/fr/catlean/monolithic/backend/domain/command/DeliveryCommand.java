@@ -25,7 +25,7 @@ public class DeliveryCommand {
         final byte[] rawRepositories =
                 versionControlSystemAdapter.getRawRepositories(organization.getVcsOrganization().getName());
         rawStorageAdapter.save(
-                organization.getVcsOrganization().getVcsId(),
+                organization.getId(),
                 versionControlSystemAdapter.getName(),
                 Repository.ALL,
                 rawRepositories);
@@ -34,17 +34,17 @@ public class DeliveryCommand {
 
     public List<PullRequest> collectPullRequestsForRepository(Repository repository) throws CatleanException {
         byte[] alreadyRawPullRequestsCollected = null;
-        if (rawStorageAdapter.exists(repository.getVcsOrganizationId(),
+        if (rawStorageAdapter.exists(repository.getOrganizationId(),
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getId()))) {
-            alreadyRawPullRequestsCollected = rawStorageAdapter.read(repository.getId(),
+            alreadyRawPullRequestsCollected = rawStorageAdapter.read(repository.getOrganizationId(),
                     versionControlSystemAdapter.getName(), PullRequest.getNameFromRepository(repository.getId()));
         }
         final byte[] rawPullRequestsForRepository =
                 versionControlSystemAdapter.getRawPullRequestsForRepository(repository,
                         alreadyRawPullRequestsCollected);
         rawStorageAdapter.save(
-                repository.getVcsOrganizationId(),
+                repository.getOrganizationId(),
                 versionControlSystemAdapter.getName(),
                 PullRequest.getNameFromRepository(repository.getId()),
                 rawPullRequestsForRepository);

@@ -6,6 +6,7 @@ import fr.catlean.monolithic.backend.infrastructure.json.local.storage.propertie
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
 public class JsonLocalStorageAdapter implements RawStorageAdapter {
 
@@ -17,8 +18,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
 
     @Override
     public void save(
-            String organizationId, String adapterName, String contentName, byte[] bytes) {
-        final Path jsonPath = buildJsonPath(organizationId, adapterName, contentName);
+            UUID organizationId, String adapterName, String contentName, byte[] bytes) {
+        final Path jsonPath = buildJsonPath(organizationId.toString(), adapterName, contentName);
         try {
             if (!Files.exists(jsonPath)) {
                 Files.createDirectories(jsonPath.getParent());
@@ -30,8 +31,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public byte[] read(String organizationId, String adapterName, String contentName) {
-        final Path jsonPath = buildJsonPath(organizationId, adapterName, contentName);
+    public byte[] read(UUID organizationId, String adapterName, String contentName) {
+        final Path jsonPath = buildJsonPath(organizationId.toString(), adapterName, contentName);
         try {
             return Files.readAllBytes(jsonPath);
         } catch (IOException e) {
@@ -40,8 +41,8 @@ public class JsonLocalStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public boolean exists(String organizationId, String adapterName, String contentName) {
-        final Path jsonPath = buildJsonPath(organizationId, adapterName, contentName);
+    public boolean exists(UUID organizationId, String adapterName, String contentName) {
+        final Path jsonPath = buildJsonPath(organizationId.toString(), adapterName, contentName);
         return Files.exists(jsonPath);
     }
 

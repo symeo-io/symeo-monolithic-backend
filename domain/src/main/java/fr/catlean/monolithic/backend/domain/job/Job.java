@@ -3,8 +3,9 @@ package fr.catlean.monolithic.backend.domain.job;
 import lombok.*;
 
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
+
+import static java.util.Objects.isNull;
 
 @Data
 @AllArgsConstructor
@@ -25,9 +26,10 @@ public class Job {
     JobRunnable jobRunnable;
     Date endDate;
     Job nextJob;
+    String code;
 
     public String getCode() {
-        return this.jobRunnable.getCode();
+        return isNull(code) ? this.jobRunnable.getCode() : this.code;
     }
 
     public Job started() {

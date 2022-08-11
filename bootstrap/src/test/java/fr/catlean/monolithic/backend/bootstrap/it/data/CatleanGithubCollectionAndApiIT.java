@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -131,6 +133,55 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
                                 )
                         )
         );
+        wireMockServer.stubFor(
+                get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[0].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_details_1.json",
+                                                GithubPullRequestDTO.class), 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[1].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_details_2.json",
+                                                GithubPullRequestDTO.class), 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[2].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_details_3.json",
+                                                GithubPullRequestDTO.class), 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[3].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_details_4.json",
+                                                GithubPullRequestDTO.class), 200
+                                )
+                        )
+        );
+
 
         // When
         client.get()
@@ -145,10 +196,14 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
                 jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectRepositoriesJobRunnable.JOB_CODE, organization);
         assertThat(repositoriesJobs).hasSize(1);
         assertThat(repositoriesJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
+        assertThat(repositoriesJobs.get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
         final List<Job> pullRequestsJobs =
                 jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectPullRequestsJobRunnable.JOB_CODE, organization);
         assertThat(pullRequestsJobs).hasSize(1);
-        assertThat(repositoriesJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
+        assertThat(pullRequestsJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
+        assertThat(pullRequestsJobs.get(0).getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
+        final Path rawStorageOrganizationPath = Paths.get(TMP_DIR + "/" + organization.getId().toString());
+        assertThat(Files.exists(rawStorageOrganizationPath)).isTrue();
     }
 
     private static GithubPullRequestDTO[] updatePullRequestsDates(GithubPullRequestDTO[] githubPullRequestDTOS) {

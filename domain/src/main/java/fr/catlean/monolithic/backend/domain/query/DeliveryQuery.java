@@ -21,7 +21,7 @@ public class DeliveryQuery {
 
     public List<Repository> readRepositoriesForOrganization(Organization organization) throws CatleanException {
         final byte[] repositoriesBytes =
-                rawStorageAdapter.read(organization.getVcsOrganization().getVcsId(),
+                rawStorageAdapter.read(organization.getId(),
                         versionControlSystemAdapter.getName(), Repository.ALL);
         return versionControlSystemAdapter.repositoriesBytesToDomain(repositoriesBytes);
     }
