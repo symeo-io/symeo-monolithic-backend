@@ -728,6 +728,121 @@ paths:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
 
+  /api/v1/teams/goals/pull-request-size/histogram:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Goals
+      summary: Get PullRequestSize Histogram
+      operationId: getPullRequestSizeHistogram
+      description: |
+        Get PullRequestSize Histogram
+      parameters:
+        - in: query
+          name: team_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: 'Successfully retrieved pull request size histogram'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHistogramResponseContract'
+              example:
+                histogram:
+                  data:
+                    - start_date_range: 12/08/1992
+                      data_above_limit: 11
+                      data_below_limit: 22
+                    - start_date_range: 24/09/1992
+                      data_above_limit: 1
+                      data_below_limit: 10
+                  limit: 5
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+  /api/v1/teams/goals/pull-request-size/curves:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Goals
+      summary: Get PullRequestSize Curve
+      operationId: getPullRequestSizeCurve
+      description: |
+        Get PullRequestSize Curve
+      parameters:
+        - in: query
+          name: team_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: 'Successfully retrieved pull request size curve'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCurveResponseContract'
+              example:
+                curves:
+                  piece_curve:
+                    - date: 12/08/1992
+                      value: 10
+                      piece_open: false
+                    - date: 12/09/1992
+                      value: 22
+                      piece_open: true
+                  average_curve:
+                    - value: 3
+                      date: 12/08/1992
+                    - value: 4
+                      date: 12/00/1992
+                  limit: 5
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatleanErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+
 
 components:
   securitySchemes:

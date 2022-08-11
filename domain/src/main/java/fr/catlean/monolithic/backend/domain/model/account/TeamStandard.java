@@ -8,7 +8,7 @@ import lombok.Data;
 public class TeamStandard {
 
     public static final String TIME_TO_MERGE = "time-to-merge";
-    public static final String MAXIMUM_SIZE_TO_MERGE = "maximum-size-to-merge";
+    public static final String PULL_REQUEST_SIZE = "pull-request-size";
     String code;
 
     public static TeamStandard buildTimeToMerge() {
@@ -17,9 +17,9 @@ public class TeamStandard {
                 .build();
     }
 
-    public static TeamStandard buildMaximumSizeToMerge() {
+    public static TeamStandard buildPullRequestSize() {
         return TeamStandard.builder()
-                .code(MAXIMUM_SIZE_TO_MERGE)
+                .code(PULL_REQUEST_SIZE)
                 .build();
     }
 }

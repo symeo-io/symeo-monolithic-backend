@@ -12,7 +12,7 @@ import fr.catlean.monolithic.backend.frontend.contract.api.model.PieceCurveDataR
 import java.util.ArrayList;
 import java.util.List;
 
-public interface TimeToMergeCurveMapper {
+public interface CurveMapper {
 
     static GetCurveResponseContract curveToContract(final PieceCurveWithAverage pieceCurveWithAverage) {
         final GetCurveResponseContract getCurveResponseContract = new GetCurveResponseContract();

@@ -24,11 +24,24 @@ public class HistogramQuery {
 
     public PullRequestHistogram computePullRequestTimeToMergeHistogram(final Organization organization,
                                                                        final UUID teamId) throws CatleanException {
-        final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
+        return getPullRequestHistogram(organization, teamId, PullRequestHistogram.TIME_LIMIT,
                 TeamStandard.buildTimeToMerge());
+    }
+
+    public PullRequestHistogram computePullRequestSizeHistogram(final Organization organization, final UUID teamId)
+            throws CatleanException {
+        return getPullRequestHistogram(organization, teamId, PullRequestHistogram.SIZE_LIMIT,
+                TeamStandard.buildPullRequestSize());
+    }
+
+    private PullRequestHistogram getPullRequestHistogram(final Organization organization, final UUID teamId,
+                                                         final String histogramType, final TeamStandard teamStandard)
+            throws CatleanException {
+        final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
+                teamStandard);
         final List<PullRequest> pullRequests =
                 expositionStorageAdapter.findAllPullRequestsForOrganizationAndTeamId(organization, teamId);
-        return pullRequestHistogramService.getPullRequestHistogram(PullRequestHistogram.TIME_LIMIT, pullRequests,
+        return pullRequestHistogramService.getPullRequestHistogram(histogramType, pullRequests,
                 organization,
                 currentTeamGoal);
     }
