@@ -54,6 +54,13 @@ public class JobManager implements JobFacadeAdapter {
 
     @Override
     public List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws CatleanException {
-        return jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(code,organization);
+        return jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(code, organization);
+    }
+
+    @Override
+    public List<Job> findLastJobsForCodeAndOrganizationAndLimit(String jobCode, Organization organization,
+                                                                int numberOfJobToFind) throws CatleanException {
+        return jobStorage.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode, organization,
+                numberOfJobToFind);
     }
 }

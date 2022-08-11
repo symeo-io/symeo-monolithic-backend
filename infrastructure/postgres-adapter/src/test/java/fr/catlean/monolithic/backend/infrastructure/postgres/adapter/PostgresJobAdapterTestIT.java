@@ -9,6 +9,7 @@ import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.infrastructure.postgres.PostgresJobAdapter;
 import fr.catlean.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -93,5 +94,39 @@ public class PostgresJobAdapterTestIT {
         assertThat(jobs.get(2).getStatus()).isEqualTo(Job.FAILED);
     }
 
+    @Test
+    void should_find_last_jobs_for_code_and_organization_and_limit() throws CatleanException {
+        // Given
+        final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
+        final String jobCode = CollectRepositoriesJobRunnable.JOB_CODE;
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final JobEntity jobEntity1 =
+                jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId()).build());
+        final JobEntity jobEntity2 =
+                jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode).organizationId(organization.getId()).build());
+        final JobEntity jobEntity3 =
+                jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId()).build());
 
+        // When
+        final List<Job> lastJobsForCodeAndOrganizationAndLimit1 =
+                postgresJobAdapter.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode,
+                        organization, 1);
+        final List<Job> lastJobsForCodeAndOrganizationAndLimit2 =
+                postgresJobAdapter.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode,
+                        organization, 2);
+        final List<Job> lastJobsForCodeAndOrganizationAndLimit3 =
+                postgresJobAdapter.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode,
+                        organization, 3);
+
+        // Then
+        assertThat(lastJobsForCodeAndOrganizationAndLimit1).hasSize(1);
+        assertThat(lastJobsForCodeAndOrganizationAndLimit1.get(0)).isEqualTo(JobMapper.entityToDomain(jobEntity1));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit2).hasSize(2);
+        assertThat(lastJobsForCodeAndOrganizationAndLimit2.get(0)).isEqualTo(JobMapper.entityToDomain(jobEntity1));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit2.get(1)).isEqualTo(JobMapper.entityToDomain(jobEntity2));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit3).hasSize(3);
+        assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(0)).isEqualTo(JobMapper.entityToDomain(jobEntity1));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(1)).isEqualTo(JobMapper.entityToDomain(jobEntity2));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(2)).isEqualTo(JobMapper.entityToDomain(jobEntity3));
+    }
 }

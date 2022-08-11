@@ -87,6 +87,7 @@ public abstract class AbstractCatleanBackForFrontendApiIT {
     protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_HISTOGRAM = "/api/v1/teams/goals/pull-request-size/histogram";
     protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES = "/api/v1/teams/goals/pull-request-size/curves";
     protected static final String TEAMS_GOALS_REST_API = "/api/v1/teams/goals";
+    protected static final String JOBS_REST_API_STATUS = "/api/v1/jobs/status";
 
     @Autowired
     ITAuthenticationContextProvider authenticationContextProvider;

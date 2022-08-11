@@ -86,4 +86,10 @@ public class RestApiConfiguration {
                                                                  final UserFacadeAdapter userFacadeAdapter) {
         return new OrganizationRestApiAdapter(authenticationService, userFacadeAdapter);
     }
+
+    @Bean
+    public JobRestApiAdapter jobRestApiAdapter(final AuthenticationService authenticationService,
+                                               final JobFacadeAdapter jobFacadeAdapter) {
+        return new JobRestApiAdapter(authenticationService, jobFacadeAdapter);
+    }
 }

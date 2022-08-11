@@ -1261,18 +1261,18 @@ components:
         - creation_date
       properties:
         id:
-          type: string
-          format: uuid
+          type: integer
+          format: int64
         code:
           type: string
         status:
           type: string
         creation_date:
-          type: number
-          format: date-time
+          type: string
+          format: date
         end_date:
-          type: number
-          format: date-time
+          type: string
+          format: date
     LastJobsContract:
       type: object
       required:
