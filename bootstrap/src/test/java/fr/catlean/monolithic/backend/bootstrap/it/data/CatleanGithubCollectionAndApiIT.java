@@ -204,6 +204,12 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
         assertThat(pullRequestsJobs.get(0).getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
         final Path rawStorageOrganizationPath = Paths.get(TMP_DIR + "/" + organization.getId().toString());
         assertThat(Files.exists(rawStorageOrganizationPath)).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github"))).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("repositories.json"))).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_1022430104.json"))).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_1021602519.json"))).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_1021457151.json"))).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_1021237971.json"))).isTrue();
     }
 
     private static GithubPullRequestDTO[] updatePullRequestsDates(GithubPullRequestDTO[] githubPullRequestDTOS) {
