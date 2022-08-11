@@ -50,6 +50,28 @@ public class PostgresJobAdapter implements JobStorage {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Job> findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(String code, Organization organization,
+                                                                                     int numberOfJobsToFind) throws CatleanException {
+        try {
+            return jobRepository.findLastJobsForCodeAndOrganizationAndLimitByTechnicalModificationDate(code,
+                            organization.getId(), numberOfJobsToFind)
+                    .stream()
+                    .map(JobMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read last %s jobs for code %s and organization %s",
+                    numberOfJobsToFind, code,
+                    organization);
+            LOGGER.error(message, e);
+            throw CatleanException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
     private Job save(Job job) throws CatleanException {
         try {
             return entityToDomain(jobRepository.save(domainToEntity(job)));

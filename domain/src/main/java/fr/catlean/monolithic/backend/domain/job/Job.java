@@ -25,6 +25,7 @@ public class Job {
     @ToString.Exclude
     JobRunnable jobRunnable;
     Date endDate;
+    Date creationDate;
     Job nextJob;
     String code;
 

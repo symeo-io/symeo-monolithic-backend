@@ -13,9 +13,20 @@ public interface JobRepository extends JpaRepository<JobEntity, Long>, JpaSpecif
 
     @Query(
             nativeQuery = true,
-            value = "select * from job_storage.job where code = :code and organization_id = :organizationId order by " +
-                    "technical_modification_date desc"
+            value = "select * from job_storage.job where code = :code and organization_id = :organizationId" +
+                    " order by technical_modification_date desc"
     )
     List<JobEntity> findAllByCodeAndAndOrganizationIdOrderByTechnicalModificationDate(@Param("code") String code,
                                                                                       @Param("organizationId") UUID organizationId);
+
+
+    @Query(
+            nativeQuery = true,
+            value = "select * from job_storage.job where code = :code and organization_id = :organizationId" +
+                    " order by technical_creation_date desc" +
+                    " limit :numberOfJobsToFind"
+    )
+    List<JobEntity> findLastJobsForCodeAndOrganizationAndLimitByTechnicalModificationDate(@Param("code") String code,
+                                                                                           @Param("organizationId") UUID organizationId,
+                                                                                           @Param("numberOfJobsToFind") int numberOfJobsToFind);
 }

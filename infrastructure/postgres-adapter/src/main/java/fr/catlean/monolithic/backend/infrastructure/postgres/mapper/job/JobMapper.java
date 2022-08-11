@@ -29,6 +29,7 @@ public interface JobMapper {
                 .status(jobEntity.getStatus())
                 .organizationId(jobEntity.getOrganizationId())
                 .endDate(nonNull(jobEntity.getEndDate()) ? Date.from(jobEntity.getEndDate().toInstant()) : null)
+                .creationDate(Date.from(jobEntity.getTechnicalCreationDate().toInstant()))
                 .build();
     }
 }
