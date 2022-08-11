@@ -272,13 +272,13 @@ aws cloudformation deploy \
   --capabilities CAPABILITY_NAMED_IAM \
   --template-file cloudformation/datadog-aws-integration.yml \
 
-export_stack_outputs catlean-datadog-integration-${ENV} ${REGION}
+set_datadog_forwarder_arn_to_env catlean-datadog-integration-${ENV} ${REGION}
 
 ## Datadog log forwarders
 aws cloudformation deploy \
 --no-fail-on-empty-changeset \
   --parameter-overrides \
-       DatadogForwarderArn=${ARN} \
+       DatadogForwarderArn=${DatadogForwarderArn} \
        CloudwatchLogsGroup=${CloudwatchLogsGroup} \
   --region ${REGION} \
   --stack-name catlean-datadog-log-forwarder-${ENV} \
