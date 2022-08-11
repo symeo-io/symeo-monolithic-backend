@@ -15,9 +15,18 @@ import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.pr.Github
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 import fr.catlean.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import fr.catlean.monolithic.backend.infrastructure.json.local.storage.properties.JsonStorageProperties;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
+import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestTimeToMergeDTO;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestTimeToMergeRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,6 +55,16 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
     public GithubProperties githubProperties;
     @Autowired
     public JsonStorageProperties jsonStorageProperties;
+    @Autowired
+    public RepositoryRepository repositoryRepository;
+    @Autowired
+    public PullRequestRepository pullRequestRepository;
+    @Autowired
+    public PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository;
+    @Autowired
+    public TeamRepository teamRepository;
+    private static final UUID organizationId = UUID.randomUUID();
+    private static final UUID teamId = UUID.randomUUID();
 
     private static String TMP_DIR;
 
@@ -59,6 +78,7 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
         new File(TMP_DIR).delete();
     }
 
+    @Order(1)
     @Test
     void should_collect_github_repositories_and_linked_pull_requests_for_a_given_organization() throws CatleanException, IOException, InterruptedException {
         // Given
@@ -73,7 +93,7 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
         final String organizationVcsId = FAKER.rickAndMorty().character();
         final Organization organization = Organization.builder()
                 .vcsOrganization(VcsOrganization.builder().name(organizationName).vcsId(organizationVcsId).build())
-                .id(UUID.randomUUID())
+                .id(organizationId)
                 .name(organizationName)
                 .build();
         accountOrganizationStorageAdapter.createOrganization(organization);
@@ -103,9 +123,10 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
                                         200)));
 
 
-        final GithubRepositoryDTO[] githubRepositoryDTOS = getStubsFromClassT("github_stubs",
+        final GithubRepositoryDTO[] githubRepositoryDTOS = updateRepositoryOrganization(getStubsFromClassT(
+                "github_stubs",
                 "get_repositories_page_0.json",
-                GithubRepositoryDTO[].class);
+                GithubRepositoryDTO[].class), organizationName);
         wireMockServer.stubFor(
                 get(
                         urlEqualTo(String.format("/orgs/%s/repos?sort=name&per_page=%s&page=%s", organizationName,
@@ -124,7 +145,7 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
                 get(
                         urlEqualTo(String.format("/repos/%s/%s/pulls?sort=updated&direction=desc&state=all&per_page" +
                                         "=%s" +
-                                        "&page%s", organizationName, githubRepositoryDTOS[0].getName(),
+                                        "&page=%s", organizationName, githubRepositoryDTOS[0].getName(),
                                 githubProperties.getSize(), "1")))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
                         .willReturn(
@@ -133,6 +154,20 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
                                 )
                         )
         );
+        wireMockServer.stubFor(
+                get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls?sort=updated&direction=desc&state=all&per_page" +
+                                        "=%s" +
+                                        "&page=%s", organizationName, githubRepositoryDTOS[1].getName(),
+                                githubProperties.getSize(), "1")))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        "[]", 200
+                                )
+                        )
+        );
+
         wireMockServer.stubFor(
                 get(
                         urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
@@ -206,10 +241,62 @@ public class CatleanGithubCollectionAndApiIT extends AbstractCatleanDataCollecti
         assertThat(Files.exists(rawStorageOrganizationPath)).isTrue();
         assertThat(Files.exists(rawStorageOrganizationPath.resolve("github"))).isTrue();
         assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("repositories.json"))).isTrue();
-        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_1022430104.json"))).isTrue();
-        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_1021602519.json"))).isTrue();
-        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_1021457151.json"))).isTrue();
-        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_1021237971.json"))).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_github-495382833" +
+                ".json"))).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_github-512630813" +
+                ".json"))).isTrue();
+        final List<RepositoryEntity> allRepositoryEntities = repositoryRepository.findAll();
+        assertThat(allRepositoryEntities).hasSize(githubRepositoryDTOS.length);
+        allRepositoryEntities.forEach(repositoryEntity -> assertThat(repositoryEntity.getOrganizationId()).isEqualTo(organization.getId()));
+        final List<PullRequestEntity> allPullRequestEntities = pullRequestRepository.findAll();
+        assertThat(allPullRequestEntities).hasSize(githubPullRequestDTOS.length);
+        allPullRequestEntities.forEach(pullRequestEntity -> {
+            assertThat(pullRequestEntity.getOrganizationId()).isEqualTo(organization.getId());
+            assertThat(pullRequestEntity.getVcsRepositoryId()).isEqualTo("github-" + githubRepositoryDTOS[0].getId());
+        });
+    }
+
+    @Order(2)
+    @Test
+    void should_return_pull_requests_linked_to_team_id() {
+        // Given
+        final List<String> repositoryIds =
+                repositoryRepository.findAll().stream().map(RepositoryEntity::getId).toList();
+        final TeamEntity teamEntity = TeamEntity.builder()
+                .organizationId(organizationId)
+                .id(teamId)
+                .repositoryIds(repositoryIds)
+                .name(FAKER.ancient().god())
+                .build();
+        teamRepository.save(teamEntity);
+
+        // When
+        final List<PullRequestEntity> allByOrganizationIdAndTeamId =
+                pullRequestRepository.findAllByOrganizationIdAndTeamId(organizationId, teamId);
+
+        // Then
+        assertThat(allByOrganizationIdAndTeamId).hasSize(pullRequestRepository.findAll().size());
+    }
+
+    @Order(3)
+    @Test
+    void should_return_time_to_merge_view() {
+        // When
+        final List<PullRequestTimeToMergeDTO> timeToMergeDTOsByOrganizationIdAndTeamId =
+                pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamId(organizationId, teamId);
+
+        // Then
+        assertThat(timeToMergeDTOsByOrganizationIdAndTeamId).hasSize(pullRequestRepository.findAll().size());
+    }
+
+    private static GithubRepositoryDTO[] updateRepositoryOrganization(GithubRepositoryDTO[] githubRepositoryDTOS,
+                                                                      String organizationName) {
+        final List<GithubRepositoryDTO> githubRepositoryDTOList = new ArrayList<>();
+        for (GithubRepositoryDTO githubRepositoryDTO : githubRepositoryDTOS) {
+            githubRepositoryDTO.getOwner().setLogin(organizationName);
+            githubRepositoryDTOList.add(githubRepositoryDTO);
+        }
+        return githubRepositoryDTOList.toArray(new GithubRepositoryDTO[githubRepositoryDTOS.length]);
     }
 
     private static GithubPullRequestDTO[] updatePullRequestsDates(GithubPullRequestDTO[] githubPullRequestDTOS) {
