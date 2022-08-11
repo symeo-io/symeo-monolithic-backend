@@ -38,7 +38,7 @@ public class CatleanTeamGoalsIT extends AbstractCatleanBackForFrontendApiIT {
 
     @Test
     @Order(1)
-    void should_create_team_goal_given_a_team() {
+    void should_create_time_to_merge_team_goal_given_a_team() {
         // Given
         final OrganizationEntity organizationEntity = organizationRepository.save(
                 OrganizationEntity.builder()
@@ -179,5 +179,38 @@ public class CatleanTeamGoalsIT extends AbstractCatleanBackForFrontendApiIT {
         final List<TeamGoalEntity> teamGoalEntities = teamGoalRepository.findAll();
         assertThat(teamGoalEntities).hasSize(1);
         assertThat(teamGoalEntities.get(0).getId()).isNotEqualTo(teamGoalEntityToDelete.getId());
+    }
+
+    @Test
+    @Order(6)
+    void should_create_pull_request_team_goal_given_a_team() {
+        // Given
+        TeamMapper.entityToDomain(teamRepository.save(
+                TeamEntity.builder()
+                        .id(teamId)
+                        .organizationId(organizationId)
+                        .name(faker.rickAndMorty().character())
+                        .build()
+        ));
+        final int value = faker.number().randomDigit();
+        final PostCreateTeamGoalsRequest postCreateTeamGoalsRequest = new PostCreateTeamGoalsRequest();
+        postCreateTeamGoalsRequest.setTeamId(teamId);
+        postCreateTeamGoalsRequest.setValue(value);
+        postCreateTeamGoalsRequest.setStandardCode(TeamStandard.PULL_REQUEST_SIZE);
+
+        // When
+        client.post()
+                .uri(getApiURI(TEAMS_GOALS_REST_API))
+                .body(BodyInserters.fromValue(postCreateTeamGoalsRequest))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful();
+
+        final List<TeamGoalEntity> teamGoalEntities = teamGoalRepository.findAll();
+        assertThat(teamGoalEntities).hasSize(2);
+        assertThat(teamGoalEntities.get(1).getTeamId()).isEqualTo(postCreateTeamGoalsRequest.getTeamId());
+        assertThat(teamGoalEntities.get(1).getStandardCode()).isEqualTo(postCreateTeamGoalsRequest.getStandardCode());
+        assertThat(teamGoalEntities.get(1).getValue()).isEqualTo(postCreateTeamGoalsRequest.getValue().toString());
     }
 }
