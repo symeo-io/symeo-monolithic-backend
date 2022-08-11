@@ -1,6 +1,5 @@
 FROM openjdk:17-alpine
 
-
 WORKDIR webapp/
 ADD bootstrap/target/catlean-monolithic-backend.jar webapp/catlean-monolithic-backend.jar
 ADD bootstrap/src/main/resources/application.yaml webapp/application.yaml
@@ -21,4 +20,5 @@ CMD java \
     -javaagent:/webapp/dd-java-agent.jar \
     $JAVA_OPTS \
     -jar webapp/catlean-monolithic-backend.jar \
+    --spring.profiles.active=aws \
     --spring.config.additional-location=webapp/application.yaml

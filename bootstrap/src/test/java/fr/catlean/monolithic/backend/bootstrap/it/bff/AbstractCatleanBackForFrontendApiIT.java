@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.bootstrap.it;
+package fr.catlean.monolithic.backend.bootstrap.it.bff;
 
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.bootstrap.CatleanMonolithicBackendITApplication;
@@ -31,7 +31,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Slf4j
 @DirtiesContext
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public abstract class AbstractCatleanMonolithicBackendIT {
+public abstract class AbstractCatleanBackForFrontendApiIT {
 
     @Container
     static PostgreSQLContainer postgresSQLContainer =

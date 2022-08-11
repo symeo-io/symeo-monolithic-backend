@@ -27,6 +27,7 @@ public class VcsService {
     private void getPullRequestsForOrganizationAccount(final Organization organization) throws CatleanException {
         deliveryQuery.readRepositoriesForOrganization(organization)
                 .parallelStream()
+                .map(repository -> repository.toBuilder().organizationId(organization.getId()).build())
                 .forEach(
                         repo -> {
                             try {

@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.bootstrap.it;
+package fr.catlean.monolithic.backend.bootstrap.it.bff;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode;
 import fr.catlean.monolithic.backend.domain.model.account.TeamStandard;
@@ -22,7 +22,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CatleanTeamGoalsIT extends AbstractCatleanMonolithicBackendIT {
+public class CatleanTeamGoalsIT extends AbstractCatleanBackForFrontendApiIT {
 
     @Autowired
     public OrganizationRepository organizationRepository;

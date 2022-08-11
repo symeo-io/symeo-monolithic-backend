@@ -1,4 +1,4 @@
-package fr.catlean.monolithic.backend.bootstrap.it;
+package fr.catlean.monolithic.backend.bootstrap.it.bff;
 
 import catlean.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookEventDTO;
 import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
@@ -31,7 +31,7 @@ import java.util.List;
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.ORGANISATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CatleanUserOnboardingIT extends AbstractCatleanMonolithicBackendIT {
+public class CatleanUserOnboardingIT extends AbstractCatleanBackForFrontendApiIT {
 
     @Autowired
     public VcsOrganizationRepository vcsOrganizationRepository;
