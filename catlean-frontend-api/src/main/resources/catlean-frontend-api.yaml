@@ -839,7 +839,7 @@ paths:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
 
-  /api/v1/jobs/last-two:
+  /api/v1/jobs/status:
     get:
       security:
         - bearerAuth: [ ]
@@ -861,16 +861,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LastTwoJobsResponseContract'
+                $ref: '#/components/schemas/LastJobsResponseContract'
               example:
                 jobs:
-                  last_job:
+                  current_job:
                     - id: 49b377f1-9533-488c-ba29-e1f6224a333c
                       status: STARTED
                       code: COLLECT_PULL_REQUESTS_FOR_ORGANIZATION_JOB
                       creation_date: 2022-07-21T17:32:28Z
                       end_date: null
-                  previous_last_job: null
+                  previous_job: null
                 errors:
                   [ ]
         "401":
@@ -1273,20 +1273,20 @@ components:
         end_date:
           type: number
           format: date-time
-    LastTwoJobsContract:
+    LastJobsContract:
       type: object
       required:
-        - last_job
+        - current_job
       properties:
-        last_job:
+        current_job:
           $ref: '#/components/schemas/JobContract'
-        previous_last_job:
+        previous_job:
           $ref: '#/components/schemas/JobContract'
-    LastTwoJobsResponseContract:
+    LastJobsResponseContract:
       type: object
       properties:
         jobs:
-          $ref: '#/components/schemas/LastTwoJobsContract'
+          $ref: '#/components/schemas/LastJobsContract'
         errors:
           type: array
           items:
