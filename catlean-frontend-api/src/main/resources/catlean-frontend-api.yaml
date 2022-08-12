@@ -628,6 +628,18 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
       responses:
         "200":
           description: 'Successfully retrieved time to merge histogram'
@@ -638,10 +650,10 @@ paths:
               example:
                 histogram:
                   data:
-                    - start_date_range: 12/08/1992
+                    - start_date_range: 1992-08-12
                       data_above_limit: 11
                       data_below_limit: 22
-                    - start_date_range: 24/09/1992
+                    - start_date_range: 1992-08-12
                       data_above_limit: 1
                       data_below_limit: 10
                   limit: 5
@@ -682,6 +694,18 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
       responses:
         "200":
           description: 'Successfully retrieved time to merge curve'
@@ -692,17 +716,17 @@ paths:
               example:
                 curves:
                   piece_curve:
-                    - date: 12/08/1992
+                    - date: 12-08-1992
                       value: 10
                       piece_open: false
-                    - date: 12/09/1992
+                    - date: 12-08-1992
                       value: 22
                       piece_open: true
                   average_curve:
                     - value: 3
-                      date: 12/08/1992
+                      date: 12-08-1992
                     - value: 4
-                      date: 12/00/1992
+                      date: 12-08-1992
                   limit: 5
                 errors:
                   [ ]
@@ -742,6 +766,18 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
       responses:
         "200":
           description: 'Successfully retrieved pull request size histogram'
@@ -796,6 +832,18 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
       responses:
         "200":
           description: 'Successfully retrieved pull request size curve'
@@ -1273,6 +1321,7 @@ components:
         end_date:
           type: string
           format: date
+
     LastJobsContract:
       type: object
       required:
