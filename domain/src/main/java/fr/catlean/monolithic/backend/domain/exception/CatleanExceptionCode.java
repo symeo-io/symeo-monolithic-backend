@@ -34,4 +34,8 @@ public interface CatleanExceptionCode {
 
     // Sendgrid Exception Codes
     String SENDGRID_EXCEPTION = "T.SEND_GRID_EMAIL_EXCEPTION";
+
+    // Date Exception Codes
+    String FAILED_TO_PARSE_DATE = "F.FAILED_TO_PARSE_DATE";
+
 }

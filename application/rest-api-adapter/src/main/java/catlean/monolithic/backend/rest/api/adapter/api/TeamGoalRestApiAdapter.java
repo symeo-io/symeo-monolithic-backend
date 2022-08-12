@@ -2,8 +2,8 @@ package catlean.monolithic.backend.rest.api.adapter.api;
 
 import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
 import catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper;
-import catlean.monolithic.backend.rest.api.adapter.mapper.TeamGoalContractMapper;
 import catlean.monolithic.backend.rest.api.adapter.mapper.CurveMapper;
+import catlean.monolithic.backend.rest.api.adapter.mapper.TeamGoalContractMapper;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.User;
 import fr.catlean.monolithic.backend.domain.port.in.TeamGoalFacadeAdapter;
@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorContractMapper.catleanExceptionToContracts;
+import static catlean.monolithic.backend.rest.api.adapter.mapper.CurveMapper.curveToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.domainToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.errorToContract;
-import static catlean.monolithic.backend.rest.api.adapter.mapper.CurveMapper.curveToContract;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -37,7 +37,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
     private final TeamGoalFacadeAdapter teamGoalFacadeAdapter;
 
     @Override
-    public ResponseEntity<CatleanErrorsContract> createTeamGoal(PostCreateTeamGoalsRequest postCreateTeamGoalsRequest) {
+    public ResponseEntity<CatleanErrorsContract> createTeamGoal(final PostCreateTeamGoalsRequest postCreateTeamGoalsRequest) {
         try {
             teamGoalFacadeAdapter.createTeamGoalForTeam(postCreateTeamGoalsRequest.getTeamId(),
                     postCreateTeamGoalsRequest.getStandardCode(), postCreateTeamGoalsRequest.getValue());
@@ -48,7 +48,8 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
     }
 
     @Override
-    public ResponseEntity<GetCurveResponseContract> getTimeToMergeCurve(UUID teamId) {
+    public ResponseEntity<GetCurveResponseContract> getTimeToMergeCurve(final UUID teamId, final String startDate,
+                                                                        final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return ok(curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
@@ -59,7 +60,9 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
     }
 
     @Override
-    public ResponseEntity<GetHistogramResponseContract> getTimeToMergeHistogram(UUID teamId) {
+    public ResponseEntity<GetHistogramResponseContract> getTimeToMergeHistogram(final UUID teamId,
+                                                                                final String startDate,
+                                                                                final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return domainToContract(histogramQuery.computePullRequestTimeToMergeHistogram(authenticatedUser.getOrganization(),
@@ -70,7 +73,8 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
     }
 
     @Override
-    public ResponseEntity<GetCurveResponseContract> getPullRequestSizeCurve(UUID teamId) {
+    public ResponseEntity<GetCurveResponseContract> getPullRequestSizeCurve(final UUID teamId, final String startDate,
+                                                                            final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return ok(curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
@@ -81,7 +85,9 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
     }
 
     @Override
-    public ResponseEntity<GetHistogramResponseContract> getPullRequestSizeHistogram(UUID teamId) {
+    public ResponseEntity<GetHistogramResponseContract> getPullRequestSizeHistogram(final UUID teamId,
+                                                                                    final String startDate,
+                                                                                    final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return domainToContract(histogramQuery.computePullRequestSizeHistogram(authenticatedUser.getOrganization(),
