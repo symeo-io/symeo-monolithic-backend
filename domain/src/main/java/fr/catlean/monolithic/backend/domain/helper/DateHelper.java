@@ -56,4 +56,19 @@ public class DateHelper {
                     .build();
         }
     }
+
+    public static List<Date> getRangeDatesBetweenStartDateAndEndDateForRange(final Date startDate, final Date endDate
+            , final int range, final TimeZone timeZone) {
+        final List<Date> rangeDates = new ArrayList<>();
+        rangeDates.add(startDate);
+        Date rangeDate = startDate;
+        while (ChronoUnit.DAYS.between(rangeDate.toInstant(), endDate.toInstant()) > range) {
+            rangeDate =
+                    Date.from((rangeDate.toInstant().atZone(timeZone.toZoneId()).toLocalDate().plusDays(range)).atStartOfDay(timeZone.toZoneId()).toInstant());
+            rangeDates.add(rangeDate);
+
+        }
+        rangeDates.add(endDate);
+        return rangeDates;
+    }
 }

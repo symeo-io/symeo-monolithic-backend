@@ -1,7 +1,6 @@
 package fr.catlean.monolithic.backend.domain.model.insight.curve;
 
-import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestSizeView;
-import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import lombok.Builder;
 import lombok.Data;
@@ -17,32 +16,20 @@ public class PieceCurveWithAverage {
     Curve averageCurve = Curve.builder().build();
     int limit;
 
-    private void addPoint(final PullRequestTimeToMergeView pullRequestTimeToMergeView) {
-        this.pieceCurve.addPoint(pullRequestTimeToMergeView.getStartDateRange(),
-                pullRequestTimeToMergeView.getDaysOpen(),
-                pullRequestTimeToMergeView.getStatus().equals(PullRequest.OPEN));
-        this.averageCurve.addPoint(pullRequestTimeToMergeView.getStartDateRange(),
-                pullRequestTimeToMergeView.getDaysOpen());
+    private void addPoint(final PullRequestView pullRequestView) {
+        this.pieceCurve.addPoint(pullRequestView.getStartDateRange(),
+                pullRequestView.getLimit(),
+                pullRequestView.getStatus().equals(PullRequest.OPEN));
+        this.averageCurve.addPoint(pullRequestView.getStartDateRange(),
+                pullRequestView.getLimit());
     }
 
-    private void addPoint(final PullRequestSizeView pullRequestSizeView) {
-        this.pieceCurve.addPoint(pullRequestSizeView.getStartDateRange(),
-                pullRequestSizeView.getSize(),
-                pullRequestSizeView.getStatus().equals(PullRequest.OPEN));
-        this.averageCurve.addPoint(pullRequestSizeView.getStartDateRange(),
-                pullRequestSizeView.getSize());
-    }
-
-    public static PieceCurveWithAverage buildTimeToMergeCurve(final List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews, final int limit) {
+    public static PieceCurveWithAverage buildPullRequestCurve(final List<PullRequestView> pullRequestLimitViews,
+                                                              final int limit) {
         final PieceCurveWithAverage pieceCurveWithAverage = PieceCurveWithAverage.builder().limit(limit).build();
-        pullRequestTimeToMergeViews.forEach(pieceCurveWithAverage::addPoint);
+        pullRequestLimitViews.forEach(pieceCurveWithAverage::addPoint);
         return pieceCurveWithAverage;
     }
 
-    public static PieceCurveWithAverage buildPullRequestSizeCurve(final List<PullRequestSizeView> pullRequestSizeViews, final int limit) {
-        final PieceCurveWithAverage pieceCurveWithAverage = PieceCurveWithAverage.builder().limit(limit).build();
-        pullRequestSizeViews.forEach(pieceCurveWithAverage::addPoint);
-        return pieceCurveWithAverage;
-    }
 
 }

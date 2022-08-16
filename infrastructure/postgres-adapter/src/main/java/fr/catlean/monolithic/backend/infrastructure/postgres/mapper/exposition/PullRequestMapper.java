@@ -35,7 +35,6 @@ public interface PullRequestMapper {
                 .organizationId(pullRequest.getOrganizationId())
                 .size(pullRequest.getSize())
                 .daysOpened(pullRequest.getDaysOpened())
-                .startDateRange(pullRequest.getStartDateRange())
                 .build();
     }
 

@@ -23,6 +23,7 @@ import static catlean.monolithic.backend.rest.api.adapter.mapper.CatleanErrorCon
 import static catlean.monolithic.backend.rest.api.adapter.mapper.CurveMapper.curveToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.domainToContract;
 import static catlean.monolithic.backend.rest.api.adapter.mapper.PullRequestHistogramContractMapper.errorToContract;
+import static fr.catlean.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -53,7 +54,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return ok(curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
-                    teamId)));
+                    teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (CatleanException e) {
             return internalServerError().body(CurveMapper.errorToContract(e));
         }
@@ -66,7 +67,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return domainToContract(histogramQuery.computePullRequestTimeToMergeHistogram(authenticatedUser.getOrganization(),
-                    teamId));
+                    teamId, stringToDate(startDate), stringToDate(endDate)));
         } catch (CatleanException e) {
             return errorToContract(e);
         }
@@ -91,7 +92,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return domainToContract(histogramQuery.computePullRequestSizeHistogram(authenticatedUser.getOrganization(),
-                    teamId));
+                    teamId, stringToDate(startDate), stringToDate(endDate)));
         } catch (CatleanException e) {
             return errorToContract(e);
         }

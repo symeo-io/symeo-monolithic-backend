@@ -6,7 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.FAILED_TO_PARSE_DATE;
 import static fr.catlean.monolithic.backend.domain.helper.DateHelper.*;
@@ -56,5 +60,27 @@ public class DateHelperTest {
         assertThat(catleanException.getCode()).isEqualTo(FAILED_TO_PARSE_DATE);
         assertThat(catleanException.getMessage()).isEqualTo(String.format("Failed to parse date %s for pattern %s",
                 dateString, DATE_PATTERN));
+    }
+
+    @Test
+    void should_return_date_ranges() {
+        // Given
+        final Date startDate =
+                Date.from(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().minusDays(25).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        final Date endDate =
+                Date.from(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().minusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        // When
+        final List<Date> rangeDates =
+                getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate, 5,
+                        TimeZone.getTimeZone(ZoneId.systemDefault()));
+
+        // Then
+        assertThat(rangeDates.get(0)).isEqualTo(startDate);
+        assertThat(rangeDates.get(4)).isEqualTo(endDate);
+        assertThat(ChronoUnit.DAYS.between(rangeDates.get(0).toInstant(), rangeDates.get(1).toInstant())).isEqualTo(5);
+        assertThat(ChronoUnit.DAYS.between(rangeDates.get(1).toInstant(), rangeDates.get(2).toInstant())).isEqualTo(5);
+        assertThat(ChronoUnit.DAYS.between(rangeDates.get(2).toInstant(), rangeDates.get(3).toInstant())).isEqualTo(5);
+        assertThat(ChronoUnit.DAYS.between(rangeDates.get(3).toInstant(), rangeDates.get(4).toInstant())).isEqualTo(5);
     }
 }

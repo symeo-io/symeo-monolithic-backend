@@ -2,8 +2,7 @@ package fr.catlean.monolithic.backend.infrastructure.postgres;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestSizeView;
-import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
@@ -75,12 +74,11 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PullRequestTimeToMergeView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization,
-                                                                                                  UUID teamId) throws CatleanException {
+    public List<PullRequestView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(final Organization organization,
+                                                                                       final UUID teamId) throws CatleanException {
         try {
-            return ofNullable(teamId)
-                    .map(uuid -> pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamId(organization.getId(), uuid))
-                    .orElseGet(() -> pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationId(organization.getId()))
+            return pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamId(
+                            organization.getId(), teamId)
                     .stream()
                     .map(PullRequestCurveMapper::dtoToView)
                     .toList();
@@ -95,12 +93,11 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PullRequestSizeView> readPullRequestsSizeViewForOrganizationAndTeam(Organization organization,
-                                                                                    UUID teamId) throws CatleanException {
+    public List<PullRequestView> readPullRequestsSizeViewForOrganizationAndTeam(Organization organization,
+                                                                                UUID teamId) throws CatleanException {
         try {
-            return ofNullable(teamId)
-                    .map(uuid -> pullRequestSizeRepository.findPullRequestSizeDTOsByOrganizationIdAndTeamId(organization.getId(), uuid))
-                    .orElseGet(() -> pullRequestSizeRepository.findPullRequestSizeDTOsByOrganizationId(organization.getId()))
+            return pullRequestSizeRepository.findPullRequestSizeDTOsByOrganizationIdAndTeamId(organization.getId(),
+                            teamId)
                     .stream()
                     .map(PullRequestCurveMapper::dtoToView)
                     .toList();

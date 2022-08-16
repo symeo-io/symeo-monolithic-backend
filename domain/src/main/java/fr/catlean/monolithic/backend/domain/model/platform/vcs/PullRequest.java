@@ -1,16 +1,15 @@
 package fr.catlean.monolithic.backend.domain.model.platform.vcs;
 
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestView;
 import lombok.Builder;
 import lombok.Value;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Math.toIntExact;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @Value
 @Builder(toBuilder = true)
@@ -71,55 +70,25 @@ public class PullRequest {
                 TimeUnit.MILLISECONDS));
     }
 
-    public String getStartDateRange() {
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        if (isNull(this.mergeDate) && isNull(this.closeDate)) {
-            return simpleDateFormat.format(new Date());
-        }
-        if (nonNull(this.mergeDate)) {
-            return simpleDateFormat.format(this.mergeDate);
-        }
-        return simpleDateFormat.format(this.closeDate);
+    public PullRequestView toSizeLimitView(){
+        return PullRequestView.builder()
+                .mergeDate(this.mergeDate)
+                .limit(this.getSize())
+                .closeDate(this.closeDate)
+                .status(this.getStatus())
+                .creationDate(this.creationDate)
+                .build();
     }
 
-    public boolean isConsideredAsOpenDuringWeek(final Date weekStartDate) {
-        final Date creationDate = this.getCreationDate();
-        final Date mergeDate = this.getMergeDate();
-        if (creationDate.before(weekStartDate)) {
-            return isNull(mergeDate) || mergeDate.after(weekStartDate);
-        } else {
-            if (creationDate.equals(weekStartDate)) {
-                return true;
-            } else if (nonNull(mergeDate)) {
-                long daysBetweenMergeAndWeekStart =
-                        TimeUnit.DAYS.convert(mergeDate.getTime() - weekStartDate.getTime(),
-                                TimeUnit.MILLISECONDS);
-                long daysBetweenCreationAndWeekStart =
-                        TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
-                                TimeUnit.MILLISECONDS);
-                return daysBetweenCreationAndWeekStart < 7 && daysBetweenMergeAndWeekStart < 7;
-            }
-        }
-        return false;
+    public PullRequestView toTimeLimitView(){
+        return PullRequestView.builder()
+                .mergeDate(this.mergeDate)
+                .limit(this.getDaysOpened())
+                .closeDate(this.closeDate)
+                .status(this.getStatus())
+                .creationDate(this.creationDate)
+                .build();
     }
 
-    public boolean isAboveSizeLimit(int pullRequestLimit) {
-        return this.getAddedLineNumber() + this.getDeletedLineNumber() >= pullRequestLimit;
-    }
 
-    public boolean isAboveTimeLimit(int pullRequestLimit, Date weekStartDate) {
-        final Date creationDate = this.getCreationDate();
-        final Date mergeDate = this.getMergeDate();
-        if (isNull(mergeDate) || (mergeDate.after(weekStartDate))) {
-            long daysBetweenCreationAndWeekStart =
-                    TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
-                            TimeUnit.MILLISECONDS);
-            return Math.abs(daysBetweenCreationAndWeekStart) > pullRequestLimit;
-        } else {
-            long daysBetweenMergeAndWeekStart =
-                    TimeUnit.DAYS.convert(mergeDate.getTime() - weekStartDate.getTime(),
-                            TimeUnit.MILLISECONDS);
-            return Math.abs(daysBetweenMergeAndWeekStart) > pullRequestLimit;
-        }
-    }
 }

@@ -3,8 +3,7 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.adapter;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestSizeView;
-import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -218,15 +217,15 @@ public class PostgresExpositionAdapterTestIT {
 
 
         // When
-        final List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews =
+        final List<PullRequestView> pullRequestTimeViews =
                 postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
                         teamEntity.getId());
-        final List<PullRequestSizeView> pullRequestSizeViews =
+        final List<PullRequestView> pullRequestSizeViews =
                 postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization,
                         teamEntity.getId());
 
         // Then
-        assertThat(pullRequestTimeToMergeViews).hasSize(2);
+        assertThat(pullRequestTimeViews).hasSize(2);
         assertThat(pullRequestSizeViews).hasSize(2);
     }
 
@@ -263,15 +262,15 @@ public class PostgresExpositionAdapterTestIT {
                                 )).build());
 
         // When
-        final List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews =
+        final List<PullRequestView> pullRequestTimeViews =
                 postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
                         teamEntity.getId());
-        final List<PullRequestSizeView> pullRequestSizeViews =
+        final List<PullRequestView> pullRequestSizeViews =
                 postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization,
                         teamEntity.getId());
 
         // Then
-        assertThat(pullRequestTimeToMergeViews).hasSize(2);
+        assertThat(pullRequestTimeViews).hasSize(2);
         assertThat(pullRequestSizeViews).hasSize(2);
     }
 
