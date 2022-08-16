@@ -25,7 +25,7 @@ public class CatleanMonolithicBackendConfiguration {
                     "|| execution(* fr.catlean.monolithic.backend.infrastructure.github.adapter.client" +
                     ".GithubHttpClient.getPullRequestDetailsForPullRequestNumber" +
                     "(..))"
-            + "|| execution(* fr.catlean.monolithic.backend.infrastructure.postgres.*.*(..))"
+            + "|| execution(* fr.catlean.monolithic.backend.application.rest.api.adapter.api.*.*(..))"
     )
     public Object around(ProceedingJoinPoint point) throws Throwable {
         final StopWatch stopWatch = new StopWatch("aop-stopwatch");

@@ -42,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>fr.catlean.monolithic.backend</groupId>
-            <artifactId>data-processing-rest-api-adapter</artifactId>
+            <artifactId>rest-api-adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

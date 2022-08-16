@@ -30,7 +30,7 @@ public class CollectRepositoriesJobRunnable implements JobRunnable {
         try {
             List<Repository> repositories = vcsService.collectRepositoriesForOrganization(organization);
             repositories =
-                    repositories.parallelStream()
+                    repositories.stream()
                             .map(repository -> repository.toBuilder()
                                     .organizationId(organization.getId())
                                     .vcsOrganizationName(organization.getVcsOrganization().getName())

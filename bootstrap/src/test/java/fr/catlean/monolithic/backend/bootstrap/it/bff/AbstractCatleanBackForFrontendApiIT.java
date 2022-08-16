@@ -21,6 +21,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.URI;
+import java.util.Map;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -74,6 +75,18 @@ public abstract class AbstractCatleanBackForFrontendApiIT {
                 .toUri();
     }
 
+    protected URI getApiURI(final String path, final Map<String, String> params) {
+        final UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance()
+                .scheme("http")
+                .host("localhost")
+                .port(port)
+                .path(path);
+        params.forEach(uriComponentsBuilder::queryParam);
+        return uriComponentsBuilder
+                .build()
+                .toUri();
+    }
+
 
     protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
     protected static final String USER_REST_API_GET_ME = "/api/v1/me";
@@ -82,10 +95,14 @@ public abstract class AbstractCatleanBackForFrontendApiIT {
     protected static final String TEAM_REST_API = "/api/v1/teams";
     protected static final String REPOSITORIES_REST_API_GET = "/api/v1/repositories";
     protected static final String ORGANIZATIONS_REST_API_USERS = "/api/v1/organizations/users";
-    protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM = "/api/v1/teams/goals/time-to-merge/histogram";
-    protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES = "/api/v1/teams/goals/time-to-merge/curves";
-    protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_HISTOGRAM = "/api/v1/teams/goals/pull-request-size/histogram";
-    protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES = "/api/v1/teams/goals/pull-request-size/curves";
+    protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM = "/api/v1/teams/goals/time-to-merge" +
+            "/histogram";
+    protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES = "/api/v1/teams/goals/time-to-merge" +
+            "/curves";
+    protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_HISTOGRAM = "/api/v1/teams/goals/pull" +
+            "-request-size/histogram";
+    protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES = "/api/v1/teams/goals/pull-request" +
+            "-size/curves";
     protected static final String TEAMS_GOALS_REST_API = "/api/v1/teams/goals";
     protected static final String JOBS_REST_API_STATUS = "/api/v1/jobs/status";
 

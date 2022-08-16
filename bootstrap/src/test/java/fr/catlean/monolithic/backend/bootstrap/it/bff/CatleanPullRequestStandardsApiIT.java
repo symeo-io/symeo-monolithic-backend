@@ -1,7 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap.it.bff;
 
 import fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode;
-import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.TeamStandard;
 import fr.catlean.monolithic.backend.domain.model.account.User;
@@ -18,12 +17,12 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
+import lombok.NonNull;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -73,9 +72,12 @@ public class CatleanPullRequestStandardsApiIT extends AbstractCatleanBackForFron
         ));
         authenticationContextProvider.authorizeUserForMail(email);
         final UUID teamId = UUID.randomUUID();
+        final String startDate = "2022-01-01";
+        final String endDate = "2022-02-01";
+
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM, "team_id", teamId.toString()))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM, getParams(teamId, startDate, endDate)))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -96,13 +98,15 @@ public class CatleanPullRequestStandardsApiIT extends AbstractCatleanBackForFron
                 TeamEntity.builder().id(currentTeamId).name(faker.dragonBall().character())
                         .organizationId(organizationId).repositoryIds(List.of(repositoryEntities.get(0).getId())).build());
         teamGoalRepository.save(TeamGoalEntity.builder().teamId(currentTeamId).id(UUID.randomUUID()).standardCode(TeamStandard.TIME_TO_MERGE).value("5").build());
-        pullRequestRepository.saveAll(
-                generatePullRequestsStubsForOrganization(OrganizationMapper.entityToDomain(organizationRepository.findById(organizationId).get())));
-
+//        pullRequestRepository.saveAll(
+//                generatePullRequestsStubsForOrganization(OrganizationMapper.entityToDomain(organizationRepository.findById(organizationId).get())));
+        final String startDate = "2022-01-01";
+        final String endDate = "2022-03-01";
 
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM, "team_id", currentTeamId.toString()))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM, getParams(currentTeamId, startDate,
+                        endDate)))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -151,9 +155,13 @@ public class CatleanPullRequestStandardsApiIT extends AbstractCatleanBackForFron
     @Order(3)
     @Test
     void should_get_time_to_merge_curves_given_a_team_id() {
+        // Given
+        final String startDate = "2022-01-01";
+        final String endDate = "2022-03-01";
+
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES, "team_id", currentTeamId.toString()))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES, getParams(currentTeamId, startDate, endDate)))
                 // Then
                 .exchange()
                 .expectStatus()
@@ -207,9 +215,12 @@ public class CatleanPullRequestStandardsApiIT extends AbstractCatleanBackForFron
         ));
         authenticationContextProvider.authorizeUserForMail(email);
         final UUID teamId = UUID.randomUUID();
+        final String startDate = "2022-01-01";
+        final String endDate = "2022-03-01";
+
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES, "team_id", teamId.toString()))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES, getParams(teamId, startDate, endDate)))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -226,9 +237,13 @@ public class CatleanPullRequestStandardsApiIT extends AbstractCatleanBackForFron
     void should_get_pull_request_size_curves_given_a_team_id() {
         // Given
         teamGoalRepository.save(TeamGoalEntity.builder().teamId(currentTeamId).id(UUID.randomUUID()).standardCode(TeamStandard.PULL_REQUEST_SIZE).value("1000").build());
+        final String startDate = "2022-01-01";
+        final String endDate = "2022-03-01";
+
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES, "team_id", currentTeamId.toString()))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES, getParams(currentTeamId, startDate,
+                        endDate)))
                 // Then
                 .exchange()
                 .expectStatus()
@@ -262,9 +277,13 @@ public class CatleanPullRequestStandardsApiIT extends AbstractCatleanBackForFron
     @Order(6)
     @Test
     void should_get_pull_request_size_histogram_given_a_team_id() {
+        // Given
+        final String startDate = "2022-01-01";
+        final String endDate = "2022-03-01";
+
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_HISTOGRAM, "team_id", currentTeamId.toString()))
+                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_HISTOGRAM, getParams(currentTeamId,startDate,endDate)))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -323,118 +342,10 @@ public class CatleanPullRequestStandardsApiIT extends AbstractCatleanBackForFron
         );
     }
 
-    private static List<PullRequestEntity> generatePullRequestsStubsForOrganization(final Organization organization) {
-//        final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organization.getTimeZone());
-        final java.util.Date weekStartDate = new Date();
-        final ArrayList<PullRequestEntity> pullRequests = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
 
-            pullRequests.add(PullRequestEntity.builder()
-                    .id("pr-1-" + i)
-                    .creationDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .minus(i * 8, ChronoUnit.DAYS))
-                    .addedLineNumber(800)
-                    .deletedLineNumber(900)
-                    .size(1200)
-                    .commitNumber(0)
-                    .state(PullRequest.OPEN)
-                    .startDateRange("01/06/2022")
-                    .isMerged(false)
-                    .daysOpened(i)
-                    .title(faker.name().title())
-                    .vcsOrganizationId(organization.getName())
-                    .isDraft(false)
-                    .vcsUrl(faker.pokemon().name())
-                    .organizationId(organization.getId())
-                    .authorLogin(faker.dragonBall().character())
-                    .vcsRepositoryId("repository-1")
-                    .lastUpdateDate(ZonedDateTime.now())
-                    .build());
-            pullRequests.add(PullRequestEntity.builder()
-                    .id("pr-2-" + i)
-                    .creationDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .minus(i * 8, ChronoUnit.DAYS))
-                    .mergeDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .minus(i * 8, ChronoUnit.DAYS))
-                    .addedLineNumber(0)
-                    .deletedLineNumber(300)
-                    .size(300)
-                    .commitNumber(0)
-                    .daysOpened(i + 1)
-                    .vcsRepositoryId("repository-1")
-                    .state(PullRequest.MERGE)
-                    .isMerged(true)
-                    .title(faker.name().title())
-                    .vcsOrganizationId(organization.getName())
-                    .isDraft(false)
-                    .vcsUrl(faker.pokemon().name())
-                    .organizationId(organization.getId())
-                    .authorLogin(faker.dragonBall().character())
-                    .lastUpdateDate(ZonedDateTime.now())
-                    .startDateRange("01/07/2022")
-                    .build());
-            pullRequests.add(PullRequestEntity.builder()
-                    .id("pr-3-" + i)
-                    .creationDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .minus(i * 8, ChronoUnit.DAYS))
-                    .mergeDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .minus(8, ChronoUnit.DAYS))
-                    .addedLineNumber(500)
-                    .deletedLineNumber(500)
-                    .size(2000)
-                    .commitNumber(0)
-                    .daysOpened(i + 2)
-                    .startDateRange("01/06/2022")
-                    .state(PullRequest.MERGE)
-                    .isMerged(true)
-                    .title(faker.name().title())
-                    .vcsOrganizationId(organization.getName())
-                    .isDraft(false)
-                    .vcsRepositoryId("repository-1")
-                    .vcsUrl(faker.pokemon().name())
-                    .organizationId(organization.getId())
-                    .authorLogin(faker.dragonBall().character())
-                    .lastUpdateDate(ZonedDateTime.now())
-                    .build());
-            pullRequests.add(PullRequestEntity.builder()
-                    .id("pr-4-" + i)
-                    .creationDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .minus(i * 8, ChronoUnit.DAYS))
-                    .mergeDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .minus(8, ChronoUnit.DAYS))
-                    .addedLineNumber(500)
-                    .deletedLineNumber(500)
-                    .size(300)
-                    .commitNumber(0)
-                    .daysOpened(i + 2)
-                    .startDateRange("01/06/2022")
-                    .state(PullRequest.MERGE)
-                    .isMerged(true)
-                    .title(faker.name().title())
-                    .vcsOrganizationId(organization.getName())
-                    .isDraft(false)
-                    .vcsRepositoryId("repository-2")
-                    .vcsUrl(faker.pokemon().name())
-                    .organizationId(organization.getId())
-                    .authorLogin(faker.dragonBall().character())
-                    .lastUpdateDate(ZonedDateTime.now())
-                    .build());
-        }
-        return pullRequests;
-
+    @NonNull
+    private static Map<String, String> getParams(UUID teamId, String startDate, String endDate) {
+        return Map.of("team_id", teamId.toString(),
+                "start_date", startDate, "end_date", endDate);
     }
 }
