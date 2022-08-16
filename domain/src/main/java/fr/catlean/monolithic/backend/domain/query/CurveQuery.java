@@ -25,26 +25,36 @@ public class CurveQuery {
     public PieceCurveWithAverage computeTimeToMergeCurve(final Organization organization,
                                                          final UUID teamId, final Date startDate,
                                                          final Date endDate) throws CatleanException {
-        final int range = 10;
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildTimeToMerge());
+        final int range = 3;
         final List<Date> rangeDates = DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
                 range, organization.getTimeZone());
         final List<PullRequestView> pullRequestLimitViews =
                 expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
                                 teamId)
                         .stream()
-                        .map(pullRequestLimitView -> pullRequestLimitView.addStartDateRangeFromRangeDates(rangeDates,
+                        .map(pullRequestLimitView -> pullRequestLimitView.addStartDateRangeFromRangeDates(rangeDates))
+                        .filter(pullRequestView -> pullRequestView.isConsideredOpenedForRangeStartDate(startDate,
                                 range))
                         .toList();
         return buildPullRequestCurve(pullRequestLimitViews, Integer.parseInt(currentTeamGoal.getValue()));
     }
 
-    public PieceCurveWithAverage computePullRequestSizeCurve(final Organization organization, final UUID teamId) throws CatleanException {
+    public PieceCurveWithAverage computePullRequestSizeCurve(final Organization organization, final UUID teamId,
+                                                             final Date startDate, final Date endDate) throws CatleanException {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildPullRequestSize());
+        final int range = 3;
+        final List<Date> rangeDates = DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
+                range, organization.getTimeZone());
         final List<PullRequestView> pullRequestSizeViews =
-                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId);
+                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId)
+                        .stream()
+                        .map(pullRequestLimitView -> pullRequestLimitView.addStartDateRangeFromRangeDates(rangeDates))
+                        .filter(pullRequestView -> pullRequestView.isConsideredOpenedForRangeStartDate(startDate,
+                                range))
+                        .toList();
         return buildPullRequestCurve(pullRequestSizeViews, Integer.parseInt(currentTeamGoal.getValue()));
     }
 }

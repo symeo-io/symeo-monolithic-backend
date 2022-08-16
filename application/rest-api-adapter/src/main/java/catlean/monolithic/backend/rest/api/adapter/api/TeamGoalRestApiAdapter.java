@@ -79,7 +79,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return ok(curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
-                    teamId)));
+                    teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (CatleanException e) {
             return internalServerError().body(CurveMapper.errorToContract(e));
         }

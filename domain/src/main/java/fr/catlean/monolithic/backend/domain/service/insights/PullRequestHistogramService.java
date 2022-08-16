@@ -45,7 +45,7 @@ public class PullRequestHistogramService {
         DataCompareToLimit dataCompareToLimit =
                 DataCompareToLimit.builder().dateAsString(DateHelper.dateToString(rangeStartDate)).build();
         for (PullRequestView pullRequestView : pullRequestViews) {
-            if (pullRequestView.isConsideredForRangeStartDate(rangeStartDate, range)) {
+            if (pullRequestView.isConsideredOpenedForRangeStartDate(rangeStartDate, range)) {
                 if (pullRequestHistogramType.equals(SIZE_LIMIT)) {
                     dataCompareToLimit = getDataCompareToSizeLimit(pullRequestLimit, dataCompareToLimit,
                             pullRequestView);

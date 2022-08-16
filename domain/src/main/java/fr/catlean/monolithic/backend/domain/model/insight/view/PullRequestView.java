@@ -1,6 +1,5 @@
 package fr.catlean.monolithic.backend.domain.model.insight.view;
 
-import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static fr.catlean.monolithic.backend.domain.helper.DateHelper.dateToString;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -21,29 +21,34 @@ public class PullRequestView {
     String startDateRange;
     Integer limit;
 
-    public PullRequestView addStartDateRangeFromRangeDates(final List<Date> rangeDates, final int range) {
-        return this.toBuilder()
-                .startDateRange(
-                        DateHelper.dateToString(
-                                rangeDates.stream().filter(date -> isConsideredForRangeStartDate(date, range))
-                                        .findFirst()
-                                        .orElseGet(() -> rangeDates.get(rangeDates.size() - 1))
-                        )
-                )
-                .build();
+    public PullRequestView addStartDateRangeFromRangeDates(final List<Date> rangeDates) {
+        String startDateRange;
+        if (isNull(mergeDate) && isNull(closeDate)) {
+            startDateRange = dateToString(rangeDates.get(rangeDates.size() - 1));
+        } else if (nonNull(mergeDate)) {
+            Date closestRangeDate = rangeDates.get(0);
+            closestRangeDate = getClosestRangeDate(rangeDates, mergeDate, closestRangeDate);
+            startDateRange = dateToString(closestRangeDate);
+        } else {
+            Date closestRangeDate = rangeDates.get(0);
+            closestRangeDate = getClosestRangeDate(rangeDates, closeDate, closestRangeDate);
+            startDateRange = dateToString(closestRangeDate);
+        }
+        return this.toBuilder().startDateRange(startDateRange).build();
     }
 
-    public String getStartDateRange() {
-        if (isNull(this.mergeDate) && isNull(this.closeDate)) {
-            return DateHelper.dateToString(new Date());
+    private Date getClosestRangeDate(List<Date> rangeDates, Date mergeDate, Date closestRangeDate) {
+        for (Date rangeDate : rangeDates) {
+            if (Math.abs(TimeUnit.DAYS.convert(mergeDate.getTime() - rangeDate.getTime(),
+                    TimeUnit.MILLISECONDS)) < Math.abs(TimeUnit.DAYS.convert(mergeDate.getTime() - closestRangeDate.getTime(),
+                    TimeUnit.MILLISECONDS))) {
+                closestRangeDate = rangeDate;
+            }
         }
-        if (nonNull(this.mergeDate)) {
-            return DateHelper.dateToString(this.mergeDate);
-        }
-        return DateHelper.dateToString(this.closeDate);
+        return closestRangeDate;
     }
 
-    public boolean isConsideredForRangeStartDate(final Date rangeStartDate, final int range) {
+    public boolean isConsideredOpenedForRangeStartDate(final Date rangeStartDate, final int range) {
         final Date creationDate = this.getCreationDate();
         final Date mergeDate = this.getMergeDate();
         if (creationDate.before(rangeStartDate)) {

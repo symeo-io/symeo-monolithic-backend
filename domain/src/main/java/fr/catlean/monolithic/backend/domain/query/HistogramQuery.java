@@ -22,7 +22,7 @@ public class HistogramQuery {
     private final ExpositionStorageAdapter expositionStorageAdapter;
     private final TeamGoalFacadeAdapter teamGoalFacadeAdapter;
     private final PullRequestHistogramService pullRequestHistogramService;
-
+    private static final int RANGE = 7;
 
     public PullRequestHistogram computePullRequestTimeToMergeHistogram(final Organization organization,
                                                                        final UUID teamId, final Date startDate,
@@ -31,16 +31,15 @@ public class HistogramQuery {
                 TeamStandard.buildTimeToMerge());
         final List<PullRequestView> pullRequests =
                 expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamId);
-        final int range = 5;
         final List<Date> rangeDates =
-                DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate, range,
+                DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate, RANGE,
                         organization.getTimeZone());
 
         return pullRequestHistogramService.getPullRequestHistogram(PullRequestHistogram.TIME_LIMIT, pullRequests,
                 organization,
                 currentTeamGoal,
                 rangeDates,
-                range);
+                RANGE);
     }
 
     public PullRequestHistogram computePullRequestSizeHistogram(final Organization organization, final UUID teamId,
@@ -50,16 +49,15 @@ public class HistogramQuery {
                 TeamStandard.buildPullRequestSize());
         final List<PullRequestView> pullRequests =
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId);
-        final int range = 5;
         final List<Date> rangeDates =
-                DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate, range,
+                DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate, RANGE,
                         organization.getTimeZone());
 
         return pullRequestHistogramService.getPullRequestHistogram(PullRequestHistogram.SIZE_LIMIT, pullRequests,
                 organization,
                 currentTeamGoal,
                 rangeDates,
-                range);
+                RANGE);
     }
 
 

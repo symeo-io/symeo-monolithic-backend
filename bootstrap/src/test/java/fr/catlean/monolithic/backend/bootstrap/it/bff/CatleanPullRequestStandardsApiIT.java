@@ -47,8 +47,7 @@ public class CatleanPullRequestStandardsApiIT extends AbstractCatleanBackForFron
     private static final UUID organizationId = UUID.randomUUID();
     private static final UUID activeUserId = UUID.randomUUID();
     private final static UUID currentTeamId = UUID.randomUUID();
-    private final List<Date> dates = DateHelper.getWeekStartDateForTheLastWeekNumber(3 * 4,
-            TimeZone.getTimeZone(ZoneId.systemDefault()));
+    private final List<Date> dates = new ArrayList<>();
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 
@@ -325,7 +324,8 @@ public class CatleanPullRequestStandardsApiIT extends AbstractCatleanBackForFron
     }
 
     private static List<PullRequestEntity> generatePullRequestsStubsForOrganization(final Organization organization) {
-        final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organization.getTimeZone());
+//        final java.util.Date weekStartDate = DateHelper.getWeekStartDate(organization.getTimeZone());
+        final java.util.Date weekStartDate = new Date();
         final ArrayList<PullRequestEntity> pullRequests = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
 

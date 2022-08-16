@@ -25,6 +25,8 @@ public interface PullRequestMapper {
                         ZoneId.systemDefault()))
                 .mergeDate(isNull(pullRequest.getMergeDate()) ? null :
                         ZonedDateTime.ofInstant(pullRequest.getMergeDate().toInstant(), ZoneId.systemDefault()))
+                .closeDate(isNull(pullRequest.getCloseDate()) ? null :
+                        ZonedDateTime.ofInstant(pullRequest.getCloseDate().toInstant(), ZoneId.systemDefault()))
                 .title(pullRequest.getTitle())
                 .vcsUrl(pullRequest.getVcsUrl())
                 .state(pullRequest.getStatus())
@@ -50,6 +52,8 @@ public interface PullRequestMapper {
                 .lastUpdateDate(Date.from(pullRequestEntity.getLastUpdateDate().toInstant()))
                 .mergeDate(isNull(pullRequestEntity.getMergeDate()) ? null :
                         Date.from(pullRequestEntity.getMergeDate().toInstant()))
+                .closeDate(isNull(pullRequestEntity.getCloseDate()) ? null :
+                        Date.from(pullRequestEntity.getCloseDate().toInstant()))
                 .title(pullRequestEntity.getTitle())
                 .vcsUrl(pullRequestEntity.getVcsUrl())
                 .repositoryId(pullRequestEntity.getVcsRepositoryId())
