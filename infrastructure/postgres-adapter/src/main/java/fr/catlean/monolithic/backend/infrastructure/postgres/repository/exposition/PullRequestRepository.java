@@ -17,9 +17,7 @@ public interface PullRequestRepository extends JpaRepository<PullRequestEntity, 
     @Query(nativeQuery = true,
             value = " select pr.*" +
                     " from exposition_storage.pull_request pr" +
-                    " where to_date(pr.start_date_range, 'DD/MM/YYYY') " +
-                    " >= to_date('01/02/2022','DD/MM/YYYY') " +
-                    " and pr.organization_id = :organizationId " +
+                    " where pr.organization_id = :organizationId " +
                     " and pr.vcs_repository_id in (" +
                     "    select ttr.repository_id from exposition_storage.team_to_repository ttr" +
                     "    where ttr.team_id = :teamId )")

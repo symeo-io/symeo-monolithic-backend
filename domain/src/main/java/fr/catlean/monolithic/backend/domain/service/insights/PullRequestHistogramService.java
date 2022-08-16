@@ -1,36 +1,33 @@
 package fr.catlean.monolithic.backend.domain.service.insights;
 
+import fr.catlean.monolithic.backend.domain.helper.DateHelper;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
 import fr.catlean.monolithic.backend.domain.model.account.TeamGoal;
 import fr.catlean.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram;
-import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestView;
 import lombok.AllArgsConstructor;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static fr.catlean.monolithic.backend.domain.helper.DateHelper.getWeekStartDateForTheLastWeekNumber;
 import static fr.catlean.monolithic.backend.domain.model.insight.PullRequestHistogram.SIZE_LIMIT;
 
 @AllArgsConstructor
 public class PullRequestHistogramService {
 
-    private final static SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
-
-    public PullRequestHistogram getPullRequestHistogram(String pullRequestHistogramType,
-                                                        List<PullRequest> pullRequests,
-                                                        Organization organization,
-                                                        TeamGoal teamGoal) {
+    public PullRequestHistogram getPullRequestHistogram(final String pullRequestHistogramType,
+                                                        final List<PullRequestView> pullRequestViews,
+                                                        final Organization organization,
+                                                        final TeamGoal teamGoal,
+                                                        final List<Date> rangeDates,
+                                                        final int range) {
         final List<DataCompareToLimit> dataCompareToLimits = new ArrayList<>();
-        for (Date weekStartDate : getWeekStartDateForTheLastWeekNumber(3 * 4,
-                organization.getTimeZone())) {
-            final String weekStart = SDF.format(weekStartDate);
-            dataCompareToLimits.add(getDataCompareToLimit(pullRequestHistogramType, pullRequests,
+        for (Date rangeStartDate : rangeDates) {
+            dataCompareToLimits.add(getDataCompareToLimit(pullRequestHistogramType, pullRequestViews,
                     teamGoal.getValueAsInteger(),
-                    weekStartDate, weekStart));
+                    rangeStartDate, range));
         }
         return PullRequestHistogram.builder()
                 .type(pullRequestHistogramType)
@@ -41,19 +38,20 @@ public class PullRequestHistogramService {
     }
 
     private static DataCompareToLimit getDataCompareToLimit(final String pullRequestHistogramType,
-                                                            final List<PullRequest> pullRequests,
+                                                            final List<PullRequestView> pullRequestViews,
                                                             final int pullRequestLimit,
-                                                            final Date weekStartDate, final String weekStart) {
+                                                            final Date rangeStartDate,
+                                                            final int range) {
         DataCompareToLimit dataCompareToLimit =
-                DataCompareToLimit.builder().dateAsString(weekStart).build();
-
-        for (PullRequest pullRequest : pullRequests) {
-            if (pullRequest.isConsideredAsOpenDuringWeek(weekStartDate)) {
+                DataCompareToLimit.builder().dateAsString(DateHelper.dateToString(rangeStartDate)).build();
+        for (PullRequestView pullRequestView : pullRequestViews) {
+            if (pullRequestView.isConsideredOpenedForRangeStartDate(rangeStartDate, range)) {
                 if (pullRequestHistogramType.equals(SIZE_LIMIT)) {
-                    dataCompareToLimit = getDataCompareToSizeLimit(pullRequestLimit, dataCompareToLimit, pullRequest);
+                    dataCompareToLimit = getDataCompareToSizeLimit(pullRequestLimit, dataCompareToLimit,
+                            pullRequestView);
                 } else {
-                    dataCompareToLimit = getDataCompareToTimeLimit(pullRequestLimit, weekStartDate,
-                            dataCompareToLimit, pullRequest);
+                    dataCompareToLimit = getDataCompareToTimeLimit(pullRequestLimit, rangeStartDate,
+                            dataCompareToLimit, pullRequestView);
                 }
             }
         }
@@ -62,8 +60,8 @@ public class PullRequestHistogramService {
 
     private static DataCompareToLimit getDataCompareToSizeLimit(int pullRequestLimit,
                                                                 DataCompareToLimit dataCompareToLimit,
-                                                                PullRequest pullRequest) {
-        if (pullRequest.isAboveSizeLimit(pullRequestLimit)) {
+                                                                PullRequestView pullRequestView) {
+        if (pullRequestView.isAboveSizeLimit(pullRequestLimit)) {
             dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
         } else {
             dataCompareToLimit = dataCompareToLimit.incrementDataBelowLimit();
@@ -73,8 +71,8 @@ public class PullRequestHistogramService {
 
     private static DataCompareToLimit getDataCompareToTimeLimit(int pullRequestLimit, Date weekStartDate,
                                                                 DataCompareToLimit dataCompareToLimit,
-                                                                PullRequest pullRequest) {
-        if (pullRequest.isAboveTimeLimit(pullRequestLimit, weekStartDate)) {
+                                                                PullRequestView pullRequestView) {
+        if (pullRequestView.isAboveTimeLimit(pullRequestLimit, weekStartDate)) {
             dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
         } else {
             dataCompareToLimit = dataCompareToLimit.incrementDataBelowLimit();

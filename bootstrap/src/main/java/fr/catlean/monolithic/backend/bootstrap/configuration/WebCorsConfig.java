@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
-import catlean.monolithic.backend.rest.api.adapter.properties.WebCorsProperties;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.properties.WebCorsProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

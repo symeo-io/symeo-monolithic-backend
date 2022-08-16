@@ -1,6 +1,6 @@
 package fr.catlean.monolithic.backend.bootstrap;
 
-import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationContextProvider;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationContextProvider;
 import com.auth0.jwt.interfaces.Claim;
 import org.mockito.Mockito;
 

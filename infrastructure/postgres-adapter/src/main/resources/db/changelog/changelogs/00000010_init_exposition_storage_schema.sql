@@ -12,6 +12,7 @@ create table exposition_storage.pull_request
     creation_date               timestamp(6) with time zone               not null,
     last_update_date            timestamp(6) with time zone               not null,
     merge_date                  timestamp(6) with time zone,
+    close_date                  timestamp(6) with time zone,
     start_date_range            varchar(50),
     is_merged                   boolean                     default false,
     is_draft                    boolean                     default false,

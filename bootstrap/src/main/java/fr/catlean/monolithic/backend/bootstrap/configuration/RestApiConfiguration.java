@@ -1,12 +1,12 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
-import catlean.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
-import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
-import catlean.monolithic.backend.rest.api.adapter.api.*;
-import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationContextProvider;
-import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
-import catlean.monolithic.backend.rest.api.adapter.properties.RepositoryRetryProperties;
-import catlean.monolithic.backend.rest.api.adapter.service.RepositoryRetryService;
+import fr.catlean.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
+import fr.catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.api.*;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationContextProvider;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.properties.RepositoryRetryProperties;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.service.RepositoryRetryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.query.CurveQuery;

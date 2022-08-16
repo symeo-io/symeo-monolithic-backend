@@ -1,11 +1,10 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
-import catlean.monolithic.backend.rest.api.adapter.authentication.Auth0ContextProvider;
-import catlean.monolithic.backend.rest.api.adapter.authentication.Auth0SecurityProperties;
-import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationContextProvider;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.authentication.Auth0ContextProvider;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.authentication.Auth0SecurityProperties;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationContextProvider;
 import com.auth0.spring.security.api.JwtWebSecurityConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

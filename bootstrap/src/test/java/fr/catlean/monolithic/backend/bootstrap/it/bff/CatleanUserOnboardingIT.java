@@ -1,7 +1,7 @@
 package fr.catlean.monolithic.backend.bootstrap.it.bff;
 
-import catlean.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookEventDTO;
-import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
+import fr.catlean.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookEventDTO;
+import fr.catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import fr.catlean.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;

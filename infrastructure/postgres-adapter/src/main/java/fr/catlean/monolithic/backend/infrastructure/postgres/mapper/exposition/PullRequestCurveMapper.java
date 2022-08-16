@@ -1,25 +1,36 @@
 package fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
-import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestSizeView;
-import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestView;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestSizeDTO;
 import fr.catlean.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestTimeToMergeDTO;
 
+import java.util.Date;
+
+import static java.util.Objects.isNull;
+
 public interface PullRequestCurveMapper {
 
-    static PullRequestTimeToMergeView dtoToView(final PullRequestTimeToMergeDTO pullRequestTimeToMergeDTO) {
-        return PullRequestTimeToMergeView.builder()
+    static PullRequestView dtoToView(final PullRequestTimeToMergeDTO pullRequestTimeToMergeDTO) {
+        return PullRequestView.builder()
+                .creationDate(Date.from(pullRequestTimeToMergeDTO.getCreationDate().toInstant()))
+                .closeDate(isNull(pullRequestTimeToMergeDTO.getCloseDate()) ? null :
+                        Date.from(pullRequestTimeToMergeDTO.getCloseDate().toInstant()))
+                .mergeDate(isNull(pullRequestTimeToMergeDTO.getMergeDate()) ? null :
+                        Date.from(pullRequestTimeToMergeDTO.getMergeDate().toInstant()))
                 .status(pullRequestTimeToMergeDTO.getState())
-                .daysOpen(pullRequestTimeToMergeDTO.getDaysOpened())
-                .startDateRange(pullRequestTimeToMergeDTO.getStartDateRange())
+                .limit(pullRequestTimeToMergeDTO.getDaysOpened())
                 .build();
     }
 
-    static PullRequestSizeView dtoToView(final PullRequestSizeDTO pullRequestSizeDTO) {
-        return PullRequestSizeView.builder()
+    static PullRequestView dtoToView(final PullRequestSizeDTO pullRequestSizeDTO) {
+        return PullRequestView.builder()
+                .creationDate(Date.from(pullRequestSizeDTO.getCreationDate().toInstant()))
+                .closeDate(isNull(pullRequestSizeDTO.getCloseDate()) ? null :
+                        Date.from(pullRequestSizeDTO.getCloseDate().toInstant()))
+                .mergeDate(isNull(pullRequestSizeDTO.getMergeDate()) ? null :
+                        Date.from(pullRequestSizeDTO.getMergeDate().toInstant()))
                 .status(pullRequestSizeDTO.getState())
-                .startDateRange(pullRequestSizeDTO.getStartDateRange())
-                .size(pullRequestSizeDTO.getSize())
+                .limit(pullRequestSizeDTO.getSize())
                 .build();
     }
 }

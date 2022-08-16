@@ -30,7 +30,7 @@ public class VcsService {
     private void getPullRequestsForOrganizationAccount(final Organization organization) throws CatleanException {
         final AtomicReference<CatleanException> catleanExceptionAtomicReference = new AtomicReference<>();
         deliveryQuery.readRepositoriesForOrganization(organization)
-                .parallelStream()
+                .stream()
                 .map(repository -> repository.toBuilder().organizationId(organization.getId()).build())
                 .forEach(
                         repo -> {
