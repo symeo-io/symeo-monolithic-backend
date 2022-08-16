@@ -88,4 +88,27 @@ public class PullRequestView {
     public boolean isAboveSizeLimit(int limit) {
         return this.getLimit() >= limit;
     }
+
+    public boolean isInDateRange(final Date startDate, final Date endDate) {
+        final Date creationDate = this.getCreationDate();
+        final Date mergeDate = this.getMergeDate();
+        final Date closeDate = this.getCloseDate();
+        if (creationDate.after(endDate)) {
+            return false;
+        }
+        if (isNull(mergeDate) && isNull(closeDate)) {
+            if (creationDate.before(endDate)) {
+                return true;
+            }
+        } else if (isNull(closeDate)) {
+            if (mergeDate.after(startDate)) {
+                return true;
+            }
+        } else {
+            if (closeDate.after(startDate)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

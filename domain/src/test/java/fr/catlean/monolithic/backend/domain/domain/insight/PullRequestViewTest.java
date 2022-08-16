@@ -60,6 +60,25 @@ public class PullRequestViewTest {
     }
 
 
+    @Test
+    void should_check_is_in_date_range() throws CatleanException {
+        // Given
+        final PullRequestView pullRequestView1 = buildPullRequestPullRequestLimitView(2000, stringToDate("2019-01-01")
+                , null, null,
+                PullRequest.OPEN);
+        final PullRequestView pullRequestView2 = buildPullRequestPullRequestLimitView(2000, stringToDate("2019-01-01")
+                , stringToDate("2019-06-01"), null,
+                PullRequest.OPEN);
+
+
+        // Then
+        assertThat(pullRequestView1.isInDateRange(stringToDate("2020-01-01"), stringToDate("2020-06-01"))).isTrue();
+        assertThat(pullRequestView1.isInDateRange(stringToDate("2018-01-01"), stringToDate("2020-06-01"))).isTrue();
+        assertThat(pullRequestView1.isInDateRange(stringToDate("2018-01-01"), stringToDate("2018-06-01"))).isFalse();
+        assertThat(pullRequestView2.isInDateRange(stringToDate("2018-01-01"), stringToDate("2019-06-01"))).isTrue();
+
+    }
+
     public static PullRequestView buildPullRequestPullRequestLimitView(final Integer limit,
                                                                        final Date creationDate,
                                                                        final Date mergeDate,

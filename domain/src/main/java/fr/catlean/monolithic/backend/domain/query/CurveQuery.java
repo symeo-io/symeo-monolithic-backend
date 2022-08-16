@@ -35,8 +35,8 @@ public class CurveQuery {
                                 teamId)
                         .stream()
                         .map(pullRequestLimitView -> pullRequestLimitView.addStartDateRangeFromRangeDates(rangeDates))
-                        .filter(pullRequestView -> pullRequestView.isConsideredOpenedForRangeStartDate(startDate,
-                                range))
+                        .filter(pullRequestView -> pullRequestView.isInDateRange(startDate,
+                                endDate))
                         .toList();
         return buildPullRequestCurve(pullRequestLimitViews, Integer.parseInt(currentTeamGoal.getValue()));
     }
@@ -52,8 +52,8 @@ public class CurveQuery {
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId)
                         .stream()
                         .map(pullRequestLimitView -> pullRequestLimitView.addStartDateRangeFromRangeDates(rangeDates))
-                        .filter(pullRequestView -> pullRequestView.isConsideredOpenedForRangeStartDate(startDate,
-                                range))
+                        .filter(pullRequestView -> pullRequestView.isInDateRange(startDate,
+                                endDate))
                         .toList();
         return buildPullRequestCurve(pullRequestSizeViews, Integer.parseInt(currentTeamGoal.getValue()));
     }

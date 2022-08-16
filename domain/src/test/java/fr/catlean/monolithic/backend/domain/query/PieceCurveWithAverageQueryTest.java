@@ -67,7 +67,7 @@ public class PieceCurveWithAverageQueryTest {
 
         // Then
         assertThat(pieceCurveWithAverage.getAverageCurve().getData()).hasSize(4);
-        assertThat(pieceCurveWithAverage.getPieceCurve().getData()).hasSize(7);
+        assertThat(pieceCurveWithAverage.getPieceCurve().getData()).hasSize(8);
         assertThat(pieceCurveWithAverage.getLimit()).isEqualTo(Integer.parseInt(teamGoal.getValue()));
     }
 
@@ -114,7 +114,7 @@ public class PieceCurveWithAverageQueryTest {
 
         // Then
         assertThat(pieceCurveWithAverage.getAverageCurve().getData()).hasSize(4);
-        assertThat(pieceCurveWithAverage.getPieceCurve().getData()).hasSize(7);
+        assertThat(pieceCurveWithAverage.getPieceCurve().getData()).hasSize(8);
         assertThat(pieceCurveWithAverage.getLimit()).isEqualTo(Integer.parseInt(teamGoal.getValue()));
     }
 
