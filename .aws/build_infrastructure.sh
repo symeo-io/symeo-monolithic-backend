@@ -267,12 +267,12 @@ aws cloudformation deploy \
        APPKey=${DATADOG_APP_KEY} \
        CloudwatchLogsGroup=${CloudwatchLogsGroup} \
   --region ${REGION} \
-  --stack-name catlean-datadog-integration-${ENV} \
+  --stack-name catlean-datadog-integration \
   --capabilities CAPABILITY_IAM \
   --capabilities CAPABILITY_NAMED_IAM \
   --template-file cloudformation/datadog-aws-integration.yml \
 
-set_datadog_forwarder_arn_to_env catlean-datadog-integration-${ENV} ${REGION}
+set_datadog_forwarder_arn_to_env catlean-datadog-integration ${REGION}
 
 ## Datadog log forwarders
 aws cloudformation deploy \
