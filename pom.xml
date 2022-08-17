@@ -42,6 +42,8 @@
         <jjwt-jackson.version>0.11.2</jjwt-jackson.version>
         <test-container.version>1.17.3</test-container.version>
         <sendgrid-java.version>4.9.3</sendgrid-java.version>
+        <logback-classic.version>1.2.9</logback-classic.version>
+        <logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
     </properties>
 
     <dependencyManagement>
@@ -83,6 +85,16 @@
                 <groupId>com.sendgrid</groupId>
                 <artifactId>sendgrid-java</artifactId>
                 <version>${sendgrid-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback-classic.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>${logstash-logback-encoder.version}</version>
             </dependency>
 
             <!-- Test -->

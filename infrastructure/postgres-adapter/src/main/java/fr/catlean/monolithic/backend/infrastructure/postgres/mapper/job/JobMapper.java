@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 public interface JobMapper {
@@ -25,9 +26,12 @@ public interface JobMapper {
     static Job entityToDomain(final JobEntity jobEntity) {
         return Job.builder()
                 .id(jobEntity.getId())
+                .code(jobEntity.getCode())
                 .status(jobEntity.getStatus())
                 .organizationId(jobEntity.getOrganizationId())
                 .endDate(nonNull(jobEntity.getEndDate()) ? Date.from(jobEntity.getEndDate().toInstant()) : null)
+                .creationDate(isNull(jobEntity.getTechnicalCreationDate()) ? null :
+                        Date.from(jobEntity.getTechnicalCreationDate().toInstant()))
                 .build();
     }
 }

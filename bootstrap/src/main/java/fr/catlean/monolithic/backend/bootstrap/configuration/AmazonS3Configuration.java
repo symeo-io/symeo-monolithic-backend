@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 
 import static fr.catlean.monolithic.backend.infrastructure.aws.s3.adapter.AmazonS3ClientFactory.getAmazonS3Client;
 
-@Profile("!local")
+@Profile("aws")
 @Configuration
 public class AmazonS3Configuration {
 

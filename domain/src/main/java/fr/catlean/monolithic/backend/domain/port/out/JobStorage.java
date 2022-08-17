@@ -12,4 +12,6 @@ public interface JobStorage {
     Job updateJob(Job job) throws CatleanException;
 
     List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws CatleanException;
+
+    List<Job> findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(String jobCode, Organization organization, int i) throws CatleanException;
 }

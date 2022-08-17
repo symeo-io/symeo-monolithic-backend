@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -23,8 +24,12 @@ public class PullRequestTimeToMergeDTO {
     String id;
     @Column(name = "days_opened")
     int daysOpened;
-    @Column(name = "start_date_range")
-    String startDateRange;
+    @Column(name = "creation_date")
+    Date creationDate;
+    @Column(name = "merge_date")
+    Date mergeDate;
+    @Column(name = "close_date")
+    Date closeDate;
     @Column(name = "state")
     String state;
 }

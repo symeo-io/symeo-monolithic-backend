@@ -1,12 +1,12 @@
 package fr.catlean.monolithic.backend.bootstrap.configuration;
 
-import catlean.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
-import catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
-import catlean.monolithic.backend.rest.api.adapter.*;
-import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationContextProvider;
-import catlean.monolithic.backend.rest.api.adapter.authentication.AuthenticationService;
-import catlean.monolithic.backend.rest.api.adapter.properties.RepositoryRetryProperties;
-import catlean.monolithic.backend.rest.api.adapter.service.RepositoryRetryService;
+import fr.catlean.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
+import fr.catlean.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.api.*;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationContextProvider;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.properties.RepositoryRetryProperties;
+import fr.catlean.monolithic.backend.application.rest.api.adapter.service.RepositoryRetryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.catlean.monolithic.backend.domain.port.in.*;
 import fr.catlean.monolithic.backend.domain.query.CurveQuery;
@@ -85,5 +85,11 @@ public class RestApiConfiguration {
     public OrganizationRestApiAdapter organizationRestApiAdapter(final AuthenticationService authenticationService,
                                                                  final UserFacadeAdapter userFacadeAdapter) {
         return new OrganizationRestApiAdapter(authenticationService, userFacadeAdapter);
+    }
+
+    @Bean
+    public JobRestApiAdapter jobRestApiAdapter(final AuthenticationService authenticationService,
+                                               final JobFacadeAdapter jobFacadeAdapter) {
+        return new JobRestApiAdapter(authenticationService, jobFacadeAdapter);
     }
 }

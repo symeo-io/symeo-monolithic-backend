@@ -49,7 +49,7 @@ class TeamGoalService implements TeamGoalFacadeAdapter {
         final List<TeamGoal> teamGoals = teamGoalStorage.readForTeamId(teamId);
         validateTeamGoals(teamGoals, teamId);
         return teamGoals
-                .stream().filter(teamGoal -> teamGoal.getStandardCode().equals(TeamStandard.TIME_TO_MERGE))
+                .stream().filter(teamGoal -> teamGoal.getStandardCode().equals(teamStandard.getCode()))
                 .findFirst()
                 .orElseThrow(() -> CatleanException.builder()
                         .code(TEAM_STANDARD_NOT_FOUND)

@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -32,7 +33,14 @@ public class CatleanMonolithicBackendITApplication {
     }
 
     @Bean
+    @Primary
     public ITAuthenticationContextProvider authenticationContextProvider() {
         return new ITAuthenticationContextProvider();
+    }
+
+    @Bean
+    @Primary
+    public ITGithubJwtTokenProvider itGithubJwtTokenProvider() {
+        return new ITGithubJwtTokenProvider();
     }
 }

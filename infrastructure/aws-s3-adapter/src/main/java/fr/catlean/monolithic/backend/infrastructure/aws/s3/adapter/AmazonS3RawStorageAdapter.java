@@ -16,6 +16,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.UUID;
 
 import static fr.catlean.monolithic.backend.domain.exception.CatleanException.getCatleanException;
 import static fr.catlean.monolithic.backend.domain.exception.CatleanExceptionCode.*;
@@ -28,8 +29,8 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
     private final AmazonS3 amazonS3;
 
     @Override
-    public void save(String organizationId, String adapterName, String contentName, byte[] bytes) throws CatleanException {
-        uploadByteArrayToS3Bucket(bytes, amazonS3Properties.getRawBucketName(), getBucketKey(organizationId,
+    public void save(UUID organizationId, String adapterName, String contentName, byte[] bytes) throws CatleanException {
+        uploadByteArrayToS3Bucket(bytes, amazonS3Properties.getRawBucketName(), getBucketKey(organizationId.toString(),
                 adapterName, contentName));
     }
 
@@ -38,11 +39,11 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public byte[] read(String organizationId, String adapterName, String contentName) throws CatleanException {
+    public byte[] read(UUID organizationId, String adapterName, String contentName) throws CatleanException {
         try {
             final S3Object s3Object =
                     amazonS3.getObject(new GetObjectRequest(amazonS3Properties.getRawBucketName(),
-                            getBucketKey(organizationId, adapterName, contentName)));
+                            getBucketKey(organizationId.toString(), adapterName, contentName)));
             return IOUtils.toByteArray(s3Object.getObjectContent());
         } catch (SdkClientException sdkClientException) {
             throw getCatleanException("A technical error happened with AWS API", AWS_API_EXCEPTION);
@@ -52,9 +53,9 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
     }
 
     @Override
-    public boolean exists(String organizationId, String adapterName, String contentName) throws CatleanException {
+    public boolean exists(UUID organizationId, String adapterName, String contentName) throws CatleanException {
         try {
-            return amazonS3.doesObjectExist(amazonS3Properties.getRawBucketName(), getBucketKey(organizationId,
+            return amazonS3.doesObjectExist(amazonS3Properties.getRawBucketName(), getBucketKey(organizationId.toString(),
                     adapterName, contentName));
         } catch (SdkClientException sdkClientException) {
             LOGGER.error("Error while checking if bucket {} {} {} exists", organizationId, adapterName,

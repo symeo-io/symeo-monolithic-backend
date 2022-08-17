@@ -11,6 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static java.util.Objects.nonNull;
 
 @AllArgsConstructor
 @Slf4j
@@ -25,8 +28,10 @@ public class VcsService {
     }
 
     private void getPullRequestsForOrganizationAccount(final Organization organization) throws CatleanException {
+        final AtomicReference<CatleanException> catleanExceptionAtomicReference = new AtomicReference<>();
         deliveryQuery.readRepositoriesForOrganization(organization)
-                .parallelStream()
+                .stream()
+                .map(repository -> repository.toBuilder().organizationId(organization.getId()).build())
                 .forEach(
                         repo -> {
                             try {
@@ -39,11 +44,14 @@ public class VcsService {
                                         )
                                         .toList());
                             } catch (CatleanException e) {
-                                // TODO : add Logger to begin
-                                LOGGER.error("Error while collecting PR for repo {}", repo);
+                                LOGGER.error("Error while collecting PR for repo {}", repo, e);
+                                catleanExceptionAtomicReference.set(e);
                             }
                         }
                 );
+        if (nonNull(catleanExceptionAtomicReference.get())) {
+            throw catleanExceptionAtomicReference.get();
+        }
     }
 
     private List<PullRequest> collectPullRequestForRepository(final Repository repository) throws CatleanException {

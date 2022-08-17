@@ -1,6 +1,5 @@
 FROM openjdk:17-alpine
 
-
 WORKDIR webapp/
 ADD bootstrap/target/catlean-monolithic-backend.jar webapp/catlean-monolithic-backend.jar
 ADD bootstrap/src/main/resources/application.yaml webapp/application.yaml
@@ -15,10 +14,11 @@ RUN export DD_AGENT_HOST=$(curl http://169.254.169.254/latest/meta-data/local-ip
 
 ENV JAVA_OPTS="-server -XX:MaxRAMPercentage=75.0 -XX:MaxMetaspaceSize=256m -XX:+UseG1GC \
 -XX:FlightRecorderOptions=stackdepth=256 -Djava.security.egd=file:/dev/urandom \
- -Dliquibase.changelogLockPollRate=1 -Ddd.profiling.enabled=true -Ddd.logs.injection=true"
+ -Dliquibase.changelogLockPollRate=1 -Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.logs.injection=true"
 
 CMD java \
     -javaagent:/webapp/dd-java-agent.jar \
     $JAVA_OPTS \
     -jar webapp/catlean-monolithic-backend.jar \
+    --spring.profiles.active=aws \
     --spring.config.additional-location=webapp/application.yaml

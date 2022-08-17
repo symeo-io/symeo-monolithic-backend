@@ -14,7 +14,8 @@ public class TeamStandardInMemoryStorage implements TeamStandardStorage {
 
     private final static Map<String, TeamStandard> TEAM_STANDARD_MAP =
             Map.of(
-                    TeamStandard.TIME_TO_MERGE, TeamStandard.builder().code(TeamStandard.TIME_TO_MERGE).build()
+                    TeamStandard.TIME_TO_MERGE, TeamStandard.builder().code(TeamStandard.TIME_TO_MERGE).build(),
+                    TeamStandard.PULL_REQUEST_SIZE, TeamStandard.builder().code(TeamStandard.PULL_REQUEST_SIZE).build()
             );
 
     @Override

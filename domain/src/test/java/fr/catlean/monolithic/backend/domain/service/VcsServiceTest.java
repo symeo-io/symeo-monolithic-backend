@@ -56,6 +56,45 @@ public class VcsServiceTest {
     }
 
     @Test
+    void should_raise_an_exception() throws CatleanException {
+        // Given
+        final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
+        final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final VcsService vcsService = new VcsService(deliveryCommand,
+                deliveryQuery, expositionStorageAdapter);
+        final String vcsOrganizationId = faker.name().name();
+        final Organization organization = Organization.builder()
+                .vcsOrganization(VcsOrganization.builder().build()).name(faker.name().firstName()).build();
+        final Repository repo1 =
+                Repository.builder().name(faker.pokemon().name() + "1").vcsOrganizationId(vcsOrganizationId).build();
+        final Repository repo2 =
+                Repository.builder().name(faker.pokemon().name() + "2").vcsOrganizationId(vcsOrganizationId).build();
+        final List<Repository> expectedRepositories = List.of(
+                repo1,
+                repo2
+        );
+        when(deliveryQuery.readRepositoriesForOrganization(organization))
+                .thenReturn(
+                        expectedRepositories
+                );
+
+        // When
+        doThrow(CatleanException.class)
+                .when(deliveryCommand)
+                .collectRepositoriesForOrganization(any());
+        CatleanException catleanException = null;
+        try {
+            vcsService.collectRepositoriesForOrganization(organization);
+        } catch (CatleanException e) {
+            catleanException = e;
+        }
+
+        // Then
+        assertThat(catleanException).isNotNull();
+    }
+
+    @Test
     void should_collect_pull_requests_given_an_organization() throws CatleanException {
         // Given
         final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);

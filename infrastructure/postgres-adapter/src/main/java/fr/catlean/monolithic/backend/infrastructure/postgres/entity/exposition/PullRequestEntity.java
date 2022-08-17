@@ -42,6 +42,8 @@ public class PullRequestEntity {
     ZonedDateTime lastUpdateDate;
     @Column(name = "merge_date")
     ZonedDateTime mergeDate;
+    @Column(name = "close_date")
+    ZonedDateTime closeDate;
     @Column(name = "is_merged")
     Boolean isMerged;
     @Column(name = "is_draft")

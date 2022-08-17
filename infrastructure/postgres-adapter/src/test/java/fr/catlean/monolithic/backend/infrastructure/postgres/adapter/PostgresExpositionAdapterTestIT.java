@@ -3,7 +3,7 @@ package fr.catlean.monolithic.backend.infrastructure.postgres.adapter;
 import com.github.javafaker.Faker;
 import fr.catlean.monolithic.backend.domain.exception.CatleanException;
 import fr.catlean.monolithic.backend.domain.model.account.Organization;
-import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestTimeToMergeView;
+import fr.catlean.monolithic.backend.domain.model.insight.view.PullRequestView;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.Repository;
 import fr.catlean.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -17,6 +17,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.mapper.exposition.P
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestSizeRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestTimeToMergeRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -50,6 +51,8 @@ public class PostgresExpositionAdapterTestIT {
     private TeamRepository teamRepository;
     @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
+    private PullRequestSizeRepository pullRequestSizeRepository;
 
 
     @AfterEach
@@ -64,7 +67,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_save_pull_requests_to_postgres() {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository);
+                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository);
         final List<PullRequest> pullRequestsToSave = List.of(
                 buildPullRequest(1),
                 buildPullRequest(2),
@@ -83,7 +86,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_save_repositories() {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository);
+                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -106,7 +109,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_read_repositories_for_an_organization() {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository);
+                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -131,7 +134,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_find_all_pull_requests_given_an_organization_given_a_null_team_id() throws CatleanException {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository);
+                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -157,7 +160,7 @@ public class PostgresExpositionAdapterTestIT {
     void should_find_all_pull_requests_given_an_organization_given_a_team_id() throws CatleanException {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository);
+                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -181,10 +184,10 @@ public class PostgresExpositionAdapterTestIT {
 
 
     @Test
-    void should_read_pr_time_to_merge_view_given_a_null_team_id() throws CatleanException {
+    void should_read_pr_time_and_pr_size_to_merge_view_given_a_null_team_id() throws CatleanException {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository);
+                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
@@ -214,19 +217,23 @@ public class PostgresExpositionAdapterTestIT {
 
 
         // When
-        final List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews =
+        final List<PullRequestView> pullRequestTimeViews =
                 postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
+                        teamEntity.getId());
+        final List<PullRequestView> pullRequestSizeViews =
+                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization,
                         teamEntity.getId());
 
         // Then
-        assertThat(pullRequestTimeToMergeViews).hasSize(2);
+        assertThat(pullRequestTimeViews).hasSize(2);
+        assertThat(pullRequestSizeViews).hasSize(2);
     }
 
     @Test
-    void should_read_pr_time_to_merge_view_given_a_team_id() throws CatleanException {
+    void should_read_pr_time_and_pr_size_to_merge_view_given_a_team_id() throws CatleanException {
         // Given
         final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository);
+                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
@@ -255,12 +262,16 @@ public class PostgresExpositionAdapterTestIT {
                                 )).build());
 
         // When
-        final List<PullRequestTimeToMergeView> pullRequestTimeToMergeViews =
+        final List<PullRequestView> pullRequestTimeViews =
                 postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
+                        teamEntity.getId());
+        final List<PullRequestView> pullRequestSizeViews =
+                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization,
                         teamEntity.getId());
 
         // Then
-        assertThat(pullRequestTimeToMergeViews).hasSize(2);
+        assertThat(pullRequestTimeViews).hasSize(2);
+        assertThat(pullRequestSizeViews).hasSize(2);
     }
 
 

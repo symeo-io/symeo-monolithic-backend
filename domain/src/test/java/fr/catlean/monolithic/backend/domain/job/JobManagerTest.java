@@ -169,4 +169,29 @@ public class JobManagerTest {
         assertThat(stringArgumentCaptor.getValue()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
         assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
     }
+
+    @Test
+    void find_last_jobs_for_code_and_organization_and_limit() throws CatleanException {
+        // Given
+        final Executor executor = Runnable::run;
+        final JobStorage jobStorage = mock(JobStorage.class);
+        final JobManager jobManager = new JobManager(executor, jobStorage);
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final int numberOfJobToFind = faker.number().randomDigit();
+        final String jobCode = faker.ancient().god();
+
+
+        // When
+        jobManager.findLastJobsForCodeAndOrganizationAndLimit(jobCode, organization, numberOfJobToFind);
+
+        // Then
+        final ArgumentCaptor<String> jobCodeCaptor = ArgumentCaptor.forClass(String.class);
+        final ArgumentCaptor<Organization> organizationArgumentCaptor = ArgumentCaptor.forClass(Organization.class);
+        final ArgumentCaptor<Integer> integerArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(jobStorage, times(1)).findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCodeCaptor.capture(),
+                organizationArgumentCaptor.capture(), integerArgumentCaptor.capture());
+        assertThat(jobCodeCaptor.getValue()).isEqualTo(jobCode);
+        assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
+        assertThat(integerArgumentCaptor.getValue()).isEqualTo(numberOfJobToFind);
+    }
 }

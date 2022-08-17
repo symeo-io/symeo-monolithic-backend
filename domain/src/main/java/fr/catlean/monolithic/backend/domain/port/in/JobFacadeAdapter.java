@@ -9,4 +9,6 @@ import java.util.List;
 public interface JobFacadeAdapter {
 
     List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws CatleanException;
+
+    List<Job> findLastJobsForCodeAndOrganizationAndLimit(String jobCode, Organization organization, int i) throws CatleanException;
 }

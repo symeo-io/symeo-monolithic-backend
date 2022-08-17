@@ -5,10 +5,7 @@ import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestTimeToMergeRepository;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
-import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
+import fr.catlean.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import fr.catlean.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -33,9 +30,10 @@ public class PostgresConfiguration {
     @Bean
     public PostgresExpositionAdapter postgresAdapter(final PullRequestRepository pullRequestRepository,
                                                      final RepositoryRepository repositoryRepository,
-                                                     final PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository) {
+                                                     final PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository,
+                                                     final PullRequestSizeRepository pullRequestSizeRepository) {
         return new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
-                pullRequestTimeToMergeRepository);
+                pullRequestTimeToMergeRepository, pullRequestSizeRepository);
     }
 
     @Bean

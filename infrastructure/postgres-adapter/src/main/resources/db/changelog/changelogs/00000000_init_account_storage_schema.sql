@@ -41,7 +41,7 @@ create table account_storage.team
     organization_id             uuid,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null,
-    constraint name_organization_id_unique unique (name, organization_id),
+    constraint team_name_organization_id_unique unique (name, organization_id),
     constraint fk_team_organization_id foreign key (organization_id) references account_storage.organization (id)
 );
 
@@ -63,5 +63,6 @@ create table account_storage.team_goal
     team_id                     uuid                                      not null,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null,
-    constraint fk_team_goal_team_id foreign key (team_id) references account_storage.team (id)
+    constraint fk_team_goal_team_id foreign key (team_id) references account_storage.team (id),
+    constraint team_goal_standard_code_team_id_unique unique (standard_code, team_id)
 )
