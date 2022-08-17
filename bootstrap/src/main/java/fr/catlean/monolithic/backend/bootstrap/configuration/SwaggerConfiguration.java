@@ -38,7 +38,7 @@ public class SwaggerConfiguration {
                 .securityContexts(Collections.singletonList(securityContext()))
                 .securitySchemes(List.of(apiKey()))
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("catlean.monolithic.backend.rest.api.adapter"))
+                .apis(RequestHandlerSelectors.basePackage("fr.catlean.monolithic.backend.application.rest.api.adapter"))
                 .paths(PathSelectors.regex("/api/.*"))
                 .build()
                 .pathMapping("/");
