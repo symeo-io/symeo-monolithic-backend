@@ -56,8 +56,8 @@ else
     FILE_PATH=${FILE}
 fi
 
-export_stack_outputs catlean-backend-aurora-${ENV} ${REGION}
-export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
+export_stack_outputs symeo-backend-aurora-${ENV} ${REGION}
+export_stack_outputs symeo-backend-s3-${ENV} ${REGION}
 
 rm -f $FILE_PATH
 

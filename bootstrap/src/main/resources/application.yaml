@@ -11,7 +11,7 @@ infrastructure:
     raw-bucket-name: ${S3_DATALAKE_BUCKET_NAME}
   sendgrid:
     api-key: ${SENDGRID_API_KEY}
-    catlean-email: ${CATLEAN_EMAIL}
+    symeo-email: ${SYMEO_EMAIL}
     invitation-template-id: ${SENDGRID_TEMPLATE_ID}
     invitation-from-user-email-placeholder: "inviterEmail"
     invitation-organization-name-placeholder: "organizationName"
@@ -36,7 +36,7 @@ application:
 
 spring:
   application:
-    name: catlean-monolithic-backend
+    name: symeo-monolithic-backend
   liquibase:
     enabled: true
   datasource:

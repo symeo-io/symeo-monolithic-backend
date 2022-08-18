@@ -53,13 +53,13 @@ else
     export AWS_PROFILE=${PROFILE}
 fi
 
-export_stack_outputs catlean-backend-monitoring-${ENV} ${REGION}
-export_stack_outputs catlean-backend-iam-${ENV} ${REGION}
-export_stack_outputs catlean-backend-ecs-repository-${ENV} ${REGION}
-export_stack_outputs catlean-backend-ecs-cluster-${ENV} ${REGION}
-export_stack_outputs catlean-backend-ecs-services-${ENV} ${REGION}
-export_stack_outputs catlean-backend-aurora-${ENV} ${REGION}
-export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
+export_stack_outputs symeo-backend-monitoring-${ENV} ${REGION}
+export_stack_outputs symeo-backend-iam-${ENV} ${REGION}
+export_stack_outputs symeo-backend-ecs-repository-${ENV} ${REGION}
+export_stack_outputs symeo-backend-ecs-cluster-${ENV} ${REGION}
+export_stack_outputs symeo-backend-ecs-services-${ENV} ${REGION}
+export_stack_outputs symeo-backend-aurora-${ENV} ${REGION}
+export_stack_outputs symeo-backend-s3-${ENV} ${REGION}
 
 AccountId=$(get_aws_account_id)
 
@@ -93,7 +93,7 @@ aws ecs register-task-definition \
     \"memory\":3840,
     \"dockerLabels\": {
       \"com.datadoghq.ad.instances\": \"[{\\\"host\\\": \\\"%%host%%\\\", \\\"port\\\": 9999}]\",
-      \"com.datadoghq.ad.check_names\": \"[\\\"catlean-api-${ENV}\\\"]\",
+      \"com.datadoghq.ad.check_names\": \"[\\\"symeo-api-${ENV}\\\"]\",
       \"com.datadoghq.ad.init_configs\": \"[{}]\"
     },
     \"environmentFiles\": [{
@@ -105,7 +105,7 @@ aws ecs register-task-definition \
           \"options\":{
             \"awslogs-group\":\"${CloudwatchLogsGroup}\",
             \"awslogs-region\":\"${REGION}\",
-            \"awslogs-stream-prefix\":\"catlean-backend\"
+            \"awslogs-stream-prefix\":\"symeo-backend\"
           }
         }
   },

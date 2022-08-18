@@ -9,14 +9,14 @@ Installer PostgreSQL sur sa machine ou bien passer par docker ou bien par le doc
 ### docker-compose:
  - Aller dans le dossier docker.
 
- - lancer la commande: $ `docker volume create postgres_data_volume_catlean-monolithic-backend`
+ - lancer la commande: $ `docker volume create postgres_data_volume_symeo-monolithic-backend`
 
- - lancer la commande : $ `docker-compose -f postgres_catlean-monolithic-backend.yml up -d`
+ - lancer la commande : $ `docker-compose -f postgres_symeo-monolithic-backend.yml up -d`
 
 La base de données se lance avec le port 5432.
 
 ### docker:
-`docker run --name postgres -e POSTGRES_PASSWORD=P@ssw0rd -e POSTGRES_USER=postgres -e POSTGRES_DB=catlean-monolithic-backend -p 5432:5432 -d postgres`
+`docker run --name postgres -e POSTGRES_PASSWORD=P@ssw0rd -e POSTGRES_USER=postgres -e POSTGRES_DB=symeo-monolithic-backend -p 5432:5432 -d postgres`
 
 ## Changer le niveau de Logs et le format
 Le projet se base sur logback pour gerer le niveau d'erreur ainsi que le format
@@ -32,4 +32,4 @@ Pour packager le programme dans une image docker, il est possible d'éxecuter le
 Afin de pouvoir communiquer avec la base de données hébérgé sur le localhost il faut ajouter lors de la création du container le flag `--network host`
 afin de dire a docker que le container se trouve sur le meme réseau que la machine hôte, cela évitera les problemes de communications.
 
-`docker run --network host catlean-monolithic-backend`
+`docker run --network host symeo-monolithic-backend`

@@ -8,9 +8,9 @@
         <module>application</module>
         <module>domain</module>
         <module>infrastructure</module>
-        <module>catlean-json-to-pojo-generator</module>
-        <module>catlean-data-processing-api</module>
-        <module>catlean-frontend-api</module>
+        <module>symeo-json-to-pojo-generator</module>
+        <module>symeo-data-processing-api</module>
+        <module>symeo-frontend-api</module>
     </modules>
 
     <parent>
@@ -20,10 +20,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>fr.catlean.monolithic.backend</groupId>
-    <artifactId>catlean-monolithic-backend</artifactId>
+    <groupId>io.symeo.monolithic.backend</groupId>
+    <artifactId>symeo-monolithic-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>catlean-monolithic-backend</name>
+    <name>symeo-monolithic-backend</name>
     <packaging>pom</packaging>
     <description>App to collect and process delivery metrics</description>
 
@@ -31,7 +31,7 @@
         <java.version>17</java.version>
         <spring-boot-starter-web.version>2.5.3</spring-boot-starter-web.version>
         <jackson.version>2.12.4</jackson.version>
-        <start-class>fr.catlean.monolithic.backend.bootstrap.CatleanMonolithicBackendApplication</start-class>
+        <start-class>io.symeo.monolithic.backend.bootstrap.SymeoMonolithicBackendApplication</start-class>
         <assertj-core.version>3.22.0</assertj-core.version>
         <javafaker.version>1.0.2</javafaker.version>
         <liquibase-core.version>4.10.0</liquibase-core.version>
