@@ -23,11 +23,11 @@ web:
 
 spring:
   application:
-    name: catlean-monolithic-backend
+    name: symeo-monolithic-backend
   liquibase:
     enabled: true
   datasource:
-    url: jdbc:postgresql://postgres_exposition_host:5432/catlean-monolithic-backend?rewriteBatchedStatements=true
+    url: jdbc:postgresql://postgres_exposition_host:5432/symeo-monolithic-backend?rewriteBatchedStatements=true
     username: postgres
     password: P@ssw0rd
     driver-class-name: org.postgresql.Driver

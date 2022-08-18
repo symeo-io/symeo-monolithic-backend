@@ -53,13 +53,13 @@ else
     export AWS_PROFILE=${PROFILE}
 fi
 
-export_stack_outputs catlean-backend-monitoring-${ENV} ${REGION}
-export_stack_outputs catlean-backend-iam-${ENV} ${REGION}
-export_stack_outputs catlean-backend-ecs-repository-${ENV} ${REGION}
-export_stack_outputs catlean-backend-ecs-cluster-${ENV} ${REGION}
-export_stack_outputs catlean-backend-ecs-services-${ENV} ${REGION}
-export_stack_outputs catlean-backend-aurora-${ENV} ${REGION}
-export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
+export_stack_outputs symeo-backend-monitoring-${ENV} ${REGION}
+export_stack_outputs symeo-backend-iam-${ENV} ${REGION}
+export_stack_outputs symeo-backend-ecs-repository-${ENV} ${REGION}
+export_stack_outputs symeo-backend-ecs-cluster-${ENV} ${REGION}
+export_stack_outputs symeo-backend-ecs-services-${ENV} ${REGION}
+export_stack_outputs symeo-backend-aurora-${ENV} ${REGION}
+export_stack_outputs symeo-backend-s3-${ENV} ${REGION}
 
 AccountId=$(get_aws_account_id)
 
@@ -75,8 +75,8 @@ ENV_FILE_PATH="./.env"
 aws s3 cp $ENV_FILE_PATH s3://${EnvFilesS3Bucket}
 
 aws ecs register-task-definition \
-  --task-role-arn arn:aws:iam::${AccountId}:role/${CatleanBackendTaskRole} \
-  --execution-role-arn arn:aws:iam::${AccountId}:role/${CatleanBackendECSExecutionRole} \
+  --task-role-arn arn:aws:iam::${AccountId}:role/${SymeoBackendTaskRole} \
+  --execution-role-arn arn:aws:iam::${AccountId}:role/${SymeoBackendECSExecutionRole} \
   --family ${FamilyName} \
   --region ${REGION} \
   --requires-compatibilities FARGATE \
@@ -86,14 +86,14 @@ aws ecs register-task-definition \
   --container-definitions "
 [
   {
-    \"name\":\"CatleanBackendContainer-${ENV}\",
-    \"image\":\"${CatleanBackendRepository}:${TAG}\",
+    \"name\":\"SymeoBackendContainer-${ENV}\",
+    \"image\":\"${SymeoBackendRepository}:${TAG}\",
     \"portMappings\":[{\"containerPort\":9999}],
     \"cpu\":1948,
     \"memory\":3840,
     \"dockerLabels\": {
       \"com.datadoghq.ad.instances\": \"[{\\\"host\\\": \\\"%%host%%\\\", \\\"port\\\": 9999}]\",
-      \"com.datadoghq.ad.check_names\": \"[\\\"catlean-api-${ENV}\\\"]\",
+      \"com.datadoghq.ad.check_names\": \"[\\\"symeo-api-${ENV}\\\"]\",
       \"com.datadoghq.ad.init_configs\": \"[{}]\"
     },
     \"environmentFiles\": [{
@@ -105,7 +105,7 @@ aws ecs register-task-definition \
           \"options\":{
             \"awslogs-group\":\"${CloudwatchLogsGroup}\",
             \"awslogs-region\":\"${REGION}\",
-            \"awslogs-stream-prefix\":\"catlean-backend\"
+            \"awslogs-stream-prefix\":\"symeo-backend\"
           }
         }
   },

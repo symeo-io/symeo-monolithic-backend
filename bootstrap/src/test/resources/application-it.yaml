@@ -9,7 +9,7 @@ infrastructure:
       private-key-certificate-path: ${GITHUB_PRIVATE_KEY_PATH}
   sendgrid:
     api-key: ${SENDGRID_API_KEY}
-    catlean-email: ${CATLEAN_EMAIL}
+    symeo-email: ${SYMEO_EMAIL}
     invitation-template-id: ${SENDGRID_TEMPLATE_ID}
     invitation-from-user-email-placeholder: "inviterEmail"
     invitation-organization-name-placeholder: "organizationName"
@@ -33,7 +33,7 @@ application:
 
 spring:
   application:
-    name: catlean-monolithic-backend
+    name: symeo-monolithic-backend
   liquibase:
     enabled: true
   datasource:

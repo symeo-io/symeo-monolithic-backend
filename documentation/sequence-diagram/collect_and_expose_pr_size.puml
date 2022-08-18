@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/sequence-diagram
 participant cronjob order 10
-participant "catlean-monolithic-backend" as backend order 20
+participant "symeo-monolithic-backend" as backend order 20
 participant github order 30
 database "raw-storage" order 40
 database "exposition-storage" order 50
@@ -13,23 +13,23 @@ actor User order 70
 alt collect data
 cronjob -> backend : trigger data collection
 cronjob <-- backend
-"catlean-processor" -> github: get all repositories
-"catlean-processor" <-- github
-"catlean-processor" -> "raw-storage": save repositories
-"catlean-processor" <-- "raw-storage"
-"catlean-processor" -> github: get all pull requests for repository
-"catlean-processor" <-- github
-"catlean-processor" -> github: get pull request details
-"catlean-processor" <-- github
-"catlean-processor" -> "raw-storage": save pull requests
-"catlean-processor" <-- "raw-storage"
+"symeo-processor" -> github: get all repositories
+"symeo-processor" <-- github
+"symeo-processor" -> "raw-storage": save repositories
+"symeo-processor" <-- "raw-storage"
+"symeo-processor" -> github: get all pull requests for repository
+"symeo-processor" <-- github
+"symeo-processor" -> github: get pull request details
+"symeo-processor" <-- github
+"symeo-processor" -> "raw-storage": save pull requests
+"symeo-processor" <-- "raw-storage"
 end
 
 alt aggregate data
-"catlean-processor" -> "raw-storage": read pull requests
-"catlean-processor" <-- "raw-storage": pull requests
-"catlean-processor" -> "catlean-processor": compute pull requests insights
-"catlean-processor" -> "exposition-storage": save pull requests insights
+"symeo-processor" -> "raw-storage": read pull requests
+"symeo-processor" <-- "raw-storage": pull requests
+"symeo-processor" -> "symeo-processor": compute pull requests insights
+"symeo-processor" -> "exposition-storage": save pull requests insights
 end
 
 alt expose data

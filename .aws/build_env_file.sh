@@ -56,8 +56,8 @@ else
     FILE_PATH=${FILE}
 fi
 
-export_stack_outputs catlean-backend-aurora-${ENV} ${REGION}
-export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
+export_stack_outputs symeo-backend-aurora-${ENV} ${REGION}
+export_stack_outputs symeo-backend-s3-${ENV} ${REGION}
 
 rm -f $FILE_PATH
 
@@ -71,6 +71,6 @@ AUTH0_ISSUER=${AUTH0_ISSUER}
 GITHUB_APP_ID=${GITHUB_APP_ID}
 GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
 FRONTEND_CORS_HOST=${FRONTEND_CORS_HOST}
-CATLEAN_EMAIL=${CATLEAN_EMAIL}
+SYMEO_EMAIL=${SYMEO_EMAIL}
 SENDGRID_TEMPLATE_ID=${SENDGRID_TEMPLATE_ID}
 SENDGRID_API_KEY=${SENDGRID_API_KEY}" >> $FILE_PATH

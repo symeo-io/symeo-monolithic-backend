@@ -104,10 +104,10 @@ aws cloudformation deploy \
       Env=${ENV} \
       VpcId=${VPC_ID} \
   --region ${REGION} \
-  --stack-name catlean-backend-sg-${ENV} \
+  --stack-name symeo-backend-sg-${ENV} \
   --template-file cloudformation/security-groups.yml
 
-export_stack_outputs catlean-backend-sg-${ENV} ${REGION}
+export_stack_outputs symeo-backend-sg-${ENV} ${REGION}
 
 ## IAM Roles
 aws cloudformation deploy \
@@ -117,10 +117,10 @@ aws cloudformation deploy \
       Env=${ENV} \
       SecretName=${SECRET_ID} \
   --region ${REGION} \
-  --stack-name catlean-backend-iam-${ENV} \
+  --stack-name symeo-backend-iam-${ENV} \
   --template-file cloudformation/iam.yml
 
-export_stack_outputs catlean-backend-iam-${ENV} ${REGION}
+export_stack_outputs symeo-backend-iam-${ENV} ${REGION}
 
 ## Monitoring (Log Group, Alarms, ...)
 aws cloudformation deploy \
@@ -128,30 +128,30 @@ aws cloudformation deploy \
   --parameter-overrides \
       Env=${ENV} \
   --region ${REGION} \
-  --stack-name catlean-backend-monitoring-${ENV} \
+  --stack-name symeo-backend-monitoring-${ENV} \
   --template-file cloudformation/monitoring.yml
 
-export_stack_outputs catlean-backend-monitoring-${ENV} ${REGION}
+export_stack_outputs symeo-backend-monitoring-${ENV} ${REGION}
 
 ## TODO: make a backup/snapshot of the db before running potential update (which could empty the db)
 
 ## Database
 # Only create db stack if it does not already exist
 # TODO: add a way to force the update with script parameter
-if ! stack_exists "catlean-backend-aurora-${ENV}" $REGION
+if ! stack_exists "symeo-backend-aurora-${ENV}" $REGION
 then
   aws cloudformation deploy \
     --no-fail-on-empty-changeset \
     --parameter-overrides \
         DBPassword=${DB_PASSWORD} \
         Env=${ENV} \
-        CatleanBackendDatabaseSg=${CatleanBackendDatabaseSg} \
+        SymeoBackendDatabaseSg=${SymeoBackendDatabaseSg} \
     --region ${REGION} \
-    --stack-name catlean-backend-aurora-${ENV} \
+    --stack-name symeo-backend-aurora-${ENV} \
     --template-file cloudformation/aurora.yml
 fi
 
-export_stack_outputs catlean-backend-aurora-${ENV} ${REGION}
+export_stack_outputs symeo-backend-aurora-${ENV} ${REGION}
 
 ## S3
 aws cloudformation deploy \
@@ -159,10 +159,10 @@ aws cloudformation deploy \
   --parameter-overrides \
       Env=${ENV} \
   --region ${REGION} \
-  --stack-name catlean-backend-s3-${ENV} \
+  --stack-name symeo-backend-s3-${ENV} \
   --template-file cloudformation/s3.yml
 
-export_stack_outputs catlean-backend-s3-${ENV} ${REGION}
+export_stack_outputs symeo-backend-s3-${ENV} ${REGION}
 
 ## Application Load Balancer
 aws cloudformation deploy \
@@ -170,14 +170,14 @@ aws cloudformation deploy \
   --parameter-overrides \
       CertificateArn=${ACM_ARN_ALB} \
       Env=${ENV} \
-      SecurityGroup=${CatleanBackendAlbSg} \
+      SecurityGroup=${SymeoBackendAlbSg} \
       Subnets=${SUBNETS} \
       VpcId=${VPC_ID} \
   --region ${REGION} \
-  --stack-name catlean-backend-alb-${ENV} \
+  --stack-name symeo-backend-alb-${ENV} \
   --template-file cloudformation/alb.yml
 
-export_stack_outputs catlean-backend-alb-${ENV} ${REGION}
+export_stack_outputs symeo-backend-alb-${ENV} ${REGION}
 
 ## Cloudfront
 aws cloudformation deploy \
@@ -188,24 +188,24 @@ aws cloudformation deploy \
       Env=${ENV} \
       PublicAlias=${PUBLIC_URL} \
   --region ${REGION} \
-  --stack-name catlean-backend-cloudfront-${ENV} \
+  --stack-name symeo-backend-cloudfront-${ENV} \
   --template-file cloudformation/cloudfront.yml \
 
-export_stack_outputs catlean-backend-cloudfront-${ENV} ${REGION}
+export_stack_outputs symeo.-backend-cloudfront-${ENV} ${REGION}
 
 ## ECS Repository
 aws cloudformation deploy \
   --no-fail-on-empty-changeset \
   --parameter-overrides \
       Env=${ENV} \
-  --stack-name catlean-backend-ecs-repository-${ENV} \
+  --stack-name symeo.-backend-ecs-repository-${ENV} \
   --region ${REGION} \
   --template-file cloudformation/ecs-repository.yml
 
-export_stack_outputs catlean-backend-ecs-repository-${ENV} ${REGION}
+export_stack_outputs symeo.-backend-ecs-repository-${ENV} ${REGION}
 
 ## Build Docker Image and push it to the ECS Repository
-if docker_image_exists_in_ecr $CatleanBackendRepositoryName $MY_TAG $REGION; then
+if docker_image_exists_in_ecr $SymeoBackendRepositoryName $MY_TAG $REGION; then
   echo "Docker image with tag ${MY_TAG} already exists, skipping build..."
 else
   echo "No image found with tag ${MY_TAG}, building it..."
@@ -229,10 +229,10 @@ aws cloudformation deploy \
   --parameter-overrides \
       Env=${ENV} \
   --region ${REGION} \
-  --stack-name catlean-backend-ecs-cluster-${ENV} \
+  --stack-name symeo.-backend-ecs-cluster-${ENV} \
   --template-file cloudformation/ecs-cluster.yml \
 
-export_stack_outputs catlean-backend-ecs-cluster-${ENV} ${REGION}
+export_stack_outputs symeo.-backend-ecs-cluster-${ENV} ${REGION}
 
 ## ECS Services
 aws cloudformation deploy \
@@ -240,24 +240,24 @@ aws cloudformation deploy \
   --parameter-overrides \
       AlbName=${AlbName} \
       CloudwatchLogsGroup=${CloudwatchLogsGroup} \
-      DockerRepository=${CatleanBackendRepository} \
-      ECSAutoScaleRole=${CatleanBackendAutoScaleRole} \
+      DockerRepository=${SymeoBackendRepository} \
+      ECSAutoScaleRole=${SymeoBackendAutoScaleRole} \
       ECSCluster=${ECSCluster} \
-      ECSTaskRole=${CatleanBackendTaskRole} \
-      ECSExecutionRole=${CatleanBackendECSExecutionRole} \
+      ECSTaskRole=${SymeoBackendTaskRole} \
+      ECSExecutionRole=${SymeoBackendECSExecutionRole} \
       Env=${ENV} \
       DataDogApiKey=${DATADOG_API_KEY} \
       EnvFilesS3Bucket=${EnvFilesS3Bucket} \
       Tag=${MY_TAG} \
       TargetGroup=${TargetGroup} \
       TargetGroupName=${TargetGroupName} \
-      SecurityGroup=${CatleanBackendSg} \
+      SecurityGroup=${SymeoBackendSg} \
       Subnets=${SUBNETS} \
   --region ${REGION} \
-  --stack-name catlean-backend-ecs-services-${ENV} \
+  --stack-name symeo.-backend-ecs-services-${ENV} \
   --template-file cloudformation/ecs-services.yml \
 
-export_stack_outputs catlean-backend-ecs-services-${ENV} ${REGION}
+export_stack_outputs symeo.-backend-ecs-services-${ENV} ${REGION}
 
 ## Datadog integration
 aws cloudformation deploy \
@@ -267,12 +267,12 @@ aws cloudformation deploy \
        APPKey=${DATADOG_APP_KEY} \
        CloudwatchLogsGroup=${CloudwatchLogsGroup} \
   --region ${REGION} \
-  --stack-name catlean-datadog-integration \
+  --stack-name symeo.-datadog-integration \
   --capabilities CAPABILITY_IAM \
   --capabilities CAPABILITY_NAMED_IAM \
   --template-file cloudformation/datadog-aws-integration.yml \
 
-set_datadog_forwarder_arn_to_env catlean-datadog-integration ${REGION}
+set_datadog_forwarder_arn_to_env symeo.-datadog-integration ${REGION}
 
 ## Datadog log forwarders
 aws cloudformation deploy \
@@ -281,7 +281,7 @@ aws cloudformation deploy \
        DatadogForwarderArn=${DatadogForwarderArn} \
        CloudwatchLogsGroup=${CloudwatchLogsGroup} \
   --region ${REGION} \
-  --stack-name catlean-datadog-log-forwarder-${ENV} \
+  --stack-name symeo.-datadog-log-forwarder-${ENV} \
   --template-file cloudformation/datadog-log-forwarder.yml
 
 echo "DONE"

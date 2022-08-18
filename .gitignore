@@ -38,6 +38,6 @@ json_local_storage
 .env
 
 ### Github App pem ###
-catlean-staging-io.private-key.pem
-catlean-io.private-key.der
-catlean-staging-io.private-key.der
+symeo-staging-io.private-key.pem
+symeo-io.private-key.der
+symeo-staging-io.private-key.der

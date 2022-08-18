@@ -47,7 +47,7 @@ fi
 
 GIT_ROOT_PATH=$(git rev-parse --show-toplevel)
 
-build_and_push_docker_image $GIT_ROOT_PATH "Dockerfile" "catlean-backend-ecs-repository-${ENV}" "CatleanBackendRepository" $REGION $TAG
+build_and_push_docker_image $GIT_ROOT_PATH "Dockerfile" "symeo-backend-ecs-repository-${ENV}" "SymeoBackendRepository" $REGION $TAG
 
 echo "DONE"
 
