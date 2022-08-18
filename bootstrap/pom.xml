@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>catlean-monolithic-backend</artifactId>
-        <groupId>fr.catlean.monolithic.backend</groupId>
+        <artifactId>symeo-monolithic-backend</artifactId>
+        <groupId>io.symeo.monolithic.backend</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -21,42 +21,42 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
+            <groupId>io.symeo.monolithic.backend</groupId>
             <artifactId>domain</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
+            <groupId>io.symeo.monolithic.backend</groupId>
             <artifactId>github-adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
+            <groupId>io.symeo.monolithic.backend</groupId>
             <artifactId>json-local-storage</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
+            <groupId>io.symeo.monolithic.backend</groupId>
             <artifactId>postgres-adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
+            <groupId>io.symeo.monolithic.backend</groupId>
             <artifactId>rest-api-adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
+            <groupId>io.symeo.monolithic.backend</groupId>
             <artifactId>aws-s3-adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
+            <groupId>io.symeo.monolithic.backend</groupId>
             <artifactId>github-webhook-api-adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
+            <groupId>io.symeo.monolithic.backend</groupId>
             <artifactId>sendgrid-adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
@@ -114,7 +114,7 @@
 
 
     <build>
-        <finalName>catlean-monolithic-backend</finalName>
+        <finalName>symeo-monolithic-backend</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

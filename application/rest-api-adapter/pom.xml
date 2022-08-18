@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>application</artifactId>
-        <groupId>fr.catlean.monolithic.backend</groupId>
+        <groupId>io.symeo.monolithic.backend</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -19,13 +19,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
-            <artifactId>catlean-data-processing-api</artifactId>
+            <groupId>io.symeo.monolithic.backend</groupId>
+            <artifactId>symeo-data-processing-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.catlean.monolithic.backend</groupId>
-            <artifactId>catlean-frontend-api</artifactId>
+            <groupId>io.symeo.monolithic.backend</groupId>
+            <artifactId>symeo-frontend-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

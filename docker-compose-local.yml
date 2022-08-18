@@ -9,15 +9,15 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=P@ssw0rd
-      - POSTGRES_DB=catlean-monolithic-backend
-      - AUTH0_AUDIENCE=https://api-staging.catlean.fr
-      - AUTH0_ISSUER=https://catlean-staging.eu.auth0.com/
+      - POSTGRES_DB=symeo-monolithic-backend
+      - AUTH0_AUDIENCE=https://api-staging.symeo.io
+      - AUTH0_ISSUER=https://symeo-staging.eu.auth0.com/
     ports:
       - "5432:5432"
     networks:
-      - catlean-backend-network
+      - symeo-backend-network
 
-  catlean-monolithic-backend:
+  symeo-monolithic-backend:
     platform: linux/x86_64
     build:
       context: .
@@ -25,8 +25,8 @@ services:
     ports:
       - "9999:9999"
     networks:
-      - catlean-backend-network
+      - symeo-backend-network
 
 networks:
-  catlean-backend-network:
+  symeo-backend-network:
     driver: bridge
