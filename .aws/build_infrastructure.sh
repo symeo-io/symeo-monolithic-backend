@@ -191,18 +191,18 @@ aws cloudformation deploy \
   --stack-name symeo-backend-cloudfront-${ENV} \
   --template-file cloudformation/cloudfront.yml \
 
-export_stack_outputs symeo.-backend-cloudfront-${ENV} ${REGION}
+export_stack_outputs symeo-backend-cloudfront-${ENV} ${REGION}
 
 ## ECS Repository
 aws cloudformation deploy \
   --no-fail-on-empty-changeset \
   --parameter-overrides \
       Env=${ENV} \
-  --stack-name symeo.-backend-ecs-repository-${ENV} \
+  --stack-name symeo-backend-ecs-repository-${ENV} \
   --region ${REGION} \
   --template-file cloudformation/ecs-repository.yml
 
-export_stack_outputs symeo.-backend-ecs-repository-${ENV} ${REGION}
+export_stack_outputs symeo-backend-ecs-repository-${ENV} ${REGION}
 
 ## Build Docker Image and push it to the ECS Repository
 if docker_image_exists_in_ecr $SymeoBackendRepositoryName $MY_TAG $REGION; then
@@ -229,10 +229,10 @@ aws cloudformation deploy \
   --parameter-overrides \
       Env=${ENV} \
   --region ${REGION} \
-  --stack-name symeo.-backend-ecs-cluster-${ENV} \
+  --stack-name symeo-backend-ecs-cluster-${ENV} \
   --template-file cloudformation/ecs-cluster.yml \
 
-export_stack_outputs symeo.-backend-ecs-cluster-${ENV} ${REGION}
+export_stack_outputs symeo-backend-ecs-cluster-${ENV} ${REGION}
 
 ## ECS Services
 aws cloudformation deploy \
@@ -254,10 +254,10 @@ aws cloudformation deploy \
       SecurityGroup=${SymeoBackendSg} \
       Subnets=${SUBNETS} \
   --region ${REGION} \
-  --stack-name symeo.-backend-ecs-services-${ENV} \
+  --stack-name symeo-backend-ecs-services-${ENV} \
   --template-file cloudformation/ecs-services.yml \
 
-export_stack_outputs symeo.-backend-ecs-services-${ENV} ${REGION}
+export_stack_outputs symeo-backend-ecs-services-${ENV} ${REGION}
 
 ## Datadog integration
 aws cloudformation deploy \
@@ -267,12 +267,12 @@ aws cloudformation deploy \
        APPKey=${DATADOG_APP_KEY} \
        CloudwatchLogsGroup=${CloudwatchLogsGroup} \
   --region ${REGION} \
-  --stack-name symeo.-datadog-integration \
+  --stack-name symeo-datadog-integration \
   --capabilities CAPABILITY_IAM \
   --capabilities CAPABILITY_NAMED_IAM \
   --template-file cloudformation/datadog-aws-integration.yml \
 
-set_datadog_forwarder_arn_to_env symeo.-datadog-integration ${REGION}
+set_datadog_forwarder_arn_to_env symeo-datadog-integration ${REGION}
 
 ## Datadog log forwarders
 aws cloudformation deploy \
@@ -281,7 +281,7 @@ aws cloudformation deploy \
        DatadogForwarderArn=${DatadogForwarderArn} \
        CloudwatchLogsGroup=${CloudwatchLogsGroup} \
   --region ${REGION} \
-  --stack-name symeo.-datadog-log-forwarder-${ENV} \
+  --stack-name symeo-datadog-log-forwarder-${ENV} \
   --template-file cloudformation/datadog-log-forwarder.yml
 
 echo "DONE"
