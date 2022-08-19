@@ -180,6 +180,7 @@ public class UserServiceTest {
         final ArgumentCaptor<List<User>> usersCaptor = ArgumentCaptor.forClass(List.class);
         final ArgumentCaptor<Organization> organizationArgumentCaptor = ArgumentCaptor.forClass(Organization.class);
         final ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        when(userStorageAdapter.getUsersFromEmails(users.stream().map(User::getEmail).toList())).thenReturn(List.of());
         when(userStorageAdapter.saveUsers(usersCaptor.capture()))
                 .thenReturn(users.stream().map(user -> user.toBuilder().id(UUID.randomUUID()).build()).toList());
         userService.inviteUsersForOrganization(organization, authenticatedUser, users);
@@ -191,6 +192,48 @@ public class UserServiceTest {
         assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
         assertThat(userArgumentCaptor.getValue()).isEqualTo(authenticatedUser);
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getId()).isNull());
+        usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOrganization()).isEqualTo(organization));
+        usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOnboarding().getHasConfiguredTeam()).isTrue());
+        usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOnboarding().getHasConnectedToVcs()).isTrue());
+        usersCaptor.getAllValues().get(1).forEach(user -> assertThat(user.getStatus()).isEqualTo(User.PENDING));
+    }
+
+    @Test
+    void should_update_existing_user_to_invite() throws SymeoException {
+        final User authenticatedUser = User.builder().id(UUID.randomUUID()).build();
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final UserStorageAdapter userStorageAdapter = mock(UserStorageAdapter.class);
+        final EmailDeliveryAdapter emailDeliveryAdapter = mock(EmailDeliveryAdapter.class);
+        final UserService userService = new UserService(userStorageAdapter, emailDeliveryAdapter);
+        final List<User> users = List.of(
+                User.builder()
+                        .email(faker.dragonBall().character())
+                        .build(),
+                User.builder()
+                        .email(faker.gameOfThrones().character())
+                        .build(),
+                User.builder()
+                        .email(faker.harryPotter().character())
+                        .build()
+        );
+
+        // When
+        final ArgumentCaptor<List<User>> usersCaptor = ArgumentCaptor.forClass(List.class);
+        final ArgumentCaptor<Organization> organizationArgumentCaptor = ArgumentCaptor.forClass(Organization.class);
+        final ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        when(userStorageAdapter.getUsersFromEmails(users.stream().map(User::getEmail).toList())).thenReturn(
+                List.of(users.get(0).toBuilder().organizations(List.of(organization)).id(UUID.randomUUID()).status(User.PENDING).build())
+        );
+        when(userStorageAdapter.saveUsers(usersCaptor.capture()))
+                .thenReturn(users.stream().map(user -> user.toBuilder().id(UUID.randomUUID()).build()).toList());
+        userService.inviteUsersForOrganization(organization, authenticatedUser, users);
+
+        // Then
+        verify(emailDeliveryAdapter, times(1)).sendInvitationForUsers(organizationArgumentCaptor.capture(),
+                userArgumentCaptor.capture(), usersCaptor.capture());
+        assertThat(usersCaptor.getAllValues()).hasSize(2);
+        assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
+        assertThat(userArgumentCaptor.getValue()).isEqualTo(authenticatedUser);
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOrganization()).isEqualTo(organization));
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOnboarding().getHasConfiguredTeam()).isTrue());
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOnboarding().getHasConnectedToVcs()).isTrue());

@@ -256,4 +256,34 @@ public class PostgresAccountUserAdapterTestIT {
         assertThat(allUsers).hasSize(1);
         assertThat(allUsers.get(0).getOrganizationEntities()).hasSize(0);
     }
+
+
+    @Test
+    void should_find_all_users_by_emails() throws SymeoException {
+        // Given
+        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+                vcsOrganizationRepository);
+        final List<UserEntity> userEntities = userRepository.saveAll(List.of(
+                UserEntity.builder().id(UUID.randomUUID()).email(faker.name().name()).status(User.PENDING)
+                        .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID())
+                                .hasConnectedToVcs(false).hasConfiguredTeam(false).build()).build(),
+                UserEntity.builder().id(UUID.randomUUID()).email(faker.name().firstName()).status(User.PENDING)
+                        .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID())
+                                .hasConnectedToVcs(false).hasConfiguredTeam(false).build()).build(),
+                UserEntity.builder().id(UUID.randomUUID()).email(faker.name().fullName()).status(User.PENDING)
+                        .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID())
+                                .hasConnectedToVcs(false).hasConfiguredTeam(false).build()).build(),
+                UserEntity.builder().id(UUID.randomUUID()).email(faker.dragonBall().character()).status(User.PENDING).onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID())
+                                .hasConnectedToVcs(false).hasConfiguredTeam(false).build())
+                        .build()
+        ));
+        final List<String> emails = List.of(userEntities.get(1).getEmail(), userEntities.get(3).getEmail());
+
+        // When
+        final List<User> usersFromEmails = postgresAccountUserAdapter.getUsersFromEmails(emails);
+
+        // Then
+        assertThat(usersFromEmails).hasSize(emails.size());
+        usersFromEmails.stream().map(User::getEmail).forEach(email -> assertThat(emails.contains(email)).isTrue());
+    }
 }

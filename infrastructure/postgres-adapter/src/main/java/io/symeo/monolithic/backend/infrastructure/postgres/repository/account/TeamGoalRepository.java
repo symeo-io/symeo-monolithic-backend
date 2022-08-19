@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface TeamGoalRepository extends JpaRepository<TeamGoalEntity, UUID>,
         JpaSpecificationExecutor<TeamGoalEntity> {
 
-    List<TeamGoalEntity> findAllByTeamId(final UUID teamId);
+    List<TeamGoalEntity> findAllByTeamIdOrderByTechnicalCreationDate(final UUID teamId);
 
     @Modifying
     @Query(value = "update TeamGoalEntity tge set tge.value = :value where tge.id = :id")
