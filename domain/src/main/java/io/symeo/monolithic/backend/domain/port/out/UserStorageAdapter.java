@@ -22,4 +22,6 @@ public interface UserStorageAdapter {
     User saveUser(User user) throws SymeoException;
 
     void removeOrganizationForUserId(UUID id) throws SymeoException;
+
+    List<User> getUsersFromEmails(List<String> emails) throws SymeoException;
 }

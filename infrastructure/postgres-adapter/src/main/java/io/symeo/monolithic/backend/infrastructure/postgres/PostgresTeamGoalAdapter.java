@@ -42,7 +42,7 @@ public class PostgresTeamGoalAdapter implements TeamGoalStorage {
     @Transactional(readOnly = true)
     public List<TeamGoal> readForTeamId(UUID teamId) throws SymeoException {
         try {
-            return teamGoalRepository.findAllByTeamId(teamId)
+            return teamGoalRepository.findAllByTeamIdOrderByTechnicalCreationDate(teamId)
                     .stream()
                     .map(TeamGoalMapper::entityToDomain)
                     .toList();

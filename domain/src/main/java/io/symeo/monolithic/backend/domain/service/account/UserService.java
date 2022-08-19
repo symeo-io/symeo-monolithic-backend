@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class UserService implements UserFacadeAdapter {
@@ -47,17 +48,44 @@ public class UserService implements UserFacadeAdapter {
     @Override
     public List<User> inviteUsersForOrganization(final Organization organization, final User authenticatedUser,
                                                  final List<User> users) throws SymeoException {
+        final List<User> existingUsers =
+                userStorageAdapter.getUsersFromEmails(users.stream().map(User::getEmail).toList());
+        final List<String> existingEmails = existingUsers.stream().map(User::getEmail).toList();
+        final List<User> newUsers =
+                users.stream().filter(user -> !existingEmails.contains(user.getEmail())).collect(Collectors.toList());
+        // TODO : handle other use cases
+        final List<User> existingNewUsersToUpdate =
+                existingUsers.stream().filter(user -> user.getOrganization().equals(organization) && user.getStatus().equals(User.PENDING))
+                        .toList();
+        newUsers.addAll(updateOnboardingForExistingNewUsers(existingNewUsersToUpdate));
         final List<User> createdUsers =
-                userStorageAdapter.saveUsers(users.stream().map(user -> user.toBuilder()
-                        .organizations(List.of(organization))
-                        .onboarding(
-                                Onboarding.builder()
-                                        .hasConfiguredTeam(true)
-                                        .hasConnectedToVcs(true)
-                                        .build())
-                        .build()).toList());
+                userStorageAdapter.saveUsers(updateNewUserWithOrganizationAndOnboarding(organization, newUsers));
         emailDeliveryAdapter.sendInvitationForUsers(organization, authenticatedUser, createdUsers);
         return createdUsers;
+    }
+
+    private List<User> updateOnboardingForExistingNewUsers(List<User> existingNewUsersToUpdate) {
+        return existingNewUsersToUpdate.stream()
+                .map(user -> user.toBuilder()
+                        .onboarding(
+                                user.getOnboarding().toBuilder()
+                                        .hasConfiguredTeam(true)
+                                        .hasConnectedToVcs(true)
+                                        .build()
+                        )
+                        .build()).toList();
+    }
+
+    private static List<User> updateNewUserWithOrganizationAndOnboarding(Organization organization,
+                                                                         List<User> newUsers) {
+        return newUsers.stream().map(user -> user.toBuilder()
+                .organizations(List.of(organization))
+                .onboarding(
+                        Onboarding.builder()
+                                .hasConfiguredTeam(true)
+                                .hasConnectedToVcs(true)
+                                .build())
+                .build()).toList();
     }
 
     @Override

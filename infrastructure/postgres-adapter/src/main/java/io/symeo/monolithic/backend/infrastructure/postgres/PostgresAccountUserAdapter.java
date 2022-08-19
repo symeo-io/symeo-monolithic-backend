@@ -130,6 +130,22 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
         }
     }
 
+    @Override
+    public List<User> getUsersFromEmails(List<String> emails) throws SymeoException {
+        try {
+            return userRepository.findAllByEmailIn(emails)
+                    .stream().map(UserMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to users for emails %s", String.join(", ", emails));
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
     private static UserEntity createUserFromMail(String mail) {
         return UserMapper.domainToEntity(User.builder().email(mail).build());
     }
