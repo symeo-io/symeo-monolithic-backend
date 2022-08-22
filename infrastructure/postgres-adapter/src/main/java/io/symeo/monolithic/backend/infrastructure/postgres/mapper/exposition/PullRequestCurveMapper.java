@@ -29,6 +29,8 @@ public interface PullRequestCurveMapper {
                 .mergeDate(isNull(pullRequestSizeDTO.getMergeDate()) ? null :
                         Date.from(pullRequestSizeDTO.getMergeDate().toInstant()))
                 .status(pullRequestSizeDTO.getState())
+                .deletedLineNumber(pullRequestSizeDTO.getDeletedLineNumber())
+                .addedLineNumber(pullRequestSizeDTO.getAddedLineNumber())
                 .build();
     }
 }

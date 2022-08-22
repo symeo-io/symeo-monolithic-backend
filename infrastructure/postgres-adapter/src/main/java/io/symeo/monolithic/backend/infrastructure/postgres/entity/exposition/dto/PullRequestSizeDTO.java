@@ -22,8 +22,10 @@ public class PullRequestSizeDTO {
     @Column(name = "id", nullable = false)
     @NotNull
     String id;
-    @Column(name = "size")
-    int size;
+    @Column(name = "deleted_line_number")
+    int deletedLineNumber;
+    @Column(name = "added_line_number")
+    int addedLineNumber;
     @Column(name = "creation_date")
     Date creationDate;
     @Column(name = "merge_date")

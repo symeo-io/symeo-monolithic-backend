@@ -85,4 +85,65 @@ public class MetricsTest {
         assertThat(metrics.getPercentageTendency()).isEqualTo(60D);
     }
 
+
+    @Test
+    void should_compute_pull_request_size_metrics_given_pull_requests_and_team_goal_limit() {
+        // Given
+        final List<PullRequestView> previousPRViews = List.of(
+                PullRequestView.builder().addedLineNumber(200).deletedLineNumber(100).build(),
+                PullRequestView.builder().addedLineNumber(500).deletedLineNumber(500).build(),
+                PullRequestView.builder().addedLineNumber(1000).deletedLineNumber(500).build(),
+                PullRequestView.builder().addedLineNumber(200).deletedLineNumber(2000).build(),
+                PullRequestView.builder().addedLineNumber(2000).deletedLineNumber(2000).build()
+        );
+        final List<PullRequestView> currentPRViews = List.of(
+                PullRequestView.builder().addedLineNumber(200).deletedLineNumber(100).build(),
+                PullRequestView.builder().addedLineNumber(500).deletedLineNumber(500).build(),
+                PullRequestView.builder().addedLineNumber(100).deletedLineNumber(500).build(),
+                PullRequestView.builder().addedLineNumber(200).deletedLineNumber(2000).build(),
+                PullRequestView.builder().addedLineNumber(200).deletedLineNumber(300).build(),
+                PullRequestView.builder().addedLineNumber(200).deletedLineNumber(100).build(),
+                PullRequestView.builder().addedLineNumber(200).deletedLineNumber(20).build()
+        );
+        final int limit = 1000;
+
+        // When
+        final Metrics metrics = Metrics.buildSizeMetricsFromPullRequests(limit, currentPRViews, previousPRViews);
+
+        // Then
+        assertThat(metrics).isNotNull();
+        assertThat(metrics.getCurrentAverage()).isEqualTo(731.4);
+        assertThat(metrics.getCurrentPercentage()).isEqualTo(85.7);
+        assertThat(metrics.getPreviousAverage()).isEqualTo(1800.0);
+        assertThat(metrics.getPreviousPercentage()).isEqualTo(40);
+        assertThat(metrics.getAverageTendency()).isEqualTo(-59.4);
+        assertThat(metrics.getPercentageTendency()).isEqualTo(114.3);
+    }
+
+    @Test
+    void should_return_zero_metrics_for_empty_pull_requests() {
+        // Given
+
+        // When
+        final Metrics timeToMergeMetricsFromPullRequests = Metrics.buildTimeToMergeMetricsFromPullRequests(5,
+                new Date(), new Date(), List.of(),
+                List.of());
+        final Metrics sizeMetricsFromPullRequests = Metrics.buildSizeMetricsFromPullRequests(1000, List.of(),
+                List.of());
+
+        // Then
+        assertThat(timeToMergeMetricsFromPullRequests.getPercentageTendency()).isEqualTo(0D);
+        assertThat(timeToMergeMetricsFromPullRequests.getAverageTendency()).isEqualTo(0D);
+        assertThat(timeToMergeMetricsFromPullRequests.getCurrentAverage()).isEqualTo(0D);
+        assertThat(timeToMergeMetricsFromPullRequests.getPreviousAverage()).isEqualTo(0D);
+        assertThat(timeToMergeMetricsFromPullRequests.getCurrentPercentage()).isEqualTo(0D);
+        assertThat(timeToMergeMetricsFromPullRequests.getPreviousPercentage()).isEqualTo(0D);
+        assertThat(sizeMetricsFromPullRequests.getPercentageTendency()).isEqualTo(0D);
+        assertThat(sizeMetricsFromPullRequests.getAverageTendency()).isEqualTo(0D);
+        assertThat(sizeMetricsFromPullRequests.getCurrentAverage()).isEqualTo(0D);
+        assertThat(sizeMetricsFromPullRequests.getPreviousAverage()).isEqualTo(0D);
+        assertThat(sizeMetricsFromPullRequests.getCurrentPercentage()).isEqualTo(0D);
+        assertThat(sizeMetricsFromPullRequests.getPreviousPercentage()).isEqualTo(0D);
+
+    }
 }

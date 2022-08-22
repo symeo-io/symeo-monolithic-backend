@@ -79,6 +79,28 @@ public class PullRequestViewTest {
 
     }
 
+    @Test
+    void should_compute_number_of_days_opened_compared_to_end_date() throws SymeoException {
+        // Given
+        final ZoneId zoneId = ZoneId.systemDefault();
+        final Date creationDate =
+                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(10)).atStartOfDay(zoneId).toInstant());
+        final Date endDate =
+                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(5)).atStartOfDay(zoneId).toInstant());
+
+        final PullRequestView pullRequestView = buildPullRequestPullRequestLimitView(2000, creationDate
+                , null, null,
+                PullRequest.OPEN);
+
+        // When
+        final int daysOpened = pullRequestView.getDaysOpened(new Date());
+        final int daysOpenedFromEndDate = pullRequestView.getDaysOpened(endDate);
+
+        // Then
+        assertThat(daysOpened).isEqualTo(10);
+        assertThat(daysOpenedFromEndDate).isEqualTo(5);
+    }
+
     public static PullRequestView buildPullRequestPullRequestLimitView(final Integer limit,
                                                                        final Date creationDate,
                                                                        final Date mergeDate,

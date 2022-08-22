@@ -12,7 +12,7 @@ import io.symeo.monolithic.backend.frontend.contract.api.model.PieceCurveDataRes
 import java.util.ArrayList;
 import java.util.List;
 
-public interface CurveMapper {
+public interface CurveContractMapper {
 
     static GetCurveResponseContract curveToContract(final PieceCurveWithAverage pieceCurveWithAverage) {
         final GetCurveResponseContract getCurveResponseContract = new GetCurveResponseContract();

@@ -1481,16 +1481,13 @@ components:
           type: object
           properties:
             average:
-              type: object
-              properties:
-                value:
-                  type: number
-                tendency_percentage:
-                  type: number
+              $ref: '#/components/schemas/MetricsContract'
             meeting_goal:
-              type: object
-              properties:
-                percentage:
-                  type: number
-                meeting_goal:
-                  type: number
+              $ref: '#/components/schemas/MetricsContract'
+    MetricsContract:
+      type: object
+      properties:
+        value:
+          type: number
+        tendency_percentage:
+          type: number

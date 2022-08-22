@@ -126,6 +126,8 @@ public class PieceCurveWithAverageQueryTest {
                                                                        final String status) {
         return PullRequestView.builder()
                 .limit(limit)
+                .addedLineNumber(limit)
+                .deletedLineNumber(0)
                 .creationDate(creationDate)
                 .closeDate(closeDate)
                 .mergeDate(mergeDate)

@@ -121,27 +121,15 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.histogram.data[0].data_above_limit").isEqualTo(0)
                 .jsonPath("$.histogram.data[0].data_below_limit").isEqualTo(3)
                 .jsonPath("$.histogram.data[0].start_date_range").isEqualTo("2022-01-01")
-                .jsonPath("$.histogram.data[1].data_above_limit").isEqualTo(2)
+                .jsonPath("$.histogram.data[1].data_above_limit").isEqualTo(1)
                 .jsonPath("$.histogram.data[1].data_below_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[1].start_date_range").isEqualTo("2022-01-08")
-                .jsonPath("$.histogram.data[2].data_above_limit").isEqualTo(3)
-                .jsonPath("$.histogram.data[2].data_below_limit").isEqualTo(1)
+                .jsonPath("$.histogram.data[2].data_above_limit").isEqualTo(2)
+                .jsonPath("$.histogram.data[2].data_below_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[2].start_date_range").isEqualTo("2022-01-15")
-                .jsonPath("$.histogram.data[3].data_above_limit").isEqualTo(3)
-                .jsonPath("$.histogram.data[3].data_below_limit").isEqualTo(2)
-                .jsonPath("$.histogram.data[3].start_date_range").isEqualTo("2022-01-22")
-                .jsonPath("$.histogram.data[4].data_above_limit").isEqualTo(4)
-                .jsonPath("$.histogram.data[4].data_below_limit").isEqualTo(2)
-                .jsonPath("$.histogram.data[4].start_date_range").isEqualTo("2022-01-29")
-                .jsonPath("$.histogram.data[5].data_above_limit").isEqualTo(5)
-                .jsonPath("$.histogram.data[5].data_below_limit").isEqualTo(2)
-                .jsonPath("$.histogram.data[5].start_date_range").isEqualTo("2022-02-05")
-                .jsonPath("$.histogram.data[6].data_above_limit").isEqualTo(7)
-                .jsonPath("$.histogram.data[6].data_below_limit").isEqualTo(1)
-                .jsonPath("$.histogram.data[6].start_date_range").isEqualTo("2022-02-12")
-                .jsonPath("$.histogram.data[7].data_above_limit").isEqualTo(6)
-                .jsonPath("$.histogram.data[7].data_below_limit").isEqualTo(1)
-                .jsonPath("$.histogram.data[7].start_date_range").isEqualTo("2022-02-19");
+                .jsonPath("$.histogram.data[3].data_above_limit").isEqualTo(2)
+                .jsonPath("$.histogram.data[3].data_below_limit").isEqualTo(3)
+                .jsonPath("$.histogram.data[3].start_date_range").isEqualTo("2022-01-22");
     }
 
     @Order(3)
@@ -161,23 +149,14 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.curves.limit").isEqualTo(5)
-                .jsonPath("$.curves.average_curve[0].value").isEqualTo(4)
-                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-01-25")
-                .jsonPath("$.curves.average_curve[1].value").isEqualTo(3)
-                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-01-16")
+                .jsonPath("$.curves.average_curve[0].value").isEqualTo(2)
+                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-01-19")
+                .jsonPath("$.curves.average_curve[1].value").isEqualTo(1)
+                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-01-25")
                 .jsonPath("$.curves.average_curve[2].value").isEqualTo(1)
-                .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-02-01")
+                .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-16")
                 .jsonPath("$.curves.average_curve[3].value").isEqualTo(3)
-                .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-01-10")
-                .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-02-01")
-                .jsonPath("$.curves.piece_curve[0].value").isEqualTo(1)
-                .jsonPath("$.curves.piece_curve[0].open").isEqualTo(true)
-                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(2)
-                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-01-10")
-                .jsonPath("$.curves.piece_curve[1].open").isEqualTo(false)
-                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(1)
-                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-02-01")
-                .jsonPath("$.curves.piece_curve[2].open").isEqualTo(true);
+                .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-01-28");
 
     }
 
@@ -242,26 +221,13 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.limit").isEqualTo(1000)
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(300)
                 .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-02-09")
-                .jsonPath("$.curves.average_curve[1].value").isEqualTo(300)
-                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-01-25")
+                .jsonPath("$.curves.average_curve[1].value").isEqualTo(1000)
+                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-01-19")
                 .jsonPath("$.curves.average_curve[2].value").isEqualTo(300)
-                .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-16")
-                .jsonPath("$.curves.average_curve[3].value").isEqualTo(300)
-                .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-02-18")
-                .jsonPath("$.curves.average_curve[4].value").isEqualTo(1787)
-                .jsonPath("$.curves.average_curve[4].date").isEqualTo("2022-01-10")
-                .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-03-01")
-                .jsonPath("$.curves.piece_curve[0].value").isEqualTo(1200)
-                .jsonPath("$.curves.piece_curve[0].open").isEqualTo(true)
-                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(2000)
-                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-01-10")
-                .jsonPath("$.curves.piece_curve[1].open").isEqualTo(false)
-                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(1200)
-                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-03-01")
-                .jsonPath("$.curves.piece_curve[2].open").isEqualTo(true)
-                .jsonPath("$.curves.piece_curve[3].value").isEqualTo(300)
-                .jsonPath("$.curves.piece_curve[3].date").isEqualTo("2022-01-10")
-                .jsonPath("$.curves.piece_curve[3].open").isEqualTo(false);
+                .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-25")
+                .jsonPath("$.curves.average_curve[3].value").isEqualTo(1000)
+                .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-02-15")
+                .jsonPath("$.curves.average_curve[4].value").isEqualTo(300);
 
 
     }
@@ -287,7 +253,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.histogram.data[0].data_above_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[0].data_below_limit").isEqualTo(1)
                 .jsonPath("$.histogram.data[0].start_date_range").isEqualTo("2022-01-01")
-                .jsonPath("$.histogram.data[1].data_above_limit").isEqualTo(3)
+                .jsonPath("$.histogram.data[1].data_above_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[1].data_below_limit").isEqualTo(1)
                 .jsonPath("$.histogram.data[1].start_date_range").isEqualTo("2022-01-08")
                 .jsonPath("$.histogram.data[2].data_above_limit").isEqualTo(3)
@@ -296,7 +262,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.histogram.data[3].data_above_limit").isEqualTo(4)
                 .jsonPath("$.histogram.data[3].data_below_limit").isEqualTo(1)
                 .jsonPath("$.histogram.data[3].start_date_range").isEqualTo("2022-01-22")
-                .jsonPath("$.histogram.data[4].data_above_limit").isEqualTo(5)
+                .jsonPath("$.histogram.data[4].data_above_limit").isEqualTo(4)
                 .jsonPath("$.histogram.data[4].data_below_limit").isEqualTo(1)
                 .jsonPath("$.histogram.data[4].start_date_range").isEqualTo("2022-01-29")
                 .jsonPath("$.histogram.data[5].data_above_limit").isEqualTo(6)
@@ -305,7 +271,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.histogram.data[6].data_above_limit").isEqualTo(7)
                 .jsonPath("$.histogram.data[6].data_below_limit").isEqualTo(1)
                 .jsonPath("$.histogram.data[6].start_date_range").isEqualTo("2022-02-12")
-                .jsonPath("$.histogram.data[7].data_above_limit").isEqualTo(7)
+                .jsonPath("$.histogram.data[7].data_above_limit").isEqualTo(8)
                 .jsonPath("$.histogram.data[7].data_below_limit").isEqualTo(0)
                 .jsonPath("$.histogram.data[7].start_date_range").isEqualTo("2022-02-19")
                 .jsonPath("$.histogram.data[8].data_above_limit").isEqualTo(7)
@@ -315,6 +281,53 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.histogram.data[9].data_below_limit").isEqualTo(0)
                 .jsonPath("$.histogram.data[9].start_date_range").isEqualTo("2022-03-01");
     }
+
+    @Order(7)
+    @Test
+    public void should_get_pull_request_size_metrics_given_a_team_id() {
+        // Given
+        final String startDate = "2022-01-15";
+        final String endDate = "2022-02-01";
+
+        // When
+        client.get()
+                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_METRICS, getParams(currentTeamId, startDate,
+                        endDate)))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.metrics.average.value").isEqualTo(1175.0)
+                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(17.5)
+                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
+                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
+    }
+
+    @Order(8)
+    @Test
+    public void should_get_time_to_merge_metrics_given_a_team_id() {
+        // Given
+        final String startDate = "2022-01-15";
+        final String endDate = "2022-02-01";
+
+        // When
+        client.get()
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_METRICS, getParams(currentTeamId, startDate,
+                        endDate)))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.metrics.average.value").isEqualTo(10.1)
+                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(188.6)
+                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
+                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
+    }
+
 
     private static List<RepositoryEntity> generateRepositoriesStubsForOrganization() {
         return List.of(
@@ -350,12 +363,9 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                                     .plus(i * 8, ChronoUnit.DAYS))
                     .addedLineNumber(800)
                     .deletedLineNumber(900)
-                    .size(1200)
                     .commitNumber(0)
                     .state(PullRequest.OPEN)
-                    .startDateRange("01/06/2022")
                     .isMerged(false)
-                    .daysOpened(i)
                     .title(faker.name().title())
                     .vcsOrganizationId(organization.getName())
                     .isDraft(false)
@@ -377,9 +387,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                                     .plus(i * 8, ChronoUnit.DAYS))
                     .addedLineNumber(0)
                     .deletedLineNumber(300)
-                    .size(300)
                     .commitNumber(0)
-                    .daysOpened(i + 1)
                     .vcsRepositoryId("repository-1")
                     .state(PullRequest.MERGE)
                     .isMerged(true)
@@ -390,7 +398,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .organizationId(organization.getId())
                     .authorLogin(faker.dragonBall().character())
                     .lastUpdateDate(ZonedDateTime.now())
-                    .startDateRange("01/07/2022")
                     .build());
             pullRequests.add(PullRequestEntity.builder()
                     .id("pr-3-" + i)
@@ -401,13 +408,10 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .mergeDate(
                             weekStartDate.toInstant()
                                     .atZone(organization.getTimeZone().toZoneId())
-                                    .plus(8, ChronoUnit.DAYS))
+                                    .plus(i * 9, ChronoUnit.DAYS))
                     .addedLineNumber(500)
                     .deletedLineNumber(500)
-                    .size(2000)
                     .commitNumber(0)
-                    .daysOpened(i + 2)
-                    .startDateRange("01/06/2022")
                     .state(PullRequest.MERGE)
                     .isMerged(true)
                     .title(faker.name().title())
@@ -428,13 +432,10 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .mergeDate(
                             weekStartDate.toInstant()
                                     .atZone(organization.getTimeZone().toZoneId())
-                                    .plus(8, ChronoUnit.DAYS))
+                                    .plus(i * 9, ChronoUnit.DAYS))
                     .addedLineNumber(500)
                     .deletedLineNumber(500)
-                    .size(300)
                     .commitNumber(0)
-                    .daysOpened(i + 2)
-                    .startDateRange("01/06/2022")
                     .state(PullRequest.MERGE)
                     .isMerged(true)
                     .title(faker.name().title())

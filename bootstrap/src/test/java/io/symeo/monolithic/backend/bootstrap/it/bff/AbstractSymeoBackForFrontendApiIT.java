@@ -1,8 +1,8 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import com.github.javafaker.Faker;
-import io.symeo.monolithic.backend.bootstrap.SymeoMonolithicBackendITApplication;
 import io.symeo.monolithic.backend.bootstrap.ITAuthenticationContextProvider;
+import io.symeo.monolithic.backend.bootstrap.SymeoMonolithicBackendITApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -99,8 +99,12 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
             "/histogram";
     protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES = "/api/v1/teams/goals/time-to-merge" +
             "/curves";
+    protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_METRICS = "/api/v1/teams/goals/time-to-merge" +
+            "/metrics";
     protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_HISTOGRAM = "/api/v1/teams/goals/pull" +
             "-request-size/histogram";
+    protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_METRICS = "/api/v1/teams/goals/pull" +
+            "-request-size/metrics";
     protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES = "/api/v1/teams/goals/pull-request" +
             "-size/curves";
     protected static final String TEAMS_GOALS_REST_API = "/api/v1/teams/goals";
