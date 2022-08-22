@@ -19,7 +19,9 @@ public class PieceCurveWithAverage {
     private void addPoint(final PullRequestView pullRequestView) {
         this.pieceCurve.addPoint(pullRequestView.getStartDateRange(),
                 pullRequestView.getLimit(),
-                pullRequestView.getStatus().equals(PullRequest.OPEN));
+                pullRequestView.getStatus().equals(PullRequest.OPEN),
+                pullRequestView.getBranchName(),
+                pullRequestView.getVcsUrl());
         this.averageCurve.addPoint(pullRequestView.getStartDateRange(),
                 pullRequestView.getLimit());
     }

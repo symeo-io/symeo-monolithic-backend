@@ -1155,6 +1155,10 @@ components:
           type: string
         open:
           type: boolean
+        link:
+          type: string
+        label:
+          type: string
     GetHistogramResponseContract:
       type: object
       properties:

@@ -51,7 +51,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
     private static final UUID organizationId = UUID.randomUUID();
     private static final UUID activeUserId = UUID.randomUUID();
     private final static UUID currentTeamId = UUID.randomUUID();
-
+    private final static String vcsUrl = faker.ancient().god();
+    private final static String branchName = faker.ancient().hero();
 
     @Order(1)
     @Test
@@ -156,8 +157,19 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.average_curve[2].value").isEqualTo(1)
                 .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-16")
                 .jsonPath("$.curves.average_curve[3].value").isEqualTo(3)
-                .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-01-28");
-
+                .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-01-28")
+                .jsonPath("$.curves.piece_curve[0].value").isEqualTo(233)
+                .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-02-01")
+                .jsonPath("$.curves.piece_curve[0].link").isEqualTo(vcsUrl)
+                .jsonPath("$.curves.piece_curve[0].label").isEqualTo(branchName)
+                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(225)
+                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-02-01")
+                .jsonPath("$.curves.piece_curve[1].link").isEqualTo(vcsUrl)
+                .jsonPath("$.curves.piece_curve[1].label").isEqualTo(branchName)
+                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(1)
+                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-10")
+                .jsonPath("$.curves.piece_curve[2].link").isEqualTo(vcsUrl)
+                .jsonPath("$.curves.piece_curve[2].label").isEqualTo(branchName);
     }
 
 
@@ -227,7 +239,19 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-25")
                 .jsonPath("$.curves.average_curve[3].value").isEqualTo(1000)
                 .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-02-15")
-                .jsonPath("$.curves.average_curve[4].value").isEqualTo(300);
+                .jsonPath("$.curves.average_curve[4].value").isEqualTo(300)
+                .jsonPath("$.curves.piece_curve[0].value").isEqualTo(1700)
+                .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-03-01")
+                .jsonPath("$.curves.piece_curve[0].link").isEqualTo(vcsUrl)
+                .jsonPath("$.curves.piece_curve[0].label").isEqualTo(branchName)
+                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(1700)
+                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-03-01")
+                .jsonPath("$.curves.piece_curve[1].link").isEqualTo(vcsUrl)
+                .jsonPath("$.curves.piece_curve[1].label").isEqualTo(branchName)
+                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(300)
+                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-10")
+                .jsonPath("$.curves.piece_curve[2].link").isEqualTo(vcsUrl)
+                .jsonPath("$.curves.piece_curve[2].label").isEqualTo(branchName);
 
 
     }
@@ -369,11 +393,12 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .title(faker.name().title())
                     .vcsOrganizationId(organization.getName())
                     .isDraft(false)
-                    .vcsUrl(faker.pokemon().name())
+                    .vcsUrl(vcsUrl)
                     .organizationId(organization.getId())
                     .authorLogin(faker.dragonBall().character())
                     .vcsRepositoryId("repository-1")
                     .lastUpdateDate(ZonedDateTime.now())
+                    .branchName(branchName)
                     .build());
             pullRequests.add(PullRequestEntity.builder()
                     .id("pr-2-" + i)
@@ -394,10 +419,11 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .title(faker.name().title())
                     .vcsOrganizationId(organization.getName())
                     .isDraft(false)
-                    .vcsUrl(faker.pokemon().name())
+                    .vcsUrl(vcsUrl)
                     .organizationId(organization.getId())
                     .authorLogin(faker.dragonBall().character())
                     .lastUpdateDate(ZonedDateTime.now())
+                    .branchName(branchName)
                     .build());
             pullRequests.add(PullRequestEntity.builder()
                     .id("pr-3-" + i)
@@ -416,9 +442,10 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .isMerged(true)
                     .title(faker.name().title())
                     .vcsOrganizationId(organization.getName())
+                    .branchName(branchName)
                     .isDraft(false)
                     .vcsRepositoryId("repository-1")
-                    .vcsUrl(faker.pokemon().name())
+                    .vcsUrl(vcsUrl)
                     .organizationId(organization.getId())
                     .authorLogin(faker.dragonBall().character())
                     .lastUpdateDate(ZonedDateTime.now())
@@ -438,11 +465,12 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .commitNumber(0)
                     .state(PullRequest.MERGE)
                     .isMerged(true)
+                    .branchName(branchName)
                     .title(faker.name().title())
                     .vcsOrganizationId(organization.getName())
                     .isDraft(false)
                     .vcsRepositoryId("repository-2")
-                    .vcsUrl(faker.pokemon().name())
+                    .vcsUrl(vcsUrl)
                     .organizationId(organization.getId())
                     .authorLogin(faker.dragonBall().character())
                     .lastUpdateDate(ZonedDateTime.now())
