@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
+import static java.lang.Math.toIntExact;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -19,6 +20,8 @@ public class PullRequestView {
     Date mergeDate;
     Date closeDate;
     String startDateRange;
+    Integer deletedLineNumber;
+    Integer addedLineNumber;
     Integer limit;
 
     public PullRequestView addStartDateRangeFromRangeDates(final List<Date> rangeDates) {
@@ -86,7 +89,11 @@ public class PullRequestView {
     }
 
     public boolean isAboveSizeLimit(int limit) {
-        return this.getLimit() >= limit;
+        return this.getSize() >= limit;
+    }
+
+    public int getSize() {
+        return this.addedLineNumber + this.deletedLineNumber;
     }
 
     public boolean isInDateRange(final Date startDate, final Date endDate) {
@@ -97,18 +104,32 @@ public class PullRequestView {
             return false;
         }
         if (isNull(mergeDate) && isNull(closeDate)) {
-            if (creationDate.before(endDate)) {
-                return true;
-            }
+            return creationDate.before(endDate);
         } else if (isNull(closeDate)) {
-            if (mergeDate.after(startDate)) {
-                return true;
-            }
+            return mergeDate.after(startDate);
         } else {
-            if (closeDate.after(startDate)) {
-                return true;
-            }
+            return closeDate.after(startDate);
         }
-        return false;
+    }
+
+    public int getDaysOpened(final Date endDate) {
+        if (isNull(this.mergeDate) && isNull(this.closeDate)) {
+            return toIntExact(TimeUnit.DAYS.convert(endDate.getTime() - creationDate.getTime(),
+                    TimeUnit.MILLISECONDS));
+        }
+        if (isNull(this.mergeDate)) {
+            return toIntExact(TimeUnit.DAYS.convert(closeDate.getTime() - this.creationDate.getTime(),
+                    TimeUnit.MILLISECONDS));
+        }
+        return toIntExact(TimeUnit.DAYS.convert(mergeDate.getTime() - this.creationDate.getTime(),
+                TimeUnit.MILLISECONDS));
+    }
+
+    public PullRequestView addTimeLimit() {
+        return this.toBuilder().limit(this.getDaysOpened(new Date())).build();
+    }
+
+    public PullRequestView addSizeLimit() {
+        return this.toBuilder().limit(this.getSize()).build();
     }
 }

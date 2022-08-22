@@ -1,14 +1,11 @@
 package io.symeo.monolithic.backend.domain.model.platform.vcs;
 
-import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import lombok.Builder;
 import lombok.Value;
 
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import static java.lang.Math.toIntExact;
 import static java.util.Objects.isNull;
 
 @Value
@@ -52,43 +49,5 @@ public class PullRequest {
         }
         return MERGE;
     }
-
-    public int getSize() {
-        return this.addedLineNumber + this.deletedLineNumber;
-    }
-
-    public int getDaysOpened() {
-        if (isNull(this.mergeDate) && isNull(this.closeDate)) {
-            return toIntExact(TimeUnit.DAYS.convert(new Date().getTime() - creationDate.getTime(),
-                    TimeUnit.MILLISECONDS));
-        }
-        if (isNull(this.mergeDate)) {
-            return toIntExact(TimeUnit.DAYS.convert(closeDate.getTime() - this.creationDate.getTime(),
-                    TimeUnit.MILLISECONDS));
-        }
-        return toIntExact(TimeUnit.DAYS.convert(mergeDate.getTime() - this.creationDate.getTime(),
-                TimeUnit.MILLISECONDS));
-    }
-
-    public PullRequestView toSizeLimitView(){
-        return PullRequestView.builder()
-                .mergeDate(this.mergeDate)
-                .limit(this.getSize())
-                .closeDate(this.closeDate)
-                .status(this.getStatus())
-                .creationDate(this.creationDate)
-                .build();
-    }
-
-    public PullRequestView toTimeLimitView(){
-        return PullRequestView.builder()
-                .mergeDate(this.mergeDate)
-                .limit(this.getDaysOpened())
-                .closeDate(this.closeDate)
-                .status(this.getStatus())
-                .creationDate(this.creationDate)
-                .build();
-    }
-
 
 }

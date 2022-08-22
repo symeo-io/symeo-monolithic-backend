@@ -83,6 +83,17 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
     }
 
     @Override
+    public ResponseEntity<MetricsResponseContract> getPullRequestSizeMetrics(UUID teamId, String startDate,
+                                                                             String endDate) {
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            curveQuery.computePullRequestSizeMetrics(authenticatedUser.getOrganization(),teamId,stringToDate(startDate),stringToDate(endDate));
+        } catch (SymeoException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public ResponseEntity<GetHistogramResponseContract> getPullRequestSizeHistogram(final UUID teamId,
                                                                                     final String startDate,
                                                                                     final String endDate) {
@@ -124,4 +135,5 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
         }
     }
+
 }
