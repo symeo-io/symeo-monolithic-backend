@@ -67,9 +67,9 @@ public class PullRequestHistogramService {
         return dataCompareToLimit;
     }
 
-    private static DataCompareToLimit getDataCompareToTimeLimit(int pullRequestLimit, Date weekStartDate,
+    private static DataCompareToLimit getDataCompareToTimeLimit(final int pullRequestLimit, final Date weekStartDate,
                                                                 DataCompareToLimit dataCompareToLimit,
-                                                                PullRequestView pullRequestView) {
+                                                                final PullRequestView pullRequestView) {
         if (pullRequestView.isAboveTimeLimit(pullRequestLimit, weekStartDate)) {
             dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
         } else {

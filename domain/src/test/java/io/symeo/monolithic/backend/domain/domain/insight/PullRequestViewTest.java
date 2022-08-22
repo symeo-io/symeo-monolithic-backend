@@ -101,6 +101,28 @@ public class PullRequestViewTest {
         assertThat(daysOpenedFromEndDate).isEqualTo(5);
     }
 
+
+    @Test
+    void should_check_if_date_limit_is_above_limit() throws SymeoException {
+        // Given
+        final int range = 3;
+        final PullRequestView pullRequestView1 = PullRequestView.builder()
+                .creationDate(stringToDate("2022-03-01"))
+                .build();
+        final PullRequestView pullRequestView2 = PullRequestView.builder()
+                .creationDate(stringToDate("2022-03-01"))
+                .mergeDate(stringToDate("2022-03-03"))
+                .build();
+
+
+        // When
+        final boolean aboveTimeLimit1 = pullRequestView1.isAboveTimeLimit(7, stringToDate("2022-04-1"));
+        final boolean aboveTimeLimit2 = pullRequestView2.isAboveTimeLimit(7, stringToDate("2022-04-1"));
+        // Then
+        assertThat(aboveTimeLimit1).isTrue();
+        assertThat(aboveTimeLimit2).isTrue();
+    }
+
     public static PullRequestView buildPullRequestPullRequestLimitView(final Integer limit,
                                                                        final Date creationDate,
                                                                        final Date mergeDate,

@@ -74,19 +74,19 @@ public class PullRequestView {
         return false;
     }
 
-    public boolean isAboveTimeLimit(int pullRequestLimit, Date weekStartDate) {
+    public boolean isAboveTimeLimit(final int pullRequestLimit, final Date weekStartDate) {
         final Date creationDate = this.getCreationDate();
         final Date mergeDate = this.getMergeDate();
         if (isNull(mergeDate) || (mergeDate.after(weekStartDate))) {
             long daysBetweenCreationAndWeekStart =
-                    TimeUnit.DAYS.convert(creationDate.getTime() - weekStartDate.getTime(),
+                    TimeUnit.DAYS.convert(weekStartDate.getTime() - creationDate.getTime(),
                             TimeUnit.MILLISECONDS);
-            return Math.abs(daysBetweenCreationAndWeekStart) > pullRequestLimit;
+            return daysBetweenCreationAndWeekStart > pullRequestLimit;
         } else {
             long daysBetweenMergeAndWeekStart =
-                    TimeUnit.DAYS.convert(mergeDate.getTime() - weekStartDate.getTime(),
+                    TimeUnit.DAYS.convert(weekStartDate.getTime() - mergeDate.getTime(),
                             TimeUnit.MILLISECONDS);
-            return Math.abs(daysBetweenMergeAndWeekStart) > pullRequestLimit;
+            return daysBetweenMergeAndWeekStart > pullRequestLimit;
         }
     }
 
