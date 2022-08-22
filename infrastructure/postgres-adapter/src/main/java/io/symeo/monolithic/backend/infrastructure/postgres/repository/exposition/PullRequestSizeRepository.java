@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface PullRequestSizeRepository extends JpaRepository<PullRequestSizeDTO, String> {
 
     @Query(nativeQuery = true,
-            value = " select pr.id, pr.size, pr.creation_date, pr.merge_date, pr.state, pr.close_date" +
+            value = " select pr.id, pr.deleted_line_number, pr.added_line_number, pr.creation_date, pr.merge_date, pr.state, pr.close_date" +
                     " from exposition_storage.pull_request pr" +
                     " where pr.organization_id = :organizationId " +
                     " and pr.vcs_repository_id in (" +

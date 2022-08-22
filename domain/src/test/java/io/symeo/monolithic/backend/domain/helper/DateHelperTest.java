@@ -63,7 +63,7 @@ public class DateHelperTest {
     }
 
     @Test
-    void should_return_date_ranges() {
+    void should_return_range_dates() {
         // Given
         final Date startDate =
                 Date.from(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().minusDays(25).atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -82,5 +82,33 @@ public class DateHelperTest {
         assertThat(ChronoUnit.DAYS.between(rangeDates.get(1).toInstant(), rangeDates.get(2).toInstant())).isEqualTo(5);
         assertThat(ChronoUnit.DAYS.between(rangeDates.get(2).toInstant(), rangeDates.get(3).toInstant())).isEqualTo(5);
         assertThat(ChronoUnit.DAYS.between(rangeDates.get(3).toInstant(), rangeDates.get(4).toInstant())).isEqualTo(5);
+    }
+
+
+    @Test
+    void should_return_previous_range_dates() {
+        // Given
+        final Date startDate =
+                Date.from(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().minusDays(25).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        final Date endDate =
+                Date.from(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().minusDays(5).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        final TimeZone timeZone = TimeZone.getTimeZone(ZoneId.systemDefault());
+
+        // When
+        final List<Date> previousRangeDates =
+                getPreviousRangeDateFromStartDateAndEndDate(startDate, endDate, 5,
+                        timeZone);
+
+        // Then
+        assertThat(previousRangeDates.get(0)).isEqualTo(Date.from((startDate.toInstant().atZone(timeZone.toZoneId()).toLocalDate().minusDays(20)).atStartOfDay(timeZone.toZoneId()).toInstant()));
+        assertThat(previousRangeDates.get(4)).isEqualTo(startDate);
+        assertThat(ChronoUnit.DAYS.between(previousRangeDates.get(0).toInstant(),
+                previousRangeDates.get(1).toInstant())).isEqualTo(5);
+        assertThat(ChronoUnit.DAYS.between(previousRangeDates.get(1).toInstant(),
+                previousRangeDates.get(2).toInstant())).isEqualTo(5);
+        assertThat(ChronoUnit.DAYS.between(previousRangeDates.get(2).toInstant(),
+                previousRangeDates.get(3).toInstant())).isEqualTo(5);
+        assertThat(ChronoUnit.DAYS.between(previousRangeDates.get(3).toInstant(),
+                previousRangeDates.get(4).toInstant())).isEqualTo(5);
     }
 }

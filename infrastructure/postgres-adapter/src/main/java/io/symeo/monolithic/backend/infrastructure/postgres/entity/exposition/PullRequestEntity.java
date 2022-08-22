@@ -30,12 +30,6 @@ public class PullRequestEntity {
     int deletedLineNumber;
     @Column(name = "added_line_number")
     int addedLineNumber;
-    @Column(name = "size")
-    int size;
-    @Column(name = "days_opened")
-    int daysOpened;
-    @Column(name = "start_date_range")
-    String startDateRange;
     @Column(name = "creation_date", nullable = false)
     ZonedDateTime creationDate;
     @Column(name = "last_update_date", nullable = false)

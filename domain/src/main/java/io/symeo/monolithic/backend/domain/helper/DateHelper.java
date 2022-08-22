@@ -49,4 +49,16 @@ public class DateHelper {
         rangeDates.add(endDate);
         return rangeDates;
     }
+
+    public static List<Date> getPreviousRangeDateFromStartDateAndEndDate(final Date startDate, final Date endDate,
+                                                                         final int range, final TimeZone timeZone) {
+        final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, timeZone);
+        return getRangeDatesBetweenStartDateAndEndDateForRange(previousStartDate, startDate, range, timeZone);
+    }
+
+    public static Date getPreviousStartDateFromStartDateAndEndDate(final Date startDate, final Date endDate,
+                                                                   final TimeZone timeZone) {
+        final long rangeDays = ChronoUnit.DAYS.between(startDate.toInstant(), endDate.toInstant());
+        return Date.from((startDate.toInstant().atZone(timeZone.toZoneId()).toLocalDate().minusDays(rangeDays)).atStartOfDay(timeZone.toZoneId()).toInstant());
+    }
 }

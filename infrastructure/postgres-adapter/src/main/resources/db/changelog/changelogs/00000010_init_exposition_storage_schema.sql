@@ -7,8 +7,6 @@ create table exposition_storage.pull_request
     commit_number               bigint,
     deleted_line_number         bigint,
     added_line_number           bigint,
-    size                        bigint,
-    days_opened                 bigint,
     creation_date               timestamp(6) with time zone               not null,
     last_update_date            timestamp(6) with time zone               not null,
     merge_date                  timestamp(6) with time zone,

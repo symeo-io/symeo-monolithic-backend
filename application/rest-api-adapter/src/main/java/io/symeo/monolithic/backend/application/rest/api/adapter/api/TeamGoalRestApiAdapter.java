@@ -1,9 +1,11 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
+import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.CurveContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.PullRequestHistogramContractMapper;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.CurveMapper;
+import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.TeamGoalContractMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.User;
@@ -12,14 +14,14 @@ import io.symeo.monolithic.backend.domain.query.CurveQuery;
 import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.frontend.contract.api.GoalsApi;
 import io.symeo.monolithic.backend.frontend.contract.api.model.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.MetricsContractMapper.errorsToContract;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.MetricsContractMapper.metricsToContract;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
@@ -50,10 +52,10 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                                                                         final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(CurveMapper.curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
+            return ok(CurveContractMapper.curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return internalServerError().body(CurveMapper.errorToContract(e));
+            return internalServerError().body(CurveContractMapper.errorToContract(e));
         }
     }
 
@@ -71,14 +73,38 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
     }
 
     @Override
+    public ResponseEntity<MetricsResponseContract> getTimeToMergeMetrics(UUID teamId, String startDate,
+                                                                         String endDate) {
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            return ok(metricsToContract(curveQuery.computePullRequestTimeToMergeMetrics(authenticatedUser.getOrganization(),
+                    teamId, stringToDate(startDate), stringToDate(endDate))));
+        } catch (SymeoException e) {
+            return internalServerError().body(errorsToContract(e));
+        }
+    }
+
+    @Override
     public ResponseEntity<GetCurveResponseContract> getPullRequestSizeCurve(final UUID teamId, final String startDate,
                                                                             final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(CurveMapper.curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
+            return ok(CurveContractMapper.curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return internalServerError().body(CurveMapper.errorToContract(e));
+            return internalServerError().body(CurveContractMapper.errorToContract(e));
+        }
+    }
+
+    @Override
+    public ResponseEntity<MetricsResponseContract> getPullRequestSizeMetrics(UUID teamId, String startDate,
+                                                                             String endDate) {
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            return ok(metricsToContract(curveQuery.computePullRequestSizeMetrics(authenticatedUser.getOrganization(),
+                    teamId, stringToDate(startDate), stringToDate(endDate))));
+        } catch (SymeoException e) {
+            return internalServerError().body(errorsToContract(e));
         }
     }
 
@@ -124,4 +150,5 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
         }
     }
+
 }

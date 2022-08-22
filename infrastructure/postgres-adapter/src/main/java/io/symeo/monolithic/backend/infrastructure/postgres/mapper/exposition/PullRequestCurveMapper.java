@@ -18,7 +18,6 @@ public interface PullRequestCurveMapper {
                 .mergeDate(isNull(pullRequestTimeToMergeDTO.getMergeDate()) ? null :
                         Date.from(pullRequestTimeToMergeDTO.getMergeDate().toInstant()))
                 .status(pullRequestTimeToMergeDTO.getState())
-                .limit(pullRequestTimeToMergeDTO.getDaysOpened())
                 .build();
     }
 
@@ -30,7 +29,8 @@ public interface PullRequestCurveMapper {
                 .mergeDate(isNull(pullRequestSizeDTO.getMergeDate()) ? null :
                         Date.from(pullRequestSizeDTO.getMergeDate().toInstant()))
                 .status(pullRequestSizeDTO.getState())
-                .limit(pullRequestSizeDTO.getSize())
+                .deletedLineNumber(pullRequestSizeDTO.getDeletedLineNumber())
+                .addedLineNumber(pullRequestSizeDTO.getAddedLineNumber())
                 .build();
     }
 }

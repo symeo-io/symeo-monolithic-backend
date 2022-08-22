@@ -22,8 +22,6 @@ public class PullRequestTimeToMergeDTO {
     @Column(name = "id", nullable = false)
     @NotNull
     String id;
-    @Column(name = "days_opened")
-    int daysOpened;
     @Column(name = "creation_date")
     Date creationDate;
     @Column(name = "merge_date")
