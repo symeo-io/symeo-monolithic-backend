@@ -86,6 +86,6 @@ public class Metrics {
     }
 
     private static Double computeTendency(final Double currentValue, final Double previousValue) {
-        return 100 * (currentValue - previousValue) / previousValue;
+        return previousValue == 0 ? 0 : 100 * (currentValue - previousValue) / previousValue;
     }
 }
