@@ -30,4 +30,8 @@ public class PullRequestTimeToMergeDTO {
     Date closeDate;
     @Column(name = "state")
     String state;
+    @Column(name = "vcs_url")
+    String vcsUrl;
+    @Column(name = "branch_name")
+    String branchName;
 }

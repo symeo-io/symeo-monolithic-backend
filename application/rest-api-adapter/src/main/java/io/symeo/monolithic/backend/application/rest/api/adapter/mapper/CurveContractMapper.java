@@ -24,6 +24,8 @@ public interface CurveContractMapper {
             pieceCurveDataResponseContract.setDate(pieceCurvePoint.getDate());
             pieceCurveDataResponseContract.setOpen(pieceCurvePoint.getOpen());
             pieceCurveDataResponseContract.setValue(pieceCurvePoint.getValue() == 0 ? 1 : pieceCurvePoint.getValue());
+            pieceCurveDataResponseContract.setLabel(pieceCurvePoint.getLabel());
+            pieceCurveDataResponseContract.setLink(pieceCurvePoint.getLink());
             pieceCurve.add(pieceCurveDataResponseContract);
         }
         for (Curve.CurvePoint curvePoint : pieceCurveWithAverage.getAverageCurve().getData()) {

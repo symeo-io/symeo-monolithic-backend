@@ -35,6 +35,7 @@ public class PullRequest {
     String repositoryId;
     String vcsOrganizationId;
     UUID organizationId;
+    String branchName;
 
     public static String getNameFromRepository(String repositoryName) {
         return ALL + "_" + repositoryName;

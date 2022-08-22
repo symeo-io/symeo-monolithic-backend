@@ -36,6 +36,7 @@ public interface GithubMapper {
                 .lastUpdateDate(githubPullRequestDTO.getUpdatedAt())
                 .vcsUrl(githubPullRequestDTO.getHtmlUrl())
                 .authorLogin(githubPullRequestDTO.getUser().getLogin())
+                .branchName(githubPullRequestDTO.getHead().getRef())
                 .build();
     }
 

@@ -11,7 +11,8 @@ import java.util.UUID;
 public interface PullRequestTimeToMergeRepository extends JpaRepository<PullRequestTimeToMergeDTO, String> {
 
     @Query(nativeQuery = true,
-            value = " select pr.id, pr.state, pr.creation_date, pr.merge_date, pr.close_date" +
+            value = " select pr.id, pr.state, pr.creation_date, pr.merge_date, pr.close_date," +
+                    " pr.vcs_url, pr.branch_name" +
                     " from exposition_storage.pull_request pr" +
                     " where pr.organization_id = :organizationId " +
                     " and pr.vcs_repository_id in (" +

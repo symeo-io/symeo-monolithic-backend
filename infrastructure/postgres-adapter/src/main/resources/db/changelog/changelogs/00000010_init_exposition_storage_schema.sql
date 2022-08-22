@@ -21,6 +21,7 @@ create table exposition_storage.pull_request
     vcs_repository              varchar(100),
     vcs_repository_id           varchar(100),
     vcs_organization_id         varchar(100),
+    branch_name                 varchar(300),
     organization_id             uuid,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null

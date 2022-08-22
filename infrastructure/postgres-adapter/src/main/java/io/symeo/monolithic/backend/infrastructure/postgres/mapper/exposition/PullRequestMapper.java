@@ -35,6 +35,7 @@ public interface PullRequestMapper {
                 .vcsRepository(pullRequest.getRepository())
                 .vcsOrganizationId(pullRequest.getVcsOrganizationId())
                 .organizationId(pullRequest.getOrganizationId())
+                .branchName(pullRequest.getBranchName())
                 .build();
     }
 
@@ -59,6 +60,7 @@ public interface PullRequestMapper {
                 .vcsOrganizationId(pullRequestEntity.getVcsOrganizationId())
                 .organizationId(pullRequestEntity.getOrganizationId())
                 .repository(pullRequestEntity.getVcsRepository())
+                .branchName(pullRequestEntity.getBranchName())
                 .build();
     }
 }

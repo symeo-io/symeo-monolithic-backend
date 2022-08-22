@@ -6,8 +6,8 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -208,6 +208,6 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         assertThat(pullRequest.getVcsUrl()).isEqualTo(pr80.getHtmlUrl());
         assertThat(pullRequest.getTitle()).isEqualTo(pr80.getTitle());
         assertThat(pullRequest.getAuthorLogin()).isEqualTo(pr80.getUser().getLogin());
-
+        assertThat(pullRequest.getBranchName()).isEqualTo(pr80.getHead().getRef());
     }
 }

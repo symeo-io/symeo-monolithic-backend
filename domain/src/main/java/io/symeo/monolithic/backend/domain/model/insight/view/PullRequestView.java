@@ -23,6 +23,8 @@ public class PullRequestView {
     Integer deletedLineNumber;
     Integer addedLineNumber;
     Integer limit;
+    String branchName;
+    String vcsUrl;
 
     public PullRequestView addStartDateRangeFromRangeDates(final List<Date> rangeDates) {
         String startDateRange;
