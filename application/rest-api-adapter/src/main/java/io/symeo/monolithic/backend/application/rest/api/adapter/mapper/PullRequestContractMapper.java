@@ -50,6 +50,7 @@ public interface PullRequestContractMapper {
         pullRequestContract.setTitle(pullRequestView.getTitle());
         pullRequestContract.setVcsUrl(pullRequestView.getVcsUrl());
         pullRequestContract.setVcsRepository(pullRequestView.getRepository());
+        pullRequestContract.setStatus(pullRequestContract.getStatus());
         return pullRequestContract;
     }
 }

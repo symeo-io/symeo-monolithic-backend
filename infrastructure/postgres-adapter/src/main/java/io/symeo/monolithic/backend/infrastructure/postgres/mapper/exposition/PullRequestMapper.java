@@ -82,6 +82,8 @@ public interface PullRequestMapper {
                 .status(pullRequestFullViewDTO.getState())
                 .title(pullRequestFullViewDTO.getTitle())
                 .authorLogin(pullRequestFullViewDTO.getAuthorLogin())
+                .commitNumber(pullRequestFullViewDTO.getCommitNumber())
+                .status(pullRequestFullViewDTO.getState())
                 .build();
     }
 }
