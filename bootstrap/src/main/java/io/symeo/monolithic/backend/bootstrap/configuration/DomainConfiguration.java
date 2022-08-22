@@ -10,6 +10,7 @@ import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.service.DataProcessingJobService;
 import io.symeo.monolithic.backend.domain.service.account.*;
 import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
+import io.symeo.monolithic.backend.domain.service.platform.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import io.symeo.monolithic.backend.domain.storage.TeamStandardInMemoryStorage;
@@ -110,5 +111,10 @@ public class DomainConfiguration {
     @Bean
     public PullRequestHistogramService pullRequestHistogramService() {
         return new PullRequestHistogramService();
+    }
+
+    @Bean
+    public PullRequestFacade pullRequestFacade(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new PullRequestService(expositionStorageAdapter);
     }
 }

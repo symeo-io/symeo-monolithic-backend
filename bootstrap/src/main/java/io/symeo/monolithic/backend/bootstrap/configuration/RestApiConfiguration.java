@@ -1,17 +1,17 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.api.*;
-import io.symeo.monolithic.backend.domain.port.in.*;
-import io.symeo.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
-import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationContextProvider;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
 import io.symeo.monolithic.backend.application.rest.api.adapter.properties.RepositoryRetryProperties;
 import io.symeo.monolithic.backend.application.rest.api.adapter.service.RepositoryRetryService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.symeo.monolithic.backend.domain.port.in.*;
 import io.symeo.monolithic.backend.domain.query.CurveQuery;
 import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
+import io.symeo.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
+import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -91,5 +91,11 @@ public class RestApiConfiguration {
     public JobRestApiAdapter jobRestApiAdapter(final AuthenticationService authenticationService,
                                                final JobFacadeAdapter jobFacadeAdapter) {
         return new JobRestApiAdapter(authenticationService, jobFacadeAdapter);
+    }
+
+    @Bean
+    public PullRequestsRestApiAdapter pullRequestsRestApiAdapter(final AuthenticationService authenticationService,
+                                                                 final PullRequestFacade pullRequestFacade) {
+        return new PullRequestsRestApiAdapter(authenticationService, pullRequestFacade);
     }
 }

@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,5 +23,14 @@ public interface ExpositionStorageAdapter {
                                                                                 UUID teamId) throws SymeoException;
 
     List<PullRequestView> readPullRequestsSizeViewForOrganizationAndTeam(Organization organization, UUID teamId)
+            throws SymeoException;
+
+    List<PullRequestView> readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId,
+                                                                                           Date startDate,
+                                                                                           Date endDate,
+                                                                                           int pageIndex, int pageSize)
+            throws SymeoException;
+
+    int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 }

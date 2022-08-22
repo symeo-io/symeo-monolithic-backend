@@ -38,4 +38,6 @@ public interface SymeoExceptionCode {
     // Date Exception Codes
     String FAILED_TO_PARSE_DATE = "F.FAILED_TO_PARSE_DATE";
 
+    // Pagination Exception Codes
+    String PAGINATION_MAXIMUM_SIZE_EXCEEDED = "F.PAGINATION_MAXIMUM_SIZE_EXCEEDED";
 }

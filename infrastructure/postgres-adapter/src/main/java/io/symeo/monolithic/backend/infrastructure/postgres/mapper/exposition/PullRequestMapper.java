@@ -1,7 +1,9 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
+import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -61,6 +63,25 @@ public interface PullRequestMapper {
                 .organizationId(pullRequestEntity.getOrganizationId())
                 .repository(pullRequestEntity.getVcsRepository())
                 .branchName(pullRequestEntity.getBranchName())
+                .build();
+    }
+
+    static PullRequestView fullViewToDomain(final PullRequestFullViewDTO pullRequestFullViewDTO) {
+        return PullRequestView.builder()
+                .id(pullRequestFullViewDTO.getId())
+                .mergeDate(isNull(pullRequestFullViewDTO.getMergeDate()) ? null :
+                        Date.from(pullRequestFullViewDTO.getMergeDate().toInstant()))
+                .creationDate(Date.from(pullRequestFullViewDTO.getCreationDate().toInstant()))
+                .branchName(pullRequestFullViewDTO.getBranchName())
+                .vcsUrl(pullRequestFullViewDTO.getVcsUrl())
+                .addedLineNumber(pullRequestFullViewDTO.getAddedLineNumber())
+                .deletedLineNumber(pullRequestFullViewDTO.getDeletedLineNumber())
+                .closeDate(isNull(pullRequestFullViewDTO.getCloseDate()) ? null :
+                        Date.from(pullRequestFullViewDTO.getCloseDate().toInstant()))
+                .repository(pullRequestFullViewDTO.getVcsRepository())
+                .status(pullRequestFullViewDTO.getState())
+                .title(pullRequestFullViewDTO.getTitle())
+                .authorLogin(pullRequestFullViewDTO.getAuthorLogin())
                 .build();
     }
 }

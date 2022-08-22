@@ -1,7 +1,9 @@
 package io.symeo.monolithic.backend.domain.model.insight.view;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
@@ -12,6 +14,8 @@ import static java.lang.Math.toIntExact;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder(toBuilder = true)
 @Data
 public class PullRequestView {
@@ -25,6 +29,11 @@ public class PullRequestView {
     Integer limit;
     String branchName;
     String vcsUrl;
+    String authorLogin;
+    Integer commitNumber;
+    String id;
+    String title;
+    String repository;
 
     public PullRequestView addStartDateRangeFromRangeDates(final List<Date> rangeDates) {
         String startDateRange;
