@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -83,51 +82,47 @@ public class PullRequestViewTest {
     }
 
     @Test
-    void should_compute_number_of_days_opened_compared_to_end_date() throws SymeoException {
+    void should_compute_number_of_days_opened_compared_to_end_date() throws ParseException {
         // Given
         final ZoneId zoneId = ZoneId.systemDefault();
         final Date creationDate =
-                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(10)).atStartOfDay(zoneId).toInstant());
+                Date.from(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2022-08-12 11:00:00").toInstant());
         final Date endDate =
-                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(5)).atStartOfDay(zoneId).toInstant());
+                Date.from(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2022-08-17 11:00:00").toInstant());
 
         final PullRequestView pullRequestView = buildPullRequestPullRequestLimitView(2000f, creationDate
                 , null, null,
                 PullRequest.OPEN);
 
         // When
-        final float daysOpened = pullRequestView.getDaysOpened(new Date());
         final float daysOpenedFromEndDate = pullRequestView.getDaysOpened(endDate);
 
         // Then
-        assertThat(daysOpened).isEqualTo(10.4f);
-        assertThat(daysOpenedFromEndDate).isEqualTo(5);
+        assertThat(daysOpenedFromEndDate).isEqualTo(5f);
     }
 
     @Test
-    void should_compute_number_of_days_opened_compared_to_end_date_with_merge_date() throws SymeoException {
+    void should_compute_number_of_days_opened_compared_to_end_date_with_merge_date() throws
+            ParseException {
         // Given
         final ZoneId zoneId = ZoneId.systemDefault();
         final Date creationDate =
-                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(10)).atStartOfDay(zoneId).toInstant());
+                Date.from(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2022-08-12 11:00:00").toInstant());
         final Date mergeDate =
-                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(8)).atStartOfDay(zoneId).toInstant());
+                Date.from(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2022-08-14 11:00:00").toInstant());
         final Date endDate =
-                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(5)).atStartOfDay(zoneId).toInstant());
+                Date.from(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2022-08-17 11:00:00").toInstant());
 
         final PullRequestView pullRequestView = buildPullRequestPullRequestLimitView(2000f, creationDate
                 , mergeDate, null,
                 PullRequest.OPEN);
 
         // When
-        final float daysOpened = pullRequestView.getDaysOpened(new Date());
         final float daysOpenedFromEndDate = pullRequestView.getDaysOpened(endDate);
 
         // Then
-        assertThat(daysOpened).isEqualTo(2f);
         assertThat(daysOpenedFromEndDate).isEqualTo(2f);
     }
-
 
 
     @Test
