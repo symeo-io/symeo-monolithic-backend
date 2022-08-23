@@ -153,9 +153,9 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.limit").isEqualTo(5)
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(2)
                 .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-01-19")
-                .jsonPath("$.curves.average_curve[1].value").isEqualTo(1)
+                .jsonPath("$.curves.average_curve[1].value").isEqualTo(0)
                 .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-01-25")
-                .jsonPath("$.curves.average_curve[2].value").isEqualTo(1)
+                .jsonPath("$.curves.average_curve[2].value").isEqualTo(0)
                 .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-16")
                 .jsonPath("$.curves.average_curve[3].value").isEqualTo(3)
                 .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-01-28")
@@ -347,8 +347,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.metrics.average.value").isEqualTo(10.1)
-                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(188.6)
+                .jsonPath("$.metrics.average.value").isEqualTo(10.2)
+                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(183.3)
                 .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
                 .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
     }
@@ -395,6 +395,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(2)
+                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(14)
                 .jsonPath("$.pull_requests_page.pull_requests").isNotEmpty()
                 .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(10))
                 .jsonPath("$.pull_requests_page.pull_requests[0].id").isNotEmpty()
@@ -419,6 +420,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(2)
+                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(14)
                 .jsonPath("$.pull_requests_page.pull_requests").isNotEmpty()
                 .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(4));
     }

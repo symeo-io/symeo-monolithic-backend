@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
-import static java.lang.Math.toIntExact;
+import static java.lang.Math.round;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -26,7 +26,7 @@ public class PullRequestView {
     String startDateRange;
     Integer deletedLineNumber;
     Integer addedLineNumber;
-    Integer limit;
+    Float limit;
     String branchName;
     String vcsUrl;
     String authorLogin;
@@ -103,8 +103,9 @@ public class PullRequestView {
         return this.getSize() >= limit;
     }
 
-    public int getSize() {
-        return this.addedLineNumber + this.deletedLineNumber;
+    public float getSize() {
+        final int size = this.addedLineNumber + this.deletedLineNumber;
+        return size == 0f ? 1f : size;
     }
 
     public boolean isInDateRange(final Date startDate, final Date endDate) {
@@ -123,17 +124,21 @@ public class PullRequestView {
         }
     }
 
-    public int getDaysOpened(final Date endDate) {
+    public float getDaysOpened(final Date endDate) {
         if (isNull(this.mergeDate) && isNull(this.closeDate)) {
-            return toIntExact(TimeUnit.DAYS.convert(endDate.getTime() - creationDate.getTime(),
+            return hoursToDays(TimeUnit.HOURS.convert(endDate.getTime() - creationDate.getTime(),
                     TimeUnit.MILLISECONDS));
         }
         if (isNull(this.mergeDate)) {
-            return toIntExact(TimeUnit.DAYS.convert(closeDate.getTime() - this.creationDate.getTime(),
+            return hoursToDays(TimeUnit.HOURS.convert(closeDate.getTime() - this.creationDate.getTime(),
                     TimeUnit.MILLISECONDS));
         }
-        return toIntExact(TimeUnit.DAYS.convert(mergeDate.getTime() - this.creationDate.getTime(),
+        return hoursToDays(TimeUnit.HOURS.convert(mergeDate.getTime() - this.creationDate.getTime(),
                 TimeUnit.MILLISECONDS));
+    }
+
+    private static float hoursToDays(long hours) {
+        return hours == 0f ? 0.1f : round(10f * hours / 24) / 10f;
     }
 
     public PullRequestView addTimeLimit() {

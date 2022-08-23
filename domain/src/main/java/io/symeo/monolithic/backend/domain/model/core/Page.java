@@ -11,4 +11,5 @@ public class Page<T> {
 
     List<T> content;
     int totalPageNumber;
+    int totalItemNumber;
 }

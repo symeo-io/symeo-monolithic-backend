@@ -6,7 +6,10 @@ import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import org.junit.jupiter.api.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -19,19 +22,19 @@ public class PullRequestViewTest {
     @Test
     void should_add_range_date_to_pull_request_view() throws SymeoException {
         // Given
-        final PullRequestView pullRequestView1 = buildPullRequestPullRequestLimitView(2000, stringToDate("2019-01-01")
+        final PullRequestView pullRequestView1 = buildPullRequestPullRequestLimitView(2000f, stringToDate("2019-01-01")
                 , null, null,
                 PullRequest.OPEN);
-        final PullRequestView pullRequestView2 = buildPullRequestPullRequestLimitView(2000, stringToDate("2019-01-01")
+        final PullRequestView pullRequestView2 = buildPullRequestPullRequestLimitView(2000f, stringToDate("2019-01-01")
                 , stringToDate("2019-01-15"), null,
                 PullRequest.OPEN);
-        final PullRequestView pullRequestView3 = buildPullRequestPullRequestLimitView(2000, stringToDate("2019-01-01")
+        final PullRequestView pullRequestView3 = buildPullRequestPullRequestLimitView(2000f, stringToDate("2019-01-01")
                 , stringToDate("2019-01-15"), stringToDate("2019-01-25"),
                 PullRequest.OPEN);
-        final PullRequestView pullRequestView4 = buildPullRequestPullRequestLimitView(2000, stringToDate("2019-01-01")
+        final PullRequestView pullRequestView4 = buildPullRequestPullRequestLimitView(2000f, stringToDate("2019-01-01")
                 , null, stringToDate("2019-01-25"),
                 PullRequest.OPEN);
-        final PullRequestView pullRequestView5 = buildPullRequestPullRequestLimitView(2000, stringToDate("2019-01-01")
+        final PullRequestView pullRequestView5 = buildPullRequestPullRequestLimitView(2000f, stringToDate("2019-01-01")
                 , stringToDate("2020-01-15"), null,
                 PullRequest.OPEN);
 
@@ -63,10 +66,10 @@ public class PullRequestViewTest {
     @Test
     void should_check_is_in_date_range() throws SymeoException {
         // Given
-        final PullRequestView pullRequestView1 = buildPullRequestPullRequestLimitView(2000, stringToDate("2019-01-01")
+        final PullRequestView pullRequestView1 = buildPullRequestPullRequestLimitView(2000f, stringToDate("2019-01-01")
                 , null, null,
                 PullRequest.OPEN);
-        final PullRequestView pullRequestView2 = buildPullRequestPullRequestLimitView(2000, stringToDate("2019-01-01")
+        final PullRequestView pullRequestView2 = buildPullRequestPullRequestLimitView(2000f, stringToDate("2019-01-01")
                 , stringToDate("2019-06-01"), null,
                 PullRequest.OPEN);
 
@@ -88,17 +91,63 @@ public class PullRequestViewTest {
         final Date endDate =
                 Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(5)).atStartOfDay(zoneId).toInstant());
 
-        final PullRequestView pullRequestView = buildPullRequestPullRequestLimitView(2000, creationDate
+        final PullRequestView pullRequestView = buildPullRequestPullRequestLimitView(2000f, creationDate
                 , null, null,
                 PullRequest.OPEN);
 
         // When
-        final int daysOpened = pullRequestView.getDaysOpened(new Date());
-        final int daysOpenedFromEndDate = pullRequestView.getDaysOpened(endDate);
+        final float daysOpened = pullRequestView.getDaysOpened(new Date());
+        final float daysOpenedFromEndDate = pullRequestView.getDaysOpened(endDate);
 
         // Then
-        assertThat(daysOpened).isEqualTo(10);
+        assertThat(daysOpened).isEqualTo(10.4f);
         assertThat(daysOpenedFromEndDate).isEqualTo(5);
+    }
+
+    @Test
+    void should_compute_number_of_days_opened_compared_to_end_date_with_merge_date() throws SymeoException {
+        // Given
+        final ZoneId zoneId = ZoneId.systemDefault();
+        final Date creationDate =
+                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(10)).atStartOfDay(zoneId).toInstant());
+        final Date mergeDate =
+                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(8)).atStartOfDay(zoneId).toInstant());
+        final Date endDate =
+                Date.from((new Date().toInstant().atZone(zoneId).toLocalDate().minusDays(5)).atStartOfDay(zoneId).toInstant());
+
+        final PullRequestView pullRequestView = buildPullRequestPullRequestLimitView(2000f, creationDate
+                , mergeDate, null,
+                PullRequest.OPEN);
+
+        // When
+        final float daysOpened = pullRequestView.getDaysOpened(new Date());
+        final float daysOpenedFromEndDate = pullRequestView.getDaysOpened(endDate);
+
+        // Then
+        assertThat(daysOpened).isEqualTo(2f);
+        assertThat(daysOpenedFromEndDate).isEqualTo(2f);
+    }
+
+
+
+    @Test
+    void should_compute_number_of_days_opened_for_less_than_hour() throws SymeoException, ParseException {
+        // Given
+        final ZoneId zoneId = ZoneId.systemDefault();
+        final Date creationDate =
+                Date.from(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2022-08-12 11:00:00").toInstant());
+        final Date endDate =
+                Date.from(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2022-08-12 11:30:00").toInstant());
+
+        final PullRequestView pullRequestView = buildPullRequestPullRequestLimitView(2000f, creationDate
+                , null, null,
+                PullRequest.OPEN);
+
+        // When
+        final float daysOpenedFromEndDate = pullRequestView.getDaysOpened(endDate);
+
+        // Then
+        assertThat(daysOpenedFromEndDate).isEqualTo(0.1f);
     }
 
 
@@ -123,7 +172,7 @@ public class PullRequestViewTest {
         assertThat(aboveTimeLimit2).isTrue();
     }
 
-    public static PullRequestView buildPullRequestPullRequestLimitView(final Integer limit,
+    public static PullRequestView buildPullRequestPullRequestLimitView(final Float limit,
                                                                        final Date creationDate,
                                                                        final Date mergeDate,
                                                                        final Date closeDate,
