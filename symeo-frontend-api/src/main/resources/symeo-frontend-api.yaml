@@ -630,13 +630,13 @@ paths:
             format: uuid
         - in: query
           name: start_date
-#          required: true
+          #          required: true
           schema:
             type: string
             pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
         - in: query
           name: end_date
-#          required: true
+          #          required: true
           schema:
             type: string
             pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
@@ -1049,6 +1049,82 @@ paths:
                       creation_date: 2022-07-21T17:32:28Z
                       end_date: null
                   previous_job: null
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+  /api/v1/teams/pull-requests:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - PullRequests
+      parameters:
+        - in: query
+          name: team_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: page_index
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: page_size
+          required: true
+          schema:
+            type: integer
+      summary: Get PullRequests page for TeamId
+      operationId: getPullRequestsForTeam
+      description: |
+        Get PullRequests details page for TeamId
+      responses:
+        "200":
+          description: 'Successfully get pull requests details'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequestsResponseContract'
+              example:
+                pull_requests_page:
+                  total_page_number: 5
+                  pull_requests:
+                    - id: github-1006511628
+                      commit_number: 3
+                      size: 1239
+                      days_opened: 1.1
+                      creation_date: 2022-01-02 11:00:02
+                      merge_date: 2022-01-03 13:00:02
+                      state: merge
+                      vcs_url: https://github.com/symeo-io/symeo-monolithic-backend/pull/50
+                      title: Updating sendgrid mail content
+                      author: PierreOucif
+                      vcs_repository: symeo-monolithic-backend
                 errors:
                   [ ]
         "401":
@@ -1495,3 +1571,50 @@ components:
           type: number
         tendency_percentage:
           type: number
+    PullRequestContract:
+      type: object
+      properties:
+        id:
+          type: string
+        author:
+          type: string
+        commit_number:
+          type: integer
+        size:
+          type: number
+          format: int64
+        days_opened:
+          type: number
+          format: int64
+        creation_date:
+          type: string
+          format: 'date-time'
+        merge_date:
+          type: string
+          format: 'date-time'
+        status:
+          type: string
+        vcs_url:
+          type: string
+        title:
+          type: string
+        vcs_repository:
+          type: string
+    PullRequestPageContract:
+      type: object
+      properties:
+        pull_requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/PullRequestContract'
+        total_page_number:
+          type: integer
+    PullRequestsResponseContract:
+      type: object
+      properties:
+        pull_requests_page:
+          $ref: '#/components/schemas/PullRequestPageContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'

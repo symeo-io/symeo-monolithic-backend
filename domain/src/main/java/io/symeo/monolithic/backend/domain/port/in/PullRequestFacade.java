@@ -1,10 +1,17 @@
 package io.symeo.monolithic.backend.domain.port.in;
 
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.insight.PullRequestHistogram;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.model.core.Page;
+import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
+
+import java.util.Date;
+import java.util.UUID;
 
 public interface PullRequestFacade {
-    PullRequestHistogram getHistogramForOrganizationAndTeamAndType(Organization organization, String teamName,
-                                                                   String histogramType);
 
+    Page<PullRequestView> getPullRequestViewsPageForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId,
+                                                                                              Date startDate,
+                                                                                              Date endDate,
+                                                                                              Integer pageIndex
+            , Integer pageSize) throws SymeoException;
 }

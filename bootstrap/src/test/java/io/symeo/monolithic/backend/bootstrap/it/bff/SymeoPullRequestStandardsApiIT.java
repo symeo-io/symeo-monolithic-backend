@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontendApiIT {
@@ -158,11 +159,11 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-16")
                 .jsonPath("$.curves.average_curve[3].value").isEqualTo(3)
                 .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-01-28")
-                .jsonPath("$.curves.piece_curve[0].value").isEqualTo(233)
+                .jsonPath("$.curves.piece_curve[0].value").isEqualTo(234)
                 .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.piece_curve[0].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[0].label").isEqualTo(branchName)
-                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(225)
+                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(226)
                 .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.piece_curve[1].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[1].label").isEqualTo(branchName)
@@ -352,6 +353,75 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
     }
 
+    @Order(9)
+    @Test
+    void should_raise_an_exception_for_invalid_page_size() {
+        // Given
+        final String startDate = "2022-01-15";
+        final String endDate = "2022-02-01";
+        final String pageIndex = "0";
+        final String pageSize = "100000";
+
+        // When
+        client.get()
+                .uri(getApiURI(TEAMS_REST_API_PULL_REQUESTS, getParams(currentTeamId, startDate,
+                        endDate, pageIndex, pageSize)))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is5xxServerError()
+                .expectBody()
+                .jsonPath("$.pull_requests_page").isEmpty()
+                .jsonPath("$.errors[0].code").isEqualTo(SymeoExceptionCode.PAGINATION_MAXIMUM_SIZE_EXCEEDED);
+    }
+
+
+    @Test
+    void should_return_pull_requests_pages() {
+        // Given
+        final String startDate = "2022-01-15";
+        final String endDate = "2022-02-01";
+        String pageIndex = "0";
+        final String pageSize = "10";
+
+        // When
+        client.get()
+                .uri(getApiURI(TEAMS_REST_API_PULL_REQUESTS, getParams(currentTeamId, startDate,
+                        endDate, pageIndex, pageSize)))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(2)
+                .jsonPath("$.pull_requests_page.pull_requests").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(10))
+                .jsonPath("$.pull_requests_page.pull_requests[0].id").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests[0].commit_number").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests[0].size").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests[0].days_opened").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests[0].creation_date").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests[0].status").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests[0].vcs_url").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests[0].title").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests[0].author").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests[0].vcs_repository").isNotEmpty();
+
+        pageIndex = "1";
+        client.get()
+                .uri(getApiURI(TEAMS_REST_API_PULL_REQUESTS, getParams(currentTeamId, startDate,
+                        endDate, pageIndex, pageSize)))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(2)
+                .jsonPath("$.pull_requests_page.pull_requests").isNotEmpty()
+                .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(4));
+    }
 
     private static List<RepositoryEntity> generateRepositoriesStubsForOrganization() {
         return List.of(
@@ -373,6 +443,14 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 "start_date", startDate, "end_date", endDate);
     }
 
+    @NonNull
+    private static Map<String, String> getParams(UUID teamId, String startDate, String endDate, String pageIndex,
+                                                 String pageSize) {
+        return Map.of("team_id", teamId.toString(),
+                "start_date", startDate, "end_date", endDate, "page_index", pageIndex, "page_size", pageSize);
+    }
+
+
     private static List<PullRequestEntity> generatePullRequestsStubsForOrganization(final Organization organization,
                                                                                     final String startDate) throws SymeoException {
         final java.util.Date weekStartDate = stringToDate(startDate);
@@ -392,6 +470,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .isMerged(false)
                     .title(faker.name().title())
                     .vcsOrganizationId(organization.getName())
+                    .vcsRepository(faker.ancient().primordial())
                     .isDraft(false)
                     .vcsUrl(vcsUrl)
                     .organizationId(organization.getId())
@@ -417,6 +496,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .state(PullRequest.MERGE)
                     .isMerged(true)
                     .title(faker.name().title())
+                    .vcsRepository(faker.ancient().primordial())
                     .vcsOrganizationId(organization.getName())
                     .isDraft(false)
                     .vcsUrl(vcsUrl)
@@ -441,6 +521,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                     .state(PullRequest.MERGE)
                     .isMerged(true)
                     .title(faker.name().title())
+                    .vcsRepository(faker.ancient().primordial())
                     .vcsOrganizationId(organization.getName())
                     .branchName(branchName)
                     .isDraft(false)
@@ -461,6 +542,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                                     .atZone(organization.getTimeZone().toZoneId())
                                     .plus(i * 9, ChronoUnit.DAYS))
                     .addedLineNumber(500)
+                    .vcsRepository(faker.ancient().primordial())
                     .deletedLineNumber(500)
                     .commitNumber(0)
                     .state(PullRequest.MERGE)

@@ -107,6 +107,7 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
             "-request-size/metrics";
     protected static final String TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_CURVES = "/api/v1/teams/goals/pull-request" +
             "-size/curves";
+    protected static final String TEAMS_REST_API_PULL_REQUESTS = "/api/v1/teams/pull-requests";
     protected static final String TEAMS_GOALS_REST_API = "/api/v1/teams/goals";
     protected static final String JOBS_REST_API_STATUS = "/api/v1/jobs/status";
 
