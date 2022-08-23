@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import java.util.Date;
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.calculateTotalNumberOfPage;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.validatePagination;
 
 @AllArgsConstructor
@@ -24,8 +25,12 @@ public class PullRequestService implements PullRequestFacade {
                                                                                                      final Integer pageSize) throws SymeoException {
         validatePagination(pageIndex, pageSize);
         return Page.<PullRequestView>builder()
-                .content(expositionStorageAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId, startDate, endDate, pageIndex, pageSize))
-                .totalPageNumber(expositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId, startDate, endDate))
+                .content(expositionStorageAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
+                        startDate, endDate, pageIndex, pageSize))
+                .totalPageNumber(
+                        calculateTotalNumberOfPage(pageSize,
+                                expositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId, startDate, endDate))
+                )
                 .build();
     }
 }

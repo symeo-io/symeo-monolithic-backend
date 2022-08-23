@@ -30,9 +30,9 @@ public class PullRequestServiceTest {
         final Date startDate = stringToDate(
                 "2022-01-01");
         final Date endDate = stringToDate("2022-06-01");
-        final int pageIndex = 111;
-        final int pageSize = 95;
-        final int count = faker.number().randomDigit();
+        final int pageIndex = 0;
+        final int pageSize = 10;
+        final int count = 25;
         final List<PullRequestView> pullRequestViews =
                 List.of(PullRequestView.builder().id(faker.ancient().god()).build(),
                         PullRequestView.builder().id(faker.ancient().god()).build());
@@ -50,6 +50,6 @@ public class PullRequestServiceTest {
 
         // Then
         assertThat(pullRequestViewPage.getContent()).isEqualTo(pullRequestViews);
-        assertThat(pullRequestViewPage.getTotalPageNumber()).isEqualTo(count);
+        assertThat(pullRequestViewPage.getTotalPageNumber()).isEqualTo(3);
     }
 }

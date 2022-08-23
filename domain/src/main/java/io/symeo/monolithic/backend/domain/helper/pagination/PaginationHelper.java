@@ -28,4 +28,8 @@ public class PaginationHelper {
                 .end((pageIndex + 1) * pageSize)
                 .build();
     }
+
+    public static int calculateTotalNumberOfPage(Integer pageSize, int count) {
+        return (count / pageSize) + 1;
+    }
 }
