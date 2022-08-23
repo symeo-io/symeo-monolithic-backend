@@ -24,13 +24,14 @@ public class PullRequestService implements PullRequestFacade {
                                                                                                      final Integer pageIndex,
                                                                                                      final Integer pageSize) throws SymeoException {
         validatePagination(pageIndex, pageSize);
+        final int count =
+                expositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
+                        startDate, endDate);
         return Page.<PullRequestView>builder()
                 .content(expositionStorageAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
                         startDate, endDate, pageIndex, pageSize))
-                .totalPageNumber(
-                        calculateTotalNumberOfPage(pageSize,
-                                expositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId, startDate, endDate))
-                )
+                .totalPageNumber(calculateTotalNumberOfPage(pageSize, count))
+                .totalItemNumber(count)
                 .build();
     }
 }

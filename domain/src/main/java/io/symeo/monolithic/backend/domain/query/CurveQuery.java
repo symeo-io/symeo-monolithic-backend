@@ -31,7 +31,7 @@ public class CurveQuery {
                                                          final Date endDate) throws SymeoException {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildTimeToMerge());
-        final int range = 3;
+        final int range = 1;
         final List<Date> rangeDates = getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
                 range, organization.getTimeZone());
         final List<PullRequestView> pullRequestLimitViews =
@@ -50,7 +50,7 @@ public class CurveQuery {
                                                              final Date startDate, final Date endDate) throws SymeoException {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildPullRequestSize());
-        final int range = 3;
+        final int range = 1;
         final List<Date> rangeDates = getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
                 range, organization.getTimeZone());
         final List<PullRequestView> pullRequestSizeViews =

@@ -42,6 +42,6 @@ public class PaginationHelperTest {
 
         // Then
         assertThat(pagination.getStart()).isEqualTo(pageIndex * pageSize);
-        assertThat(pagination.getEnd()).isEqualTo((pageIndex + 1) * pageSize);
+        assertThat(pagination.getEnd()).isEqualTo(pageSize);
     }
 }

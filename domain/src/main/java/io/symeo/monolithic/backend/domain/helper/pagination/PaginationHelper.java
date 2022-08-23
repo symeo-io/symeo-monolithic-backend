@@ -25,7 +25,7 @@ public class PaginationHelper {
     public static Pagination buildPagination(final int pageIndex, final int pageSize) {
         return Pagination.builder()
                 .start(pageIndex * pageSize)
-                .end((pageIndex + 1) * pageSize)
+                .end(pageSize)
                 .build();
     }
 

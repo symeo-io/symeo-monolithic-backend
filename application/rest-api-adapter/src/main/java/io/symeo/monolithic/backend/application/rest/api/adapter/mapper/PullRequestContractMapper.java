@@ -29,6 +29,7 @@ public interface PullRequestContractMapper {
         final PullRequestsResponseContract pullRequestsResponseContract = new PullRequestsResponseContract();
         final PullRequestPageContract pullRequestsPage = new PullRequestPageContract();
         pullRequestsPage.setTotalPageNumber(pullRequestViewPage.getTotalPageNumber());
+        pullRequestsPage.setTotalItemNumber(pullRequestViewPage.getTotalItemNumber());
         pullRequestsPage.setPullRequests(pullRequestViewPage.getContent().stream()
                 .map(pullRequest -> pullRequestToContract(pullRequest, zoneId, endDate)).collect(Collectors.toList()));
         pullRequestsResponseContract.setPullRequestsPage(pullRequestsPage);

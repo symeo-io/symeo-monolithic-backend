@@ -1219,14 +1219,16 @@ components:
       type: object
       properties:
         value:
-          type: integer
+          type: number
+          format: int64
         date:
           type: string
     PieceCurveDataResponseContract:
       type: object
       properties:
         value:
-          type: integer
+          type: number
+          format: int64
         date:
           type: string
         open:
@@ -1608,6 +1610,8 @@ components:
           items:
             $ref: '#/components/schemas/PullRequestContract'
         total_page_number:
+          type: integer
+        total_item_number:
           type: integer
     PullRequestsResponseContract:
       type: object

@@ -13,12 +13,12 @@ public class PieceCurve {
     @Builder.Default
     List<PieceCurvePoint> data = new ArrayList<>();
 
-    public void addPoint(final String startDateRange, final Integer daysOpen, final boolean open, final String label,
+    public void addPoint(final String startDateRange, final Float value, final boolean open, final String label,
                          final String link) {
         this.data.add(
                 PieceCurvePoint.builder()
                         .date(startDateRange)
-                        .value(daysOpen)
+                        .value(value)
                         .open(open)
                         .label(label)
                         .link(link)
@@ -30,7 +30,7 @@ public class PieceCurve {
     @Builder
     public static class PieceCurvePoint {
         String date;
-        Integer value;
+        Float value;
         Boolean open;
         String label;
         String link;
