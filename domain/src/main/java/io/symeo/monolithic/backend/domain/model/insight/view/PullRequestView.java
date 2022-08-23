@@ -138,7 +138,7 @@ public class PullRequestView {
     }
 
     private static float hoursToDays(long hours) {
-        return hours < 0.1f ? 0.1f : round(10f * hours / 24) / 10f;
+        return hours < 2f ? 0.1f : round(10f * hours / 24) / 10f;
     }
 
     public PullRequestView addTimeLimit() {
