@@ -15,6 +15,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManager;
+
 @Configuration
 @EnableAutoConfiguration
 @EntityScan(basePackages = {
@@ -32,9 +34,11 @@ public class PostgresConfiguration {
                                                      final RepositoryRepository repositoryRepository,
                                                      final PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository,
                                                      final PullRequestSizeRepository pullRequestSizeRepository,
-                                                     final PullRequestFullViewRepository pullRequestFullViewRepository) {
+                                                     final PullRequestFullViewRepository pullRequestFullViewRepository,
+                                                     final CustomPullRequestViewRepository customPullRequestViewRepository) {
         return new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
-                pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository);
+                pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository,
+                customPullRequestViewRepository);
     }
 
     @Bean
@@ -69,5 +73,10 @@ public class PostgresConfiguration {
     public PostgresTeamGoalAdapter postgresTeamGoalAdapter(final TeamRepository teamRepository,
                                                            final TeamGoalRepository teamGoalRepository) {
         return new PostgresTeamGoalAdapter(teamRepository, teamGoalRepository);
+    }
+
+    @Bean
+    public CustomPullRequestViewRepository customPullRequestViewRepository(final EntityManager entityManager) {
+        return new CustomPullRequestViewRepository(entityManager);
     }
 }

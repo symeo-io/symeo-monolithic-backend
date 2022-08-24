@@ -18,7 +18,7 @@ public interface PullRequestSizeRepository extends JpaRepository<PullRequestSize
                     " where pr.organization_id = :organizationId " +
                     " and pr.vcs_repository_id in (" +
                     "    select ttr.repository_id from exposition_storage.team_to_repository ttr" +
-                    "    where ttr.team_id = :teamId )")
+                    "    where ttr.team_id = :teamId ) order by pr.creation_date")
     List<PullRequestSizeDTO> findPullRequestSizeDTOsByOrganizationIdAndTeamId(@Param("organizationId") UUID organizationId,
                                                                               @Param("teamId") UUID teamId);
 

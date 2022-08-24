@@ -10,26 +10,28 @@ import lombok.AllArgsConstructor;
 import java.util.Date;
 import java.util.UUID;
 
-import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.calculateTotalNumberOfPage;
-import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.validatePagination;
+import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.*;
 
 @AllArgsConstructor
 public class PullRequestService implements PullRequestFacade {
     private final ExpositionStorageAdapter expositionStorageAdapter;
 
     @Override
-    public Page<PullRequestView> getPullRequestViewsPageForTeamIdAndStartDateAndEndDateAndPagination(final UUID teamId,
-                                                                                                     final Date startDate,
-                                                                                                     final Date endDate,
-                                                                                                     final Integer pageIndex,
-                                                                                                     final Integer pageSize) throws SymeoException {
+    public Page<PullRequestView> getPullRequestViewsPageForTeamIdAndStartDateAndEndDateAndPaginationSorted(final UUID teamId,
+                                                                                                           final Date startDate,
+                                                                                                           final Date endDate,
+                                                                                                           final Integer pageIndex,
+                                                                                                           final Integer pageSize,
+                                                                                                           final String sortingParameter,
+                                                                                                           final String sortingDirection) throws SymeoException {
         validatePagination(pageIndex, pageSize);
+        validateSortingInputs(sortingDirection, sortingParameter, PullRequestView.AVAILABLE_SORTING_PARAMETERS);
         final int count =
                 expositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
                         startDate, endDate);
         return Page.<PullRequestView>builder()
-                .content(expositionStorageAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
-                        startDate, endDate, pageIndex, pageSize))
+                .content(expositionStorageAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(teamId,
+                        startDate, endDate, pageIndex, pageSize, sortingParameter, sortingDirection))
                 .totalPageNumber(calculateTotalNumberOfPage(pageSize, count))
                 .totalItemNumber(count)
                 .build();

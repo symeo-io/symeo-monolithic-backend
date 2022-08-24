@@ -167,6 +167,16 @@ public class PullRequestViewTest {
         assertThat(aboveTimeLimit2).isTrue();
     }
 
+    @Test
+    void should_contains_available_sorting_parameters() {
+        // Then
+        assertThat(PullRequestView.AVAILABLE_SORTING_PARAMETERS).isEqualTo(List.of(
+                "status", "creation_date", "merge_date", "size", "days_opened", "id", "commit_number", "vcs_url",
+                "title"
+                , "author", "vcs_repository"
+        ));
+    }
+
     public static PullRequestView buildPullRequestPullRequestLimitView(final Float limit,
                                                                        final Date creationDate,
                                                                        final Date mergeDate,

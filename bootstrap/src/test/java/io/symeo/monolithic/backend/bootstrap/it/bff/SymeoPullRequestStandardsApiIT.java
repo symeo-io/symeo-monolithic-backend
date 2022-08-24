@@ -361,11 +361,13 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
         final String endDate = "2022-02-01";
         final String pageIndex = "0";
         final String pageSize = "100000";
+        final String sortingDirection = "asc";
+        final String sortingParameter = "creation_date";
 
         // When
         client.get()
                 .uri(getApiURI(TEAMS_REST_API_PULL_REQUESTS, getParams(currentTeamId, startDate,
-                        endDate, pageIndex, pageSize)))
+                        endDate, pageIndex, pageSize, sortingParameter, sortingDirection)))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -383,11 +385,13 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
         final String endDate = "2022-02-01";
         String pageIndex = "0";
         final String pageSize = "10";
+        final String sortingDirection = "asc";
+        final String sortingParameter = "creation_date";
 
         // When
         client.get()
                 .uri(getApiURI(TEAMS_REST_API_PULL_REQUESTS, getParams(currentTeamId, startDate,
-                        endDate, pageIndex, pageSize)))
+                        endDate, pageIndex, pageSize, sortingParameter, sortingDirection)))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -412,7 +416,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
         pageIndex = "1";
         client.get()
                 .uri(getApiURI(TEAMS_REST_API_PULL_REQUESTS, getParams(currentTeamId, startDate,
-                        endDate, pageIndex, pageSize)))
+                        endDate, pageIndex, pageSize, sortingParameter, sortingDirection)))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -447,9 +451,10 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
 
     @NonNull
     private static Map<String, String> getParams(UUID teamId, String startDate, String endDate, String pageIndex,
-                                                 String pageSize) {
+                                                 String pageSize, String sortingParameter, String sortingDirection) {
         return Map.of("team_id", teamId.toString(),
-                "start_date", startDate, "end_date", endDate, "page_index", pageIndex, "page_size", pageSize);
+                "start_date", startDate, "end_date", endDate, "page_index", pageIndex, "page_size", pageSize,
+                "sort_by", sortingParameter, "sort_dir", sortingDirection);
     }
 
 
