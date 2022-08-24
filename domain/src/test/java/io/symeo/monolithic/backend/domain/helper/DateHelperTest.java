@@ -27,7 +27,7 @@ public class DateHelperTest {
         final String dateToString = dateToString(now);
 
         // Then
-        assertThat(dateToString).isEqualTo(new SimpleDateFormat(DATE_TIME_PATTERN).format(now));
+        assertThat(dateToString).isEqualTo(new SimpleDateFormat(DATE_PATTERN).format(now));
     }
 
     @Test

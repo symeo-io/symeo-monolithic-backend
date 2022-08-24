@@ -92,7 +92,7 @@ public interface PullRequestMapper {
     }
 
     Map<String, String> SORTING_PARAMETERS_MAPPING = Map.of(
-            "status", "state");
+            "status", "state", "author","author_login");
 
     static String sortingParameterToDatabaseAttribute(final String sortingParameter) {
         return SORTING_PARAMETERS_MAPPING.getOrDefault(sortingParameter, sortingParameter);
