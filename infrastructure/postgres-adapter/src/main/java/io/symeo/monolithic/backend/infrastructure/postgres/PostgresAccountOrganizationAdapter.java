@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.ORGANIZATION_NAME_NOT_FOUND;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper.entityToDomain;
@@ -22,13 +24,12 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
 
     @Override
     @Transactional(readOnly = true)
-    public Organization findVcsOrganizationForName(String organizationName) throws SymeoException {
-
-        return vcsOrganizationRepository.findByName(organizationName)
+    public Organization findOrganizationById(final UUID organizationId) throws SymeoException {
+        return vcsOrganizationRepository.findByOrganizationId(organizationId)
                 .map(OrganizationMapper::entityToDomain)
                 .orElseThrow(
                         () -> SymeoException.builder()
-                                .message(String.format("Vcs Organization not found for name %s", organizationName))
+                                .message(String.format("Organization not found for id %s", organizationId))
                                 .code(ORGANIZATION_NAME_NOT_FOUND)
                                 .build()
                 );
