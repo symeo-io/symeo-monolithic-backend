@@ -89,6 +89,7 @@ jobs:
               --key-name symeo-backend-${ENVIRONMENT} \
               --domain ${DOMAIN} \
               --prefix-url ${PREFIX_URL} \
+              --job-prefix-url ${JOB_PREFIX_URL} \
               --acm-arn ${ACM_ARN} \
               --acm-arn-alb ${ACM_ARN_ALB} \
               --tag ${CIRCLE_SHA1} \
