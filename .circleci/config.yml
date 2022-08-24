@@ -49,7 +49,7 @@ jobs:
               --region ${AWS_REGION} \
               --env ${ENVIRONMENT} \
               --tag ${CIRCLE_SHA1} \
-               -s "symeo-api" -sp "aws,api"
+               -s "symeo-api" -sp "aws,api" --registry "symeo-backend-ecs-repository-${ENVIRONMENT}"
       - run:
           name: Build docker
           command: |
@@ -57,7 +57,7 @@ jobs:
               --region ${AWS_REGION} \
               --env ${ENVIRONMENT} \
               --tag ${CIRCLE_SHA1} \
-               -s "symeo-job" -sp "aws,job"
+               -s "symeo-job" -sp "aws,job"  --registry "symeo-backend-ecs-repository-job-${ENVIRONMENT}"
       - run:
           name: Deploy
           command: |

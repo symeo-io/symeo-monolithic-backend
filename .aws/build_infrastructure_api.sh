@@ -138,7 +138,7 @@ if docker_image_exists_in_ecr $SymeoBackendRepositoryName $MY_TAG $REGION; then
   echo "Docker image with tag ${MY_TAG} already exists, skipping build..."
 else
   echo "No image found with tag ${MY_TAG}, building it..."
-  ./build_docker.sh -r "$REGION" -e "$ENV" -t "$MY_TAG" -p "$PROFILE" --service "symeo-api" --spring-profile "aws,api"
+  ./build_docker.sh -r "$REGION" -e "$ENV" -t "$MY_TAG" -p "$PROFILE" --service "symeo-api" --spring-profile "aws,api" --registry "symeo-backend-ecs-repository-${ENV}"
 fi
 
 ENV_FILE_PATH="./.env"
