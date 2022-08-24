@@ -18,12 +18,25 @@ jobs:
             sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
             sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
       - run:
+          name: Generate cumulative pom.xml checksum
+          command: |
+            find . -type f -name "pom.xml" -exec sh -c "sha256sum {} >> ~/pom-checksum.tmp" \;
+            sort -o ~/pom-checksum ~/pom-checksum.tmp
+      - restore_cache:
+          keys:
+            - symeo-monolithic-backend-multi-module-mvn-{{ checksum "~/pom-checksum" }}
+      - run:
           name: Build
-          command: ./mvnw -B clean package -T 12
-      - save_cache:
-          key: build-{{ .Environment.CIRCLE_SHA1 }}
+          command: ./mvnw install -T 12 -DskipTests -DskipITs
+      - persist_to_workspace:
+          root: ~/
           paths:
-            - bootstrap/target/
+            - project
+            - .m2
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: symeo-monolithic-backend-multi-module-mvn-{{ checksum "~/pom-checksum" }}
       - run:
           name: Unit Tests
           command: ./mvnw test -T 12
