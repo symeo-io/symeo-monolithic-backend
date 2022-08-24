@@ -19,6 +19,7 @@ import java.util.UUID;
 public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
 
     private final DataProcessingJobAdapter dataProcessingJobAdapter;
+    private final String jobApiKey;
 
     @Override
     public ResponseEntity<Void> startDataProcessingJob(final UUID organizationId) {
@@ -34,6 +35,10 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
     @Override
     public ResponseEntity<Void> startAllDataCollectionJobs(String X_SYMEO_JOB_KEY_X) {
         try {
+            if (!X_SYMEO_JOB_KEY_X.equals(jobApiKey)) {
+                LOGGER.error("Unauthorized X_SYMEO_JOB_KEY_X {}", X_SYMEO_JOB_KEY_X);
+                return ResponseEntity.status(403).build();
+            }
             dataProcessingJobAdapter.startAll();
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {

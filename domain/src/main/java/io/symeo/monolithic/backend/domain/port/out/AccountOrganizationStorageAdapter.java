@@ -11,5 +11,5 @@ public interface AccountOrganizationStorageAdapter {
 
     Organization createOrganization(Organization organization) throws SymeoException;
 
-    List<Organization> findAllOrganization();
+    List<Organization> findAllOrganization() throws SymeoException;
 }

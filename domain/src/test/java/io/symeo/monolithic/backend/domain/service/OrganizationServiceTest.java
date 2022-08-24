@@ -33,6 +33,7 @@ public class OrganizationServiceTest {
         final UUID organizationId = UUID.randomUUID();
         final Organization expectedOrganization = Organization.builder().id(organizationId)
                 .name(vcsOrganizationName)
+                .id(organizationId)
                 .vcsOrganization(
                         VcsOrganization.builder()
                                 .externalId(externalId)
@@ -45,6 +46,7 @@ public class OrganizationServiceTest {
         ArgumentCaptor<UUID> uuiDArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
         final Organization organization = Organization.builder()
                 .name(vcsOrganizationName)
+                .id(organizationId)
                 .vcsOrganization(
                         VcsOrganization.builder()
                                 .externalId(externalId)

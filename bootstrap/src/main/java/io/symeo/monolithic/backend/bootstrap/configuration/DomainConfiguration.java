@@ -47,9 +47,10 @@ public class DomainConfiguration {
     public DataProcessingJobService dataProcessingJobService(final VcsService vcsService,
                                                              final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService,
-                                                             final JobManager jobManager) {
+                                                             final JobManager jobManager,
+                                                             final SymeoJobApiAdapter symeoJobApiAdapter) {
         return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter,
-                repositoryService, jobManager);
+                repositoryService, jobManager, symeoJobApiAdapter);
     }
 
     @Bean

@@ -1,8 +1,9 @@
 package io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class SymeoJobApiProperties {
     String apiKey;
+    String url;
 }

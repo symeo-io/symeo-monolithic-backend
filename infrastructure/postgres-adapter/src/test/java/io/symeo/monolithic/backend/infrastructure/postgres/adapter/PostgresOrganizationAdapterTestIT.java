@@ -41,7 +41,8 @@ public class PostgresOrganizationAdapterTestIT {
 
     @BeforeEach
     void setUp() {
-        postgresOrganizationAdapter = new PostgresAccountOrganizationAdapter(vcsOrganizationRepository);
+        postgresOrganizationAdapter = new PostgresAccountOrganizationAdapter(vcsOrganizationRepository,
+                organizationRepository);
     }
 
     @Test
