@@ -86,7 +86,6 @@ jobs:
               --datadog-api-key ${DATADOG_API_KEY} \
               --datadog-app-key ${DATADOG_APP_KEY} \
               --db-password ${DB_PASSWORD} \
-              --key-name symeo-backend-${ENVIRONMENT} \
               --domain ${DOMAIN} \
               --prefix-url ${PREFIX_URL} \
               --job-prefix-url ${JOB_PREFIX_URL} \
