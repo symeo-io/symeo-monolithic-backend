@@ -28,6 +28,14 @@ case $key in
     PROFILE="$2"
     shift # past argument
     ;;
+    -s|--service)
+    DD_SERVICE="$2"
+    shift # past argument
+    ;;
+    -sp|--spring-profile)
+    SPRING_PROFILES_ACTIVE="$2"
+    shift # past argument
+    ;;
     *)
     printf "***************************\n"
     printf "* Error: Invalid argument.*\n"
@@ -47,7 +55,7 @@ fi
 
 GIT_ROOT_PATH=$(git rev-parse --show-toplevel)
 
-build_and_push_docker_image $GIT_ROOT_PATH "Dockerfile" "symeo-backend-ecs-repository-${ENV}" "SymeoBackendRepository" $REGION $TAG
+build_and_push_docker_image $GIT_ROOT_PATH "Dockerfile" "symeo-backend-ecs-repository-${ENV}" "SymeoBackendRepository" $REGION $TAG $DD_SERVICE $ENV $SPRING_PROFILES_ACTIVE
 
 echo "DONE"
 
