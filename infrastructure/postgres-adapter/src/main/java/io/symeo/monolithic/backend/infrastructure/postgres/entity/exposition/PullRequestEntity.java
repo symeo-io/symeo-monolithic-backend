@@ -60,6 +60,10 @@ public class PullRequestEntity {
     String branchName;
     @Column(name = "organization_id")
     UUID organizationId;
+    @Column(name = "size")
+    float size;
+    @Column(name = "days_opened")
+    float daysOpened;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

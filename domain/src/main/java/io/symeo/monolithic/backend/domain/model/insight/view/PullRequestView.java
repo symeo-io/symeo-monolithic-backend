@@ -19,6 +19,11 @@ import static java.util.Objects.nonNull;
 @Builder(toBuilder = true)
 @Data
 public class PullRequestView {
+    public static final List<String> AVAILABLE_SORTING_PARAMETERS = List.of(
+            "status", "creation_date", "merge_date", "size", "days_opened", "id", "commit_number", "vcs_url", "title"
+            , "author", "vcs_repository"
+    );
+
     String status;
     Date creationDate;
     Date mergeDate;

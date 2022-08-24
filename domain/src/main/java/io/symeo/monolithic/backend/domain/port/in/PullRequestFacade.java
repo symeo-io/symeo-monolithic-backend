@@ -9,9 +9,12 @@ import java.util.UUID;
 
 public interface PullRequestFacade {
 
-    Page<PullRequestView> getPullRequestViewsPageForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId,
-                                                                                              Date startDate,
-                                                                                              Date endDate,
-                                                                                              Integer pageIndex
-            , Integer pageSize) throws SymeoException;
+    Page<PullRequestView> getPullRequestViewsPageForTeamIdAndStartDateAndEndDateAndPaginationSorted(UUID teamId,
+                                                                                                    Date startDate,
+                                                                                                    Date endDate,
+                                                                                                    Integer pageIndex,
+                                                                                                    Integer pageSize,
+                                                                                                    String sortingParameter,
+                                                                                                    String sortingDirection)
+            throws SymeoException;
 }

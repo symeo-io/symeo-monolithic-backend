@@ -42,9 +42,9 @@ public interface JobContractMapper {
         jobContract.setCode(job.getCode());
         jobContract.setStatus(job.getStatus());
         jobContract.setId(job.getId());
-        jobContract.setCreationDate(job.getCreationDate().toInstant().atZone(organization.getTimeZone().toZoneId()).toLocalDate());
+        jobContract.setCreationDate(job.getCreationDate().toInstant().atZone(organization.getTimeZone().toZoneId()));
         jobContract.setEndDate(isNull(job.getEndDate()) ? null :
-                job.getEndDate().toInstant().atZone(organization.getTimeZone().toZoneId()).toLocalDate());
+                job.getEndDate().toInstant().atZone(organization.getTimeZone().toZoneId()));
         return jobContract;
     }
 }

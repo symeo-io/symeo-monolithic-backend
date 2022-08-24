@@ -29,14 +29,18 @@ public class PullRequestsRestApiAdapter implements PullRequestsApi {
     private final PullRequestFacade pullRequestFacade;
 
     @Override
-    public ResponseEntity<PullRequestsResponseContract> getPullRequestsForTeam(UUID teamId, String startDateString,
-                                                                               String endDateString, Integer pageIndex,
-                                                                               Integer pageSize) {
+    public ResponseEntity<PullRequestsResponseContract> getPullRequestsForTeam(final UUID teamId,
+                                                                               final String startDateString,
+                                                                               final String endDateString,
+                                                                               final Integer pageIndex,
+                                                                               final Integer pageSize,
+                                                                               final String sortBy,
+                                                                               final String sortDir) {
         try {
             final Date endDate = stringToDate(endDateString);
-            return ok(toContract(pullRequestFacade.getPullRequestViewsPageForTeamIdAndStartDateAndEndDateAndPagination(teamId,
+            return ok(toContract(pullRequestFacade.getPullRequestViewsPageForTeamIdAndStartDateAndEndDateAndPaginationSorted(teamId,
                             stringToDate(startDateString),
-                            endDate, pageIndex, pageSize),
+                            endDate, pageIndex, pageSize, sortBy, sortDir),
                     authenticationService.getAuthenticatedUser().getOrganization().getTimeZone().toZoneId(), endDate));
         } catch (SymeoException e) {
             return internalServerError().body(errorToContract(e));

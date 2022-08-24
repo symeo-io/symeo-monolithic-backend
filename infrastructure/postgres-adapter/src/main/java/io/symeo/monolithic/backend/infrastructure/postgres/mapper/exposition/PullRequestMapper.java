@@ -8,12 +8,14 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Map;
 
 import static java.util.Objects.isNull;
 
 public interface PullRequestMapper {
 
     static PullRequestEntity domainToEntity(final PullRequest pullRequest) {
+        final PullRequestView pullRequestView = pullRequest.toView();
         return PullRequestEntity.builder()
                 .id(pullRequest.getId())
                 .isDraft(pullRequest.getIsDraft())
@@ -38,6 +40,8 @@ public interface PullRequestMapper {
                 .vcsOrganizationId(pullRequest.getVcsOrganizationId())
                 .organizationId(pullRequest.getOrganizationId())
                 .branchName(pullRequest.getBranchName())
+                .size(pullRequestView.getSize())
+                .daysOpened(pullRequestView.getDaysOpened(new Date()))
                 .build();
     }
 
@@ -85,5 +89,12 @@ public interface PullRequestMapper {
                 .commitNumber(pullRequestFullViewDTO.getCommitNumber())
                 .status(pullRequestFullViewDTO.getState())
                 .build();
+    }
+
+    Map<String, String> SORTING_PARAMETERS_MAPPING = Map.of(
+            "status", "state");
+
+    static String sortingParameterToDatabaseAttribute(final String sortingParameter) {
+        return SORTING_PARAMETERS_MAPPING.getOrDefault(sortingParameter, sortingParameter);
     }
 }

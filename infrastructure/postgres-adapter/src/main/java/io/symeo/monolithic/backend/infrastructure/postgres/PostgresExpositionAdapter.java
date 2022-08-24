@@ -22,6 +22,8 @@ import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.buildPagination;
+import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.SortingMapper.directionToPostgresSortingValue;
+import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper.sortingParameterToDatabaseAttribute;
 import static java.util.Optional.ofNullable;
 
 @AllArgsConstructor
@@ -33,6 +35,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository;
     private final PullRequestSizeRepository pullRequestSizeRepository;
     private final PullRequestFullViewRepository pullRequestFullViewRepository;
+    private final CustomPullRequestViewRepository customPullRequestViewRepository;
 
     @Override
     public void savePullRequestDetails(List<PullRequest> pullRequests) {
@@ -112,15 +115,19 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
-    public List<PullRequestView> readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId,
-                                                                                                  Date startDate,
-                                                                                                  Date endDate,
-                                                                                                  int pageIndex,
-                                                                                                  int pageSize) throws SymeoException {
+    public List<PullRequestView> readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(final UUID teamId,
+                                                                                                        final Date startDate,
+                                                                                                        final Date endDate,
+                                                                                                        final int pageIndex,
+                                                                                                        final int pageSize,
+                                                                                                        final String sortingParameter,
+                                                                                                        final String sortingDirection) throws SymeoException {
         try {
             final Pagination pagination = buildPagination(pageIndex, pageSize);
-            return pullRequestFullViewRepository.findAllByTeamIdAndStartEndAndEndDateAndPagination(
-                    teamId, startDate, endDate, pagination.getStart(), pagination.getEnd()
+            return customPullRequestViewRepository.findAllByTeamIdAndStartEndAndEndDateAndPagination(
+                    teamId, startDate, endDate, pagination.getStart(), pagination.getEnd(),
+                    sortingParameterToDatabaseAttribute(sortingParameter),
+                    directionToPostgresSortingValue(sortingDirection)
             ).stream().map(
                     PullRequestMapper::fullViewToDomain
             ).toList();
@@ -136,8 +143,9 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
-    public int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate,
-                                                                                 Date endDate) throws SymeoException {
+    public int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(final UUID teamId,
+                                                                                 final Date startDate,
+                                                                                 final Date endDate) throws SymeoException {
         try {
             return pullRequestFullViewRepository.countByTeamIdAndStartEndAndEndDate(teamId, startDate, endDate);
         } catch (Exception e) {

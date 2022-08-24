@@ -19,6 +19,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Or
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,9 @@ public class PostgresExpositionAdapterTestIT {
     private PullRequestSizeRepository pullRequestSizeRepository;
     @Autowired
     private PullRequestFullViewRepository pullRequestFullViewRepository;
-
+    @Autowired
+    private CustomPullRequestViewRepository customPullRequestViewRepository;
+    private PostgresExpositionAdapter postgresExpositionAdapter;
 
     @AfterEach
     void tearDown() {
@@ -64,12 +67,16 @@ public class PostgresExpositionAdapterTestIT {
         organizationRepository.deleteAll();
     }
 
+    @BeforeEach
+    public void setUp() {
+        postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
+                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
+                pullRequestFullViewRepository, customPullRequestViewRepository);
+    }
+
     @Test
     void should_save_pull_requests_to_postgres() {
         // Given
-        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository);
         final List<PullRequest> pullRequestsToSave = List.of(
                 buildPullRequest(1),
                 buildPullRequest(2),
@@ -87,9 +94,6 @@ public class PostgresExpositionAdapterTestIT {
     @Test
     void should_save_repositories() {
         // Given
-        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -111,9 +115,6 @@ public class PostgresExpositionAdapterTestIT {
     @Test
     void should_read_repositories_for_an_organization() {
         // Given
-        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -137,9 +138,6 @@ public class PostgresExpositionAdapterTestIT {
     @Test
     void should_find_all_pull_requests_given_an_organization_given_a_null_team_id() throws SymeoException {
         // Given
-        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -164,9 +162,6 @@ public class PostgresExpositionAdapterTestIT {
     @Test
     void should_find_all_pull_requests_given_an_organization_given_a_team_id() throws SymeoException {
         // Given
-        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
@@ -192,9 +187,6 @@ public class PostgresExpositionAdapterTestIT {
     @Test
     void should_read_pr_time_and_pr_size_to_merge_view_given_a_null_team_id() throws SymeoException {
         // Given
-        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
@@ -239,9 +231,6 @@ public class PostgresExpositionAdapterTestIT {
     @Test
     void should_read_pr_time_and_pr_size_to_merge_view_given_a_team_id() throws SymeoException {
         // Given
-        final PostgresExpositionAdapter postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
-                repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
@@ -286,9 +275,6 @@ public class PostgresExpositionAdapterTestIT {
     @Test
     void should_find_and_count_all_pr_full_view_details_given_a_team_id_and_date_range_and_pagination() throws SymeoException {
         // Given
-        final PostgresExpositionAdapter postgresExpositionAdapter =
-                new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
-                        pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository);
         final UUID organizationId = UUID.randomUUID();
         final String repositoryId = faker.rickAndMorty().character();
         repositoryRepository.save(RepositoryEntity.builder().id(repositoryId).name(faker.ancient().god()).build());
@@ -361,19 +347,37 @@ public class PostgresExpositionAdapterTestIT {
         final int count = postgresExpositionAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(
                 teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date()
         );
-        final List<PullRequestView> pullRequestViewsPage1 =
-                postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(
-                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 0, 3
+        final List<PullRequestView> pullRequestViewsPage11 =
+                postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
+                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 0, 3,
+                        "creation_date", "asc"
                 );
-        final List<PullRequestView> pullRequestViewsPage2 =
-                postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(
-                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 1, 3
+        final List<PullRequestView> pullRequestViewsPage12 =
+                postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
+                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 0, 3,
+                        "size", "asc"
                 );
+        final List<PullRequestView> pullRequestViewsPage21 =
+                postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
+                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 1, 3,
+                        "creation_date", "asc"
+                );
+        final List<PullRequestView> pullRequestViewsPage22 =
+                postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
+                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 1, 3,
+                        "creation_date", "desc"
+                );
+
+
 
         // Then
         assertThat(count).isEqualTo(4);
-        assertThat(pullRequestViewsPage1.size()).isEqualTo(3);
-        assertThat(pullRequestViewsPage2.size()).isEqualTo(1);
+        assertThat(pullRequestViewsPage11.size()).isEqualTo(3);
+        assertThat(pullRequestViewsPage12.size()).isEqualTo(3);
+        assertThat(pullRequestViewsPage21.size()).isEqualTo(1);
+        assertThat(pullRequestViewsPage21.size()).isEqualTo(1);
+        assertThat(pullRequestViewsPage22.get(0)).isNotEqualTo(pullRequestViewsPage21.get(0));
+        assertThat(pullRequestViewsPage12.get(0)).isNotEqualTo(pullRequestViewsPage11.get(0));
     }
 
     private Repository buildRepository(Organization organization) {

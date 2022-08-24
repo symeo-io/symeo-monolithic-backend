@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.domain.model.platform.vcs;
 
+import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import lombok.Builder;
 import lombok.Value;
 
@@ -49,6 +50,16 @@ public class PullRequest {
             return CLOSE;
         }
         return MERGE;
+    }
+
+    public PullRequestView toView() {
+        return PullRequestView.builder()
+                .addedLineNumber(this.addedLineNumber)
+                .deletedLineNumber(this.deletedLineNumber)
+                .creationDate(this.creationDate)
+                .closeDate(this.closeDate)
+                .mergeDate(this.mergeDate)
+                .build();
     }
 
 }

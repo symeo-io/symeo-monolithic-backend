@@ -25,10 +25,12 @@ public interface ExpositionStorageAdapter {
     List<PullRequestView> readPullRequestsSizeViewForOrganizationAndTeam(Organization organization, UUID teamId)
             throws SymeoException;
 
-    List<PullRequestView> readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId,
-                                                                                           Date startDate,
-                                                                                           Date endDate,
-                                                                                           int pageIndex, int pageSize)
+    List<PullRequestView> readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(UUID teamId,
+                                                                                                 Date startDate,
+                                                                                                 Date endDate,
+                                                                                                 int pageIndex, int pageSize,
+                                                                                                 String sortingParameter,
+                                                                                                 String sortingDirection)
             throws SymeoException;
 
     int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate, Date endDate)
