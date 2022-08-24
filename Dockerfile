@@ -16,9 +16,6 @@ ENV JAVA_OPTS="-server -XX:MaxRAMPercentage=75.0 -XX:MaxMetaspaceSize=256m -XX:+
 -XX:FlightRecorderOptions=stackdepth=256 -Djava.security.egd=file:/dev/urandom \
  -Dliquibase.changelogLockPollRate=1 -Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.logs.injection=true"
 
-ENV SPRING_PROFILES_ACTIVE="aws,bff"
-ENV SPRING_PROFILES_ACTIVE="aws,job"
-
 CMD java \
     -javaagent:/webapp/dd-java-agent.jar \
     $JAVA_OPTS \

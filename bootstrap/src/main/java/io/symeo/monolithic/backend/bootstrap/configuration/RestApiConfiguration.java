@@ -1,6 +1,5 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.api.*;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationContextProvider;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
@@ -10,17 +9,13 @@ import io.symeo.monolithic.backend.domain.port.in.*;
 import io.symeo.monolithic.backend.domain.query.CurveQuery;
 import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
-import io.symeo.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
-import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
+@Profile("api")
 public class RestApiConfiguration {
 
-    @Bean
-    public DataProcessingRestApiAdapter dataProcessingJobApi(final DataProcessingJobAdapter dataProcessingJobAdapter) {
-        return new DataProcessingRestApiAdapter(dataProcessingJobAdapter);
-    }
 
     @Bean
     public TeamGoalRestApiAdapter teamGoalRestApiAdapter(final AuthenticationService authenticationService,
@@ -66,19 +61,6 @@ public class RestApiConfiguration {
     public AuthenticationService userAuthenticationService(final UserFacadeAdapter userFacadeAdapter,
                                                            final AuthenticationContextProvider authenticationContextProvider) {
         return new AuthenticationService(userFacadeAdapter, authenticationContextProvider);
-    }
-
-    @Bean
-    @ConfigurationProperties("application.github.webhook")
-    public GithubWebhookProperties githubWebhookProperties() {
-        return new GithubWebhookProperties();
-    }
-
-    @Bean
-    public GithubWebhookApiAdapter githubWebhookApiAdapter(final OrganizationFacadeAdapter organizationFacadeAdapter,
-                                                           final ObjectMapper objectMapper,
-                                                           final GithubWebhookProperties githubWebhookProperties) {
-        return new GithubWebhookApiAdapter(organizationFacadeAdapter, githubWebhookProperties, objectMapper);
     }
 
     @Bean

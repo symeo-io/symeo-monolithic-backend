@@ -25,7 +25,7 @@ import java.util.Map;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@ActiveProfiles({"it"})
+@ActiveProfiles({"it", "api"})
 @AutoConfigureWebTestClient(timeout = "36000")
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = SymeoMonolithicBackendITApplication.class)
 @Testcontainers
@@ -87,8 +87,6 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
                 .toUri();
     }
 
-
-    protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
     protected static final String USER_REST_API_GET_ME = "/api/v1/me";
     protected static final String USER_REST_API_POST_ME_ORGANIZATION = "/api/v1/me/organization";
     protected static final String USER_REST_API_POST_ME_ONBOARDING = "/api/v1/me/onboarding";

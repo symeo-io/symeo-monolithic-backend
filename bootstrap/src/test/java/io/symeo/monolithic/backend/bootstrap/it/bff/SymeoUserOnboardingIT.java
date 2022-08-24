@@ -1,9 +1,10 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
-import io.symeo.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookEventDTO;
-import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.domain.service.account.OrganizationService;
 import io.symeo.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
@@ -11,22 +12,18 @@ import io.symeo.monolithic.backend.frontend.contract.api.model.UpdateTeamRequest
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
-import org.apache.commons.codec.digest.HmacUtils;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.ORGANISATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,8 +33,6 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
     @Autowired
     public VcsOrganizationRepository vcsOrganizationRepository;
     @Autowired
-    public GithubWebhookProperties githubWebhookProperties;
-    @Autowired
     public ObjectMapper objectMapper;
     @Autowired
     public RepositoryRepository repositoryRepository;
@@ -45,48 +40,12 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
     public TeamRepository teamRepository;
     @Autowired
     public JobRepository jobRepository;
+    @Autowired
+    public OrganizationService organizationService;
 
     private static final String mail = faker.name().firstName() + "@" + faker.name().firstName() + ".fr";
 
-
     @Order(1)
-    @Test
-    public void should_create_an_organization_triggered_by_a_github_webhook_installation_event() throws IOException {
-        // Given
-        final byte[] githubWebhookInstallationCreatedEventBytes = Files.readString(Paths.get("target/test-classes" +
-                "/webhook_events" +
-                "/post_installation_created_1.json")).getBytes();
-        final String hmacSHA256 = new HmacUtils("HmacSHA256",
-                githubWebhookProperties.getSecret()).hmacHex(githubWebhookInstallationCreatedEventBytes);
-
-        // When
-        client
-                .post()
-                .uri(getApiURI(GITHUB_WEBHOOK_API))
-                .bodyValue(githubWebhookInstallationCreatedEventBytes)
-                .header("X-GitHub-Event", "installation")
-                .header("X-Hub-Signature-256", "sha256=" + hmacSHA256)
-                .exchange()
-                .expectStatus()
-                .is2xxSuccessful();
-
-        // Then
-        final List<VcsOrganizationEntity> vcsOrganizationEntities = vcsOrganizationRepository.findAll();
-        assertThat(vcsOrganizationEntities).hasSize(1);
-        final GithubWebhookEventDTO githubWebhookEventDTO =
-                objectMapper.readValue(githubWebhookInstallationCreatedEventBytes, GithubWebhookEventDTO.class);
-        final String organizationName = githubWebhookEventDTO.getInstallation().getAccount().getLogin();
-        assertThat(vcsOrganizationEntities.get(0).getName()).isEqualTo(organizationName);
-        assertThat(vcsOrganizationEntities.get(0).getVcsId()).isEqualTo("github-" + githubWebhookEventDTO.getInstallation().getAccount().getId());
-        assertThat(vcsOrganizationEntities.get(0).getExternalId()).isEqualTo(githubWebhookEventDTO.getInstallation().getId());
-        assertThat(vcsOrganizationEntities.get(0).getOrganizationEntity().getName()).isEqualTo(organizationName);
-        final List<JobEntity> jobs = jobRepository.findAll();
-        assertThat(jobs).hasSize(1);
-        assertThat(jobs.get(0).getOrganizationId()).isEqualTo(vcsOrganizationEntities.get(0).getOrganizationEntity().getId());
-        assertThat(jobs.get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
-    }
-
-    @Order(2)
     @Test
     void should_create_me() {
         // Given
@@ -108,10 +67,18 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.user.organization").isEmpty();
     }
 
-    @Order(3)
+    @Order(2)
     @Test
-    void should_linked_organization_to_user() {
+    void should_linked_organization_to_user() throws SymeoException {
         // Given
+        final String organizationName = faker.ancient().hero();
+        organizationService.createOrganization(
+                Organization.builder()
+                        .id(UUID.randomUUID())
+                        .name(organizationName)
+                        .vcsOrganization(VcsOrganization.builder().vcsId(faker.rickAndMorty().character()).name(organizationName).build())
+                        .build()
+        );
         final LinkOrganizationToCurrentUserRequestContract requestContract =
                 new LinkOrganizationToCurrentUserRequestContract();
         final VcsOrganizationEntity vcsOrganizationEntity = vcsOrganizationRepository.findAll().get(0);
@@ -135,7 +102,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.user.organization.name").isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getName());
     }
 
-    @Order(4)
+    @Order(3)
     @Test
     void should_get_me_with_organization() {
         // Given
@@ -160,7 +127,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
     }
 
 
-    @Order(5)
+    @Order(4)
     @Test
     void should_get_repositories() {
         // Given
@@ -193,7 +160,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
     }
 
 
-    @Order(6)
+    @Order(5)
     @Test
     void should_configure_two_teams() {
         // Given
@@ -233,7 +200,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
 
     }
 
-    @Order(7)
+    @Order(6)
     @Test
     void should_get_teams() {
         // When
@@ -263,7 +230,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
 
     }
 
-    @Order(8)
+    @Order(7)
     @Test
     void should_get_me_after_team_creation() {
         // Given
@@ -288,7 +255,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
     }
 
 
-    @Order(9)
+    @Order(8)
     @Test
     void should_update_onboarding() {
         // Given
@@ -311,7 +278,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.onboarding.id").isNotEmpty();
     }
 
-    @Order(10)
+    @Order(9)
     @Test
     void should_delete_on_team() {
         // Given
@@ -332,7 +299,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
         assertThat(teamsAfterDelete.get(0).getId()).isNotEqualTo(teamToDelete.getId());
     }
 
-    @Order(11)
+    @Order(10)
     @Test
     void should_update_team() {
         // Given
@@ -363,7 +330,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
         teamsAfterUpdate.get(0).getRepositoryIds().forEach(repositoryId -> assertThat(newRepositoryIds.contains(repositoryId)).isTrue());
     }
 
-    @Order(12)
+    @Order(11)
     @Test
     void should_return_empty_repositories() {
         // Given
@@ -382,7 +349,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.repositories").isEmpty();
     }
 
-    @Order(13)
+    @Order(12)
     @Test
     void should_return_error_for_not_found_organization_to_link_to_current_user() {
         // Given
