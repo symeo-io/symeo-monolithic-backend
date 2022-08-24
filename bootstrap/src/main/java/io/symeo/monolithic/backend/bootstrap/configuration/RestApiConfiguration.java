@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
-@Profile("api")
+@Profile("front-api")
 public class RestApiConfiguration {
 
 

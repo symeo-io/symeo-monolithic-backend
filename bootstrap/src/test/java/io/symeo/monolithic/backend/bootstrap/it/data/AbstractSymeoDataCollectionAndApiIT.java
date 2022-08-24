@@ -35,7 +35,7 @@ import java.nio.file.Paths;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@ActiveProfiles({"it", "job"})
+@ActiveProfiles({"it", "job-api"})
 @AutoConfigureWebTestClient(timeout = "36000")
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = SymeoMonolithicBackendITApplication.class)
 @Testcontainers
