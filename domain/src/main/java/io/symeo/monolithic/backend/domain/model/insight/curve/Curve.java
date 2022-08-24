@@ -32,7 +32,7 @@ public class Curve {
         this.valuesMappedToDate.forEach((date, values) -> this.data.add(
                 CurvePoint.builder()
                         .date(date)
-                        .value(round(10 * values.stream().reduce(0f, Float::sum) / values.size()) / 10f)
+                        .value(round(10f * values.stream().reduce(0f, Float::sum) / values.size()) / 10f)
                         .build())
         );
         return this.data;

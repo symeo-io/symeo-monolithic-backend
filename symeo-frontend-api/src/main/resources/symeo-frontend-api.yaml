@@ -630,13 +630,13 @@ paths:
             format: uuid
         - in: query
           name: start_date
-          #          required: true
+          required: true
           schema:
             type: string
             pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
         - in: query
           name: end_date
-          #          required: true
+          required: true
           schema:
             type: string
             pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
@@ -1541,11 +1541,8 @@ components:
           type: string
         creation_date:
           type: string
-          format: 'date-time'
         end_date:
           type: string
-          format: 'date-time'
-
     LastJobsContract:
       type: object
       required:

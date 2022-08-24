@@ -10,14 +10,15 @@ import io.symeo.monolithic.backend.frontend.contract.api.model.LastJobsResponseC
 import java.util.List;
 
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.exceptionToContract;
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateTimeToString;
 import static java.util.Objects.isNull;
 
 public interface JobContractMapper {
 
-    static LastJobsResponseContract domainToContract(final List<Job> jobs, final Organization organization) {
+    static LastJobsResponseContract domainToContract(final List<Job> jobs) {
         final LastJobsResponseContract lastJobsResponseContract = new LastJobsResponseContract();
         lastJobsResponseContract.setJobs(
-                jobsToContract(jobs, organization)
+                jobsToContract(jobs)
         );
         return lastJobsResponseContract;
     }
@@ -28,23 +29,23 @@ public interface JobContractMapper {
         return lastJobsResponseContract;
     }
 
-    private static LastJobsContract jobsToContract(final List<Job> jobs, final Organization organization) {
+    private static LastJobsContract jobsToContract(final List<Job> jobs) {
         final LastJobsContract lastJobsContract = new LastJobsContract();
-        lastJobsContract.setCurrentJob(jobToContract(jobs.get(0), organization));
+        lastJobsContract.setCurrentJob(jobToContract(jobs.get(0)));
         if (jobs.size() == 2) {
-            lastJobsContract.setPreviousJob(jobToContract(jobs.get(1), organization));
+            lastJobsContract.setPreviousJob(jobToContract(jobs.get(1)));
         }
         return lastJobsContract;
     }
 
-    private static JobContract jobToContract(final Job job, final Organization organization) {
+    private static JobContract jobToContract(final Job job) {
         final JobContract jobContract = new JobContract();
         jobContract.setCode(job.getCode());
         jobContract.setStatus(job.getStatus());
         jobContract.setId(job.getId());
-        jobContract.setCreationDate(job.getCreationDate().toInstant().atZone(organization.getTimeZone().toZoneId()));
+        jobContract.setCreationDate(dateTimeToString(job.getCreationDate()));
         jobContract.setEndDate(isNull(job.getEndDate()) ? null :
-                job.getEndDate().toInstant().atZone(organization.getTimeZone().toZoneId()));
+                dateTimeToString(job.getEndDate()));
         return jobContract;
     }
 }

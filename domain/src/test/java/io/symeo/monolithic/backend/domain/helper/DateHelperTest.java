@@ -27,8 +27,21 @@ public class DateHelperTest {
         final String dateToString = dateToString(now);
 
         // Then
-        assertThat(dateToString).isEqualTo(new SimpleDateFormat(DATE_PATTERN).format(now));
+        assertThat(dateToString).isEqualTo(new SimpleDateFormat(DATE_TIME_PATTERN).format(now));
     }
+
+    @Test
+    void should_parse_date_time_to_string() {
+        // Given
+        final Date now = new Date();
+
+        // When
+        final String dateToString = dateTimeToString(now);
+
+        // Then
+        assertThat(dateToString).isEqualTo(new SimpleDateFormat(DATE_TIME_PATTERN).format(now));
+    }
+
 
     @Test
     void should_parse_string_to_date() throws SymeoException, ParseException {

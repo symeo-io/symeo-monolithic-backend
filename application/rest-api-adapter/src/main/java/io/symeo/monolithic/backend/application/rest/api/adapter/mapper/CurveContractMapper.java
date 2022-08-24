@@ -9,10 +9,9 @@ import io.symeo.monolithic.backend.frontend.contract.api.model.CurveResponseCont
 import io.symeo.monolithic.backend.frontend.contract.api.model.GetCurveResponseContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.PieceCurveDataResponseContract;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.math.BigDecimal.valueOf;
 
 public interface CurveContractMapper {
 
@@ -25,7 +24,7 @@ public interface CurveContractMapper {
             final PieceCurveDataResponseContract pieceCurveDataResponseContract = new PieceCurveDataResponseContract();
             pieceCurveDataResponseContract.setDate(pieceCurvePoint.getDate());
             pieceCurveDataResponseContract.setOpen(pieceCurvePoint.getOpen());
-            pieceCurveDataResponseContract.setValue(valueOf(pieceCurvePoint.getValue()));
+            pieceCurveDataResponseContract.setValue(new BigDecimal(Float.toString(pieceCurvePoint.getValue())));
             pieceCurveDataResponseContract.setLabel(pieceCurvePoint.getLabel());
             pieceCurveDataResponseContract.setLink(pieceCurvePoint.getLink());
             pieceCurve.add(pieceCurveDataResponseContract);
@@ -33,7 +32,7 @@ public interface CurveContractMapper {
         for (Curve.CurvePoint curvePoint : pieceCurveWithAverage.getAverageCurve().getData()) {
             final CurveDataResponseContract curveDataResponseContract = new CurveDataResponseContract();
             curveDataResponseContract.setDate(curvePoint.getDate());
-            curveDataResponseContract.setValue(valueOf(curvePoint.getValue()));
+            curveDataResponseContract.setValue(new BigDecimal(Float.toString(curvePoint.getValue())));
             curveDataResponseContractList.add(curveDataResponseContract);
         }
         curveResponseContract.setAverageCurve(curveDataResponseContractList);
