@@ -58,7 +58,7 @@ case $key in
     ;;
     *)
     printf "***************************\n"
-    printf "* Error: Invalid argument in build infra job.*\n"
+    printf "* Error: Invalid argument in build infra job %s=%s.*\n" "$1" "$2"
     printf "***************************\n"
     exit 1
 esac
@@ -135,7 +135,7 @@ if docker_image_exists_in_ecr $SymeoBackendRepositoryName $MY_TAG $REGION; then
   echo "Docker image with tag ${MY_TAG} already exists, skipping build..."
 else
   echo "No image found with tag ${MY_TAG}, building it..."
-  ./build_docker.sh -r ${REGION} -e ${ENV} -t ${MY_TAG} -p ${PROFILE} -s "symeo-job" -sp "aws,job"
+  ./build_docker.sh -r "$REGION" -e "$ENV" -t "$MY_TAG" -p "$PROFILE" -s "symeo-job" -sp "aws,job"
 fi
 
 ENV_FILE_PATH="./.env"

@@ -30,7 +30,7 @@ case $key in
     ;;
     *)
     printf "***************************\n"
-    printf "* Error: Invalid argument in deploy api.*\n"
+    printf "* Error: Invalid argument in deploy api %s=%s.*\n" "$1" "$2"
     printf "***************************\n"
     exit 1
 esac

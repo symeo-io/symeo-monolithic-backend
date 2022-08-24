@@ -48,7 +48,16 @@ jobs:
             cd .aws && ./build_docker.sh \
               --region ${AWS_REGION} \
               --env ${ENVIRONMENT} \
-              --tag ${CIRCLE_SHA1}
+              --tag ${CIRCLE_SHA1} \
+               -s "symeo-api" -sp "aws,api"
+      - run:
+          name: Build docker
+          command: |
+            cd .aws && ./build_docker.sh \
+              --region ${AWS_REGION} \
+              --env ${ENVIRONMENT} \
+              --tag ${CIRCLE_SHA1} \
+               -s "symeo-job" -sp "aws,job"
       - run:
           name: Deploy
           command: |
