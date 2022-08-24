@@ -6,23 +6,30 @@ orbs:
 
 jobs:
   build-and-test:
-    docker:
-      - image: cimg/openjdk:17.0
+    machine:
+      image: ubuntu-2004:202107-02
+      docker_layer_caching: true
     steps:
       - checkout
       - run:
+          name: Install OpenJDK 17
+          command: |
+            sudo apt-get update && sudo apt-get install openjdk-17-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
+      - run:
           name: Build
-          command: mvn -B -DskipTests clean package -T 6
+          command: ./mvnw -B clean package -T 12
       - save_cache:
           key: build-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - bootstrap/target/
       - run:
-          name: Test
-          command: mvn test -T 6
+          name: Unit Tests
+          command: ./mvnw test -T 12
       - run:
-          name: Integration Test
-          command: mvn integration-test -T 4
+          name: Integration Tests
+          command: ./mvnw failsafe:integration-test failsafe:verify -T 12
       - slack/notify:
           event: fail
           template: basic_fail_1
