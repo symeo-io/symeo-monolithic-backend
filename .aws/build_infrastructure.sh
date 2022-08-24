@@ -160,31 +160,31 @@ aws cloudformation deploy \
 export_stack_outputs symeo-backend-s3-${ENV} ${REGION}
 
 ./build_infrastructure_api.sh \
-  --region ${REGION} \
-  --env ${ENV} \
-  --profile ${PROFILE} \
-  --db-password ${DB_PASSWORD} \
-  --datadog-api-key ${DATADOG_API_KEY} \
-  --domain ${DOMAIN} \
-  --prefix-url ${PREFIX_URL} \
-  --acm-arn ${ACM_ARN} \
-  --acm-arn-alb ${ACM_ARN_ALB} \
-  --tag ${MY_TAG} \
-  --vpc-id ${VPC_ID} \
-  --subnets ${SUBNETS}
+  --region "$REGION" \
+  --env "$ENV" \
+  --profile "$PROFILE" \
+  --db-password "$DB_PASSWORD" \
+  --datadog-api-key "$DATADOG_API_KEY" \
+  --domain "$DOMAIN" \
+  --prefix-url "$PREFIX_URL" \
+  --acm-arn "$ACM_ARN" \
+  --acm-arn-alb "$ACM_ARN_ALB" \
+  --tag "$MY_TAG" \
+  --vpc-id "$VPC_ID" \
+  --subnets "$SUBNETS"
 
 ./build_infrastructure_job.sh \
-  --region ${REGION} \
-  --env ${ENV} \
-  --profile ${PROFILE} \
-  --db-password ${DB_PASSWORD} \
-  --domain ${DOMAIN} \
-  --prefix-url ${JOB_PREFIX_URL} \
-  --acm-arn ${ACM_ARN} \
-  --acm-arn-alb ${ACM_ARN_ALB} \
-  --tag ${MY_TAG} \
-  --vpc-id ${VPC_ID} \
-  --subnets ${SUBNETS}
+  --region "$REGION" \
+  --env "$ENV" \
+  --profile "$PROFILE" \
+  --db-password "$DB_PASSWORD" \
+  --domain "$DOMAIN" \
+  --prefix-url "$JOB_PREFIX_URL" \
+  --acm-arn "$ACM_ARN" \
+  --acm-arn-alb "$ACM_ARN_ALB" \
+  --tag "$MY_TAG" \
+  --vpc-id "$VPC_ID" \
+  --subnets "$SUBNETS"
 
 ## Datadog integration
 aws cloudformation deploy \
