@@ -6,11 +6,9 @@ import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJob
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 
 import java.net.http.HttpClient;
 
-@Profile("job-api")
 public class SymeoJobApiConfiguration {
 
     @Bean
