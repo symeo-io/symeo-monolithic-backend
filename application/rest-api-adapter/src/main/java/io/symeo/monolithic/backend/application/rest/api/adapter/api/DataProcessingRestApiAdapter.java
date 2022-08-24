@@ -20,6 +20,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
 
     private final DataProcessingJobAdapter dataProcessingJobAdapter;
     private final String jobApiKey;
+    private final String jobApiHeaderKey;
 
     @Override
     public ResponseEntity<Void> startDataProcessingJob(final UUID organizationId) {
@@ -36,7 +37,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
     public ResponseEntity<Void> startAllDataCollectionJobs(String X_SYMEO_JOB_KEY_X) {
         try {
             if (!X_SYMEO_JOB_KEY_X.equals(jobApiKey)) {
-                LOGGER.error("Unauthorized X_SYMEO_JOB_KEY_X {}", X_SYMEO_JOB_KEY_X);
+                LOGGER.error("Unauthorized header key {} = {}", jobApiHeaderKey, X_SYMEO_JOB_KEY_X);
                 return ResponseEntity.status(403).build();
             }
             dataProcessingJobAdapter.startAll();

@@ -34,6 +34,7 @@ application:
   job-api:
     api-key: ${SYMEO_JOB_API_KEY}
     url: ${SYMEO_JOB_API_URL}
+    header-key: X-SYMEO-JOB-KEY-X
 
 
 

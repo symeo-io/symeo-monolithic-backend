@@ -18,7 +18,8 @@ public class JobApiConfiguration {
     @Bean
     public DataProcessingRestApiAdapter dataProcessingJobApi(final DataProcessingJobAdapter dataProcessingJobAdapter,
                                                              final SymeoJobApiProperties symeoJobApiProperties) {
-        return new DataProcessingRestApiAdapter(dataProcessingJobAdapter, symeoJobApiProperties.getApiKey());
+        return new DataProcessingRestApiAdapter(dataProcessingJobAdapter, symeoJobApiProperties.getApiKey(),
+                symeoJobApiProperties.getHeaderKey());
     }
 
     @Bean

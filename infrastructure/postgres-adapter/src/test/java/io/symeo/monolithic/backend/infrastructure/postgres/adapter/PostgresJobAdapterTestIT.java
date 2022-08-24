@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -120,13 +121,13 @@ public class PostgresJobAdapterTestIT {
 
         // Then
         assertThat(lastJobsForCodeAndOrganizationAndLimit1).hasSize(1);
-        assertThat(lastJobsForCodeAndOrganizationAndLimit1.get(0)).isEqualTo(JobMapper.entityToDomain(jobEntity3));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit1.get(0)).isEqualTo(entityToDomain(jobEntity3));
         assertThat(lastJobsForCodeAndOrganizationAndLimit2).hasSize(2);
-        assertThat(lastJobsForCodeAndOrganizationAndLimit2.get(0)).isEqualTo(JobMapper.entityToDomain(jobEntity3));
-        assertThat(lastJobsForCodeAndOrganizationAndLimit2.get(1)).isEqualTo(JobMapper.entityToDomain(jobEntity2));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit2.get(0)).isEqualTo(entityToDomain(jobEntity3));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit2.get(1)).isEqualTo(entityToDomain(jobEntity2));
         assertThat(lastJobsForCodeAndOrganizationAndLimit3).hasSize(3);
-        assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(0)).isEqualTo(JobMapper.entityToDomain(jobEntity3));
-        assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(1)).isEqualTo(JobMapper.entityToDomain(jobEntity2));
-        assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(2)).isEqualTo(JobMapper.entityToDomain(jobEntity1));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(0)).isEqualTo(entityToDomain(jobEntity3));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(1)).isEqualTo(entityToDomain(jobEntity2));
+        assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(2)).isEqualTo(entityToDomain(jobEntity1));
     }
 }
