@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @AllArgsConstructor
 public class UserService implements UserFacadeAdapter {
 
@@ -55,7 +57,7 @@ public class UserService implements UserFacadeAdapter {
                 users.stream().filter(user -> !existingEmails.contains(user.getEmail())).collect(Collectors.toList());
         // TODO : handle other use cases
         final List<User> existingNewUsersToUpdate =
-                existingUsers.stream().filter(user -> user.getOrganization().equals(organization) && user.getStatus().equals(User.PENDING))
+                existingUsers.stream().filter(user -> isNull(user.getOrganization()) && user.getStatus().equals(User.PENDING))
                         .toList();
         newUsers.addAll(updateOnboardingForExistingNewUsers(existingNewUsersToUpdate));
         final List<User> createdUsers =

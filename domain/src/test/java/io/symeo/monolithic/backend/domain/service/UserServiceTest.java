@@ -222,7 +222,7 @@ public class UserServiceTest {
         final ArgumentCaptor<Organization> organizationArgumentCaptor = ArgumentCaptor.forClass(Organization.class);
         final ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
         when(userStorageAdapter.getUsersFromEmails(users.stream().map(User::getEmail).toList())).thenReturn(
-                List.of(users.get(0).toBuilder().organizations(List.of(organization)).id(UUID.randomUUID()).status(User.PENDING).build())
+                List.of(users.get(0).toBuilder().id(UUID.randomUUID()).status(User.PENDING).build())
         );
         when(userStorageAdapter.saveUsers(usersCaptor.capture()))
                 .thenReturn(users.stream().map(user -> user.toBuilder().id(UUID.randomUUID()).build()).toList());
