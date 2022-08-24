@@ -65,7 +65,7 @@ aws ecs register-task-definition \
   --container-definitions "
 [
   {
-    \"name\":\"SymeoBackendContainer-${ENV}\",
+    \"name\":\"SymeoBackendContainerJob-${ENV}\",
     \"image\":\"${SymeoBackendRepository}:${TAG}\",
     \"portMappings\":[{\"containerPort\":9999}],
     \"cpu\":1948,
