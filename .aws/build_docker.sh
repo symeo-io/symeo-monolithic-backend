@@ -55,7 +55,7 @@ fi
 
 GIT_ROOT_PATH=$(git rev-parse --show-toplevel)
 
-build_and_push_docker_image $GIT_ROOT_PATH "Dockerfile" "symeo-backend-ecs-repository-${ENV}" "SymeoBackendRepository" $REGION $TAG $DD_SERVICE $ENV $SPRING_PROFILES_ACTIVE
+build_and_push_docker_image $GIT_ROOT_PATH "Dockerfile" "symeo-backend-ecs-repository-${ENV}" "SymeoBackendRepository" $REGION $TAG $DD_SERVICE $SPRING_PROFILES_ACTIVE $ENV
 
 echo "DONE"
 
