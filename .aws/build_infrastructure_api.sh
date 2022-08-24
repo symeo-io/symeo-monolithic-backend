@@ -104,7 +104,7 @@ aws cloudformation deploy \
       VpcId=${VPC_ID} \
   --region ${REGION} \
   --stack-name symeo-backend-alb-${ENV} \
-  --template-file cloudformation/alb.yml
+  --template-file cloudformation/api/alb.yml
 
 export_stack_outputs symeo-backend-alb-${ENV} ${REGION}
 
@@ -118,7 +118,7 @@ aws cloudformation deploy \
       PublicAlias=${PUBLIC_URL} \
   --region ${REGION} \
   --stack-name symeo-backend-cloudfront-${ENV} \
-  --template-file cloudformation/cloudfront.yml \
+  --template-file cloudformation/api/cloudfront.yml \
 
 export_stack_outputs symeo-backend-cloudfront-${ENV} ${REGION}
 
