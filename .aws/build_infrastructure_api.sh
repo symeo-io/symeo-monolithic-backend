@@ -62,7 +62,7 @@ case $key in
     ;;
     *)
     printf "***************************\n"
-    printf "* Error: Invalid argument in build infra api.*\n"
+    printf "* Error: Invalid argument in build infra api %s.*\n" "$2"
     printf "***************************\n"
     exit 1
 esac
