@@ -66,7 +66,7 @@ ENV_FILE_PATH="./.env"
 
 aws s3 cp $ENV_FILE_PATH s3://${EnvFilesS3Bucket}
 
-./deploy_api \
+./deploy_api.sh \
   --region ${REGION} \
   --tag ${TAG} \
   --env ${ENV} \
@@ -74,7 +74,7 @@ aws s3 cp $ENV_FILE_PATH s3://${EnvFilesS3Bucket}
   --datadog-api-key ${DATADOG_API_KEY} \
   --profile ${PROFILE}
 
-./deploy_job \
+./deploy_job.sh \
   --region ${REGION} \
   --tag ${TAG} \
   --env ${ENV} \
