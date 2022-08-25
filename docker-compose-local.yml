@@ -22,6 +22,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        dd_service: symeo-local-api
+        dd_env: local
+        spring_profiles_active: local,front-api,job-api
     ports:
       - "9999:9999"
     networks:
