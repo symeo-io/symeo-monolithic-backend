@@ -49,7 +49,7 @@ public class PullRequestHistogramService {
                             pullRequestView);
                 } else {
                     dataCompareToLimit = getDataCompareToTimeLimit(pullRequestLimit, rangeStartDate,
-                            dataCompareToLimit, pullRequestView);
+                            dataCompareToLimit, pullRequestView, range);
                 }
             }
         }
@@ -69,8 +69,9 @@ public class PullRequestHistogramService {
 
     private static DataCompareToLimit getDataCompareToTimeLimit(final int pullRequestLimit, final Date weekStartDate,
                                                                 DataCompareToLimit dataCompareToLimit,
-                                                                final PullRequestView pullRequestView) {
-        if (pullRequestView.isAboveTimeLimit(pullRequestLimit, weekStartDate)) {
+                                                                final PullRequestView pullRequestView,
+                                                                final int range) {
+        if (pullRequestView.isAboveTimeLimit(pullRequestLimit, weekStartDate, range)) {
             dataCompareToLimit = dataCompareToLimit.incrementDataAboveLimit();
         } else {
             dataCompareToLimit = dataCompareToLimit.incrementDataBelowLimit();

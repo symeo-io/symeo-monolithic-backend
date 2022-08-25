@@ -41,3 +41,6 @@ json_local_storage
 symeo-staging-io.private-key.pem
 symeo-io.private-key.der
 symeo-staging-io.private-key.der
+
+### MacOS ###
+.DS_Store

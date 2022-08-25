@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -88,20 +89,22 @@ public class PullRequestView {
         return false;
     }
 
-    public boolean isAboveTimeLimit(final int pullRequestLimit, final Date weekStartDate) {
-        final Date creationDate = this.getCreationDate();
-        final Date mergeDate = this.getMergeDate();
-        if (isNull(mergeDate) || (mergeDate.after(weekStartDate))) {
-            long daysBetweenCreationAndWeekStart =
-                    TimeUnit.DAYS.convert(weekStartDate.getTime() - creationDate.getTime(),
-                            TimeUnit.MILLISECONDS);
-            return daysBetweenCreationAndWeekStart > pullRequestLimit;
+    public boolean isAboveTimeLimit(final int pullRequestLimit, final Date weekStartDate, final int range) {
+        final ZoneId zoneId = ZoneId.systemDefault();
+        final Date now = new Date();
+        final long daysBetweenNowAndWeekStartDate =
+                TimeUnit.DAYS.convert(now.getTime() - weekStartDate.getTime(),
+                        TimeUnit.MILLISECONDS);
+        float daysOpened;
+        if (daysBetweenNowAndWeekStartDate < range) {
+            daysOpened = this.getDaysOpened(now);
         } else {
-            long daysBetweenMergeAndWeekStart =
-                    TimeUnit.DAYS.convert(weekStartDate.getTime() - mergeDate.getTime(),
-                            TimeUnit.MILLISECONDS);
-            return daysBetweenMergeAndWeekStart > pullRequestLimit;
+            daysOpened = this.getDaysOpened(
+                    Date.from((weekStartDate.toInstant().atZone(zoneId)
+                            .toLocalDate().plusDays(range))
+                            .atStartOfDay(zoneId).toInstant()));
         }
+        return daysOpened > pullRequestLimit;
     }
 
     public boolean isAboveSizeLimit(int limit) {

@@ -160,8 +160,8 @@ public class PullRequestViewTest {
 
 
         // When
-        final boolean aboveTimeLimit1 = pullRequestView1.isAboveTimeLimit(7, stringToDate("2022-04-1"));
-        final boolean aboveTimeLimit2 = pullRequestView2.isAboveTimeLimit(7, stringToDate("2022-04-1"));
+        final boolean aboveTimeLimit1 = pullRequestView1.isAboveTimeLimit(7, stringToDate("2022-04-1"), range);
+        final boolean aboveTimeLimit2 = pullRequestView2.isAboveTimeLimit(7, stringToDate("2022-04-1"), range);
         // Then
         assertThat(aboveTimeLimit1).isTrue();
         assertThat(aboveTimeLimit2).isTrue();
