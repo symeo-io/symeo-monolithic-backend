@@ -22,21 +22,20 @@ jobs:
           command: |
             find . -type f -name "pom.xml" -exec sh -c "sha256sum {} >> ~/pom-checksum.tmp" \;
             sort -o ~/pom-checksum ~/pom-checksum.tmp
-      - restore_cache:
+      - restore_maven_cache:
           keys:
             - symeo-monolithic-backend-multi-module-mvn-{{ checksum "~/pom-checksum" }}
       - run:
           name: Build
           command: ./mvnw install -T 12 -DskipTests -DskipITs
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project
-            - .m2
-      - save_cache:
+      - save_maven_cache:
           paths:
             - ~/.m2
           key: symeo-monolithic-backend-multi-module-mvn-{{ checksum "~/pom-checksum" }}
+      - save_build_cache:
+          key: build-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - bootstrap/target/
       - run:
           name: Unit Tests
           command: ./mvnw test -T 12
@@ -55,9 +54,8 @@ jobs:
       - checkout
       - setup_remote_docker
       - aws-cli/setup
-      - restore_cache:
-          keys:
-            - symeo-monolithic-backend-multi-module-mvn-{{ checksum "~/pom-checksum" }}
+      - restore_build_cache:
+          key: build-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Prepare Github App private key
           command: |
@@ -100,9 +98,8 @@ jobs:
       - checkout
       - setup_remote_docker
       - aws-cli/setup
-      - restore_cache:
-          keys:
-            - symeo-monolithic-backend-multi-module-mvn-{{ checksum "~/pom-checksum" }}
+      - restore_build_cache:
+          key: build-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Prepare Github App private key
           command: |
