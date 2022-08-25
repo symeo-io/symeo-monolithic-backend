@@ -78,6 +78,8 @@ aws s3 cp $ENV_FILE_PATH s3://${EnvFilesS3Bucket}
   --region ${REGION} \
   --tag ${TAG} \
   --env ${ENV} \
+  --db-password ${DB_PASSWORD} \
+  --datadog-api-key ${DATADOG_API_KEY} \
   --profile ${PROFILE}
 
 echo "DONE"

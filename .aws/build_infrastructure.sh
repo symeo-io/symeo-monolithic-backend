@@ -178,6 +178,7 @@ export_stack_outputs symeo-backend-s3-${ENV} ${REGION}
   --env "$ENV" \
   --profile "$PROFILE" \
   --db-password "$DB_PASSWORD" \
+  --datadog-api-key "$DATADOG_API_KEY" \
   --domain "$DOMAIN" \
   --prefix-url "$JOB_PREFIX_URL" \
   --acm-arn "$ACM_ARN" \

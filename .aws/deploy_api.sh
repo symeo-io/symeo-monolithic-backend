@@ -58,6 +58,7 @@ export_stack_outputs symeo-backend-iam-${ENV} ${REGION}
 export_stack_outputs symeo-backend-ecs-repository-${ENV} ${REGION}
 export_stack_outputs symeo-backend-ecs-cluster-${ENV} ${REGION}
 export_stack_outputs symeo-backend-ecs-services-${ENV} ${REGION}
+export_stack_outputs symeo-backend-aurora-${ENV} ${REGION}
 
 AccountId=$(get_aws_account_id)
 

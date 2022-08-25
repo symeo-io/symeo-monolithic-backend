@@ -28,6 +28,10 @@ case $key in
     DB_PASSWORD="$2"
     shift # past argument
     ;;
+    -ddik|--datadog-api-key)
+    DATADOG_API_KEY="$2"
+    shift # past argument
+    ;;
     -d|--domain)
     DOMAIN="$2"
     shift # past argument
@@ -172,6 +176,7 @@ aws cloudformation deploy \
       ECSTaskRole=${SymeoBackendTaskRole} \
       ECSExecutionRole=${SymeoBackendECSExecutionRole} \
       Env=${ENV} \
+      DataDogApiKey=${DATADOG_API_KEY} \
       EnvFilesS3Bucket=${EnvFilesS3Bucket} \
       Tag=${MY_TAG} \
       TargetGroup=${TargetGroup} \
