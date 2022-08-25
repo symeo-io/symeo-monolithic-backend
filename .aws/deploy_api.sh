@@ -62,6 +62,67 @@ export_stack_outputs symeo-backend-aurora-${ENV} ${REGION}
 
 AccountId=$(get_aws_account_id)
 
+api_container="
+{
+  \"name\":\"SymeoBackendContainer-${ENV}\",
+  \"image\":\"${SymeoBackendRepository}:${TAG}\",
+  \"portMappings\":[{\"containerPort\":9999}],
+  \"cpu\":1948,
+  \"memory\":3840,
+  \"dockerLabels\": {
+    \"com.datadoghq.ad.instances\": \"[{\\\"host\\\": \\\"%%host%%\\\", \\\"port\\\": 9999}]\",
+    \"com.datadoghq.ad.check_names\": \"[\\\"symeo-front-api-${ENV}\\\"]\",
+    \"com.datadoghq.ad.init_configs\": \"[{}]\"
+  },
+  \"environmentFiles\": [{
+    \"type\":\"s3\",
+    \"value\":\"arn:aws:s3:::${EnvFilesS3Bucket}/.env\"
+  }],
+  \"logConfiguration\":{
+    \"logDriver\":\"awslogs\",
+    \"options\":{
+      \"awslogs-group\":\"${CloudwatchLogsGroup}\",
+      \"awslogs-region\":\"${REGION}\",
+      \"awslogs-stream-prefix\":\"symeo-backend\"
+    }
+  }
+}"
+
+datadog_container="
+{
+  \"name\":\"DataDogAgent-${ENV}\",
+  \"image\":\"public.ecr.aws/datadog/agent:latest\",
+  \"cpu\":100,
+  \"memory\":256,
+  \"portMappings\":[{
+    \"hostPort\":8126,
+    \"protocol\":\"tcp\",
+    \"containerPort\":8126
+  }],
+  \"dockerLabels\": {
+    \"com.datadoghq.ad.instances\": \"[{\\\"dbm\\\":true,\\\"host\\\":\\\"${ClusterEndpoint}\\\",\\\"username\\\":\\\"datadog\\\"\\\"password\\\": \\\"${DB_PASSWORD}\\\"\\\"port\\\": 9999}]\",
+    \"com.datadoghq.ad.check_names\": \"[\\\"postgres\\\"]\",
+    \"com.datadoghq.ad.init_configs\": \"[{}]\"
+  },
+  \"environment\":[
+    {\"name\":\"DD_API_KEY\",\"value\":\"${DATADOG_API_KEY}\"},
+    {\"name\":\"DD_SITE\",\"value\":\"datadoghq.eu\"},
+    {\"name\":\"DD_APM_ENABLED\",\"value\":\"true\"},
+    {\"name\":\"DD_APM_NON_LOCAL_TRAFFIC\",\"value\":\"true\"},
+    {\"name\":\"ECS_FARGATE\",\"value\":\"true\"},
+    {\"name\":\"DD_APM_IGNORE_RESOURCES\",\"value\":\"GET /actuator/health\"}
+  ]
+}
+"
+
+if [ "$ENV" = "prod" ]
+then
+  container_definition="[${api_container},${datadog_container}]"
+else
+  container_definition="[${api_container}]"
+fi
+
+
 aws ecs register-task-definition \
   --task-role-arn arn:aws:iam::${AccountId}:role/${SymeoBackendTaskRole} \
   --execution-role-arn arn:aws:iam::${AccountId}:role/${SymeoBackendECSExecutionRole} \
@@ -71,57 +132,7 @@ aws ecs register-task-definition \
   --cpu 2048 \
   --memory 4096 \
   --network-mode awsvpc \
-  --container-definitions "
-[
-  {
-    \"name\":\"SymeoBackendContainer-${ENV}\",
-    \"image\":\"${SymeoBackendRepository}:${TAG}\",
-    \"portMappings\":[{\"containerPort\":9999}],
-    \"cpu\":1948,
-    \"memory\":3840,
-    \"dockerLabels\": {
-      \"com.datadoghq.ad.instances\": \"[{\\\"host\\\": \\\"%%host%%\\\", \\\"port\\\": 9999}]\",
-      \"com.datadoghq.ad.check_names\": \"[\\\"symeo-api-${ENV}\\\"]\",
-      \"com.datadoghq.ad.init_configs\": \"[{}]\"
-    },
-    \"environmentFiles\": [{
-      \"type\":\"s3\",
-      \"value\":\"arn:aws:s3:::${EnvFilesS3Bucket}/.env\"
-    }],
-    \"logConfiguration\":{
-          \"logDriver\":\"awslogs\",
-          \"options\":{
-            \"awslogs-group\":\"${CloudwatchLogsGroup}\",
-            \"awslogs-region\":\"${REGION}\",
-            \"awslogs-stream-prefix\":\"symeo-backend\"
-          }
-        }
-  },
-  {
-    \"name\":\"DataDogAgent-${ENV}\",
-    \"image\":\"public.ecr.aws/datadog/agent:latest\",
-    \"cpu\":100,
-    \"memory\":256,
-    \"portMappings\":[{
-      \"hostPort\":8126,
-      \"protocol\":\"tcp\",
-      \"containerPort\":8126
-    }],
-    \"dockerLabels\": {
-      \"com.datadoghq.ad.instances\": \"[{\\\"dbm\\\":true,\\\"host\\\":\\\"${ClusterEndpoint}\\\",\\\"username\\\":\\\"datadog\\\"\\\"password\\\": \\\"${DB_PASSWORD}\\\"\\\"port\\\": 9999}]\",
-      \"com.datadoghq.ad.check_names\": \"[\\\"postgres\\\"]\",
-      \"com.datadoghq.ad.init_configs\": \"[{}]\"
-    },
-    \"environment\":[
-      {\"name\":\"DD_API_KEY\",\"value\":\"${DATADOG_API_KEY}\"},
-      {\"name\":\"DD_SITE\",\"value\":\"datadoghq.eu\"},
-      {\"name\":\"DD_APM_ENABLED\",\"value\":\"true\"},
-      {\"name\":\"DD_APM_NON_LOCAL_TRAFFIC\",\"value\":\"true\"},
-      {\"name\":\"ECS_FARGATE\",\"value\":\"true\"},
-      {\"name\":\"DD_APM_IGNORE_RESOURCES\",\"value\":\"GET /actuator/health\"}
-    ]
-  }
-]"
+  --container-definitions "$container_definition"
 
 aws ecs update-service --cluster ${ECSCluster} --service ${ServiceName} --task-definition ${FamilyName} --region ${REGION}
 

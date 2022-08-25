@@ -139,7 +139,7 @@ if docker_image_exists_in_ecr $SymeoBackendRepositoryName $MY_TAG $REGION; then
   echo "Docker image with tag ${MY_TAG} already exists, skipping build..."
 else
   echo "No image found with tag ${MY_TAG}, building it..."
-  ./build_docker.sh -r "$REGION" -e "$ENV" -t "$MY_TAG" -p "$PROFILE" -s "symeo-job" -sp "aws,job" --registry "symeo-backend-ecs-repository-job-${ENV}"
+  ./build_docker.sh -r "$REGION" -e "$ENV" -t "$MY_TAG" -p "$PROFILE" -s "symeo-job-api-${ENV}" -sp "aws,job-api" --registry "symeo-backend-ecs-repository-job-${ENV}"
 fi
 
 ENV_FILE_PATH="./.env"
