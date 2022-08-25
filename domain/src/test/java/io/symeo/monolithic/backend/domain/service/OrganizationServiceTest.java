@@ -30,8 +30,10 @@ public class OrganizationServiceTest {
                 new OrganizationService(accountOrganizationStorageAdapter, dataProcessingJobAdapter);
         final String externalId = faker.name().name();
         final String vcsOrganizationName = faker.gameOfThrones().character();
-        final Organization expectedOrganization = Organization.builder().id(UUID.randomUUID())
+        final UUID organizationId = UUID.randomUUID();
+        final Organization expectedOrganization = Organization.builder().id(organizationId)
                 .name(vcsOrganizationName)
+                .id(organizationId)
                 .vcsOrganization(
                         VcsOrganization.builder()
                                 .externalId(externalId)
@@ -41,9 +43,10 @@ public class OrganizationServiceTest {
                 .build();
 
         // When
-        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<UUID> uuiDArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
         final Organization organization = Organization.builder()
                 .name(vcsOrganizationName)
+                .id(organizationId)
                 .vcsOrganization(
                         VcsOrganization.builder()
                                 .externalId(externalId)
@@ -58,7 +61,7 @@ public class OrganizationServiceTest {
 
         // Then
         assertThat(result).isEqualTo(expectedOrganization);
-        verify(dataProcessingJobAdapter, times(1)).start(stringArgumentCaptor.capture());
-        assertThat(stringArgumentCaptor.getValue()).isEqualTo(organization.getVcsOrganization().getName());
+        verify(dataProcessingJobAdapter, times(1)).start(uuiDArgumentCaptor.capture());
+        assertThat(uuiDArgumentCaptor.getValue()).isEqualTo(organization.getId());
     }
 }

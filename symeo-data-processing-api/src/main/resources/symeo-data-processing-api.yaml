@@ -12,19 +12,41 @@ paths:
     get:
       tags:
         - DataProcessingJob
-      summary: Start to collect and process data from clients' platforms
+      summary: Start to collect and process data for an organization
       operationId: startDataProcessingJob
+      description: |
+        Start to collect and process data given an organization id
+      parameters:
+        - in: query
+          name: organization_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Job started successfully
+        400:
+          description: A functional error has occurred
+        500:
+          description: An internal error has occurred
+  /api/v1/job/data-processing/all:
+    get:
+      tags:
+        - DataProcessingJob
+      summary: Start data collection jobs for all organizations
+      operationId: startAllDataCollectionJobs
       description: |
         Start to collect and process data from clients' platforms
       parameters:
-        - in: query
-          name: organization_name
+        - in: header
+          name: X-SYMEO-JOB-KEY-X
           schema:
             type: string
-            example: armis
+          required: true
       responses:
         200:
-          description: Job ran successfully
+          description: All jobs started successfully
         400:
           description: A functional error has occurred
         500:

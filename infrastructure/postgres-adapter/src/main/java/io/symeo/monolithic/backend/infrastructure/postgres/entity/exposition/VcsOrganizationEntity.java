@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -17,7 +18,7 @@ import java.time.ZonedDateTime;
 @Builder
 @Table(name = "vcs_organization", schema = "exposition_storage")
 @EntityListeners(AuditingEntityListener.class)
-public class VcsOrganizationEntity  {
+public class VcsOrganizationEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -34,6 +35,8 @@ public class VcsOrganizationEntity  {
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "organization_id", referencedColumnName = "id")
     OrganizationEntity organizationEntity;
+    @Column(name = "organization_id", updatable = false, insertable = false)
+    UUID organizationId;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;
