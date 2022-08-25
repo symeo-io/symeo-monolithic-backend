@@ -123,6 +123,7 @@ public class PullRequestHistogramServiceTest {
         final List<PullRequestView> pullRequestViews = List.of(
                 PieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2021-01-01"), null, null, PullRequest.OPEN),
                 PieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
+                PieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), stringToDate("2022-01-03"), null, PullRequest.MERGE),
                 PieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
                 PieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), stringToDate("2022-01-15"),
                         null, PullRequest.MERGE),
@@ -141,10 +142,10 @@ public class PullRequestHistogramServiceTest {
                         .limit(teamGoal.getValueAsInteger())
                         .organizationId(organization.getId())
                         .build();
-        pullRequestHistogram.addDataBelowAndAboveLimitForWeek(3, 1, "2022-01-01");
+        pullRequestHistogram.addDataBelowAndAboveLimitForWeek(1, 4, "2022-01-01");
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(0, 4, "2022-01-08");
-        pullRequestHistogram.addDataBelowAndAboveLimitForWeek(1, 3, "2022-01-15");
-        pullRequestHistogram.addDataBelowAndAboveLimitForWeek(2, 4, "2022-01-22");
+        pullRequestHistogram.addDataBelowAndAboveLimitForWeek(0, 4, "2022-01-15");
+        pullRequestHistogram.addDataBelowAndAboveLimitForWeek(0, 6, "2022-01-22");
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(0, 6, "2022-01-29");
         pullRequestHistogram.addDataBelowAndAboveLimitForWeek(0, 5, "2022-02-01");
 

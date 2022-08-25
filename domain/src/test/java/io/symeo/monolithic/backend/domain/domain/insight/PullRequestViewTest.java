@@ -164,7 +164,7 @@ public class PullRequestViewTest {
         final boolean aboveTimeLimit2 = pullRequestView2.isAboveTimeLimit(7, stringToDate("2022-04-1"), range);
         // Then
         assertThat(aboveTimeLimit1).isTrue();
-        assertThat(aboveTimeLimit2).isTrue();
+        assertThat(aboveTimeLimit2).isFalse();
     }
 
     @Test

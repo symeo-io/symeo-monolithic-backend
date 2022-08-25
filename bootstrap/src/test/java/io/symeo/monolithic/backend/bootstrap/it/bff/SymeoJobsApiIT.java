@@ -48,8 +48,8 @@ public class SymeoJobsApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .build()
         ));
         authenticationContextProvider.authorizeUserForMail(email);
-        final String code1 = faker.ancient().god();
-        final String code2 = faker.ancient().hero();
+        final String code1 = faker.harryPotter().character();
+        final String code2 = faker.pokemon().name();
         final JobEntity jobEntity11 =
                 jobRepository.save(JobEntity.builder().organizationId(organizationId).code(code1).technicalCreationDate(ZonedDateTime.now()).status(Job.FAILED).build());
         final JobEntity jobEntity12 =

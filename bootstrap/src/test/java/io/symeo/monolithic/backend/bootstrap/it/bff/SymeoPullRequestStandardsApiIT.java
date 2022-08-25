@@ -120,8 +120,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.histogram.limit").isEqualTo(5)
-                .jsonPath("$.histogram.data[0].data_above_limit").isEqualTo(0)
-                .jsonPath("$.histogram.data[0].data_below_limit").isEqualTo(3)
+                .jsonPath("$.histogram.data[0].data_above_limit").isEqualTo(1)
+                .jsonPath("$.histogram.data[0].data_below_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[0].start_date_range").isEqualTo("2022-01-01")
                 .jsonPath("$.histogram.data[1].data_above_limit").isEqualTo(1)
                 .jsonPath("$.histogram.data[1].data_below_limit").isEqualTo(2)
@@ -129,8 +129,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.histogram.data[2].data_above_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[2].data_below_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[2].start_date_range").isEqualTo("2022-01-15")
-                .jsonPath("$.histogram.data[3].data_above_limit").isEqualTo(2)
-                .jsonPath("$.histogram.data[3].data_below_limit").isEqualTo(3)
+                .jsonPath("$.histogram.data[3].data_above_limit").isEqualTo(3)
+                .jsonPath("$.histogram.data[3].data_below_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[3].start_date_range").isEqualTo("2022-01-22");
     }
 
