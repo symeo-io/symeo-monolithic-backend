@@ -56,7 +56,8 @@ jobs:
       - setup_remote_docker
       - aws-cli/setup
       - restore_cache:
-          key: build-{{ .Environment.CIRCLE_SHA1 }}
+          keys:
+            - symeo-monolithic-backend-multi-module-mvn-{{ checksum "~/pom-checksum" }}
       - run:
           name: Prepare Github App private key
           command: |
@@ -100,7 +101,8 @@ jobs:
       - setup_remote_docker
       - aws-cli/setup
       - restore_cache:
-          key: build-{{ .Environment.CIRCLE_SHA1 }}
+          keys:
+            - symeo-monolithic-backend-multi-module-mvn-{{ checksum "~/pom-checksum" }}
       - run:
           name: Prepare Github App private key
           command: |
