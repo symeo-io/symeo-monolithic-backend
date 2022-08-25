@@ -29,7 +29,10 @@ application:
       repositories:
         max-retry-number: 3
         retry-time-delay-in-millis: 100
-
+  job-api:
+    api-key: "fake-api-key"
+    url: "https://faker-app.symeo.io"
+    header-key: X-SYMEO-JOB-KEY-X
 
 spring:
   application:

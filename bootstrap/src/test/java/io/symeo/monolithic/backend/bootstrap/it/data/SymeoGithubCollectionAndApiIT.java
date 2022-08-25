@@ -271,7 +271,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
         // When
         client.get()
-                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_name", organizationName))
+                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_id", organizationId.toString()))
                 .exchange()
                 // Then
                 .expectStatus()
