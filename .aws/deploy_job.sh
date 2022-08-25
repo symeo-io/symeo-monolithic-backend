@@ -64,7 +64,7 @@ AccountId=$(get_aws_account_id)
 
 api_container="
 {
-  \"name\":\"SymeoBackendContainerJob-${ENV}\",
+  \"name\":\"SymeoBackendContainer-Job-${ENV}\",
   \"image\":\"${SymeoBackendRepository}:${TAG}\",
   \"portMappings\":[{\"containerPort\":9999}],
   \"cpu\":1948,
