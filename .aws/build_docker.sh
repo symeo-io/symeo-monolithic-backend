@@ -28,9 +28,21 @@ case $key in
     PROFILE="$2"
     shift # past argument
     ;;
+    -s|--service)
+    DD_SERVICE="$2"
+    shift # past argument
+    ;;
+    -sp|--spring-profile)
+    SPRING_PROFILES_ACTIVE="$2"
+    shift # past argument
+    ;;
+    -ry|--registry)
+    REGISTRY="$2"
+    shift # past argument
+    ;;
     *)
     printf "***************************\n"
-    printf "* Error: Invalid argument.*\n"
+    printf "* Error: Invalid argument in build docker %s=%s.*\n" "$1" "$2"
     printf "***************************\n"
     exit 1
 esac
@@ -47,7 +59,7 @@ fi
 
 GIT_ROOT_PATH=$(git rev-parse --show-toplevel)
 
-build_and_push_docker_image $GIT_ROOT_PATH "Dockerfile" "symeo-backend-ecs-repository-${ENV}" "SymeoBackendRepository" $REGION $TAG
+build_and_push_docker_image $GIT_ROOT_PATH "Dockerfile" ${REGISTRY} "SymeoBackendRepository" $REGION $TAG $DD_SERVICE $SPRING_PROFILES_ACTIVE $ENV
 
 echo "DONE"
 

@@ -15,7 +15,7 @@ public class OrganizationService implements OrganizationFacadeAdapter {
     @Override
     public Organization createOrganization(Organization organization) throws SymeoException {
         final Organization createdOrganization = accountOrganizationStorageAdapter.createOrganization(organization);
-        dataProcessingJobAdapter.start(organization.getVcsOrganization().getName());
+        dataProcessingJobAdapter.start(createdOrganization.getId());
         return createdOrganization;
     }
 }

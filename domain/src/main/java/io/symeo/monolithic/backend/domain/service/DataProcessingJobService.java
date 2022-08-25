@@ -8,10 +8,14 @@ import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRun
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Slf4j
@@ -21,13 +25,20 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
     private final RepositoryService repositoryService;
     private final JobManager jobManager;
+    private final SymeoJobApiAdapter symeoJobApiAdapter;
 
     @Override
-    public void start(final String vcsOrganizationName) throws SymeoException {
-        LOGGER.info("Starting to collect data for organization {}", vcsOrganizationName);
+    public void start(final UUID organizationId) throws SymeoException {
+        LOGGER.info("Starting to collect data for organization {}", organizationId);
         final Organization organization =
-                accountOrganizationStorageAdapter.findVcsOrganizationForName(vcsOrganizationName);
+                accountOrganizationStorageAdapter.findOrganizationById(organizationId);
         collectRepositories(organization);
+    }
+
+    @Override
+    public void startAll() throws SymeoException {
+        final List<Organization> organizations = accountOrganizationStorageAdapter.findAllOrganization();
+        organizations.forEach(organization -> symeoJobApiAdapter.startJobForOrganizationId(organization.getId()));
     }
 
     private void collectRepositories(Organization organization) throws SymeoException {

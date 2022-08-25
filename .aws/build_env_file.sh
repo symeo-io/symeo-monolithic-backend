@@ -34,7 +34,7 @@ case $key in
     ;;
     *)
     printf "***************************\n"
-    printf "* Error: Invalid argument.*\n"
+    printf "* Error: Invalid argument in build env file %s=%s.*\n" "$1" "$2"
     printf "***************************\n"
     exit 1
 esac

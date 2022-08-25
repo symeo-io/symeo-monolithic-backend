@@ -9,6 +9,8 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookEventDTO;
+import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
@@ -18,11 +20,16 @@ import io.symeo.monolithic.backend.infrastructure.json.local.storage.properties.
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestTimeToMergeDTO;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestTimeToMergeRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -63,6 +70,12 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
     public PullRequestTimeToMergeRepository pullRequestTimeToMergeRepository;
     @Autowired
     public TeamRepository teamRepository;
+    @Autowired
+    public GithubWebhookProperties githubWebhookProperties;
+    @Autowired
+    public VcsOrganizationRepository vcsOrganizationRepository;
+    @Autowired
+    public JobRepository jobRepository;
     private static final UUID organizationId = UUID.randomUUID();
     private static final UUID teamId = UUID.randomUUID();
 
@@ -78,7 +91,45 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         new File(TMP_DIR).delete();
     }
 
+
     @Order(1)
+    @Test
+    public void should_create_an_organization_triggered_by_a_github_webhook_installation_event() throws IOException {
+        // Given
+        final byte[] githubWebhookInstallationCreatedEventBytes = Files.readString(Paths.get("target/test-classes" +
+                "/webhook_events" +
+                "/post_installation_created_1.json")).getBytes();
+        final String hmacSHA256 = new HmacUtils("HmacSHA256",
+                githubWebhookProperties.getSecret()).hmacHex(githubWebhookInstallationCreatedEventBytes);
+
+        // When
+        client
+                .post()
+                .uri(getApiURI(GITHUB_WEBHOOK_API))
+                .bodyValue(githubWebhookInstallationCreatedEventBytes)
+                .header("X-GitHub-Event", "installation")
+                .header("X-Hub-Signature-256", "sha256=" + hmacSHA256)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful();
+
+        // Then
+        final List<VcsOrganizationEntity> vcsOrganizationEntities = vcsOrganizationRepository.findAll();
+        assertThat(vcsOrganizationEntities).hasSize(1);
+        final GithubWebhookEventDTO githubWebhookEventDTO =
+                objectMapper.readValue(githubWebhookInstallationCreatedEventBytes, GithubWebhookEventDTO.class);
+        final String organizationName = githubWebhookEventDTO.getInstallation().getAccount().getLogin();
+        assertThat(vcsOrganizationEntities.get(0).getName()).isEqualTo(organizationName);
+        assertThat(vcsOrganizationEntities.get(0).getVcsId()).isEqualTo("github-" + githubWebhookEventDTO.getInstallation().getAccount().getId());
+        assertThat(vcsOrganizationEntities.get(0).getExternalId()).isEqualTo(githubWebhookEventDTO.getInstallation().getId());
+        assertThat(vcsOrganizationEntities.get(0).getOrganizationEntity().getName()).isEqualTo(organizationName);
+        final List<JobEntity> jobs = jobRepository.findAll();
+        assertThat(jobs).hasSize(1);
+        assertThat(jobs.get(0).getOrganizationId()).isEqualTo(vcsOrganizationEntities.get(0).getOrganizationEntity().getId());
+        assertThat(jobs.get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
+    }
+
+    @Order(2)
     @Test
     void should_collect_github_repositories_and_linked_pull_requests_for_a_given_organization() throws SymeoException, IOException, InterruptedException {
         // Given
@@ -220,7 +271,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
         // When
         client.get()
-                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_name", organizationName))
+                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_id", organizationId.toString()))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -256,7 +307,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         });
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void should_return_pull_requests_linked_to_team_id() {
         // Given
@@ -278,7 +329,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         assertThat(allByOrganizationIdAndTeamId).hasSize(pullRequestRepository.findAll().size());
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void should_return_time_to_merge_view() {
         // When

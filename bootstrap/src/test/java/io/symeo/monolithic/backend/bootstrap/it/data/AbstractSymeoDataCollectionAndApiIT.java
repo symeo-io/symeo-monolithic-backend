@@ -35,7 +35,7 @@ import java.nio.file.Paths;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@ActiveProfiles({"it"})
+@ActiveProfiles({"it", "job-api"})
 @AutoConfigureWebTestClient(timeout = "36000")
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = SymeoMonolithicBackendITApplication.class)
 @Testcontainers
@@ -78,6 +78,15 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
         return objectMapper.readValue(dto1, tClass);
     }
 
+    protected URI getApiURI(final String path) {
+        return UriComponentsBuilder.newInstance()
+                .scheme("http")
+                .host("localhost")
+                .port(port)
+                .path(path)
+                .build()
+                .toUri();
+    }
 
     protected URI getApiURI(final String path, String paramName, String paramValue) {
         return UriComponentsBuilder.newInstance()
@@ -90,7 +99,9 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
                 .toUri();
     }
 
+    protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB = "/api/v1/job/data-processing";
+    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL = "/api/v1/job/data-processing/all";
 
     public static class WireMockInitializer
             implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -112,7 +123,8 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
                     });
 
             TestPropertyValues.of(
-                            "infrastructure.github.app.api:http://localhost:" + wireMockServer.port() + "/")
+                            "infrastructure.github.app.api:http://localhost:" + wireMockServer.port() + "/",
+                            "application.job-api.url:http://localhost:" + wireMockServer.port() + "/")
                     .applyTo(configurableApplicationContext);
         }
 

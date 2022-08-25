@@ -1,10 +1,7 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.configuration;
 
 import io.symeo.monolithic.backend.infrastructure.postgres.*;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -48,8 +45,9 @@ public class PostgresConfiguration {
     }
 
     @Bean
-    public PostgresAccountOrganizationAdapter postgresOrganizationAdapter(final VcsOrganizationRepository vcsOrganizationRepository) {
-        return new PostgresAccountOrganizationAdapter(vcsOrganizationRepository);
+    public PostgresAccountOrganizationAdapter postgresOrganizationAdapter(final VcsOrganizationRepository vcsOrganizationRepository,
+                                                                          final OrganizationRepository organizationRepository) {
+        return new PostgresAccountOrganizationAdapter(vcsOrganizationRepository, organizationRepository);
     }
 
     @Bean

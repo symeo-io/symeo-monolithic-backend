@@ -36,16 +36,16 @@ case $key in
     DATADOG_APP_KEY="$2"
     shift # past argument
     ;;
-    -k|--key-name)
-    PEM_KEY="$2"
-    shift # past argument
-    ;;
     -d|--domain)
     DOMAIN="$2"
     shift # past argument
     ;;
     -pu|--prefix-url)
     PREFIX_URL="$2"
+    shift # past argument
+    ;;
+    -jpu|--job-prefix-url)
+    JOB_PREFIX_URL="$2"
     shift # past argument
     ;;
     -acmc|--acm-arn)
@@ -70,7 +70,7 @@ case $key in
     ;;
     *)
     printf "***************************\n"
-    printf "* Error: Invalid argument.*\n"
+    printf "* Error: Invalid argument in build infra %s=%s.*\n" "$1" "$2"
     printf "***************************\n"
     exit 1
 esac
@@ -91,11 +91,6 @@ then
 else
     MY_TAG=$TAG
 fi
-
-## Build Public Url
-PUBLIC_URL=${PREFIX_URL}.${DOMAIN}
-
-AmiImageId=$(get_amazon_linux_2_ami_id $REGION)
 
 ## Security Groups
 aws cloudformation deploy \
@@ -164,100 +159,33 @@ aws cloudformation deploy \
 
 export_stack_outputs symeo-backend-s3-${ENV} ${REGION}
 
-## Application Load Balancer
-aws cloudformation deploy \
-  --no-fail-on-empty-changeset \
-  --parameter-overrides \
-      CertificateArn=${ACM_ARN_ALB} \
-      Env=${ENV} \
-      SecurityGroup=${SymeoBackendAlbSg} \
-      Subnets=${SUBNETS} \
-      VpcId=${VPC_ID} \
-  --region ${REGION} \
-  --stack-name symeo-backend-alb-${ENV} \
-  --template-file cloudformation/alb.yml
+./build_infrastructure_api.sh \
+  --region "$REGION" \
+  --env "$ENV" \
+  --profile "$PROFILE" \
+  --db-password "$DB_PASSWORD" \
+  --datadog-api-key "$DATADOG_API_KEY" \
+  --domain "$DOMAIN" \
+  --prefix-url "$PREFIX_URL" \
+  --acm-arn "$ACM_ARN" \
+  --acm-arn-alb "$ACM_ARN_ALB" \
+  --tag "$MY_TAG" \
+  --vpc-id "$VPC_ID" \
+  --subnets "$SUBNETS"
 
-export_stack_outputs symeo-backend-alb-${ENV} ${REGION}
-
-## Cloudfront
-aws cloudformation deploy \
-  --no-fail-on-empty-changeset \
-  --parameter-overrides \
-      AlbDNS=${ServiceId} \
-      CertificateArn=${ACM_ARN} \
-      Env=${ENV} \
-      PublicAlias=${PUBLIC_URL} \
-  --region ${REGION} \
-  --stack-name symeo-backend-cloudfront-${ENV} \
-  --template-file cloudformation/cloudfront.yml \
-
-export_stack_outputs symeo-backend-cloudfront-${ENV} ${REGION}
-
-## ECS Repository
-aws cloudformation deploy \
-  --no-fail-on-empty-changeset \
-  --parameter-overrides \
-      Env=${ENV} \
-  --stack-name symeo-backend-ecs-repository-${ENV} \
-  --region ${REGION} \
-  --template-file cloudformation/ecs-repository.yml
-
-export_stack_outputs symeo-backend-ecs-repository-${ENV} ${REGION}
-
-## Build Docker Image and push it to the ECS Repository
-if docker_image_exists_in_ecr $SymeoBackendRepositoryName $MY_TAG $REGION; then
-  echo "Docker image with tag ${MY_TAG} already exists, skipping build..."
-else
-  echo "No image found with tag ${MY_TAG}, building it..."
-  ./build_docker.sh -r ${REGION} -e ${ENV} -t ${MY_TAG} -p ${PROFILE}
-fi
-
-ENV_FILE_PATH="./.env"
-
-./build_env_file.sh \
-  --file ${ENV_FILE_PATH} \
-  --region ${REGION} \
-  --env ${ENV} \
-  --db-password ${DB_PASSWORD} \
-  --profile ${PROFILE}
-
-aws s3 cp $ENV_FILE_PATH s3://${EnvFilesS3Bucket}
-
-## ECS Cluster
-aws cloudformation deploy \
-  --no-fail-on-empty-changeset \
-  --parameter-overrides \
-      Env=${ENV} \
-  --region ${REGION} \
-  --stack-name symeo-backend-ecs-cluster-${ENV} \
-  --template-file cloudformation/ecs-cluster.yml \
-
-export_stack_outputs symeo-backend-ecs-cluster-${ENV} ${REGION}
-
-## ECS Services
-aws cloudformation deploy \
-  --no-fail-on-empty-changeset \
-  --parameter-overrides \
-      AlbName=${AlbName} \
-      CloudwatchLogsGroup=${CloudwatchLogsGroup} \
-      DockerRepository=${SymeoBackendRepository} \
-      ECSAutoScaleRole=${SymeoBackendAutoScaleRole} \
-      ECSCluster=${ECSCluster} \
-      ECSTaskRole=${SymeoBackendTaskRole} \
-      ECSExecutionRole=${SymeoBackendECSExecutionRole} \
-      Env=${ENV} \
-      DataDogApiKey=${DATADOG_API_KEY} \
-      EnvFilesS3Bucket=${EnvFilesS3Bucket} \
-      Tag=${MY_TAG} \
-      TargetGroup=${TargetGroup} \
-      TargetGroupName=${TargetGroupName} \
-      SecurityGroup=${SymeoBackendSg} \
-      Subnets=${SUBNETS} \
-  --region ${REGION} \
-  --stack-name symeo-backend-ecs-services-${ENV} \
-  --template-file cloudformation/ecs-services.yml \
-
-export_stack_outputs symeo-backend-ecs-services-${ENV} ${REGION}
+./build_infrastructure_job.sh \
+  --region "$REGION" \
+  --env "$ENV" \
+  --profile "$PROFILE" \
+  --db-password "$DB_PASSWORD" \
+  --datadog-api-key "$DATADOG_API_KEY" \
+  --domain "$DOMAIN" \
+  --prefix-url "$JOB_PREFIX_URL" \
+  --acm-arn "$ACM_ARN" \
+  --acm-arn-alb "$ACM_ARN_ALB" \
+  --tag "$MY_TAG" \
+  --vpc-id "$VPC_ID" \
+  --subnets "$SUBNETS"
 
 ## Datadog integration
 aws cloudformation deploy \

@@ -10,6 +10,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,6 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -25,12 +25,6 @@ import static org.mockito.Mockito.*;
 public class DataProcessingJobServiceTest {
 
     private final Faker faker = new Faker();
-    private final Executor executor = new Executor() {
-        @Override
-        public void execute(Runnable command) {
-            command.run();
-        }
-    };
 
     // TODO : add unit test raising SymeoException
     @Test
@@ -41,12 +35,14 @@ public class DataProcessingJobServiceTest {
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
+        final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, repositoryService, jobManager);
+                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter);
         final String organisationName = faker.name().username();
         final String vcsOrganizationId = faker.rickAndMorty().character();
-        final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
+        final UUID organizationId = UUID.randomUUID();
+        final Organization organisation = Organization.builder().id(organizationId).name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
         final List<Repository> repositories = List.of(
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build(),
@@ -56,13 +52,13 @@ public class DataProcessingJobServiceTest {
 
         // When
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
-        when(accountOrganizationStorageAdapter.findVcsOrganizationForName(organisationName)).thenReturn(
+        when(accountOrganizationStorageAdapter.findOrganizationById(organizationId)).thenReturn(
                 organisation
         );
         when(vcsService.collectRepositoriesForOrganization(organisation)).thenReturn(
                 repositories
         );
-        dataProcessingJobService.start(organisationName);
+        dataProcessingJobService.start(organizationId);
 
         // Then
         verify(jobManager, times(1)).start(jobArgumentCaptor.capture());
@@ -73,5 +69,32 @@ public class DataProcessingJobServiceTest {
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
 
+    }
+
+    @Test
+    void should_start_all_data_collection_jobs() throws SymeoException {
+        // Given
+        final JobManager jobManager = mock(JobManager.class);
+        final VcsService vcsService = mock(VcsService.class);
+        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
+                mock(AccountOrganizationStorageAdapter.class);
+        final RepositoryService repositoryService = mock(RepositoryService.class);
+        final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
+        final DataProcessingJobService dataProcessingJobService =
+                new DataProcessingJobService(vcsService,
+                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter);
+        final List<Organization> organizations = List.of(
+                Organization.builder().id(UUID.randomUUID()).build(),
+                Organization.builder().id(UUID.randomUUID()).build()
+        );
+
+        // When
+        when(accountOrganizationStorageAdapter.findAllOrganization())
+                .thenReturn(organizations);
+        dataProcessingJobService.startAll();
+
+        // Then
+        verify(symeoJobApiAdapter, times(1)).startJobForOrganizationId(organizations.get(0).getId());
+        verify(symeoJobApiAdapter, times(1)).startJobForOrganizationId(organizations.get(1).getId());
     }
 }
