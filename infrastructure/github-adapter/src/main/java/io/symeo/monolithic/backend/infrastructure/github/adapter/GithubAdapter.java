@@ -3,14 +3,16 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -188,5 +191,33 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     public <T> T bytesToDto(byte[] bytes, Class<T> tClass) throws IOException {
         return objectMapper.readValue(bytes, tClass);
+    }
+
+
+    @Override
+    public byte[] getRawCommits(final String vcsOrganizationName,
+                                final String repositoryName,
+                                final int pullRequestNumber) throws SymeoException {
+        final GithubCommitsDTO[] githubCommitsDTO = githubHttpClient.getCommitsForPullRequestNumber(vcsOrganizationName,
+                repositoryName, pullRequestNumber);
+        try {
+            return dtoToBytes(githubCommitsDTO);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Commit> commitsBytesToDomain(byte[] rawCommits) {
+        if (rawCommits.length == 0) {
+            return List.of();
+        }
+        try {
+            return Arrays.stream(bytesToDto(rawCommits, GithubCommitsDTO[].class))
+                    .map(GithubMapper::mapCommitToDomain)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

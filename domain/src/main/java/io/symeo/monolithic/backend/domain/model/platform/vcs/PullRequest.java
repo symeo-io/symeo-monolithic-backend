@@ -2,9 +2,11 @@ package io.symeo.monolithic.backend.domain.model.platform.vcs;
 
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -28,7 +30,8 @@ public class PullRequest {
     Boolean isMerged = false;
     @Builder.Default
     Boolean isDraft = false;
-    int number;
+    @NonNull
+    Integer number;
     String vcsUrl;
     String title;
     String authorLogin;
@@ -37,6 +40,8 @@ public class PullRequest {
     String vcsOrganizationId;
     UUID organizationId;
     String branchName;
+    @Builder.Default
+    List<Commit> commits = List.of();
 
     public static String getNameFromRepository(String repositoryName) {
         return ALL + "_" + repositoryName;

@@ -1,7 +1,9 @@
 package io.symeo.monolithic.backend.infrastructure.github.adapter.mapper;
 
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 
@@ -38,6 +40,17 @@ public interface GithubMapper {
                 .authorLogin(githubPullRequestDTO.getUser().getLogin())
                 .branchName(githubPullRequestDTO.getHead().getRef())
                 .build();
+    }
+
+    static Commit mapCommitToDomain(final GithubCommitsDTO githubCommitsDTO) {
+        final GithubCommitsDTO.GithubCommitterDTO committer = githubCommitsDTO.getCommit().getCommitter();
+        return Commit.builder()
+                .author(committer.getName())
+                .sha(githubCommitsDTO.getSha())
+                .date(committer.getDate())
+                .message(githubCommitsDTO.getCommit().getMessage())
+                .build();
+
     }
 
 }

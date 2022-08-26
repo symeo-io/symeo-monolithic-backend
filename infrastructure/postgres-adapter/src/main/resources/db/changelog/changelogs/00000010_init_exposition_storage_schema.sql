@@ -4,6 +4,7 @@ create table exposition_storage.pull_request
 (
     id                          varchar(100)                              not null
         constraint pull_request_id primary key,
+    code                        varchar(100)                              not null,
     commit_number               bigint,
     deleted_line_number         bigint,
     added_line_number           bigint,
@@ -60,6 +61,18 @@ create table exposition_storage.vcs_organization
     name                        varchar(300)                              not null,
     organization_id             uuid,
     external_id                 varchar(100),
+    technical_creation_date     timestamp(6) with time zone default now() not null,
+    technical_modification_date timestamp(6) with time zone default now() not null
+);
+
+create table exposition_storage.commit
+(
+    sha                         varchar(200)                              not null
+        constraint sha_commit_id primary key,
+    pull_request_id             varchar(100)                              not null,
+    author_login                varchar(200)                              not null,
+    message                     varchar(400),
+    date                        timestamp(6) with time zone               not null,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null
 );

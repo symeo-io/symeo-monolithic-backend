@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ExpositionStorageAdapter {
-    void savePullRequestDetails(List<PullRequest> pullRequests);
+    void savePullRequestDetailsWithLinkedCommits(List<PullRequest> pullRequests);
 
     void saveRepositories(List<Repository> repositories);
 

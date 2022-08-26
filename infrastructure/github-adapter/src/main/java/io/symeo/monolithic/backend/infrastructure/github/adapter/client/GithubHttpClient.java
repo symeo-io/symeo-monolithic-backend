@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.jwt.GithubJwtTokenProvider;
@@ -92,6 +93,25 @@ public class GithubHttpClient {
                 uri,
                 organizationName,
                 GithubPullRequestDTO.class
+        );
+    }
+
+    public GithubCommitsDTO[] getCommitsForPullRequestNumber(final String organizationName,
+                                                             final String repositoryName,
+                                                             final int pullRequestNumber) throws SymeoException {
+        final String uri =
+                api
+                        + "repos/"
+                        + organizationName
+                        + "/" +
+                        repositoryName
+                        + "/pulls/"
+                        + pullRequestNumber +
+                        "/commits";
+        return get(
+                uri,
+                organizationName,
+                GithubCommitsDTO[].class
         );
     }
 
@@ -220,5 +240,4 @@ public class GithubHttpClient {
                 .message(message)
                 .build();
     }
-
 }
