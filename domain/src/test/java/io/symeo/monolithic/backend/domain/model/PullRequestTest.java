@@ -1,4 +1,4 @@
-package io.symeo.monolithic.backend.domain.domain;
+package io.symeo.monolithic.backend.domain.model;
 
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import org.junit.jupiter.api.Test;

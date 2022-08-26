@@ -1,4 +1,4 @@
-package io.symeo.monolithic.backend.domain.domain.insight;
+package io.symeo.monolithic.backend.domain.model.insight;
 
 import io.symeo.monolithic.backend.domain.model.insight.DataCompareToLimit;
 import org.junit.jupiter.api.Test;
