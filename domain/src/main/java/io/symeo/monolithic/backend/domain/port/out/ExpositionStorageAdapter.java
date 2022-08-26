@@ -28,11 +28,16 @@ public interface ExpositionStorageAdapter {
     List<PullRequestView> readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(UUID teamId,
                                                                                                  Date startDate,
                                                                                                  Date endDate,
-                                                                                                 int pageIndex, int pageSize,
+                                                                                                 int pageIndex,
+                                                                                                 int pageSize,
                                                                                                  String sortingParameter,
                                                                                                  String sortingDirection)
             throws SymeoException;
 
     int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
+
+    List<PullRequestView> readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
+                                                                                     Date startDate
+            , Date endDate);
 }

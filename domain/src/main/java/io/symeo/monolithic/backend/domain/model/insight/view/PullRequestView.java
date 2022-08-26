@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.domain.model.insight.view;
 
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.hoursToDays;
 import static java.lang.Math.round;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -40,6 +42,7 @@ public class PullRequestView {
     String id;
     String title;
     String repository;
+    List<Commit> commits;
 
     public PullRequestView addStartDateRangeFromRangeDates(final List<Date> rangeDates) {
         String startDateRange;
@@ -143,10 +146,6 @@ public class PullRequestView {
         }
         return hoursToDays(TimeUnit.HOURS.convert(mergeDate.getTime() - this.creationDate.getTime(),
                 TimeUnit.MILLISECONDS));
-    }
-
-    private static float hoursToDays(long hours) {
-        return hours < 2f ? 0.1f : round(10f * hours / 24) / 10f;
     }
 
     public PullRequestView addTimeLimit() {

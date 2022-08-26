@@ -1,48 +1,42 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 
-import com.github.javafaker.Faker;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
+import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
+import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.LeadTimeContractMapper;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.model.account.User;
+import io.symeo.monolithic.backend.domain.port.in.LeadTimeFacadeAdapter;
 import io.symeo.monolithic.backend.frontend.contract.api.LeadTimeApi;
 import io.symeo.monolithic.backend.frontend.contract.api.model.LeadTimeResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.LeadTimeResponseContractLeadTime;
-import io.symeo.monolithic.backend.frontend.contract.api.model.MetricsContract;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.util.UUID;
+
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
+import static org.springframework.http.ResponseEntity.internalServerError;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @Tags(@Tag(name = "LeadTime"))
 @AllArgsConstructor
 public class LeadTimeRestApiAdapter implements LeadTimeApi {
 
-    private final static Faker faker = new Faker();
-
-    private static LeadTimeResponseContractLeadTime generateLeadTimeStub() {
-        final LeadTimeResponseContractLeadTime leadTimeResponseContractLeadTime =
-                new LeadTimeResponseContractLeadTime();
-        leadTimeResponseContractLeadTime.setAverage(getMetricsContractStub());
-        leadTimeResponseContractLeadTime.setCodingTime(getMetricsContractStub());
-        leadTimeResponseContractLeadTime.setReviewLag(getMetricsContractStub());
-        leadTimeResponseContractLeadTime.setReviewTime(getMetricsContractStub());
-        leadTimeResponseContractLeadTime.setTimeToDeploy(getMetricsContractStub());
-        return leadTimeResponseContractLeadTime;
-    }
-
-    private static MetricsContract getMetricsContractStub() {
-        final MetricsContract average = new MetricsContract();
-        average.setValue(new BigDecimal(Float.toString(faker.number().numberBetween(1, 200) / 10f)));
-        average.setTendencyPercentage(new BigDecimal(Float.toString(faker.number().numberBetween(-2000, 2000) / 10f)));
-        return average;
-    }
+    private final AuthenticationService authenticationService;
+    private final LeadTimeFacadeAdapter leadTimeFacadeAdapter;
 
     @Override
     public ResponseEntity<LeadTimeResponseContract> getLeadTimeMetrics(UUID teamId, String startDate, String endDate) {
-        final LeadTimeResponseContract leadTimeResponseContract = new LeadTimeResponseContract();
-        leadTimeResponseContract.setLeadTime(generateLeadTimeStub());
-        return ResponseEntity.ok(leadTimeResponseContract);
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            return ok(LeadTimeContractMapper.toContract(leadTimeFacadeAdapter
+                    .computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(authenticatedUser.getOrganization(),
+                            teamId, stringToDate(startDate),
+                            stringToDate(endDate))));
+        } catch (SymeoException e) {
+            return internalServerError().body(LeadTimeContractMapper.errorToContract(e));
+        }
     }
 }
