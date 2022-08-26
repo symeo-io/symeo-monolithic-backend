@@ -7,7 +7,6 @@ import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestCurveMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
@@ -16,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,12 +36,15 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestSizeRepository pullRequestSizeRepository;
     private final PullRequestFullViewRepository pullRequestFullViewRepository;
     private final CustomPullRequestViewRepository customPullRequestViewRepository;
+    private final CommitRepository commitRepository;
 
     @Override
-    public void savePullRequestDetails(List<PullRequest> pullRequests) {
-        final List<PullRequestEntity> pullRequestEntities = pullRequests.stream().map(PullRequestMapper::domainToEntity)
-                .toList();
-        pullRequestRepository.saveAll(pullRequestEntities);
+    public void savePullRequestDetailsWithLinkedCommits(List<PullRequest> pullRequests) {
+        pullRequestRepository.saveAll(pullRequests.stream().map(PullRequestMapper::domainToEntity)
+                .toList());
+        commitRepository.saveAll(pullRequests.stream().map(PullRequestMapper::pullRequestToCommitEntities)
+                .flatMap(Collection::stream)
+                .toList());
     }
 
     @Override

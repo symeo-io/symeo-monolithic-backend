@@ -24,6 +24,8 @@ public class PullRequestEntity {
     @Column(name = "id", nullable = false)
     @NotNull
     String id;
+    @Column(name = "code",nullable = false)
+    String code;
     @Column(name = "commit_number")
     int commitNumber;
     @Column(name = "deleted_line_number")

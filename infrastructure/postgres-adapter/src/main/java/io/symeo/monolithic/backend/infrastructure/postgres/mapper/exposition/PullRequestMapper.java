@@ -2,12 +2,14 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.isNull;
@@ -18,6 +20,7 @@ public interface PullRequestMapper {
         final PullRequestView pullRequestView = pullRequest.toView();
         return PullRequestEntity.builder()
                 .id(pullRequest.getId())
+                .code(pullRequest.getNumber().toString())
                 .isDraft(pullRequest.getIsDraft())
                 .isMerged(pullRequest.getIsMerged())
                 .commitNumber(pullRequest.getCommitNumber())
@@ -45,6 +48,13 @@ public interface PullRequestMapper {
                 .build();
     }
 
+    static List<CommitEntity> pullRequestToCommitEntities(final PullRequest pullRequest) {
+        final String pullRequestId = pullRequest.getId();
+        return pullRequest.getCommits().stream()
+                .map(commit -> CommitMapper.domainToEntity(commit, pullRequestId))
+                .toList();
+    }
+
     static PullRequest entityToDomain(final PullRequestEntity pullRequestEntity) {
         return PullRequest.builder()
                 .id(pullRequestEntity.getId())
@@ -67,6 +77,7 @@ public interface PullRequestMapper {
                 .organizationId(pullRequestEntity.getOrganizationId())
                 .repository(pullRequestEntity.getVcsRepository())
                 .branchName(pullRequestEntity.getBranchName())
+                .number(Integer.valueOf(pullRequestEntity.getCode()))
                 .build();
     }
 
@@ -92,7 +103,7 @@ public interface PullRequestMapper {
     }
 
     Map<String, String> SORTING_PARAMETERS_MAPPING = Map.of(
-            "status", "state", "author","author_login");
+            "status", "state", "author", "author_login");
 
     static String sortingParameterToDatabaseAttribute(final String sortingParameter) {
         return SORTING_PARAMETERS_MAPPING.getOrDefault(sortingParameter, sortingParameter);

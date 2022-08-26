@@ -131,7 +131,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
     @Order(2)
     @Test
-    void should_collect_github_repositories_and_linked_pull_requests_for_a_given_organization() throws SymeoException, IOException, InterruptedException {
+    void should_collect_github_repositories_with_pull_requests_and_commits_for_a_given_organization() throws SymeoException, IOException, InterruptedException {
         // Given
         jsonStorageProperties.setRootDirectory(TMP_DIR);
         final GithubInstallationDTO[] githubInstallationDTOS = getStubsFromClassT("github_stubs",

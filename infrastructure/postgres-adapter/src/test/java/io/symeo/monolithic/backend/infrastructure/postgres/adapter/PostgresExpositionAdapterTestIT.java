@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -11,6 +12,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.PostgresExpositionAda
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
@@ -57,6 +59,8 @@ public class PostgresExpositionAdapterTestIT {
     private PullRequestFullViewRepository pullRequestFullViewRepository;
     @Autowired
     private CustomPullRequestViewRepository customPullRequestViewRepository;
+    @Autowired
+    private CommitRepository commitRepository;
     private PostgresExpositionAdapter postgresExpositionAdapter;
 
     @AfterEach
@@ -65,13 +69,14 @@ public class PostgresExpositionAdapterTestIT {
         pullRequestRepository.deleteAll();
         repositoryRepository.deleteAll();
         organizationRepository.deleteAll();
+        commitRepository.deleteAll();
     }
 
     @BeforeEach
     public void setUp() {
         postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository, customPullRequestViewRepository);
+                pullRequestFullViewRepository, customPullRequestViewRepository, commitRepository);
     }
 
     @Test
@@ -84,11 +89,48 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetails(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommits(pullRequestsToSave);
 
         // Then
         final List<PullRequestEntity> all = pullRequestRepository.findAll();
         assertThat(all).hasSize(pullRequestsToSave.size());
+    }
+
+    @Test
+    void should_save_pull_requests_with_commits() {
+        // Given
+        final List<PullRequest> pullRequestsToSave = List.of(
+                buildPullRequest(1).toBuilder()
+                        .commits(List.of(
+                                Commit.builder()
+                                        .sha(faker.dragonBall().character() + "-11")
+                                        .author(faker.ancient().god())
+                                        .date(new Date())
+                                        .build(),
+                                Commit.builder()
+                                        .sha(faker.dragonBall().character() + "-12")
+                                        .author(faker.ancient().god())
+                                        .date(new Date())
+                                        .build()
+
+                        )).build(),
+                buildPullRequest(2).toBuilder()
+                        .commits(List.of(
+                                Commit.builder()
+                                        .sha(faker.dragonBall().character() + "-11")
+                                        .author(faker.ancient().god())
+                                        .date(new Date())
+                                        .build()
+
+                        )).build()
+        );
+
+        // When
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommits(pullRequestsToSave);
+
+        // Then
+        final List<CommitEntity> commitEntities = commitRepository.findAll();
+        assertThat(commitEntities).hasSize(3);
     }
 
     @Test
@@ -294,6 +336,7 @@ public class PostgresExpositionAdapterTestIT {
         pullRequestRepository.saveAll(List.of(
                 PullRequestEntity.builder()
                         .id(faker.rickAndMorty().character() + "-1")
+                        .code(faker.harryPotter().book())
                         .organizationId(organizationId)
                         .creationDate(ZonedDateTime.now().minusDays(50))
                         .mergeDate(ZonedDateTime.now().minusDays(49))
@@ -304,6 +347,7 @@ public class PostgresExpositionAdapterTestIT {
                         .build(),
                 PullRequestEntity.builder()
                         .id(faker.rickAndMorty().character() + "-2")
+                        .code(faker.harryPotter().book())
                         .organizationId(organizationId)
                         .creationDate(ZonedDateTime.now().minusDays(30))
                         .vcsRepositoryId(repositoryId)
@@ -313,6 +357,7 @@ public class PostgresExpositionAdapterTestIT {
                         .build(),
                 PullRequestEntity.builder()
                         .id(faker.rickAndMorty().character() + "-3")
+                        .code(faker.harryPotter().book())
                         .organizationId(organizationId)
                         .creationDate(ZonedDateTime.now().minusDays(20))
                         .vcsRepositoryId(repositoryId)
@@ -323,6 +368,7 @@ public class PostgresExpositionAdapterTestIT {
                 PullRequestEntity.builder()
                         .id(faker.rickAndMorty().character() + "-4")
                         .organizationId(organizationId)
+                        .code(faker.harryPotter().book())
                         .creationDate(ZonedDateTime.now().minusDays(20))
                         .mergeDate(ZonedDateTime.now().minusDays(19))
                         .vcsRepositoryId(repositoryId)
@@ -331,6 +377,7 @@ public class PostgresExpositionAdapterTestIT {
                         .lastUpdateDate(ZonedDateTime.now())
                         .build(),
                 PullRequestEntity.builder()
+                        .code(faker.harryPotter().book())
                         .id(faker.rickAndMorty().character() + "-5")
                         .organizationId(organizationId)
                         .creationDate(ZonedDateTime.now().minusDays(20))
@@ -367,7 +414,6 @@ public class PostgresExpositionAdapterTestIT {
                         teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 1, 3,
                         "creation_date", "desc"
                 );
-
 
 
         // Then
