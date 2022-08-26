@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +31,7 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
         assertThat(commit.getAuthor()).isEqualTo("pierre.oucif");
         assertThat(commit.getMessage()).isEqualTo("Init for Biox");
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
         assertThat(commit.getDate()).isEqualTo(simpleDateFormat.parse("2022-08-24 " +
                 "11:05:15"));
     }

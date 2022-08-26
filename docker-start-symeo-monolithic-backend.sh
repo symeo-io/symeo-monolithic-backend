@@ -13,7 +13,7 @@ fi
 echo "Starting Symeo monolithic backend for env ${DD_ENV} and spring-profiles-active ${SPRING_PROFILES_ACTIVE}"
 java_options="-server -XX:MaxRAMPercentage=75.0 -XX:MaxMetaspaceSize=256m -XX:+UseG1GC \
                -XX:FlightRecorderOptions=stackdepth=256 -Djava.security.egd=file:/dev/urandom \
-                -Dliquibase.changelogLockPollRate=1"
+                -Dliquibase.changelogLockPollRate=1 -Duser.timezone=Europe/Paris"
 if [[ $DD_ENV == "prod" ]]; then
   java_options="${java_options} -Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.logs.injection=true"
   java -javaagent:/webapp/dd-java-agent.jar \
