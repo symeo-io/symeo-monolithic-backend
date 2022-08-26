@@ -1,0 +1,318 @@
+[
+  {
+    "sha": "cfd1ffbb5a70ce0add58614f4e0b545e1ca23939",
+    "node_id": "C_kwDOHYbxMdoAKGNmZDFmZmJiNWE3MGNlMGFkZDU4NjE0ZjRlMGI1NDVlMWNhMjM5Mzk",
+    "commit": {
+      "author": {
+        "name": "Georges Biaux",
+        "email": "georges.biaux@gadz.org",
+        "date": "2022-08-24T12:27:30Z"
+      },
+      "committer": {
+        "name": "Georges Biaux",
+        "email": "georges.biaux@gadz.org",
+        "date": "2022-08-24T12:27:30Z"
+      },
+      "message": "Add explicit loggers to build infra",
+      "tree": {
+        "sha": "fa3703ab8cefb04487b39319bd1693529de119fe",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/trees/fa3703ab8cefb04487b39319bd1693529de119fe"
+      },
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/cfd1ffbb5a70ce0add58614f4e0b545e1ca23939",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/cfd1ffbb5a70ce0add58614f4e0b545e1ca23939",
+    "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/cfd1ffbb5a70ce0add58614f4e0b545e1ca23939",
+    "comments_url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/cfd1ffbb5a70ce0add58614f4e0b545e1ca23939/comments",
+    "author": {
+      "login": "georgesbiaux",
+      "id": 22441392,
+      "node_id": "MDQ6VXNlcjIyNDQxMzky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22441392?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/georgesbiaux",
+      "html_url": "https://github.com/georgesbiaux",
+      "followers_url": "https://api.github.com/users/georgesbiaux/followers",
+      "following_url": "https://api.github.com/users/georgesbiaux/following{/other_user}",
+      "gists_url": "https://api.github.com/users/georgesbiaux/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/georgesbiaux/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/georgesbiaux/subscriptions",
+      "organizations_url": "https://api.github.com/users/georgesbiaux/orgs",
+      "repos_url": "https://api.github.com/users/georgesbiaux/repos",
+      "events_url": "https://api.github.com/users/georgesbiaux/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/georgesbiaux/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "georgesbiaux",
+      "id": 22441392,
+      "node_id": "MDQ6VXNlcjIyNDQxMzky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22441392?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/georgesbiaux",
+      "html_url": "https://github.com/georgesbiaux",
+      "followers_url": "https://api.github.com/users/georgesbiaux/followers",
+      "following_url": "https://api.github.com/users/georgesbiaux/following{/other_user}",
+      "gists_url": "https://api.github.com/users/georgesbiaux/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/georgesbiaux/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/georgesbiaux/subscriptions",
+      "organizations_url": "https://api.github.com/users/georgesbiaux/orgs",
+      "repos_url": "https://api.github.com/users/georgesbiaux/repos",
+      "events_url": "https://api.github.com/users/georgesbiaux/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/georgesbiaux/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "3397e6f30921d9ca6745983043493fe1f5596f1e",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/3397e6f30921d9ca6745983043493fe1f5596f1e",
+        "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/3397e6f30921d9ca6745983043493fe1f5596f1e"
+      }
+    ]
+  },
+  {
+    "sha": "254b3efa7ac930c41da3ee454ed620a6db3f5e55",
+    "node_id": "C_kwDOHYbxMdoAKDI1NGIzZWZhN2FjOTMwYzQxZGEzZWU0NTRlZDYyMGE2ZGIzZjVlNTU",
+    "commit": {
+      "author": {
+        "name": "Georges Biaux",
+        "email": "georges.biaux@gadz.org",
+        "date": "2022-08-24T12:31:57Z"
+      },
+      "committer": {
+        "name": "Georges Biaux",
+        "email": "georges.biaux@gadz.org",
+        "date": "2022-08-24T12:31:57Z"
+      },
+      "message": "Add log to build infra",
+      "tree": {
+        "sha": "0a253d886c70b9521c2e73c0b0fb0b8353d082d5",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/trees/0a253d886c70b9521c2e73c0b0fb0b8353d082d5"
+      },
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/254b3efa7ac930c41da3ee454ed620a6db3f5e55",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/254b3efa7ac930c41da3ee454ed620a6db3f5e55",
+    "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/254b3efa7ac930c41da3ee454ed620a6db3f5e55",
+    "comments_url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/254b3efa7ac930c41da3ee454ed620a6db3f5e55/comments",
+    "author": {
+      "login": "georgesbiaux",
+      "id": 22441392,
+      "node_id": "MDQ6VXNlcjIyNDQxMzky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22441392?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/georgesbiaux",
+      "html_url": "https://github.com/georgesbiaux",
+      "followers_url": "https://api.github.com/users/georgesbiaux/followers",
+      "following_url": "https://api.github.com/users/georgesbiaux/following{/other_user}",
+      "gists_url": "https://api.github.com/users/georgesbiaux/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/georgesbiaux/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/georgesbiaux/subscriptions",
+      "organizations_url": "https://api.github.com/users/georgesbiaux/orgs",
+      "repos_url": "https://api.github.com/users/georgesbiaux/repos",
+      "events_url": "https://api.github.com/users/georgesbiaux/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/georgesbiaux/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "georgesbiaux",
+      "id": 22441392,
+      "node_id": "MDQ6VXNlcjIyNDQxMzky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22441392?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/georgesbiaux",
+      "html_url": "https://github.com/georgesbiaux",
+      "followers_url": "https://api.github.com/users/georgesbiaux/followers",
+      "following_url": "https://api.github.com/users/georgesbiaux/following{/other_user}",
+      "gists_url": "https://api.github.com/users/georgesbiaux/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/georgesbiaux/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/georgesbiaux/subscriptions",
+      "organizations_url": "https://api.github.com/users/georgesbiaux/orgs",
+      "repos_url": "https://api.github.com/users/georgesbiaux/repos",
+      "events_url": "https://api.github.com/users/georgesbiaux/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/georgesbiaux/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "cfd1ffbb5a70ce0add58614f4e0b545e1ca23939",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/cfd1ffbb5a70ce0add58614f4e0b545e1ca23939",
+        "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/cfd1ffbb5a70ce0add58614f4e0b545e1ca23939"
+      }
+    ]
+  },
+  {
+    "sha": "3d4e00e26991a433365f00b09fa07c8987b15eec",
+    "node_id": "C_kwDOHYbxMdoAKDNkNGUwMGUyNjk5MWE0MzMzNjVmMDBiMDlmYTA3Yzg5ODdiMTVlZWM",
+    "commit": {
+      "author": {
+        "name": "Georges Biaux",
+        "email": "georges.biaux@gadz.org",
+        "date": "2022-08-24T12:36:20Z"
+      },
+      "committer": {
+        "name": "Georges Biaux",
+        "email": "georges.biaux@gadz.org",
+        "date": "2022-08-24T12:36:20Z"
+      },
+      "message": "Add log to build infra",
+      "tree": {
+        "sha": "470841fe3c61804ba2307b347a262f61b3bc62d8",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/trees/470841fe3c61804ba2307b347a262f61b3bc62d8"
+      },
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/3d4e00e26991a433365f00b09fa07c8987b15eec",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/3d4e00e26991a433365f00b09fa07c8987b15eec",
+    "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/3d4e00e26991a433365f00b09fa07c8987b15eec",
+    "comments_url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/3d4e00e26991a433365f00b09fa07c8987b15eec/comments",
+    "author": {
+      "login": "georgesbiaux",
+      "id": 22441392,
+      "node_id": "MDQ6VXNlcjIyNDQxMzky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22441392?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/georgesbiaux",
+      "html_url": "https://github.com/georgesbiaux",
+      "followers_url": "https://api.github.com/users/georgesbiaux/followers",
+      "following_url": "https://api.github.com/users/georgesbiaux/following{/other_user}",
+      "gists_url": "https://api.github.com/users/georgesbiaux/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/georgesbiaux/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/georgesbiaux/subscriptions",
+      "organizations_url": "https://api.github.com/users/georgesbiaux/orgs",
+      "repos_url": "https://api.github.com/users/georgesbiaux/repos",
+      "events_url": "https://api.github.com/users/georgesbiaux/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/georgesbiaux/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "georgesbiaux",
+      "id": 22441392,
+      "node_id": "MDQ6VXNlcjIyNDQxMzky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22441392?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/georgesbiaux",
+      "html_url": "https://github.com/georgesbiaux",
+      "followers_url": "https://api.github.com/users/georgesbiaux/followers",
+      "following_url": "https://api.github.com/users/georgesbiaux/following{/other_user}",
+      "gists_url": "https://api.github.com/users/georgesbiaux/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/georgesbiaux/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/georgesbiaux/subscriptions",
+      "organizations_url": "https://api.github.com/users/georgesbiaux/orgs",
+      "repos_url": "https://api.github.com/users/georgesbiaux/repos",
+      "events_url": "https://api.github.com/users/georgesbiaux/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/georgesbiaux/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "254b3efa7ac930c41da3ee454ed620a6db3f5e55",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/254b3efa7ac930c41da3ee454ed620a6db3f5e55",
+        "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/254b3efa7ac930c41da3ee454ed620a6db3f5e55"
+      }
+    ]
+  },
+  {
+    "sha": "22a2a3a08ff62366aa63107de013211451b5f2bb",
+    "node_id": "C_kwDOHYbxMdoAKDIyYTJhM2EwOGZmNjIzNjZhYTYzMTA3ZGUwMTMyMTE0NTFiNWYyYmI",
+    "commit": {
+      "author": {
+        "name": "Georges Biaux",
+        "email": "georges.biaux@gadz.org",
+        "date": "2022-08-24T12:44:45Z"
+      },
+      "committer": {
+        "name": "Georges Biaux",
+        "email": "georges.biaux@gadz.org",
+        "date": "2022-08-24T12:44:45Z"
+      },
+      "message": "Fix build infra",
+      "tree": {
+        "sha": "80819b0d281a77799d013252ce71efffdbf3686c",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/trees/80819b0d281a77799d013252ce71efffdbf3686c"
+      },
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/22a2a3a08ff62366aa63107de013211451b5f2bb",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/22a2a3a08ff62366aa63107de013211451b5f2bb",
+    "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/22a2a3a08ff62366aa63107de013211451b5f2bb",
+    "comments_url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/22a2a3a08ff62366aa63107de013211451b5f2bb/comments",
+    "author": {
+      "login": "georgesbiaux",
+      "id": 22441392,
+      "node_id": "MDQ6VXNlcjIyNDQxMzky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22441392?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/georgesbiaux",
+      "html_url": "https://github.com/georgesbiaux",
+      "followers_url": "https://api.github.com/users/georgesbiaux/followers",
+      "following_url": "https://api.github.com/users/georgesbiaux/following{/other_user}",
+      "gists_url": "https://api.github.com/users/georgesbiaux/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/georgesbiaux/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/georgesbiaux/subscriptions",
+      "organizations_url": "https://api.github.com/users/georgesbiaux/orgs",
+      "repos_url": "https://api.github.com/users/georgesbiaux/repos",
+      "events_url": "https://api.github.com/users/georgesbiaux/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/georgesbiaux/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "georgesbiaux",
+      "id": 22441392,
+      "node_id": "MDQ6VXNlcjIyNDQxMzky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22441392?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/georgesbiaux",
+      "html_url": "https://github.com/georgesbiaux",
+      "followers_url": "https://api.github.com/users/georgesbiaux/followers",
+      "following_url": "https://api.github.com/users/georgesbiaux/following{/other_user}",
+      "gists_url": "https://api.github.com/users/georgesbiaux/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/georgesbiaux/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/georgesbiaux/subscriptions",
+      "organizations_url": "https://api.github.com/users/georgesbiaux/orgs",
+      "repos_url": "https://api.github.com/users/georgesbiaux/repos",
+      "events_url": "https://api.github.com/users/georgesbiaux/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/georgesbiaux/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "3d4e00e26991a433365f00b09fa07c8987b15eec",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/3d4e00e26991a433365f00b09fa07c8987b15eec",
+        "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/3d4e00e26991a433365f00b09fa07c8987b15eec"
+      }
+    ]
+  }
+]

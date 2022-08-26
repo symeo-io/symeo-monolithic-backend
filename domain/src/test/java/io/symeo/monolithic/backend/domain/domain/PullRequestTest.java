@@ -14,19 +14,23 @@ public class PullRequestTest {
         // Given
         final PullRequest openPR = PullRequest.builder()
                 .creationDate(new Date())
+                .number(1)
                 .build();
         final PullRequest mergedPR = PullRequest.builder()
                 .creationDate(new Date())
                 .mergeDate(new Date())
+                .number(2)
                 .build();
         final PullRequest mergedPRWithCloseDate = PullRequest.builder()
                 .creationDate(new Date())
                 .mergeDate(new Date())
                 .closeDate(new Date())
+                .number(3)
                 .build();
         final PullRequest closedPR = PullRequest.builder()
                 .creationDate(new Date())
                 .closeDate(new Date())
+                .number(4)
                 .build();
 
 

@@ -5,14 +5,14 @@ import io.symeo.monolithic.backend.infrastructure.github.adapter.jwt.GithubJwtTo
 
 public class ITGithubJwtTokenProvider implements GithubJwtTokenProvider {
 
-    private String tokenSub;
+    private String tokenStub;
 
     @Override
     public String generateSignedJwtToken() throws SymeoException {
-        return tokenSub;
+        return tokenStub;
     }
 
     public void setGithubTokenStub(final String tokenStub) {
-        this.tokenSub = tokenStub;
+        this.tokenStub = tokenStub;
     }
 }

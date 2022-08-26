@@ -107,7 +107,7 @@ public class GithubHttpClient {
                         repositoryName
                         + "/pulls/"
                         + pullRequestNumber +
-                        " /commits";
+                        "/commits";
         return get(
                 uri,
                 organizationName,

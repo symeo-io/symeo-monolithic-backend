@@ -13,21 +13,20 @@ import io.symeo.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookE
 import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import io.symeo.monolithic.backend.infrastructure.json.local.storage.properties.JsonStorageProperties;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestTimeToMergeDTO;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestTimeToMergeRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.joda.time.DateTime;
@@ -76,6 +75,8 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
     public VcsOrganizationRepository vcsOrganizationRepository;
     @Autowired
     public JobRepository jobRepository;
+    @Autowired
+    public CommitRepository commitRepository;
     private static final UUID organizationId = UUID.randomUUID();
     private static final UUID teamId = UUID.randomUUID();
 
@@ -233,6 +234,18 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         wireMockServer.stubFor(
                 get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s/commits", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[0].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_1_commits.json",
+                                                GithubCommitsDTO[].class), 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
                         urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
                                 githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[1].getNumber())))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
@@ -240,6 +253,18 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                                 jsonResponse(
                                         getStubsFromClassT("github_stubs", "get_repo_1_pr_details_2.json",
                                                 GithubPullRequestDTO.class), 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s/commits", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[1].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_2_commits.json",
+                                                GithubCommitsDTO[].class), 200
                                 )
                         )
         );
@@ -257,6 +282,18 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         wireMockServer.stubFor(
                 get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s/commits", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[2].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_3_commits.json",
+                                                GithubCommitsDTO[].class), 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
                         urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
                                 githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[3].getNumber())))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
@@ -267,11 +304,24 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                                 )
                         )
         );
+        wireMockServer.stubFor(
+                get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s/commits", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[3].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_4_commits.json",
+                                                GithubCommitsDTO[].class), 200
+                                )
+                        )
+        );
 
 
         // When
         client.get()
-                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_id", organizationId.toString()))
+                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_id",
+                        organizationId.toString()))
                 .exchange()
                 // Then
                 .expectStatus()
@@ -305,6 +355,8 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
             assertThat(pullRequestEntity.getOrganizationId()).isEqualTo(organization.getId());
             assertThat(pullRequestEntity.getVcsRepositoryId()).isEqualTo("github-" + githubRepositoryDTOS[0].getId());
         });
+        final List<CommitEntity> commitEntities = commitRepository.findAll();
+        assertThat(commitEntities).hasSize(12);
     }
 
     @Order(3)
