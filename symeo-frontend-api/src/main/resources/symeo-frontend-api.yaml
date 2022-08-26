@@ -1151,6 +1151,144 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+  /api/v1/teams/lead-time:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - LeadTime
+      summary: Get LeadTime Metrics
+      operationId: getLeadTimeMetrics
+      description: |
+        Get LeadTime Metrics
+      parameters:
+        - in: query
+          name: team_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+      responses:
+        "200":
+          description: 'Successfully retrieved lead time metrics'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadTimeResponseContract'
+              example:
+                lead_time:
+                  average:
+                    value: 11.4
+                    tendency_percentage: -12.3
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+  /api/v1/teams/lead-time/break-down:
+      get:
+        security:
+          - bearerAuth: [ ]
+        tags:
+          - LeadTime
+        summary: Get LeadTimeBreakDown Metrics
+        operationId: getLeadTimeBreakDownMetrics
+        description: |
+          Get LeadTimeBreakDown Metrics
+        parameters:
+          - in: query
+            name: team_id
+            required: true
+            schema:
+              type: string
+              format: uuid
+          - in: query
+            name: start_date
+            required: true
+            schema:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+          - in: query
+            name: end_date
+            required: true
+            schema:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        responses:
+          "200":
+            description: 'Successfully retrieved lead time break down metrics'
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/LeadTimeBreakDownResponseContract'
+                example:
+                  lead_time_break_down:
+                    coding_time:
+                      average:
+                        value: 1.2
+                        tendency_percentage: +20.0
+                    review_lag:
+                      average:
+                        value: 2.3
+                        tendency_percentage: +13.3
+                    review_time:
+                      average:
+                        value: 5.4
+                        tendency_percentage: -3.4
+                    time_to_deploy:
+                      average:
+                        value: 8.2
+                        tendency_percentage: +35.4
+                  errors:
+                    [ ]
+          "401":
+            $ref: '#/components/responses/UnauthorizedError'
+          "404":
+            description: Not found error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SymeoErrorsContract'
+          "500":
+            description: An internal error has occurred
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SymeoErrorsContract'
+                example:
+                  errors:
+                    - code: "T.POSTGRES_TIMEOUT"
+                      message: "Failed to open connection with database"
+
+
 
 components:
   securitySchemes:
@@ -1631,3 +1769,45 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SymeoErrorContract'
+    LeadTimeResponseContract:
+      type: object
+      properties:
+        lead_time:
+          type: object
+          properties:
+            average:
+              $ref: '#/components/schemas/MetricsContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'
+    LeadTimeBreakDownResponseContract:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'
+        lead_time_break_down:
+          type: object
+          properties:
+            coding_time:
+              type: object
+              properties:
+                average:
+                  $ref: '#/components/schemas/MetricsContract'
+            review_lag:
+              type: object
+              properties:
+                average:
+                  $ref: '#/components/schemas/MetricsContract'
+            review_time:
+              type: object
+              properties:
+                average:
+                  $ref: '#/components/schemas/MetricsContract'
+            time_to_deploy:
+              type: object
+              properties:
+                average:
+                  $ref: '#/components/schemas/MetricsContract'
