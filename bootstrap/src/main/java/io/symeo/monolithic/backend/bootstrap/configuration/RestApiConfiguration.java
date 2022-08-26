@@ -80,4 +80,9 @@ public class RestApiConfiguration {
                                                                  final PullRequestFacade pullRequestFacade) {
         return new PullRequestsRestApiAdapter(authenticationService, pullRequestFacade);
     }
+
+    @Bean
+    public LeadTimeRestApiAdapter leadTimeRestApiAdapter() {
+        return new LeadTimeRestApiAdapter();
+    }
 }
