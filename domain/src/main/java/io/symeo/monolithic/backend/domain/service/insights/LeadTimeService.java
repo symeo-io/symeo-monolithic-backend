@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.domain.service.insights;
 
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.LeadTime;
 import io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics;
@@ -25,7 +26,7 @@ public class LeadTimeService implements LeadTimeFacadeAdapter {
     public Optional<LeadTimeMetrics> computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(final Organization organization,
                                                                                            final UUID teamId,
                                                                                            final Date startDate,
-                                                                                           final Date endDate) {
+                                                                                           final Date endDate) throws SymeoException {
         final List<PullRequestView> currentPullRequestWithCommitsViews =
                 expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId, startDate
                         , endDate);

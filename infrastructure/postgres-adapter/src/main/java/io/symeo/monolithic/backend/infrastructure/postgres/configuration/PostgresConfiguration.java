@@ -33,10 +33,11 @@ public class PostgresConfiguration {
                                                      final PullRequestSizeRepository pullRequestSizeRepository,
                                                      final PullRequestFullViewRepository pullRequestFullViewRepository,
                                                      final CustomPullRequestViewRepository customPullRequestViewRepository,
-                                                     final CommitRepository commitRepository) {
+                                                     final CommitRepository commitRepository,
+                                                     final CommentRepository commentRepository) {
         return new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
                 pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository,
-                customPullRequestViewRepository, commitRepository);
+                customPullRequestViewRepository, commitRepository, commentRepository);
     }
 
     @Bean

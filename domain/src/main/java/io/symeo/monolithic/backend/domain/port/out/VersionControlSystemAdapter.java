@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.domain.port.out;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -23,4 +24,8 @@ public interface VersionControlSystemAdapter {
                          final int pullRequestNumber) throws SymeoException;
 
     List<Commit> commitsBytesToDomain(byte[] rawCommits);
+
+    List<Comment> commentsBytesToDomain(byte[] rawComments);
+
+    byte[] getRawComments(String vcsOrganizationName, String name, Integer number) throws SymeoException;
 }

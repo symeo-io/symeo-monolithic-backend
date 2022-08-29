@@ -4,10 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.command.DeliveryCommand;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.query.DeliveryQuery;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -199,7 +196,7 @@ public class VcsServiceTest {
 
         // Then
         final ArgumentCaptor<List<PullRequest>> prArgumentCaptor = ArgumentCaptor.forClass(List.class);
-        verify(expositionStorageAdapter, times(2)).savePullRequestDetailsWithLinkedCommits(prArgumentCaptor.capture());
+        verify(expositionStorageAdapter, times(2)).savePullRequestDetailsWithLinkedCommitsAndComments(prArgumentCaptor.capture());
         final List<List<PullRequest>> prArgumentCaptorAllValues = prArgumentCaptor.getAllValues();
         assertThat(prArgumentCaptorAllValues).hasSize(2);
         prArgumentCaptorAllValues.stream().flatMap(Collection::stream)
@@ -208,4 +205,120 @@ public class VcsServiceTest {
                     assertThat(pullRequest.getCommits()).isNotEmpty();
                 });
     }
+
+    @Test
+    void should_collect_pull_requests_with_comments_given_an_organization() throws SymeoException {
+        // Given
+        final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
+        final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final VcsService vcsService = new VcsService(deliveryCommand,
+                deliveryQuery, expositionStorageAdapter);
+        final String vcsOrganizationId = faker.pokemon().name();
+        final Organization organization = Organization.builder()
+                .name(faker.name().firstName())
+                .id(UUID.randomUUID())
+                .vcsOrganization(
+                        VcsOrganization.builder().name(faker.dragonBall().character()).build()
+                )
+                .build();
+        final Repository repo1 =
+                Repository.builder().id(faker.pokemon().name()).name(vcsOrganizationId + "1")
+                        .vcsOrganizationId(vcsOrganizationId + "id-1").build();
+        final Repository repo2 =
+                Repository.builder().id(faker.rickAndMorty().character()).name(vcsOrganizationId + "2")
+                        .vcsOrganizationId(vcsOrganizationId + "id-2").build();
+        final List<Repository> expectedRepositories = List.of(
+                repo1,
+                repo2
+        );
+
+        // When
+        when(deliveryQuery.readRepositoriesForOrganization(organization)).thenReturn(expectedRepositories);
+        final List<PullRequest> pullRequestList1 = List.of(
+                PullRequest.builder().id(faker.pokemon().name()).number(11).build(),
+                PullRequest.builder().id(faker.hacker().abbreviation()).number(12).build(),
+                PullRequest.builder().id(faker.animal().name()).number(13).build()
+        );
+        final List<PullRequest> pullRequestList2 = List.of(
+                PullRequest.builder().id(faker.pokemon().name()).number(21).build(),
+                PullRequest.builder().id(faker.hacker().abbreviation()).number(22).build()
+        );
+
+        when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(0)))
+                .thenReturn(pullRequestList1);
+        when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(1)))
+                .thenReturn(pullRequestList2);
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(0)))
+                .thenReturn(List.of(Comment.builder().build()));
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(1)))
+                .thenReturn(List.of(Comment.builder().build()));
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(2)))
+                .thenReturn(List.of(Comment.builder().build()));
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(0)))
+                .thenReturn(List.of(Comment.builder().build()));
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(1)))
+                .thenReturn(List.of(Comment.builder().build()));
+
+        vcsService.collectPullRequestsForOrganization(organization);
+
+        // Then
+        final ArgumentCaptor<List<PullRequest>> prArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        verify(expositionStorageAdapter, times(2)).savePullRequestDetailsWithLinkedCommitsAndComments(prArgumentCaptor.capture());
+        final List<List<PullRequest>> prArgumentCaptorAllValues = prArgumentCaptor.getAllValues();
+        assertThat(prArgumentCaptorAllValues).hasSize(2);
+        prArgumentCaptorAllValues.stream().flatMap(Collection::stream)
+                .forEach(pullRequest -> {
+                    assertThat(pullRequest.getOrganizationId()).isEqualTo(organization.getId());
+                    assertThat(pullRequest.getComments()).isNotEmpty();
+                });
+    }
+
+    @Test
+    void should_raise_an_exception_while_collection_comments() throws SymeoException {
+        // Given
+        final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
+        final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final VcsService vcsService = new VcsService(deliveryCommand,
+                deliveryQuery, expositionStorageAdapter);
+        final String vcsOrganizationId = faker.name().name();
+        final Organization organization = Organization.builder()
+                .vcsOrganization(VcsOrganization.builder().build()).name(faker.name().firstName()).build();
+        final Repository repo1 =
+                Repository.builder().name(faker.pokemon().name() + "1").vcsOrganizationId(vcsOrganizationId).build();
+        final List<Repository> expectedRepositories = List.of(
+                repo1
+        );
+        final List<PullRequest> pullRequestList1 = List.of(
+                PullRequest.builder().id(faker.pokemon().name()).number(11).build(),
+                PullRequest.builder().id(faker.hacker().abbreviation()).number(12).build(),
+                PullRequest.builder().id(faker.animal().name()).number(13).build()
+        );
+
+        // When
+        when(deliveryQuery.readRepositoriesForOrganization(organization))
+                .thenReturn(
+                        expectedRepositories
+                );
+        when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(0)))
+                .thenReturn(pullRequestList1);
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(0)))
+                .thenReturn(List.of(Comment.builder().build()));
+
+        doThrow(SymeoException.class)
+                .when(deliveryCommand)
+                .collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(1));
+        SymeoException symeoException = null;
+        try {
+            vcsService.collectPullRequestsForOrganization(organization);
+        } catch (SymeoException e) {
+            symeoException = e;
+        }
+
+        // Then
+        assertThat(symeoException).isNotNull();
+    }
+
+
 }

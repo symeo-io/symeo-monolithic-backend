@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
@@ -11,6 +12,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -107,5 +109,11 @@ public interface PullRequestMapper {
 
     static String sortingParameterToDatabaseAttribute(final String sortingParameter) {
         return SORTING_PARAMETERS_MAPPING.getOrDefault(sortingParameter, sortingParameter);
+    }
+
+    static List<CommentEntity> pullRequestToCommentEntities(PullRequest pullRequest) {
+        return pullRequest.getComments().stream()
+                .map(comment -> CommentMapper.domainToEntity(comment, pullRequest))
+                .collect(Collectors.toList());
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ExpositionStorageAdapter {
-    void savePullRequestDetailsWithLinkedCommits(List<PullRequest> pullRequests);
+    void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests);
 
     void saveRepositories(List<Repository> repositories);
 
@@ -39,5 +39,5 @@ public interface ExpositionStorageAdapter {
 
     List<PullRequestView> readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
                                                                                      Date startDate
-            , Date endDate);
+            , Date endDate) throws SymeoException;
 }

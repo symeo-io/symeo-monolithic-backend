@@ -4,14 +4,12 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
@@ -61,6 +59,8 @@ public class PostgresExpositionAdapterTestIT {
     private CustomPullRequestViewRepository customPullRequestViewRepository;
     @Autowired
     private CommitRepository commitRepository;
+    @Autowired
+    private CommentRepository commentRepository;
     private PostgresExpositionAdapter postgresExpositionAdapter;
 
     @AfterEach
@@ -70,13 +70,14 @@ public class PostgresExpositionAdapterTestIT {
         repositoryRepository.deleteAll();
         organizationRepository.deleteAll();
         commitRepository.deleteAll();
+        commitRepository.deleteAll();
     }
 
     @BeforeEach
     public void setUp() {
         postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository, customPullRequestViewRepository, commitRepository);
+                pullRequestFullViewRepository, customPullRequestViewRepository, commitRepository, commentRepository);
     }
 
     @Test
@@ -89,7 +90,7 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommits(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
 
         // Then
         final List<PullRequestEntity> all = pullRequestRepository.findAll();
@@ -126,11 +127,43 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommits(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
 
         // Then
         final List<CommitEntity> commitEntities = commitRepository.findAll();
         assertThat(commitEntities).hasSize(3);
+    }
+
+    @Test
+    void should_save_pull_requests_with_comments() {
+        final List<PullRequest> pullRequestsToSave = List.of(
+                buildPullRequest(1).toBuilder()
+                        .comments(List.of(
+                                Comment.builder()
+                                        .creationDate(new Date())
+                                        .id(faker.rickAndMorty().character())
+                                        .build(),
+                                Comment.builder()
+                                        .creationDate(new Date())
+                                        .id(faker.rickAndMorty().character())
+                                        .build()
+
+                        )).build(),
+                buildPullRequest(2).toBuilder()
+                        .comments(List.of(
+                                Comment.builder()
+                                        .creationDate(new Date())
+                                        .id(faker.rickAndMorty().character())
+                                        .build()
+                        )).build()
+        );
+
+        // When
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
+
+        // Then
+        final List<CommentEntity> commentEntities = commentRepository.findAll();
+        assertThat(commentEntities).hasSize(3);
     }
 
     @Test

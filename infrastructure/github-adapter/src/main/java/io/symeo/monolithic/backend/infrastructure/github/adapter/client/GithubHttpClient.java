@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
@@ -112,6 +113,25 @@ public class GithubHttpClient {
                 uri,
                 organizationName,
                 GithubCommitsDTO[].class
+        );
+    }
+
+    public GithubCommentsDTO[] getCommentsForPullRequestNumber(final String organizationName,
+                                                               final String repositoryName,
+                                                               final Integer pullRequestNumber) throws SymeoException {
+        final String uri =
+                api
+                        + "repos/"
+                        + organizationName
+                        + "/" +
+                        repositoryName
+                        + "/pulls/"
+                        + pullRequestNumber +
+                        "/comments";
+        return get(
+                uri,
+                organizationName,
+                GithubCommentsDTO[].class
         );
     }
 

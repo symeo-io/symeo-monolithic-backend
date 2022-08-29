@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.domain.command;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -61,5 +62,17 @@ public class DeliveryCommand {
                 Commit.getNameFromPullRequest(pullRequest),
                 rawCommits);
         return versionControlSystemAdapter.commitsBytesToDomain(rawCommits);
+    }
+
+    public List<Comment> collectCommentsForRepositoryAndPullRequest(final Repository repository,
+                                                                    final PullRequest pullRequest) throws SymeoException {
+        final byte[] rawComments = versionControlSystemAdapter.getRawComments(repository.getVcsOrganizationName(),
+                repository.getName(), pullRequest.getNumber());
+        rawStorageAdapter.save(
+                pullRequest.getOrganizationId(),
+                versionControlSystemAdapter.getName(),
+                Comment.getNameFromPullRequest(pullRequest),
+                rawComments);
+        return versionControlSystemAdapter.commentsBytesToDomain(rawComments);
     }
 }

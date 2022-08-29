@@ -3,11 +3,13 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
@@ -208,7 +210,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     }
 
     @Override
-    public List<Commit> commitsBytesToDomain(byte[] rawCommits) {
+    public List<Commit> commitsBytesToDomain(final byte[] rawCommits) {
         if (rawCommits.length == 0) {
             return List.of();
         }
@@ -217,6 +219,36 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                     .map(GithubMapper::mapCommitToDomain)
                     .collect(Collectors.toList());
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Comment> commentsBytesToDomain(final byte[] rawComments) {
+        if (rawComments.length == 0) {
+            return List.of();
+        }
+        try {
+            return Arrays.stream(bytesToDto(rawComments, GithubCommentsDTO[].class))
+                    .map(
+                            (GithubCommentsDTO githubCommentsDTO) ->
+                                    GithubMapper.mapCommentToDomain(githubCommentsDTO, this.getName())
+                    )
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public byte[] getRawComments(final String vcsOrganizationName, final String repositoryName,
+                                 final Integer pullRequestNumber) throws SymeoException {
+        final GithubCommentsDTO[] githubCommentsDTOS =
+                githubHttpClient.getCommentsForPullRequestNumber(vcsOrganizationName,
+                        repositoryName, pullRequestNumber);
+        try {
+            return dtoToBytes(githubCommentsDTOS);
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

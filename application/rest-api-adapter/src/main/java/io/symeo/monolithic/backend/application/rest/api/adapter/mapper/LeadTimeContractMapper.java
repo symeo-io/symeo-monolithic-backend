@@ -8,6 +8,7 @@ import io.symeo.monolithic.backend.frontend.contract.api.model.MetricsContract;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface LeadTimeContractMapper {
 
@@ -18,9 +19,12 @@ public interface LeadTimeContractMapper {
         return leadTimeResponseContract;
     }
 
-    static LeadTimeResponseContract toContract(final LeadTimeMetrics leadTimeMetrics) {
+    static LeadTimeResponseContract toContract(final Optional<LeadTimeMetrics> leadTimeMetrics) {
         final LeadTimeResponseContract leadTimeResponseContract = new LeadTimeResponseContract();
-        final LeadTimeResponseContractLeadTime leadTime = getLeadTimeResponseContractLeadTime(leadTimeMetrics);
+        if (leadTimeMetrics.isEmpty()) {
+            return leadTimeResponseContract;
+        }
+        final LeadTimeResponseContractLeadTime leadTime = getLeadTimeResponseContractLeadTime(leadTimeMetrics.get());
         leadTimeResponseContract.setLeadTime(leadTime);
         return leadTimeResponseContract;
     }

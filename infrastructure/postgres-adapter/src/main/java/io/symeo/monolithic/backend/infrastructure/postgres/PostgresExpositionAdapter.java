@@ -37,12 +37,16 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestFullViewRepository pullRequestFullViewRepository;
     private final CustomPullRequestViewRepository customPullRequestViewRepository;
     private final CommitRepository commitRepository;
+    private final CommentRepository commentRepository;
 
     @Override
-    public void savePullRequestDetailsWithLinkedCommits(List<PullRequest> pullRequests) {
+    public void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests) {
         pullRequestRepository.saveAll(pullRequests.stream().map(PullRequestMapper::domainToEntity)
                 .toList());
         commitRepository.saveAll(pullRequests.stream().map(PullRequestMapper::pullRequestToCommitEntities)
+                .flatMap(Collection::stream)
+                .toList());
+        commentRepository.saveAll(pullRequests.stream().map(PullRequestMapper::pullRequestToCommentEntities)
                 .flatMap(Collection::stream)
                 .toList());
     }
@@ -161,5 +165,12 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
         }
     }
 
-    
+
+    @Override
+    public List<PullRequestView> readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
+                                                                                            Date startDate,
+                                                                                            Date endDate) throws SymeoException {
+        return readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(teamId, startDate, endDate, 0,
+                200, "creation_date", "asc");
+    }
 }
