@@ -382,7 +382,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
         final String startDate = "2022-01-15";
         final String endDate = "2022-02-01";
         String pageIndex = "0";
-        final String pageSize = "10";
+        final String pageSize = "5";
         final String sortingDirection = "asc";
         final String sortingParameter = "creation_date";
 
@@ -397,9 +397,9 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(2)
-                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(14)
+                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(8)
                 .jsonPath("$.pull_requests_page.pull_requests").isNotEmpty()
-                .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(10))
+                .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(5))
                 .jsonPath("$.pull_requests_page.pull_requests[0].id").isNotEmpty()
                 .jsonPath("$.pull_requests_page.pull_requests[0].commit_number").isNotEmpty()
                 .jsonPath("$.pull_requests_page.pull_requests[0].size").isNotEmpty()
@@ -422,9 +422,9 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(2)
-                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(14)
+                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(8)
                 .jsonPath("$.pull_requests_page.pull_requests").isNotEmpty()
-                .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(4));
+                .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(3));
     }
 
     private static List<RepositoryEntity> generateRepositoriesStubsForOrganization() {

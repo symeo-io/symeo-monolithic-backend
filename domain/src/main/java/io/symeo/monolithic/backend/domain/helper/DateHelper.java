@@ -16,7 +16,7 @@ import java.util.TimeZone;
 public class DateHelper {
 
     public static final String DATE_PATTERN = "yyyy-MM-dd";
-    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd hh:mm:ss";
+    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     public static String dateToString(final Date now) {
         return new SimpleDateFormat(DATE_PATTERN).format(now);

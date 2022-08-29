@@ -124,4 +124,17 @@ public class DateHelperTest {
         assertThat(ChronoUnit.DAYS.between(previousRangeDates.get(3).toInstant(),
                 previousRangeDates.get(4).toInstant())).isEqualTo(5);
     }
+
+    @Test
+    void should_convert_date_to_string_with_local() throws ParseException {
+        // Given
+        final String dateAsString = "2022-01-01 13:25:23";
+        final Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateAsString);
+
+        // When
+        final String dateTimeToString = dateTimeToString(date);
+
+        // Then
+        assertThat(dateTimeToString).isEqualTo(dateAsString);
+    }
 }
