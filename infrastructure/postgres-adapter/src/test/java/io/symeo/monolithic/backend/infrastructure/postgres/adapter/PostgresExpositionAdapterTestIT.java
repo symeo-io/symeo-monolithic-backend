@@ -333,93 +333,97 @@ public class PostgresExpositionAdapterTestIT {
                         .organizationId(organizationId)
                         .repositoryIds(List.of(repositoryId)).build()
         );
+        final ZonedDateTime now = ZonedDateTime.now();
         pullRequestRepository.saveAll(List.of(
                 PullRequestEntity.builder()
                         .id(faker.rickAndMorty().character() + "-1")
                         .code(faker.harryPotter().book())
                         .organizationId(organizationId)
-                        .creationDate(ZonedDateTime.now().minusDays(50))
-                        .mergeDate(ZonedDateTime.now().minusDays(49))
+                        .creationDate(now.minusDays(50))
+                        .mergeDate(now.minusDays(49))
                         .vcsRepositoryId(repositoryId)
                         .authorLogin(faker.dragonBall().character())
                         .title(faker.gameOfThrones().character())
-                        .lastUpdateDate(ZonedDateTime.now())
+                        .lastUpdateDate(now)
                         .build(),
                 PullRequestEntity.builder()
                         .id(faker.rickAndMorty().character() + "-2")
                         .code(faker.harryPotter().book())
                         .organizationId(organizationId)
-                        .creationDate(ZonedDateTime.now().minusDays(30))
+                        .creationDate(now.minusDays(30))
                         .vcsRepositoryId(repositoryId)
                         .authorLogin(faker.dragonBall().character())
                         .title(faker.gameOfThrones().character())
-                        .lastUpdateDate(ZonedDateTime.now())
+                        .lastUpdateDate(now)
                         .build(),
                 PullRequestEntity.builder()
                         .id(faker.rickAndMorty().character() + "-3")
                         .code(faker.harryPotter().book())
                         .organizationId(organizationId)
-                        .creationDate(ZonedDateTime.now().minusDays(20))
+                        .creationDate(now.minusDays(20))
                         .vcsRepositoryId(repositoryId)
                         .authorLogin(faker.dragonBall().character())
                         .title(faker.gameOfThrones().character())
-                        .lastUpdateDate(ZonedDateTime.now())
+                        .lastUpdateDate(now)
                         .build(),
                 PullRequestEntity.builder()
                         .id(faker.rickAndMorty().character() + "-4")
                         .organizationId(organizationId)
                         .code(faker.harryPotter().book())
-                        .creationDate(ZonedDateTime.now().minusDays(20))
-                        .mergeDate(ZonedDateTime.now().minusDays(19))
+                        .creationDate(now.minusDays(20))
+                        .mergeDate(now.minusDays(19))
                         .vcsRepositoryId(repositoryId)
                         .authorLogin(faker.dragonBall().character())
                         .title(faker.gameOfThrones().character())
-                        .lastUpdateDate(ZonedDateTime.now())
+                        .lastUpdateDate(now)
                         .build(),
                 PullRequestEntity.builder()
                         .code(faker.harryPotter().book())
                         .id(faker.rickAndMorty().character() + "-5")
                         .organizationId(organizationId)
-                        .creationDate(ZonedDateTime.now().minusDays(20))
-                        .mergeDate(ZonedDateTime.now())
+                        .creationDate(now.minusDays(20))
+                        .mergeDate(now.minusDays(1))
                         .vcsRepositoryId(repositoryId)
                         .authorLogin(faker.dragonBall().character())
                         .title(faker.gameOfThrones().character())
-                        .lastUpdateDate(ZonedDateTime.now())
+                        .lastUpdateDate(now)
                         .build()
         ));
 
 
         // When
+        final Date from = Date.from(now.minusDays(40).toInstant());
+        final Date to = new Date();
+        final int pageSize = 3;
         final int count = postgresExpositionAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(
-                teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date()
+                teamId, from, to
         );
         final List<PullRequestView> pullRequestViewsPage11 =
                 postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
-                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 0, 3,
+                        teamId, from, to, 0, pageSize,
                         "creation_date", "asc"
                 );
         final List<PullRequestView> pullRequestViewsPage12 =
                 postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
-                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 0, 3,
+                        teamId, from, to, 0, pageSize,
                         "size", "asc"
                 );
         final List<PullRequestView> pullRequestViewsPage21 =
                 postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
-                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 1, 3,
+                        teamId, from, to, 1, pageSize,
                         "creation_date", "asc"
                 );
         final List<PullRequestView> pullRequestViewsPage22 =
                 postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
-                        teamId, Date.from(ZonedDateTime.now().minusDays(40).toInstant()), new Date(), 1, 3,
+                        teamId, from, to, 1, pageSize,
                         "creation_date", "desc"
                 );
 
 
         // Then
         assertThat(count).isEqualTo(4);
-        assertThat(pullRequestViewsPage11.size()).isEqualTo(3);
-        assertThat(pullRequestViewsPage12.size()).isEqualTo(3);
+        assertThat(pullRequestViewsPage11.size()).isEqualTo(pageSize);
+        assertThat(pullRequestViewsPage12.size()).isEqualTo(pageSize);
         assertThat(pullRequestViewsPage21.size()).isEqualTo(1);
         assertThat(pullRequestViewsPage21.size()).isEqualTo(1);
         assertThat(pullRequestViewsPage22.get(0)).isNotEqualTo(pullRequestViewsPage21.get(0));

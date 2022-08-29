@@ -42,4 +42,10 @@ public class SymeoMonolithicBackendConfiguration {
                 stopWatch.getTotalTimeSeconds());
         return result;
     }
+
+    static {
+        final String timezoneId = "Europe/Paris";
+        LOGGER.info("Setting default system timezone to {}", timezoneId);
+        System.setProperty("user.timezone", timezoneId);
+    }
 }
