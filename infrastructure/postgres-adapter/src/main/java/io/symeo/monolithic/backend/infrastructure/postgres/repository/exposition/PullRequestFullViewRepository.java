@@ -13,7 +13,7 @@ public interface PullRequestFullViewRepository extends JpaRepository<PullRequest
     @Query(value = "select count(pr.id)" +
             " from exposition_storage.pull_request pr" +
             " where (pr.merge_date is null and pr.creation_date <= :endDate)" +
-            "   or (pr.merge_date >= :startDate)" +
+            "   or (pr.merge_date >= :startDate and pr.merge_date <= :endDate)" +
             "    and pr.vcs_repository_id in (select ttr.repository_id" +
             "                                 from exposition_storage.team_to_repository ttr" +
             "                                 where ttr.team_id = :teamId)"
