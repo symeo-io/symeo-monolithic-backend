@@ -10,9 +10,11 @@ import lombok.AllArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getPreviousStartDateFromStartDateAndEndDate;
+import static io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics.buildFromCurrentAndPreviousLeadTimes;
 
 @AllArgsConstructor
 public class LeadTimeService implements LeadTimeFacadeAdapter {
@@ -20,14 +22,14 @@ public class LeadTimeService implements LeadTimeFacadeAdapter {
     private final ExpositionStorageAdapter expositionStorageAdapter;
 
     @Override
-    public LeadTimeMetrics computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(final Organization organization,
-                                                                                 final UUID teamId,
-                                                                                 final Date startDate,
-                                                                                 final Date endDate) {
+    public Optional<LeadTimeMetrics> computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(final Organization organization,
+                                                                                           final UUID teamId,
+                                                                                           final Date startDate,
+                                                                                           final Date endDate) {
         final List<PullRequestView> currentPullRequestWithCommitsViews =
                 expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId, startDate
                         , endDate);
-        final LeadTime currentLeadTime =
+        final Optional<LeadTime> currentLeadTime =
                 LeadTime.buildFromPullRequestWithCommitsViews(currentPullRequestWithCommitsViews);
         final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate,
                 endDate, organization.getTimeZone());
@@ -35,8 +37,8 @@ public class LeadTimeService implements LeadTimeFacadeAdapter {
                 expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
                         previousStartDate
                         , startDate);
-        final LeadTime previousLeadTime =
+        final Optional<LeadTime> previousLeadTime =
                 LeadTime.buildFromPullRequestWithCommitsViews(previousPullRequestWithCommitsViews);
-        return LeadTimeMetrics.buildFromCurrentAndPreviousLeadTimes(currentLeadTime, previousLeadTime);
+        return buildFromCurrentAndPreviousLeadTimes(currentLeadTime, previousLeadTime);
     }
 }

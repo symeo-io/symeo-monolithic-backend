@@ -81,7 +81,11 @@ public class DateHelper {
         return hours < 2f ? 0.1f : round(10f * hours / 24) / 10f;
     }
 
-    public static Float getNumberOfDaysWithOneDecimalBetweenDates(Date date1, Date date2) {
+    public static Float getNumberOfDaysWithOneDecimalBetweenDates(final Date date1, final Date date2) {
         return hoursToDays(ChronoUnit.HOURS.between(date1.toInstant(), date2.toInstant()));
+    }
+
+    public static Long getNumberOfMinutesBetweenDates(final Date date1, final Date date2) {
+        return ChronoUnit.MINUTES.between(date1.toInstant(), date2.toInstant());
     }
 }

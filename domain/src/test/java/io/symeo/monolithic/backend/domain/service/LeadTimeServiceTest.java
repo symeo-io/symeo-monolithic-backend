@@ -2,7 +2,6 @@ package io.symeo.monolithic.backend.domain.service;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.service.insights.LeadTimeService;
@@ -38,9 +37,8 @@ public class LeadTimeServiceTest {
                 .thenReturn(
                         pullRequestWithCommitsViews
                 );
-        final LeadTimeMetrics leadTimeMetrics =
-                leadTimeService.computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(organization, teamId, startDate
-                        , endDate);
+        leadTimeService.computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(organization, teamId, startDate
+                , endDate);
 
         // Then
         verify(expositionStorageAdapter, times(1))
