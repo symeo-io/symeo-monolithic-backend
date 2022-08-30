@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ExpositionStorageAdapter {
-    void savePullRequestDetailsWithLinkedCommits(List<PullRequest> pullRequests);
+    void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests);
 
     void saveRepositories(List<Repository> repositories);
 
@@ -28,11 +28,16 @@ public interface ExpositionStorageAdapter {
     List<PullRequestView> readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(UUID teamId,
                                                                                                  Date startDate,
                                                                                                  Date endDate,
-                                                                                                 int pageIndex, int pageSize,
+                                                                                                 int pageIndex,
+                                                                                                 int pageSize,
                                                                                                  String sortingParameter,
                                                                                                  String sortingDirection)
             throws SymeoException;
 
     int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
+
+    List<PullRequestView> readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
+                                                                                     Date startDate
+            , Date endDate) throws SymeoException;
 }

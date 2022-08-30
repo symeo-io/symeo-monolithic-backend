@@ -1,4 +1,4 @@
-package io.symeo.monolithic.backend.domain.domain.insight;
+package io.symeo.monolithic.backend.domain.model.insight;
 
 import com.github.javafaker.Faker;
 

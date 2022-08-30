@@ -37,12 +37,17 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestFullViewRepository pullRequestFullViewRepository;
     private final CustomPullRequestViewRepository customPullRequestViewRepository;
     private final CommitRepository commitRepository;
+    private final CommentRepository commentRepository;
+    private final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
 
     @Override
-    public void savePullRequestDetailsWithLinkedCommits(List<PullRequest> pullRequests) {
+    public void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests) {
         pullRequestRepository.saveAll(pullRequests.stream().map(PullRequestMapper::domainToEntity)
                 .toList());
         commitRepository.saveAll(pullRequests.stream().map(PullRequestMapper::pullRequestToCommitEntities)
+                .flatMap(Collection::stream)
+                .toList());
+        commentRepository.saveAll(pullRequests.stream().map(PullRequestMapper::pullRequestToCommentEntities)
                 .flatMap(Collection::stream)
                 .toList());
     }
@@ -153,6 +158,28 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             return pullRequestFullViewRepository.countByTeamIdAndStartEndAndEndDate(teamId, startDate, endDate);
         } catch (Exception e) {
             final String message = String.format("Failed to count PR details for teamId %s", teamId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PullRequestView> readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
+                                                                                            Date startDate,
+                                                                                            Date endDate) throws SymeoException {
+        try {
+            return pullRequestWithCommitsAndCommentsRepository.findAllMergedByTeamIdForStartDateAndEndDate(teamId,
+                            startDate, endDate)
+                    .stream()
+                    .map(PullRequestMapper::withCommitsAndCommentsToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read PR with commits and comments for teamId %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
                     .code(POSTGRES_EXCEPTION)

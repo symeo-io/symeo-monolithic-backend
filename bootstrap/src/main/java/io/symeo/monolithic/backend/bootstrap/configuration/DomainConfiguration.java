@@ -9,6 +9,7 @@ import io.symeo.monolithic.backend.domain.query.DeliveryQuery;
 import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.service.DataProcessingJobService;
 import io.symeo.monolithic.backend.domain.service.account.*;
+import io.symeo.monolithic.backend.domain.service.insights.LeadTimeService;
 import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
@@ -117,5 +118,10 @@ public class DomainConfiguration {
     @Bean
     public PullRequestFacade pullRequestFacade(final ExpositionStorageAdapter expositionStorageAdapter) {
         return new PullRequestService(expositionStorageAdapter);
+    }
+
+    @Bean
+    public LeadTimeFacadeAdapter leadTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter) {
+        return new LeadTimeService(expositionStorageAdapter);
     }
 }

@@ -1,17 +1,21 @@
 package io.symeo.monolithic.backend.domain.model.insight.view;
 
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
-import static java.lang.Math.round;
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.hoursToDays;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -40,6 +44,10 @@ public class PullRequestView {
     String id;
     String title;
     String repository;
+    @Builder.Default
+    List<Commit> commits = new ArrayList<>();
+    @Builder.Default
+    List<Comment> comments = new ArrayList<>();
 
     public PullRequestView addStartDateRangeFromRangeDates(final List<Date> rangeDates) {
         String startDateRange;
@@ -145,15 +153,23 @@ public class PullRequestView {
                 TimeUnit.MILLISECONDS));
     }
 
-    private static float hoursToDays(long hours) {
-        return hours < 2f ? 0.1f : round(10f * hours / 24) / 10f;
-    }
-
     public PullRequestView addTimeLimit() {
         return this.toBuilder().limit(this.getDaysOpened(new Date())).build();
     }
 
     public PullRequestView addSizeLimit() {
         return this.toBuilder().limit(this.getSize()).build();
+    }
+
+    public List<Commit> getCommitsOrderByDate() {
+        final ArrayList<Commit> commitArrayList = new ArrayList<>(this.commits);
+        commitArrayList.sort(Comparator.comparing(Commit::getDate));
+        return commitArrayList;
+    }
+
+    public List<Comment> getCommentsOrderByDate() {
+        final ArrayList<Comment> commentArrayList = new ArrayList<>(this.comments);
+        commentArrayList.sort(Comparator.comparing(Comment::getCreationDate));
+        return commentArrayList;
     }
 }

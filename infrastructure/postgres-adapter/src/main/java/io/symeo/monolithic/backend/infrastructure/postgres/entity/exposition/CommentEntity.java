@@ -15,23 +15,17 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "commit", schema = "exposition_storage")
+@Table(name = "comment", schema = "exposition_storage")
 @EntityListeners(AuditingEntityListener.class)
-public class CommitEntity {
-
-
+public class CommentEntity {
     @Id
-    @Column(name = "sha", nullable = false)
+    @Column(name = "id", nullable = false)
     @NotNull
-    String sha;
-    @Column(name = "author_login")
-    String authorLogin;
-    @Column(name = "message")
-    String message;
-    @Column(name = "date", nullable = false)
-    ZonedDateTime date;
+    String id;
     @Column(name = "pull_request_id", nullable = false)
     String pullRequestId;
+    @Column(name = "creation_date", nullable = false)
+    ZonedDateTime creationDate;
     @ManyToOne
     @JoinColumn(name = "pull_request_id", nullable = false, updatable = false, insertable = false)
     PullRequestEntity pullRequest;

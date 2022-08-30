@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.domain.service.platform.vcs;
 import io.symeo.monolithic.backend.domain.command.DeliveryCommand;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -37,7 +38,7 @@ public class VcsService {
                 .forEach(
                         repository -> {
                             try {
-                                collectAndSavePullRequestsDetailsWithCommits(organization,
+                                collectAndSavePullRequestsDetailsWithCommitsAndComments(organization,
                                         symeoExceptionAtomicReference, repository);
                             } catch (SymeoException e) {
                                 LOGGER.error("Error while collecting PR for repository {}", repository, e);
@@ -50,10 +51,10 @@ public class VcsService {
         }
     }
 
-    private void collectAndSavePullRequestsDetailsWithCommits(Organization organization,
-                                                              AtomicReference<SymeoException> symeoExceptionAtomicReference,
-                                                              Repository repository) throws SymeoException {
-        expositionStorageAdapter.savePullRequestDetailsWithLinkedCommits(collectPullRequestForRepository(repository)
+    private void collectAndSavePullRequestsDetailsWithCommitsAndComments(Organization organization,
+                                                                         AtomicReference<SymeoException> symeoExceptionAtomicReference,
+                                                                         Repository repository) throws SymeoException {
+        expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(collectPullRequestForRepository(repository)
                 .stream()
                 .map(pullRequest -> pullRequest.toBuilder()
                         .organizationId(organization.getId())
@@ -61,6 +62,8 @@ public class VcsService {
                         .build()
                 )
                 .map(pullRequest -> populatePullRequestWithCommits(symeoExceptionAtomicReference, repository,
+                        pullRequest))
+                .map(pullRequest -> populatePullRequestWithComments(symeoExceptionAtomicReference, repository,
                         pullRequest))
                 .toList());
     }
@@ -81,6 +84,23 @@ public class VcsService {
                 .build();
     }
 
+    private PullRequest populatePullRequestWithComments(final AtomicReference<SymeoException> symeoExceptionAtomicReference,
+                                                        final Repository repository, final PullRequest pullRequest) {
+        List<Comment> comments;
+        try {
+            comments = collectCommentsForRepositoryAndPullRequest(repository, pullRequest);
+        } catch (SymeoException e) {
+            LOGGER.error("Error while collection comments for PR {}",
+                    pullRequest, e);
+            symeoExceptionAtomicReference.set(e);
+            comments = new ArrayList<>();
+        }
+        return pullRequest.toBuilder()
+                .comments(comments)
+                .build();
+    }
+
+
     private List<PullRequest> collectPullRequestForRepository(final Repository repository) throws SymeoException {
         return deliveryCommand.collectPullRequestsForRepository(repository);
     }
@@ -92,5 +112,11 @@ public class VcsService {
     private List<Commit> collectCommitsForRepositoryAndPullRequest(final Repository repository,
                                                                    final PullRequest pullRequest) throws SymeoException {
         return deliveryCommand.collectCommitsForPullRequest(repository, pullRequest);
+    }
+
+    private List<Comment> collectCommentsForRepositoryAndPullRequest(final Repository repository,
+                                                                     final PullRequest pullRequest)
+            throws SymeoException {
+        return deliveryCommand.collectCommentsForRepositoryAndPullRequest(repository, pullRequest);
     }
 }

@@ -42,6 +42,9 @@ public class PullRequest {
     String branchName;
     @Builder.Default
     List<Commit> commits = List.of();
+    @Builder.Default
+    List<Comment> comments = List.of();
+
 
     public static String getNameFromRepository(String repositoryName) {
         return ALL + "_" + repositoryName;

@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import static java.lang.Math.round;
+
 @Slf4j
 public class DateHelper {
 
@@ -24,6 +26,14 @@ public class DateHelper {
 
     public static String dateTimeToString(final Date now) {
         return new SimpleDateFormat(DATE_TIME_PATTERN).format(now);
+    }
+
+    public static Date stringToDateTime(final String dateTimeString) {
+        try {
+            return new SimpleDateFormat(DATE_TIME_PATTERN).parse(dateTimeString);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Date stringToDate(String dateString) throws SymeoException {
@@ -65,5 +75,13 @@ public class DateHelper {
                                                                    final TimeZone timeZone) {
         final long rangeDays = ChronoUnit.DAYS.between(startDate.toInstant(), endDate.toInstant());
         return Date.from((startDate.toInstant().atZone(timeZone.toZoneId()).toLocalDate().minusDays(rangeDays)).atStartOfDay(timeZone.toZoneId()).toInstant());
+    }
+
+    public static float hoursToDays(long hours) {
+        return hours < 2f ? 0.1f : round(10f * hours / 24) / 10f;
+    }
+
+    public static Long getNumberOfMinutesBetweenDates(final Date date1, final Date date2) {
+        return ChronoUnit.MINUTES.between(date1.toInstant(), date2.toInstant());
     }
 }

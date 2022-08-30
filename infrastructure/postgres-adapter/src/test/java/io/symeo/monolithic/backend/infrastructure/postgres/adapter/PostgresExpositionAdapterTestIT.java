@@ -4,14 +4,12 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
@@ -61,22 +59,28 @@ public class PostgresExpositionAdapterTestIT {
     private CustomPullRequestViewRepository customPullRequestViewRepository;
     @Autowired
     private CommitRepository commitRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
     private PostgresExpositionAdapter postgresExpositionAdapter;
 
     @AfterEach
     void tearDown() {
+        commitRepository.deleteAll();
+        commentRepository.deleteAll();
         teamRepository.deleteAll();
         pullRequestRepository.deleteAll();
         repositoryRepository.deleteAll();
         organizationRepository.deleteAll();
-        commitRepository.deleteAll();
     }
 
     @BeforeEach
     public void setUp() {
         postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository, customPullRequestViewRepository, commitRepository);
+                pullRequestFullViewRepository, customPullRequestViewRepository, commitRepository, commentRepository,
+                pullRequestWithCommitsAndCommentsRepository);
     }
 
     @Test
@@ -89,7 +93,7 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommits(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
 
         // Then
         final List<PullRequestEntity> all = pullRequestRepository.findAll();
@@ -126,11 +130,43 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommits(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
 
         // Then
         final List<CommitEntity> commitEntities = commitRepository.findAll();
         assertThat(commitEntities).hasSize(3);
+    }
+
+    @Test
+    void should_save_pull_requests_with_comments() {
+        final List<PullRequest> pullRequestsToSave = List.of(
+                buildPullRequest(1).toBuilder()
+                        .comments(List.of(
+                                Comment.builder()
+                                        .creationDate(new Date())
+                                        .id(faker.rickAndMorty().character())
+                                        .build(),
+                                Comment.builder()
+                                        .creationDate(new Date())
+                                        .id(faker.rickAndMorty().character())
+                                        .build()
+
+                        )).build(),
+                buildPullRequest(2).toBuilder()
+                        .comments(List.of(
+                                Comment.builder()
+                                        .creationDate(new Date())
+                                        .id(faker.rickAndMorty().character())
+                                        .build()
+                        )).build()
+        );
+
+        // When
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
+
+        // Then
+        final List<CommentEntity> commentEntities = commentRepository.findAll();
+        assertThat(commentEntities).hasSize(3);
     }
 
     @Test
@@ -428,6 +464,147 @@ public class PostgresExpositionAdapterTestIT {
         assertThat(pullRequestViewsPage21.size()).isEqualTo(1);
         assertThat(pullRequestViewsPage22.get(0)).isNotEqualTo(pullRequestViewsPage21.get(0));
         assertThat(pullRequestViewsPage12.get(0)).isNotEqualTo(pullRequestViewsPage11.get(0));
+    }
+
+    @Test
+    void should_return_pull_requests_with_commits_and_comments() throws SymeoException {
+        // Given
+        final UUID organizationId = UUID.randomUUID();
+        final String repositoryId = faker.rickAndMorty().character();
+        repositoryRepository.save(RepositoryEntity.builder().id(repositoryId).name(faker.ancient().god()).build());
+        final UUID teamId = UUID.randomUUID();
+        organizationRepository.save(
+                OrganizationEntity.builder()
+                        .id(organizationId)
+                        .name(faker.name().firstName())
+                        .build()
+        );
+        teamRepository.save(
+                TeamEntity.builder().id(teamId)
+                        .name(faker.ancient().hero())
+                        .organizationId(organizationId)
+                        .repositoryIds(List.of(repositoryId)).build()
+        );
+        final ZonedDateTime now = ZonedDateTime.now();
+        final PullRequestEntity pr1 = PullRequestEntity.builder()
+                .id("1")
+                .code(faker.harryPotter().book())
+                .organizationId(organizationId)
+                .creationDate(now.minusDays(25))
+                .mergeDate(now.minusDays(20))
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(now)
+                .state(PullRequest.MERGE)
+                .build();
+        final PullRequestEntity pr11 = PullRequestEntity.builder()
+                .id("11")
+                .code(faker.harryPotter().book())
+                .organizationId(organizationId)
+                .creationDate(now.minusDays(50))
+                .mergeDate(now.minusDays(49))
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(now)
+                .state(PullRequest.MERGE)
+                .build();
+
+        final PullRequestEntity pr2 = PullRequestEntity.builder()
+                .id("2")
+                .code(faker.harryPotter().book())
+                .organizationId(organizationId)
+                .creationDate(now.minusDays(30))
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .state(PullRequest.MERGE)
+                .lastUpdateDate(now)
+                .build();
+        final PullRequestEntity pr3 = PullRequestEntity.builder()
+                .id("3")
+                .code(faker.harryPotter().book())
+                .organizationId(organizationId)
+                .creationDate(now.minusDays(30))
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .state(PullRequest.OPEN)
+                .lastUpdateDate(now)
+                .build();
+        pullRequestRepository.saveAll(List.of(
+                pr1,
+                pr2,
+                pr3,
+                pr11
+        ));
+        commentRepository.saveAll(
+                List.of(
+                        CommentEntity.builder()
+                                .id("1")
+                                .pullRequestId(pr1.getId())
+                                .creationDate(ZonedDateTime.now())
+                                .build(),
+                        CommentEntity.builder()
+                                .id("2")
+                                .pullRequestId(pr1.getId())
+                                .creationDate(ZonedDateTime.now())
+                                .build(),
+                        CommentEntity.builder()
+                                .id("3")
+                                .pullRequestId(pr2.getId())
+                                .creationDate(ZonedDateTime.now())
+                                .build()
+                )
+        );
+        commitRepository.saveAll(
+                List.of(
+                        CommitEntity.builder()
+                                .sha(faker.dragonBall().character())
+                                .pullRequestId(pr1.getId())
+                                .date(ZonedDateTime.now())
+                                .message(faker.gameOfThrones().character())
+                                .authorLogin(faker.gameOfThrones().dragon())
+                                .build(),
+                        CommitEntity.builder()
+                                .sha(faker.rickAndMorty().character())
+                                .pullRequestId(pr1.getId())
+                                .date(ZonedDateTime.now())
+                                .message(faker.gameOfThrones().character())
+                                .authorLogin(faker.gameOfThrones().dragon())
+                                .build(),
+                        CommitEntity.builder()
+                                .sha(faker.rickAndMorty().location())
+                                .pullRequestId(pr2.getId())
+                                .date(ZonedDateTime.now())
+                                .message(faker.gameOfThrones().character())
+                                .authorLogin(faker.gameOfThrones().dragon())
+                                .build(),
+                        CommitEntity.builder()
+                                .sha(faker.demographic().race())
+                                .pullRequestId(pr2.getId())
+                                .date(ZonedDateTime.now())
+                                .message(faker.gameOfThrones().character())
+                                .authorLogin(faker.gameOfThrones().dragon())
+                                .build()
+                )
+        );
+        final Date startDate = Date.from(now.minusDays(40).toInstant());
+        final Date endDate = new Date();
+
+
+        // When
+        final List<PullRequestView> pullRequestViews =
+                postgresExpositionAdapter.readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId, startDate,
+                        endDate);
+
+        // Then
+        assertThat(pullRequestViews).hasSize(2);
+        assertThat(pullRequestViews.get(0).getCommits()).hasSize(2);
+        assertThat(pullRequestViews.get(1).getCommits()).hasSize(2);
+        assertThat(pullRequestViews.get(0).getComments()).hasSize(2);
+        assertThat(pullRequestViews.get(1).getComments()).hasSize(1);
     }
 
     private Repository buildRepository(Organization organization) {

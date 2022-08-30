@@ -2,15 +2,18 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestWithCommitsAndCommentsDTO;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -102,10 +105,28 @@ public interface PullRequestMapper {
                 .build();
     }
 
+    static PullRequestView withCommitsAndCommentsToDomain(final PullRequestWithCommitsAndCommentsDTO pullRequestWithCommitsAndCommentsDTO) {
+        return PullRequestView.builder()
+                .id(pullRequestWithCommitsAndCommentsDTO.getId())
+                .status(pullRequestWithCommitsAndCommentsDTO.getState())
+                .mergeDate(isNull(pullRequestWithCommitsAndCommentsDTO.getMergeDate()) ? null :
+                        Date.from(pullRequestWithCommitsAndCommentsDTO.getMergeDate().toInstant()))
+                .creationDate(Date.from(pullRequestWithCommitsAndCommentsDTO.getCreationDate().toInstant()))
+                .comments(pullRequestWithCommitsAndCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
+                .commits(pullRequestWithCommitsAndCommentsDTO.getCommits().stream().map(CommitMapper::entityToDomain).toList())
+                .build();
+    }
+
     Map<String, String> SORTING_PARAMETERS_MAPPING = Map.of(
             "status", "state", "author", "author_login");
 
     static String sortingParameterToDatabaseAttribute(final String sortingParameter) {
         return SORTING_PARAMETERS_MAPPING.getOrDefault(sortingParameter, sortingParameter);
+    }
+
+    static List<CommentEntity> pullRequestToCommentEntities(PullRequest pullRequest) {
+        return pullRequest.getComments().stream()
+                .map(comment -> CommentMapper.domainToEntity(comment, pullRequest))
+                .collect(Collectors.toList());
     }
 }

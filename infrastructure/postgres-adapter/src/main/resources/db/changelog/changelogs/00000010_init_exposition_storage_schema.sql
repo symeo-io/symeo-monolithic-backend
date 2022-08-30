@@ -77,4 +77,14 @@ create table exposition_storage.commit
     technical_modification_date timestamp(6) with time zone default now() not null
 );
 
+create table exposition_storage.comment
+(
+    id                          varchar(300)                              not null
+        constraint comment_id primary key,
+    pull_request_id             varchar(100)                              not null,
+    creation_date               timestamp(6) with time zone               not null,
+    technical_creation_date     timestamp(6) with time zone default now() not null,
+    technical_modification_date timestamp(6) with time zone default now() not null
+);
+
 

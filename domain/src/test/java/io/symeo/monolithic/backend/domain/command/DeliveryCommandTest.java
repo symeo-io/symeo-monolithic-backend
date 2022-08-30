@@ -3,10 +3,7 @@ package io.symeo.monolithic.backend.domain.command;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.RawStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import org.junit.jupiter.api.Test;
@@ -134,6 +131,33 @@ public class DeliveryCommandTest {
 
         // Then
         assertThat(commitsResult).isEqualTo(commits);
-
     }
+
+    @Test
+    void should_collect_comments_given_a_pull_request() throws SymeoException {
+        // Given
+        final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
+        final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
+        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
+        final PullRequest pullRequest = PullRequest.builder().number(faker.number().randomDigit()).build();
+        final Repository repository =
+                Repository.builder().vcsOrganizationName(faker.ancient().hero()).name(faker.pokemon().name()).build();
+        final byte[] bytes = faker.ancient().god().getBytes();
+        final List<Comment> comments = List.of(Comment.builder().build());
+
+        // When
+        when(versionControlSystemAdapter.getRawComments(repository.getVcsOrganizationName(), repository.getName(),
+                pullRequest.getNumber())).thenReturn(
+                bytes
+        );
+        when(versionControlSystemAdapter.commentsBytesToDomain(bytes))
+                .thenReturn(comments);
+        final List<Comment> commentsResult = deliveryCommand.collectCommentsForRepositoryAndPullRequest(repository,
+                pullRequest);
+
+        // Then
+        assertThat(commentsResult).isEqualTo(comments);
+    }
+
+
 }
