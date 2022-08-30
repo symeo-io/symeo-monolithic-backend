@@ -114,6 +114,8 @@ public interface PullRequestMapper {
                 .creationDate(Date.from(pullRequestWithCommitsAndCommentsDTO.getCreationDate().toInstant()))
                 .comments(pullRequestWithCommitsAndCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
                 .commits(pullRequestWithCommitsAndCommentsDTO.getCommits().stream().map(CommitMapper::entityToDomain).toList())
+                .vcsUrl(pullRequestWithCommitsAndCommentsDTO.getVcsUrl())
+                .branchName(pullRequestWithCommitsAndCommentsDTO.getBranchName())
                 .build();
     }
 

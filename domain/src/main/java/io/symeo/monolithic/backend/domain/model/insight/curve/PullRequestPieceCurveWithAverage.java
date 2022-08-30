@@ -9,15 +9,15 @@ import java.util.List;
 
 @Data
 @Builder
-public class PieceCurveWithAverage {
+public class PullRequestPieceCurveWithAverage {
     @Builder.Default
-    PieceCurve pieceCurve = PieceCurve.builder().build();
+    PullRequestPieceCurve pullRequestPieceCurve = PullRequestPieceCurve.builder().build();
     @Builder.Default
     Curve averageCurve = Curve.builder().build();
     int limit;
 
     private void addPoint(final PullRequestView pullRequestView) {
-        this.pieceCurve.addPoint(pullRequestView.getStartDateRange(),
+        this.pullRequestPieceCurve.addPoint(pullRequestView.getStartDateRange(),
                 pullRequestView.getLimit(),
                 pullRequestView.getStatus().equals(PullRequest.OPEN),
                 pullRequestView.getBranchName(),
@@ -26,11 +26,11 @@ public class PieceCurveWithAverage {
                 pullRequestView.getLimit());
     }
 
-    public static PieceCurveWithAverage buildPullRequestCurve(final List<PullRequestView> pullRequestLimitViews,
-                                                              final int limit) {
-        final PieceCurveWithAverage pieceCurveWithAverage = PieceCurveWithAverage.builder().limit(limit).build();
-        pullRequestLimitViews.forEach(pieceCurveWithAverage::addPoint);
-        return pieceCurveWithAverage;
+    public static PullRequestPieceCurveWithAverage buildPullRequestCurve(final List<PullRequestView> pullRequestLimitViews,
+                                                                         final int limit) {
+        final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage = PullRequestPieceCurveWithAverage.builder().limit(limit).build();
+        pullRequestLimitViews.forEach(pullRequestPieceCurveWithAverage::addPoint);
+        return pullRequestPieceCurveWithAverage;
     }
 
 

@@ -16,7 +16,7 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.getPreviousSt
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.mockito.Mockito.*;
 
-public class LeadTimeServiceTest {
+public class AverageLeadTimeServiceTest {
 
 
     @Test
@@ -32,7 +32,7 @@ public class LeadTimeServiceTest {
         final Organization organization = Organization.builder().build();
 
         // When
-        when(expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
+        when(expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
                 startDate, endDate))
                 .thenReturn(
                         pullRequestWithCommitsViews
@@ -42,12 +42,12 @@ public class LeadTimeServiceTest {
 
         // Then
         verify(expositionStorageAdapter, times(1))
-                .readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
+                .readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
                         startDate, endDate);
         final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate,
                 endDate, organization.getTimeZone());
         verify(expositionStorageAdapter, times(1))
-                .readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId, previousStartDate, startDate);
+                .readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId, previousStartDate, startDate);
 
     }
 }

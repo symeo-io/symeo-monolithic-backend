@@ -16,7 +16,9 @@ public interface PullRequestWithCommitsAndCommentsRepository
     @Query(nativeQuery = true, value = "select pr.id," +
             "       pr.creation_date," +
             "       pr.merge_date," +
-            "       pr.state" +
+            "       pr.state," +
+            "       pr.vcs_url," +
+            "       pr.branch_name" +
             " from exposition_storage.pull_request pr" +
             " where pr.state = 'merge' " +
             " and (pr.merge_date is null and pr.creation_date <= :endDate)" +

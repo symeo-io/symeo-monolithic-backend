@@ -30,6 +30,10 @@ public class PullRequestWithCommitsAndCommentsDTO {
     Date creationDate;
     @Column(name = "state")
     String state;
+    @Column(name = "vcs_url")
+    String vcsUrl;
+    @Column(name = "branch_name")
+    String branchName;
     @OneToMany(mappedBy = "pullRequest", fetch = FetchType.EAGER)
     List<CommitEntity> commits;
     @OneToMany(mappedBy = "pullRequest", fetch = FetchType.EAGER)

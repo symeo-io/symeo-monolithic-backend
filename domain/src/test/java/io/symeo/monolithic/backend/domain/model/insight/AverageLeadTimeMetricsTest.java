@@ -7,21 +7,21 @@ import java.util.Optional;
 import static io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics.buildFromCurrentAndPreviousLeadTimes;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LeadTimeMetricsTest {
+public class AverageLeadTimeMetricsTest {
 
     @Test
     void should_compute_lead_time_metrics_given_current_and_previous_average_lead_time() {
         // Given
-        final Optional<LeadTime> currentLeadTime = Optional.of(
-                LeadTime.builder()
+        final Optional<AverageLeadTime> currentLeadTime = Optional.of(
+                AverageLeadTime.builder()
                         .averageValue(123.0f)
                         .averageCodingTime(98.5f)
                         .averageReviewLag(14.3f)
                         .averageReviewTime(10.2f)
                         .build()
         );
-        final Optional<LeadTime> previousLeadTime = Optional.of(
-                LeadTime.builder()
+        final Optional<AverageLeadTime> previousLeadTime = Optional.of(
+                AverageLeadTime.builder()
                         .averageValue(145.0f)
                         .averageCodingTime(55.5f)
                         .averageReviewLag(23.3f)
@@ -52,15 +52,15 @@ public class LeadTimeMetricsTest {
     @Test
     void should_compute_lead_time_given_no_previous_lead_time() {
         // Given
-        final Optional<LeadTime> currentLeadTime = Optional.of(
-                LeadTime.builder()
+        final Optional<AverageLeadTime> currentLeadTime = Optional.of(
+                AverageLeadTime.builder()
                         .averageValue(123.0f)
                         .averageCodingTime(98.5f)
                         .averageReviewLag(14.3f)
                         .averageReviewTime(10.2f)
                         .build()
         );
-        final Optional<LeadTime> previousLeadTime = Optional.empty();
+        final Optional<AverageLeadTime> previousLeadTime = Optional.empty();
 
 
         // When
@@ -85,8 +85,8 @@ public class LeadTimeMetricsTest {
     @Test
     void should_no_compute_lead_time_for_empty_lead_times() {
         // Given
-        final Optional<LeadTime> previousLeadTime = Optional.of(
-                LeadTime.builder()
+        final Optional<AverageLeadTime> previousLeadTime = Optional.of(
+                AverageLeadTime.builder()
                         .averageValue(123.0f)
                         .averageCodingTime(98.5f)
                         .averageReviewLag(14.3f)

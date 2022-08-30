@@ -23,55 +23,55 @@ public class LeadTimeMetrics {
     Float averageReviewTimePercentageTendency;
 
 
-    public static Optional<LeadTimeMetrics> buildFromCurrentAndPreviousLeadTimes(final Optional<LeadTime> optionalCurrentLeadTime,
-                                                                                 final Optional<LeadTime> optionalPreviousLeadTime) {
+    public static Optional<LeadTimeMetrics> buildFromCurrentAndPreviousLeadTimes(final Optional<AverageLeadTime> optionalCurrentLeadTime,
+                                                                                 final Optional<AverageLeadTime> optionalPreviousLeadTime) {
         if (optionalPreviousLeadTime.isEmpty() && optionalCurrentLeadTime.isEmpty()) {
             return empty();
         } else if (optionalCurrentLeadTime.isPresent() && optionalPreviousLeadTime.isPresent()) {
-            final LeadTime currentLeadTime = optionalCurrentLeadTime.get();
-            final LeadTime previousLeadTime = optionalPreviousLeadTime.get();
-            return getLeadTimeMetricsForCurrentAndPreviousLeadTimePresents(currentLeadTime, previousLeadTime);
+            final AverageLeadTime currentAverageLeadTime = optionalCurrentLeadTime.get();
+            final AverageLeadTime previousAverageLeadTime = optionalPreviousLeadTime.get();
+            return getLeadTimeMetricsForCurrentAndPreviousLeadTimePresents(currentAverageLeadTime, previousAverageLeadTime);
         } else if (optionalCurrentLeadTime.isPresent()) {
-            final LeadTime currentLeadTime = optionalCurrentLeadTime.get();
-            return getLeadTimeMetricsWithNoPreviousLeadTime(currentLeadTime);
+            final AverageLeadTime currentAverageLeadTime = optionalCurrentLeadTime.get();
+            return getLeadTimeMetricsWithNoPreviousLeadTime(currentAverageLeadTime);
         } else {
             return empty();
         }
     }
 
-    private static Optional<LeadTimeMetrics> getLeadTimeMetricsWithNoPreviousLeadTime(LeadTime currentLeadTime) {
+    private static Optional<LeadTimeMetrics> getLeadTimeMetricsWithNoPreviousLeadTime(AverageLeadTime currentAverageLeadTime) {
         return of(LeadTimeMetrics.builder()
-                .average(currentLeadTime.getAverageValue())
+                .average(currentAverageLeadTime.getAverageValue())
                 .averageTendencyPercentage(EMPTY_PERCENTAGE)
-                .averageCodingTime(currentLeadTime.getAverageCodingTime())
+                .averageCodingTime(currentAverageLeadTime.getAverageCodingTime())
                 .averageCodingTimePercentageTendency(EMPTY_PERCENTAGE)
-                .averageReviewLag(currentLeadTime.getAverageReviewLag())
+                .averageReviewLag(currentAverageLeadTime.getAverageReviewLag())
                 .averageReviewLagPercentageTendency(EMPTY_PERCENTAGE)
-                .averageReviewTime(currentLeadTime.getAverageReviewTime())
+                .averageReviewTime(currentAverageLeadTime.getAverageReviewTime())
                 .averageReviewTimePercentageTendency(EMPTY_PERCENTAGE)
                 .build());
     }
 
-    private static Optional<LeadTimeMetrics> getLeadTimeMetricsForCurrentAndPreviousLeadTimePresents(LeadTime currentLeadTime, LeadTime previousLeadTime) {
+    private static Optional<LeadTimeMetrics> getLeadTimeMetricsForCurrentAndPreviousLeadTimePresents(AverageLeadTime currentAverageLeadTime, AverageLeadTime previousAverageLeadTime) {
         return of(LeadTimeMetrics.builder()
-                .average(currentLeadTime.getAverageValue())
+                .average(currentAverageLeadTime.getAverageValue())
                 .averageTendencyPercentage(
-                        getTendencyPercentage(currentLeadTime.getAverageValue(), previousLeadTime.getAverageValue())
+                        getTendencyPercentage(currentAverageLeadTime.getAverageValue(), previousAverageLeadTime.getAverageValue())
                 )
-                .averageCodingTime(currentLeadTime.getAverageCodingTime())
+                .averageCodingTime(currentAverageLeadTime.getAverageCodingTime())
                 .averageCodingTimePercentageTendency(
-                        getTendencyPercentage(currentLeadTime.getAverageCodingTime(),
-                                previousLeadTime.getAverageCodingTime())
+                        getTendencyPercentage(currentAverageLeadTime.getAverageCodingTime(),
+                                previousAverageLeadTime.getAverageCodingTime())
                 )
-                .averageReviewLag(currentLeadTime.getAverageReviewLag())
+                .averageReviewLag(currentAverageLeadTime.getAverageReviewLag())
                 .averageReviewLagPercentageTendency(
-                        getTendencyPercentage(currentLeadTime.getAverageReviewLag(),
-                                previousLeadTime.getAverageReviewLag())
+                        getTendencyPercentage(currentAverageLeadTime.getAverageReviewLag(),
+                                previousAverageLeadTime.getAverageReviewLag())
                 )
-                .averageReviewTime(currentLeadTime.getAverageReviewTime())
+                .averageReviewTime(currentAverageLeadTime.getAverageReviewTime())
                 .averageReviewTimePercentageTendency(
-                        getTendencyPercentage(currentLeadTime.getAverageReviewTime(),
-                                previousLeadTime.getAverageReviewTime())
+                        getTendencyPercentage(currentAverageLeadTime.getAverageReviewTime(),
+                                previousAverageLeadTime.getAverageReviewTime())
                 )
                 .build());
     }

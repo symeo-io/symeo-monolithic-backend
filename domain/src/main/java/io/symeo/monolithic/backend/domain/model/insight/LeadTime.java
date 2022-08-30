@@ -3,74 +3,27 @@ package io.symeo.monolithic.backend.domain.model.insight;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import lombok.Builder;
 import lombok.Value;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getNumberOfMinutesBetweenDates;
-import static java.lang.Math.round;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 
+@Builder(toBuilder = true)
 @Value
-@Builder
 public class LeadTime {
-    Float averageValue;
-    Float averageCodingTime;
-    Float averageReviewLag;
-    Float averageReviewTime;
-    Float averageDeployTime;
 
-    public static Optional<LeadTime> buildFromPullRequestWithCommitsViews(final List<PullRequestView> pullRequestWithCommitsViews) {
-        final List<PullRequestView> pullRequestViewsToComputeLeadTime =
-                filterPullRequestForLeadTimeComputation(pullRequestWithCommitsViews);
-        final int pullRequestSize = pullRequestViewsToComputeLeadTime.size();
-        if (pullRequestSize == 0) {
-            return empty();
-        }
-        return of(computeLeadTime(pullRequestViewsToComputeLeadTime, pullRequestSize));
+    Long value;
+    Long codingTime;
+    Long reviewLag;
+    Long reviewTime;
+    Long deployTime;
+    PullRequestView pullRequestView;
 
-    }
 
-    private static List<PullRequestView> filterPullRequestForLeadTimeComputation(List<PullRequestView> pullRequestWithCommitsViews) {
-        return pullRequestWithCommitsViews.stream()
-                .filter(LeadTime::filterPullRequestToComputeLeadTime).toList();
-    }
-
-    private static LeadTime computeLeadTime(List<PullRequestView> pullRequestViewsToComputeLeadTime,
-                                            int pullRequestSize) {
-        Long cumulatedLeadTimeValue = 0L;
-        Long cumulatedCodingTime = 0L;
-        Long cumulatedReviewLag = 0L;
-        Long cumulatedReviewTime = 0L;
-        for (PullRequestView pullRequestWithCommitsView : pullRequestViewsToComputeLeadTime) {
-            final SingleLeadTime singleLeadTime = computeLeadTimeForPullRequestView(pullRequestWithCommitsView);
-            cumulatedCodingTime += singleLeadTime.getCodingTime();
-            cumulatedReviewLag += singleLeadTime.getReviewLag();
-            cumulatedReviewTime += singleLeadTime.getReviewTime();
-            cumulatedLeadTimeValue += singleLeadTime.getValue();
-        }
-        return LeadTime.builder()
-                .averageValue(averageValueWithOneDecimal(cumulatedLeadTimeValue, pullRequestSize))
-                .averageCodingTime(averageValueWithOneDecimal(cumulatedCodingTime, pullRequestSize))
-                .averageReviewLag(averageValueWithOneDecimal(cumulatedReviewLag, pullRequestSize))
-                .averageReviewTime(averageValueWithOneDecimal(cumulatedReviewTime, pullRequestSize))
-                .build();
-    }
-
-    private static boolean filterPullRequestToComputeLeadTime(final PullRequestView pullRequestView) {
-        return !pullRequestView.getCommits().isEmpty() && pullRequestView.getStatus().equals(PullRequest.MERGE);
-    }
-
-    private static Float averageValueWithOneDecimal(Long cumulatedLeadTimeValue, int size) {
-        return round(10 * cumulatedLeadTimeValue / size) / 10f;
-    }
-
-    private static SingleLeadTime computeLeadTimeForPullRequestView(final PullRequestView pullRequestView) {
+    public static LeadTime computeLeadTimeForPullRequestView(final PullRequestView pullRequestView) {
         final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
         final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
         final Date mergeDate = pullRequestView.getMergeDate();
@@ -85,12 +38,13 @@ public class LeadTime {
         final Long reviewTime = computeReviewTime(commentsOrderByDate, mergeDate,
                 lastCommit);
         final Long deployTime = computeDeployTime();
-        return SingleLeadTime.builder()
+        return LeadTime.builder()
                 .codingTime(codingTime)
                 .reviewLag(reviewLag)
                 .reviewTime(reviewTime)
                 .deployTime(deployTime)
                 .value(codingTime + reviewLag + reviewTime)
+                .pullRequestView(pullRequestView)
                 .build();
     }
 
@@ -164,14 +118,4 @@ public class LeadTime {
         return lastCommitBeforeFirstReview;
     }
 
-
-    @Builder(toBuilder = true)
-    @Value
-    private static class SingleLeadTime {
-        Long value;
-        Long codingTime;
-        Long reviewLag;
-        Long reviewTime;
-        Long deployTime;
-    }
 }

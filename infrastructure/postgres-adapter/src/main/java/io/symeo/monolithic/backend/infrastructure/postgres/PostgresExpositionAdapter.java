@@ -169,9 +169,9 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PullRequestView> readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
-                                                                                            Date startDate,
-                                                                                            Date endDate) throws SymeoException {
+    public List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
+                                                                                                  Date startDate,
+                                                                                                  Date endDate) throws SymeoException {
         try {
             return pullRequestWithCommitsAndCommentsRepository.findAllMergedByTeamIdForStartDateAndEndDate(teamId,
                             startDate, endDate)
