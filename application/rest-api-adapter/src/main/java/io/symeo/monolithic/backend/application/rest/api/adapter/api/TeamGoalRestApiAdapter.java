@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.CurveContractMapper;
+import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.PullRequestCurveContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.PullRequestHistogramContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.TeamGoalContractMapper;
@@ -52,10 +52,10 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                                                                         final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(CurveContractMapper.curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
+            return ok(PullRequestCurveContractMapper.curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return internalServerError().body(CurveContractMapper.errorToContract(e));
+            return internalServerError().body(PullRequestCurveContractMapper.errorToContract(e));
         }
     }
 
@@ -89,10 +89,10 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                                                                             final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(CurveContractMapper.curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
+            return ok(PullRequestCurveContractMapper.curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return internalServerError().body(CurveContractMapper.errorToContract(e));
+            return internalServerError().body(PullRequestCurveContractMapper.errorToContract(e));
         }
     }
 

@@ -37,7 +37,7 @@ public interface ExpositionStorageAdapter {
     int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 
-    List<PullRequestView> readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
-                                                                                     Date startDate
+    List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
+                                                                                           Date startDate
             , Date endDate) throws SymeoException;
 }

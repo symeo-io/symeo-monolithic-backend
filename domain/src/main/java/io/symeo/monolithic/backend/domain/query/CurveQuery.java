@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.TeamGoal;
 import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
 import io.symeo.monolithic.backend.domain.model.insight.Metrics;
-import io.symeo.monolithic.backend.domain.model.insight.curve.PieceCurveWithAverage;
+import io.symeo.monolithic.backend.domain.model.insight.curve.PullRequestPieceCurveWithAverage;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.port.in.TeamGoalFacadeAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
@@ -19,16 +19,16 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.getPreviousSt
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange;
 import static io.symeo.monolithic.backend.domain.model.insight.Metrics.buildSizeMetricsFromPullRequests;
 import static io.symeo.monolithic.backend.domain.model.insight.Metrics.buildTimeToMergeMetricsFromPullRequests;
-import static io.symeo.monolithic.backend.domain.model.insight.curve.PieceCurveWithAverage.buildPullRequestCurve;
+import static io.symeo.monolithic.backend.domain.model.insight.curve.PullRequestPieceCurveWithAverage.buildPullRequestCurve;
 
 @AllArgsConstructor
 public class CurveQuery {
     private final ExpositionStorageAdapter expositionStorageAdapter;
     private final TeamGoalFacadeAdapter teamGoalFacadeAdapter;
 
-    public PieceCurveWithAverage computeTimeToMergeCurve(final Organization organization,
-                                                         final UUID teamId, final Date startDate,
-                                                         final Date endDate) throws SymeoException {
+    public PullRequestPieceCurveWithAverage computeTimeToMergeCurve(final Organization organization,
+                                                                    final UUID teamId, final Date startDate,
+                                                                    final Date endDate) throws SymeoException {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildTimeToMerge());
         final int range = 1;
@@ -46,8 +46,8 @@ public class CurveQuery {
         return buildPullRequestCurve(pullRequestLimitViews, Integer.parseInt(currentTeamGoal.getValue()));
     }
 
-    public PieceCurveWithAverage computePullRequestSizeCurve(final Organization organization, final UUID teamId,
-                                                             final Date startDate, final Date endDate) throws SymeoException {
+    public PullRequestPieceCurveWithAverage computePullRequestSizeCurve(final Organization organization, final UUID teamId,
+                                                                        final Date startDate, final Date endDate) throws SymeoException {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildPullRequestSize());
         final int range = 1;

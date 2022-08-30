@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDateTime;
-import static io.symeo.monolithic.backend.domain.model.insight.LeadTime.buildFromPullRequestWithCommitsViews;
+import static io.symeo.monolithic.backend.domain.model.insight.AverageLeadTime.buildFromPullRequestWithCommitsViews;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LeadTimeTest {
+public class AverageLeadTimeTest {
 
     @Nested
     public class CodingTimeFeatures {
@@ -34,10 +34,10 @@ public class LeadTimeTest {
             );
 
             // When
-            final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
             // Then
-            assertThat(leadTime.getAverageCodingTime()).isEqualTo(3425.0f);
+            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3425.0f);
         }
 
         @Test
@@ -56,10 +56,10 @@ public class LeadTimeTest {
             );
 
             // When
-            final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
             // Then
-            assertThat(leadTime.getAverageCodingTime()).isEqualTo(8460.0f);
+            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(8460.0f);
         }
 
         @Test
@@ -83,10 +83,10 @@ public class LeadTimeTest {
                             ).build()
             );
 
-            final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
             // Then
-            assertThat(leadTime.getAverageCodingTime()).isEqualTo(3420.0f);
+            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3420.0f);
         }
 
         @Test
@@ -110,10 +110,10 @@ public class LeadTimeTest {
                             ).build()
             );
 
-            final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
             // Then
-            assertThat(leadTime.getAverageCodingTime()).isEqualTo(3420.0f);
+            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3420.0f);
         }
     }
 
@@ -141,11 +141,11 @@ public class LeadTimeTest {
             );
 
             // When
-            final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
             // Then
-            assertThat(leadTime.getAverageReviewLag()).isEqualTo(598.0f);
-            assertThat(leadTime.getAverageReviewTime()).isEqualTo(1938.0f);
+            assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(598.0f);
+            assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(1938.0f);
         }
 
         @Test
@@ -163,11 +163,11 @@ public class LeadTimeTest {
             );
 
             // When
-            final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
             // Then
-            assertThat(leadTime.getAverageReviewLag()).isEqualTo(0.0f);
-            assertThat(leadTime.getAverageReviewTime()).isEqualTo(25.0f);
+            assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(0.0f);
+            assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(25.0f);
         }
 
         @Test
@@ -185,11 +185,11 @@ public class LeadTimeTest {
             );
 
             // When
-            final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
             // Then
-            assertThat(leadTime.getAverageReviewLag()).isEqualTo(35.0f);
-            assertThat(leadTime.getAverageReviewTime()).isEqualTo(60.0f);
+            assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(35.0f);
+            assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(60.0f);
         }
 
     }
@@ -215,13 +215,13 @@ public class LeadTimeTest {
         );
 
         // When
-        final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+        final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
         // Then
-        assertThat(leadTime.getAverageCodingTime()).isEqualTo(3420.f);
-        assertThat(leadTime.getAverageReviewLag()).isEqualTo(598.0f);
-        assertThat(leadTime.getAverageReviewTime()).isEqualTo(1938.0f);
-        assertThat(leadTime.getAverageValue()).isEqualTo(5956.0f);
+        assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3420.f);
+        assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(598.0f);
+        assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(1938.0f);
+        assertThat(averageLeadTime.getAverageValue()).isEqualTo(5956.0f);
     }
 
     @Test
@@ -230,7 +230,7 @@ public class LeadTimeTest {
         final List<PullRequestView> pullRequestViews = List.of();
 
         // When
-        final Optional<LeadTime> leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews);
+        final Optional<AverageLeadTime> leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews);
 
         // Then
         assertThat(leadTime.isEmpty()).isTrue();
@@ -253,12 +253,12 @@ public class LeadTimeTest {
         );
 
         // When
-        final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+        final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
         // Then
-        assertThat(leadTime).isNotNull();
-        assertThat(leadTime.getAverageReviewLag()).isEqualTo(0.0f);
-        assertThat(leadTime.getAverageReviewTime()).isEqualTo(25.0f);
+        assertThat(averageLeadTime).isNotNull();
+        assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(0.0f);
+        assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(25.0f);
     }
 
     @Test
@@ -289,12 +289,12 @@ public class LeadTimeTest {
         );
 
         // When
-        final LeadTime leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+        final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
         // Then
-        assertThat(leadTime.getAverageCodingTime()).isEqualTo(3237.5f);
-        assertThat(leadTime.getAverageReviewLag()).isEqualTo(316.5f);
-        assertThat(leadTime.getAverageReviewTime()).isEqualTo(999.0f);
+        assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3237.5f);
+        assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(316.5f);
+        assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(999.0f);
     }
 
 }

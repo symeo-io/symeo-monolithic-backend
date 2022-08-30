@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.TeamGoal;
 import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
-import io.symeo.monolithic.backend.domain.model.insight.curve.PieceCurveWithAverage;
+import io.symeo.monolithic.backend.domain.model.insight.curve.PullRequestPieceCurveWithAverage;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.port.in.TeamGoalFacadeAdapter;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PieceCurveWithAverageQueryTest {
+public class PullRequestPullRequestPieceCurveWithAverageQueryTest {
     private final Faker faker = new Faker();
 
     @Test
@@ -62,13 +62,13 @@ public class PieceCurveWithAverageQueryTest {
                 .thenReturn(teamGoal);
         when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId))
                 .thenReturn(pullRequestPullRequestSizeViews);
-        final PieceCurveWithAverage pieceCurveWithAverage = curveQuery.computePullRequestSizeCurve(organization,
+        final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage = curveQuery.computePullRequestSizeCurve(organization,
                 teamId, stringToDate("2019-01-01"), stringToDate("2019-06-01"));
 
         // Then
-        assertThat(pieceCurveWithAverage.getAverageCurve().getData()).hasSize(4);
-        assertThat(pieceCurveWithAverage.getPieceCurve().getData()).hasSize(8);
-        assertThat(pieceCurveWithAverage.getLimit()).isEqualTo(Integer.parseInt(teamGoal.getValue()));
+        assertThat(pullRequestPieceCurveWithAverage.getAverageCurve().getData()).hasSize(4);
+        assertThat(pullRequestPieceCurveWithAverage.getPullRequestPieceCurve().getData()).hasSize(8);
+        assertThat(pullRequestPieceCurveWithAverage.getLimit()).isEqualTo(Integer.parseInt(teamGoal.getValue()));
     }
 
     @Test
@@ -109,13 +109,13 @@ public class PieceCurveWithAverageQueryTest {
                 .thenReturn(teamGoal);
         when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamId))
                 .thenReturn(pullRequestPullRequestSizeViews);
-        final PieceCurveWithAverage pieceCurveWithAverage = curveQuery.computeTimeToMergeCurve(organization,
+        final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage = curveQuery.computeTimeToMergeCurve(organization,
                 teamId, stringToDate("2019-01-01"), stringToDate("2019-06-01"));
 
         // Then
-        assertThat(pieceCurveWithAverage.getAverageCurve().getData()).hasSize(4);
-        assertThat(pieceCurveWithAverage.getPieceCurve().getData()).hasSize(8);
-        assertThat(pieceCurveWithAverage.getLimit()).isEqualTo(Integer.parseInt(teamGoal.getValue()));
+        assertThat(pullRequestPieceCurveWithAverage.getAverageCurve().getData()).hasSize(4);
+        assertThat(pullRequestPieceCurveWithAverage.getPullRequestPieceCurve().getData()).hasSize(8);
+        assertThat(pullRequestPieceCurveWithAverage.getLimit()).isEqualTo(Integer.parseInt(teamGoal.getValue()));
     }
 
 

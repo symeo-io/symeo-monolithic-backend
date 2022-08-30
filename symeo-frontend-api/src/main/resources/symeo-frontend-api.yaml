@@ -1213,7 +1213,74 @@ paths:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
 
-
+  /api/v1/teams/lead-time/curve:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - LeadTime
+      summary: Get LeadTime Curve
+      operationId: getLeadTime Curve
+      description: |
+        Get LeadTime Curve
+      parameters:
+        - in: query
+          name: team_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+      responses:
+        "200":
+          description: 'Successfully retrieved lead time curve'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadTimeCurveResponseContract'
+              example:
+                curves:
+                  average_curve:
+                    - value: 11.3
+                      date: 2022-01-01
+                  piece_curve:
+                    - value: 13.3
+                      date: 2022-01-01
+                      coding_time: 5.4
+                      review_lag: 3.2
+                      review_time: 2.2
+                      deploy_time: 2.5
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
 
 components:
   securitySchemes:
@@ -1714,3 +1781,50 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SymeoErrorContract'
+    LeadTimeCurveResponseContract:
+      type: object
+      properties:
+        curves:
+          $ref: '#/components/schemas/LeadTimeCurveContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'
+    LeadTimeCurveContract:
+      type: object
+      required:
+        - average_curve
+        - piece_curve
+      properties:
+        average_curve:
+          type: array
+          items:
+            $ref: '#/components/schemas/CurveDataResponseContract'
+        piece_curve:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeadTimePieceCurveDataResponseContract'
+    LeadTimePieceCurveDataResponseContract:
+      type: object
+      properties:
+        value:
+          type: number
+          format: int64
+        date:
+          type: string
+        coding_time:
+          type: number
+          format: int64
+        review_lag:
+          type: number
+          format: int64
+        review_time:
+          type: number
+          format: int64
+        deploy_time:
+          type: number
+          format: int64
+        label:
+          type: string
+        link:
+          type: string

@@ -8,6 +8,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.port.in.LeadTimeFacadeAdapter;
 import io.symeo.monolithic.backend.frontend.contract.api.LeadTimeApi;
+import io.symeo.monolithic.backend.frontend.contract.api.model.LeadTimeCurveResponseContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.LeadTimeResponseContract;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.LeadTimeCurveContractMapper.errorToContract;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.LeadTimeCurveContractMapper.toContract;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
@@ -37,6 +40,21 @@ public class LeadTimeRestApiAdapter implements LeadTimeApi {
                             stringToDate(endDate))));
         } catch (SymeoException e) {
             return internalServerError().body(LeadTimeContractMapper.errorToContract(e));
+        }
+    }
+
+    @Override
+    public ResponseEntity<LeadTimeCurveResponseContract> getLeadTimeCurve(UUID teamId, String startDate,
+                                                                          String endDate) {
+        try {
+            return ok(
+                    toContract(
+                            leadTimeFacadeAdapter.computeLeadTimeCurvesForTeamIdFromStartDateAndEndDate(teamId,
+                                    stringToDate(startDate),
+                                    stringToDate(endDate))
+                    ));
+        } catch (SymeoException e) {
+            return internalServerError().body(errorToContract(e));
         }
     }
 }

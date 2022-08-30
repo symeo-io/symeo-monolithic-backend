@@ -8,14 +8,6 @@
         </layout>
     </appender>
 
-    <appender name="Default" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss} %-5p %c{1} - ${DD_SERVICE} - %m%n
-            </Pattern>
-        </layout>
-    </appender>
-
     <springProfile name="aws">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
@@ -29,7 +21,7 @@
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
         <root level="INFO">
-            <appender-ref ref="Default"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 

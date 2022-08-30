@@ -74,7 +74,7 @@ public interface LeadTimeContractMapper {
         leadTime.setAverage(average);
     }
 
-    private static BigDecimal floatToBigDecimal(final Float floatToConvert) {
+    static BigDecimal floatToBigDecimal(final Float floatToConvert) {
         return new BigDecimal(Float.toString(floatToConvert));
     }
 }

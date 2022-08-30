@@ -2,8 +2,8 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.insight.curve.Curve;
-import io.symeo.monolithic.backend.domain.model.insight.curve.PieceCurve;
-import io.symeo.monolithic.backend.domain.model.insight.curve.PieceCurveWithAverage;
+import io.symeo.monolithic.backend.domain.model.insight.curve.PullRequestPieceCurve;
+import io.symeo.monolithic.backend.domain.model.insight.curve.PullRequestPieceCurveWithAverage;
 import io.symeo.monolithic.backend.frontend.contract.api.model.CurveDataResponseContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.CurveResponseContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.GetCurveResponseContract;
@@ -13,23 +13,23 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface CurveContractMapper {
+public interface PullRequestCurveContractMapper {
 
-    static GetCurveResponseContract curveToContract(final PieceCurveWithAverage pieceCurveWithAverage) {
+    static GetCurveResponseContract curveToContract(final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage) {
         final GetCurveResponseContract getCurveResponseContract = new GetCurveResponseContract();
         final CurveResponseContract curveResponseContract = new CurveResponseContract();
         final List<CurveDataResponseContract> curveDataResponseContractList = new ArrayList<>();
         final List<PieceCurveDataResponseContract> pieceCurve = new ArrayList<>();
-        for (PieceCurve.PieceCurvePoint pieceCurvePoint : pieceCurveWithAverage.getPieceCurve().getData()) {
+        for (PullRequestPieceCurve.PullRequestPieceCurvePoint pullRequestPieceCurvePoint : pullRequestPieceCurveWithAverage.getPullRequestPieceCurve().getData()) {
             final PieceCurveDataResponseContract pieceCurveDataResponseContract = new PieceCurveDataResponseContract();
-            pieceCurveDataResponseContract.setDate(pieceCurvePoint.getDate());
-            pieceCurveDataResponseContract.setOpen(pieceCurvePoint.getOpen());
-            pieceCurveDataResponseContract.setValue(new BigDecimal(Float.toString(pieceCurvePoint.getValue())));
-            pieceCurveDataResponseContract.setLabel(pieceCurvePoint.getLabel());
-            pieceCurveDataResponseContract.setLink(pieceCurvePoint.getLink());
+            pieceCurveDataResponseContract.setDate(pullRequestPieceCurvePoint.getDate());
+            pieceCurveDataResponseContract.setOpen(pullRequestPieceCurvePoint.getOpen());
+            pieceCurveDataResponseContract.setValue(new BigDecimal(Float.toString(pullRequestPieceCurvePoint.getValue())));
+            pieceCurveDataResponseContract.setLabel(pullRequestPieceCurvePoint.getLabel());
+            pieceCurveDataResponseContract.setLink(pullRequestPieceCurvePoint.getLink());
             pieceCurve.add(pieceCurveDataResponseContract);
         }
-        for (Curve.CurvePoint curvePoint : pieceCurveWithAverage.getAverageCurve().getData()) {
+        for (Curve.CurvePoint curvePoint : pullRequestPieceCurveWithAverage.getAverageCurve().getData()) {
             final CurveDataResponseContract curveDataResponseContract = new CurveDataResponseContract();
             curveDataResponseContract.setDate(curvePoint.getDate());
             curveDataResponseContract.setValue(new BigDecimal(Float.toString(curvePoint.getValue())));
@@ -37,7 +37,7 @@ public interface CurveContractMapper {
         }
         curveResponseContract.setAverageCurve(curveDataResponseContractList);
         curveResponseContract.setPieceCurve(pieceCurve);
-        curveResponseContract.setLimit(pieceCurveWithAverage.getLimit());
+        curveResponseContract.setLimit(pullRequestPieceCurveWithAverage.getLimit());
         getCurveResponseContract.setCurves(curveResponseContract);
         return getCurveResponseContract;
     }
@@ -47,6 +47,7 @@ public interface CurveContractMapper {
         getCurveResponseContract.setErrors(List.of(SymeoErrorContractMapper.exceptionToContract(symeoException)));
         return getCurveResponseContract;
     }
+
 
 
 }

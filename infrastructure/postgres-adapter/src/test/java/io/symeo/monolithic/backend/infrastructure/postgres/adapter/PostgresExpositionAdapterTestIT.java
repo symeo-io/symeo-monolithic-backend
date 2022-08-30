@@ -596,7 +596,7 @@ public class PostgresExpositionAdapterTestIT {
 
         // When
         final List<PullRequestView> pullRequestViews =
-                postgresExpositionAdapter.readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId, startDate,
+                postgresExpositionAdapter.readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId, startDate,
                         endDate);
 
         // Then
