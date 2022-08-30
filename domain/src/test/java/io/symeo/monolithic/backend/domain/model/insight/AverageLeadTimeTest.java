@@ -26,7 +26,6 @@ public class AverageLeadTimeTest {
             final List<PullRequestView> pullRequestViews = List.of(
                     PullRequestView.builder()
                             .status(PullRequest.MERGE)
-                            .creationDate(stringToDateTime("2022-01-01 13:00:00"))
                             .mergeDate(stringToDateTime("2022-01-03 13:00:00"))
                             .commits(
                                     List.of(Commit.builder().date(stringToDateTime("2022-01-03 22:05:00")).build())
@@ -37,7 +36,7 @@ public class AverageLeadTimeTest {
             final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
             // Then
-            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3425.0f);
+            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(0f);
         }
 
         @Test
@@ -46,10 +45,9 @@ public class AverageLeadTimeTest {
             final List<PullRequestView> pullRequestViews = List.of(
                     PullRequestView.builder()
                             .status(PullRequest.MERGE)
-                            .creationDate(stringToDateTime("2022-01-01 13:00:00"))
                             .mergeDate(stringToDateTime("2022-01-03 13:00:00"))
                             .commits(
-                                    List.of(Commit.builder().date(stringToDateTime("2022-01-03 22:00:00")).build(),
+                                    List.of(Commit.builder().date(stringToDateTime("2022-01-03 07:30:00")).build(),
                                             Commit.builder().date(stringToDateTime("2022-01-04 22:00:00")).build(),
                                             Commit.builder().date(stringToDateTime("2022-01-07 10:00:00")).build())
                             ).build()
@@ -59,62 +57,9 @@ public class AverageLeadTimeTest {
             final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
             // Then
-            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(8460.0f);
+            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(5910.0f);
         }
 
-        @Test
-        void should_compute_coding_time_given_several_commits_and_pull_request_comments() {
-            // Given
-            final List<PullRequestView> pullRequestViews = List.of(
-                    PullRequestView.builder()
-                            .status(PullRequest.MERGE)
-                            .creationDate(stringToDateTime("2022-01-01 13:00:00"))
-                            .mergeDate(stringToDateTime("2022-01-03 13:00:00"))
-                            .comments(
-                                    List.of(
-                                            Comment.builder().creationDate(stringToDateTime("2022-01-04 15:00:00")).build(),
-                                            Comment.builder().creationDate(stringToDateTime("2022-01-05 22:00:00")).build()
-                                    )
-                            )
-                            .commits(
-                                    List.of(Commit.builder().date(stringToDateTime("2022-01-03 22:00:00")).build(),
-                                            Commit.builder().date(stringToDateTime("2022-01-04 22:00:00")).build(),
-                                            Commit.builder().date(stringToDateTime("2022-01-07 10:00:00")).build())
-                            ).build()
-            );
-
-            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
-
-            // Then
-            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3420.0f);
-        }
-
-        @Test
-        void should_compute_coding_time_given_a_first_comment_before_first_commit() {
-            // Given
-            final List<PullRequestView> pullRequestViews = List.of(
-                    PullRequestView.builder()
-                            .status(PullRequest.MERGE)
-                            .creationDate(stringToDateTime("2022-01-01 13:00:00"))
-                            .mergeDate(stringToDateTime("2022-01-03 13:00:00"))
-                            .comments(
-                                    List.of(
-                                            Comment.builder().creationDate(stringToDateTime("2022-01-01 10:00:00")).build(),
-                                            Comment.builder().creationDate(stringToDateTime("2022-01-05 22:00:00")).build()
-                                    )
-                            )
-                            .commits(
-                                    List.of(Commit.builder().date(stringToDateTime("2022-01-03 22:00:00")).build(),
-                                            Commit.builder().date(stringToDateTime("2022-01-04 22:00:00")).build(),
-                                            Commit.builder().date(stringToDateTime("2022-01-07 10:00:00")).build())
-                            ).build()
-            );
-
-            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
-
-            // Then
-            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3420.0f);
-        }
     }
 
     @Nested
@@ -218,10 +163,10 @@ public class AverageLeadTimeTest {
         final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
         // Then
-        assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3420.f);
+        assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(1830.0f);
         assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(598.0f);
         assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(1938.0f);
-        assertThat(averageLeadTime.getAverageValue()).isEqualTo(5956.0f);
+        assertThat(averageLeadTime.getAverageValue()).isEqualTo(4366.0f);
     }
 
     @Test
@@ -292,7 +237,7 @@ public class AverageLeadTimeTest {
         final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
         // Then
-        assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(3237.5f);
+        assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(915.0f);
         assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(316.5f);
         assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(999.0f);
     }
