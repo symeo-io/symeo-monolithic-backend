@@ -84,7 +84,7 @@ public class RestApiConfiguration {
 
     @Bean
     public LeadTimeRestApiAdapter leadTimeRestApiAdapter(final AuthenticationService authenticationService,
-                                                         final LeadTimeService leadTimeService) {
-        return new LeadTimeRestApiAdapter(authenticationService, leadTimeService);
+                                                         final LeadTimeFacadeAdapter leadTimeFacadeAdapter) {
+        return new LeadTimeRestApiAdapter(authenticationService, leadTimeFacadeAdapter);
     }
 }

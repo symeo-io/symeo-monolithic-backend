@@ -13,6 +13,7 @@ import io.symeo.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookE
 import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
@@ -246,6 +247,19 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         wireMockServer.stubFor(
                 get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s/comments", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[0].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_1_comments.json",
+                                                GithubCommentsDTO[].class), 200
+                                )
+                        )
+        );
+
+        wireMockServer.stubFor(
+                get(
                         urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
                                 githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[1].getNumber())))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
@@ -265,6 +279,18 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                                 jsonResponse(
                                         getStubsFromClassT("github_stubs", "get_repo_1_pr_2_commits.json",
                                                 GithubCommitsDTO[].class), 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s/comments", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[1].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_2_comments.json",
+                                                GithubCommentsDTO[].class), 200
                                 )
                         )
         );
@@ -294,6 +320,18 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         wireMockServer.stubFor(
                 get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s/comments", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[2].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_3_comments.json",
+                                                GithubCommentsDTO[].class), 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
                         urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
                                 githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[3].getNumber())))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
@@ -316,7 +354,18 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                                 )
                         )
         );
-
+        wireMockServer.stubFor(
+                get(
+                        urlEqualTo(String.format("/repos/%s/%s/pulls/%s/comments", organizationName,
+                                githubRepositoryDTOS[0].getName(), githubPullRequestDTOS[3].getNumber())))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        getStubsFromClassT("github_stubs", "get_repo_1_pr_4_comments.json",
+                                                GithubCommentsDTO[].class), 200
+                                )
+                        )
+        );
 
         // When
         client.get()
