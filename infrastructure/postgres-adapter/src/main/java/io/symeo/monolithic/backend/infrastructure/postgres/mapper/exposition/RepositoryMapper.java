@@ -12,6 +12,7 @@ public interface RepositoryMapper {
                 .name(repository.getName())
                 .organizationId(repository.getOrganizationId())
                 .vcsOrganizationName(repository.getVcsOrganizationName())
+                .defaultBranch(repository.getDefaultBranch())
                 .build();
     }
 
@@ -21,6 +22,7 @@ public interface RepositoryMapper {
                 .id(repositoryEntity.getId())
                 .vcsOrganizationId(repositoryEntity.getVcsOrganizationId())
                 .vcsOrganizationName(repositoryEntity.getVcsOrganizationName())
+                .defaultBranch(repositoryEntity.getDefaultBranch())
                 .build();
     }
 }

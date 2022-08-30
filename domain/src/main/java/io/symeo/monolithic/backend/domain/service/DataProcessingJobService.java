@@ -5,6 +5,7 @@ import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobManager;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
@@ -26,6 +27,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     private final RepositoryService repositoryService;
     private final JobManager jobManager;
     private final SymeoJobApiAdapter symeoJobApiAdapter;
+    private final OrganizationSettingsService organizationSettingsService;
 
     @Override
     public void start(final UUID organizationId) throws SymeoException {
@@ -41,7 +43,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         organizations.forEach(organization -> symeoJobApiAdapter.startJobForOrganizationId(organization.getId()));
     }
 
-    private void collectRepositories(Organization organization) throws SymeoException {
+    private void collectRepositories(final Organization organization) throws SymeoException {
         jobManager.start(
                 Job.builder()
                         .organizationId(organization.getId())
@@ -57,7 +59,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         );
     }
 
-    private Job getCollectPullRequestsJob(Organization organization) {
+    private Job getCollectPullRequestsJob(final Organization organization) {
         return
                 Job.builder()
                         .jobRunnable(CollectPullRequestsJobRunnable.builder()
@@ -65,9 +67,20 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .vcsService(vcsService)
                                 .build())
                         .organizationId(organization.getId())
+                        .nextJob(getInitializeOrganizationSettingsJob(organization))
                         .build();
+    }
 
-
+    private Job getInitializeOrganizationSettingsJob(final Organization organization) {
+        return Job.builder()
+                .jobRunnable(
+                        InitializeOrganizationSettingsJobRunnable.builder()
+                                .organizationSettingsService(organizationSettingsService)
+                                .organization(organization)
+                                .build()
+                )
+                .organizationId(organization.getId())
+                .build();
     }
 
 }

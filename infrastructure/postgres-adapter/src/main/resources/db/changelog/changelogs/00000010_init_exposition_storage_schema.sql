@@ -36,8 +36,9 @@ create table exposition_storage.repository
         constraint repository_id primary key,
     name                        varchar(300)                              not null,
     organization_id             uuid,
-    vcs_organization_id         varchar(100),
-    vcs_organization_name       varchar(100),
+    vcs_organization_id         varchar(200),
+    vcs_organization_name       varchar(200),
+    default_branch              varchar(200),
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null
 );

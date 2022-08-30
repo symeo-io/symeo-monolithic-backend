@@ -1281,6 +1281,47 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+  /ap1/v1/organization/settings:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Organization
+      summary: Get Organization Settings
+      operationId: getOrganizationSettings
+      responses:
+        "200":
+          description: 'Successfully retrieved organization settings'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationSettingsResponseContract'
+              example:
+                settings:
+                  delivery:
+                    deploy_detection:
+                      tag_regex: null
+                      pull_request_merged_on_branch_regex: ^staging$
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
 
 components:
   securitySchemes:
@@ -1827,4 +1868,30 @@ components:
         label:
           type: string
         link:
+          type: string
+    OrganizationSettingsResponseContract:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'
+        settings:
+          $ref: '#/components/schemas/OrganizationSettingsContract'
+    OrganizationSettingsContract:
+      type: object
+      properties:
+        delivery:
+          $ref: '#/components/schemas/DeliverySettingsContract'
+    DeliverySettingsContract:
+      type: object
+      properties:
+        deploy_detection:
+          $ref: '#/components/schemas/DeployDetectionSettingsContract'
+    DeployDetectionSettingsContract:
+      type: object
+      properties:
+        tag_regex:
+          type: string
+        pull_request_merged_on_branch_regex:
           type: string

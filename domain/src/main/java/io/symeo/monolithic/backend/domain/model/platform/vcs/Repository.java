@@ -14,4 +14,5 @@ public class Repository {
     UUID organizationId;
     String vcsOrganizationId;
     String vcsOrganizationName;
+    String defaultBranch;
 }

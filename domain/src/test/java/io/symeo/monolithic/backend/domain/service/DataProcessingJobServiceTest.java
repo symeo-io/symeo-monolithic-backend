@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobManager;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -36,9 +37,11 @@ public class DataProcessingJobServiceTest {
                 mock(AccountOrganizationStorageAdapter.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
+        final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter);
+                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
+                        organizationSettingsService);
         final String organisationName = faker.name().username();
         final String vcsOrganizationId = faker.rickAndMorty().character();
         final UUID organizationId = UUID.randomUUID();
@@ -68,6 +71,10 @@ public class DataProcessingJobServiceTest {
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob()).isNotNull();
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob()).isNotNull();
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getCode()).isEqualTo(InitializeOrganizationSettingsJobRunnable.JOB_CODE);
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
+
 
     }
 
@@ -80,9 +87,11 @@ public class DataProcessingJobServiceTest {
                 mock(AccountOrganizationStorageAdapter.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
+        final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter);
+                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
+                        organizationSettingsService);
         final List<Organization> organizations = List.of(
                 Organization.builder().id(UUID.randomUUID()).build(),
                 Organization.builder().id(UUID.randomUUID()).build()

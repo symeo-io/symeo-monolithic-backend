@@ -40,4 +40,6 @@ public interface ExpositionStorageAdapter {
     List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
                                                                                            Date startDate
             , Date endDate) throws SymeoException;
+
+    String findDefaultMostUsedBranchForOrganizationId(UUID organizationId);
 }

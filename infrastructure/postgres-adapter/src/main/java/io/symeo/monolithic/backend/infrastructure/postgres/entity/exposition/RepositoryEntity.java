@@ -32,6 +32,8 @@ public class RepositoryEntity {
     String vcsOrganizationName;
     @Column(name = "organization_id")
     UUID organizationId;
+    @Column(name = "default_branch")
+    String defaultBranch;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;
