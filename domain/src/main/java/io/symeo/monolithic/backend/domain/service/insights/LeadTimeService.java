@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.domain.service.insights;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.AverageLeadTime;
 import io.symeo.monolithic.backend.domain.model.insight.LeadTime;
@@ -11,10 +12,7 @@ import io.symeo.monolithic.backend.domain.port.in.LeadTimeFacadeAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getPreviousStartDateFromStartDateAndEndDate;
 import static io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics.buildFromCurrentAndPreviousLeadTimes;
@@ -51,10 +49,14 @@ public class LeadTimeService implements LeadTimeFacadeAdapter {
     public LeadTimePieceCurveWithAverage computeLeadTimeCurvesForTeamIdFromStartDateAndEndDate(final UUID teamId,
                                                                                                final Date startDate,
                                                                                                final Date endDate) throws SymeoException {
+        final List<Date> rangeDatesBetweenStartDateAndEndDateForRange =
+                DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate, 1,
+                        TimeZone.getDefault());
         final List<PullRequestView> currentPullRequestWithCommitsViews =
                 expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
-                        startDate
-                        , endDate);
+                                startDate, endDate)
+                        .stream()
+                        .map(pullRequestView -> pullRequestView.addStartDateRangeFromRangeDates(rangeDatesBetweenStartDateAndEndDateForRange)).toList();
         final List<LeadTime> leadTimes = currentPullRequestWithCommitsViews.stream()
                 .map(LeadTime::computeLeadTimeForPullRequestView)
                 .toList();
