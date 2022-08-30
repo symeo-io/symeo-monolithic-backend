@@ -10,9 +10,8 @@ import java.time.ZonedDateTime;
 public interface CommitMapper {
 
 
-    static CommitEntity domainToEntity(final Commit commit, final String pullRequestId) {
+    static CommitEntity domainToEntity(final Commit commit) {
         return CommitEntity.builder()
-                .pullRequestId(pullRequestId)
                 .sha(commit.getSha())
                 .date(ZonedDateTime.ofInstant(commit.getDate().toInstant(), ZoneId.systemDefault()))
                 .authorLogin(commit.getAuthor())

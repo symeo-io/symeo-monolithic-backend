@@ -22,12 +22,10 @@ public class CommentEntity {
     @Column(name = "id", nullable = false)
     @NotNull
     String id;
-    @Column(name = "pull_request_id", nullable = false)
-    String pullRequestId;
     @Column(name = "creation_date", nullable = false)
     ZonedDateTime creationDate;
     @ManyToOne
-    @JoinColumn(name = "pull_request_id", nullable = false, updatable = false, insertable = false)
+    @JoinColumn(name = "pull_request_id", nullable = false, updatable = false)
     PullRequestEntity pullRequest;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp

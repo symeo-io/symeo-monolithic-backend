@@ -21,7 +21,7 @@ public interface PullRequestMapper {
 
     static PullRequestEntity domainToEntity(final PullRequest pullRequest) {
         final PullRequestView pullRequestView = pullRequest.toView();
-        return PullRequestEntity.builder()
+        final PullRequestEntity pullRequestEntity = PullRequestEntity.builder()
                 .id(pullRequest.getId())
                 .code(pullRequest.getNumber().toString())
                 .isDraft(pullRequest.getIsDraft())
@@ -49,12 +49,16 @@ public interface PullRequestMapper {
                 .size(pullRequestView.getSize())
                 .daysOpened(pullRequestView.getDaysOpened(new Date()))
                 .build();
+        pullRequestToCommitEntities(pullRequest)
+                .forEach(pullRequestEntity::addCommit);
+        pullRequestToCommentEntities(pullRequest)
+                .forEach(pullRequestEntity::addComment);
+        return pullRequestEntity;
     }
 
     static List<CommitEntity> pullRequestToCommitEntities(final PullRequest pullRequest) {
-        final String pullRequestId = pullRequest.getId();
         return pullRequest.getCommits().stream()
-                .map(commit -> CommitMapper.domainToEntity(commit, pullRequestId))
+                .map(CommitMapper::domainToEntity)
                 .toList();
     }
 
@@ -128,7 +132,7 @@ public interface PullRequestMapper {
 
     static List<CommentEntity> pullRequestToCommentEntities(PullRequest pullRequest) {
         return pullRequest.getComments().stream()
-                .map(comment -> CommentMapper.domainToEntity(comment, pullRequest))
+                .map(CommentMapper::domainToEntity)
                 .collect(Collectors.toList());
     }
 }

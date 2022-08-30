@@ -8,6 +8,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,7 +26,7 @@ public class PullRequestEntity {
     @Column(name = "id", nullable = false)
     @NotNull
     String id;
-    @Column(name = "code",nullable = false)
+    @Column(name = "code", nullable = false)
     String code;
     @Column(name = "commit_number")
     int commitNumber;
@@ -66,10 +68,26 @@ public class PullRequestEntity {
     float size;
     @Column(name = "days_opened")
     float daysOpened;
+    @Builder.Default
+    @OneToMany(mappedBy = "pullRequest", cascade = CascadeType.ALL)
+    List<CommitEntity> commits = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "pullRequest", cascade = CascadeType.ALL)
+    List<CommentEntity> comments = new ArrayList<>();
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;
     @UpdateTimestamp
     @Column(name = "technical_modification_date")
     ZonedDateTime technicalModificationDate;
+
+    public void addCommit(final CommitEntity commitEntity) {
+        commitEntity.setPullRequest(this);
+        this.commits.add(commitEntity);
+    }
+
+    public void addComment(final CommentEntity commentEntity) {
+        commentEntity.setPullRequest(this);
+        this.comments.add(commentEntity);
+    }
 }

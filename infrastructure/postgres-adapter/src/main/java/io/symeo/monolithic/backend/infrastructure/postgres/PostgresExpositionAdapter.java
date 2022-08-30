@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,19 +35,11 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestSizeRepository pullRequestSizeRepository;
     private final PullRequestFullViewRepository pullRequestFullViewRepository;
     private final CustomPullRequestViewRepository customPullRequestViewRepository;
-    private final CommitRepository commitRepository;
-    private final CommentRepository commentRepository;
     private final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
 
     @Override
     public void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests) {
         pullRequestRepository.saveAll(pullRequests.stream().map(PullRequestMapper::domainToEntity)
-                .toList());
-        commitRepository.saveAll(pullRequests.stream().map(PullRequestMapper::pullRequestToCommitEntities)
-                .flatMap(Collection::stream)
-                .toList());
-        commentRepository.saveAll(pullRequests.stream().map(PullRequestMapper::pullRequestToCommentEntities)
-                .flatMap(Collection::stream)
                 .toList());
     }
 

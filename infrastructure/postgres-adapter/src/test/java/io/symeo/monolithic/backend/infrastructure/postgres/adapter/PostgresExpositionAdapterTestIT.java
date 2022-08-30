@@ -79,7 +79,7 @@ public class PostgresExpositionAdapterTestIT {
     public void setUp() {
         postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
-                pullRequestFullViewRepository, customPullRequestViewRepository, commitRepository, commentRepository,
+                pullRequestFullViewRepository, customPullRequestViewRepository,
                 pullRequestWithCommitsAndCommentsRepository);
     }
 
@@ -543,17 +543,17 @@ public class PostgresExpositionAdapterTestIT {
                 List.of(
                         CommentEntity.builder()
                                 .id("1")
-                                .pullRequestId(pr1.getId())
+                                .pullRequest(pr1)
                                 .creationDate(ZonedDateTime.now())
                                 .build(),
                         CommentEntity.builder()
                                 .id("2")
-                                .pullRequestId(pr1.getId())
+                                .pullRequest(pr1)
                                 .creationDate(ZonedDateTime.now())
                                 .build(),
                         CommentEntity.builder()
                                 .id("3")
-                                .pullRequestId(pr2.getId())
+                                .pullRequest(pr2)
                                 .creationDate(ZonedDateTime.now())
                                 .build()
                 )
@@ -562,28 +562,28 @@ public class PostgresExpositionAdapterTestIT {
                 List.of(
                         CommitEntity.builder()
                                 .sha(faker.dragonBall().character())
-                                .pullRequestId(pr1.getId())
+                                .pullRequest(pr1)
                                 .date(ZonedDateTime.now())
                                 .message(faker.gameOfThrones().character())
                                 .authorLogin(faker.gameOfThrones().dragon())
                                 .build(),
                         CommitEntity.builder()
                                 .sha(faker.rickAndMorty().character())
-                                .pullRequestId(pr1.getId())
+                                .pullRequest(pr1)
                                 .date(ZonedDateTime.now())
                                 .message(faker.gameOfThrones().character())
                                 .authorLogin(faker.gameOfThrones().dragon())
                                 .build(),
                         CommitEntity.builder()
                                 .sha(faker.rickAndMorty().location())
-                                .pullRequestId(pr2.getId())
+                                .pullRequest(pr2)
                                 .date(ZonedDateTime.now())
                                 .message(faker.gameOfThrones().character())
                                 .authorLogin(faker.gameOfThrones().dragon())
                                 .build(),
                         CommitEntity.builder()
                                 .sha(faker.demographic().race())
-                                .pullRequestId(pr2.getId())
+                                .pullRequest(pr2)
                                 .date(ZonedDateTime.now())
                                 .message(faker.gameOfThrones().character())
                                 .authorLogin(faker.gameOfThrones().dragon())
@@ -596,7 +596,8 @@ public class PostgresExpositionAdapterTestIT {
 
         // When
         final List<PullRequestView> pullRequestViews =
-                postgresExpositionAdapter.readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId, startDate,
+                postgresExpositionAdapter.readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
+                        startDate,
                         endDate);
 
         // Then
