@@ -35,34 +35,46 @@ public interface LeadTimeContractMapper {
         mapCodingTime(leadTimeMetrics, leadTime);
         mapReviewLag(leadTimeMetrics, leadTime);
         mapReviewTime(leadTimeMetrics, leadTime);
+        mapDeployTime(leadTimeMetrics, leadTime);
         return leadTime;
+    }
+
+    static void mapDeployTime(LeadTimeMetrics leadTimeMetrics, LeadTimeResponseContractLeadTime leadTime) {
+        final MetricsContract deployTime = new MetricsContract();
+        deployTime.setValue(BigDecimal.ZERO);
+        deployTime.setTendencyPercentage(BigDecimal.ZERO);
+        leadTime.setTimeToDeploy(deployTime);
     }
 
     private static void mapReviewTime(LeadTimeMetrics leadTimeMetrics, LeadTimeResponseContractLeadTime leadTime) {
         final MetricsContract reviewTime = new MetricsContract();
-        reviewTime.setValue(BigDecimal.valueOf(leadTimeMetrics.getAverageReviewTime()));
-        reviewTime.setTendencyPercentage(BigDecimal.valueOf(leadTimeMetrics.getAverageReviewTimePercentageTendency()));
+        reviewTime.setValue(floatToBigDecimal(leadTimeMetrics.getAverageReviewTime()));
+        reviewTime.setTendencyPercentage(floatToBigDecimal(leadTimeMetrics.getAverageReviewTimePercentageTendency()));
         leadTime.setReviewTime(reviewTime);
     }
 
     private static void mapReviewLag(LeadTimeMetrics leadTimeMetrics, LeadTimeResponseContractLeadTime leadTime) {
         final MetricsContract reviewLag = new MetricsContract();
-        reviewLag.setTendencyPercentage(BigDecimal.valueOf(leadTimeMetrics.getAverageReviewLagPercentageTendency()));
-        reviewLag.setValue(BigDecimal.valueOf(leadTimeMetrics.getAverageReviewLag()));
+        reviewLag.setTendencyPercentage(floatToBigDecimal(leadTimeMetrics.getAverageReviewLagPercentageTendency()));
+        reviewLag.setValue(floatToBigDecimal(leadTimeMetrics.getAverageReviewLag()));
         leadTime.setReviewLag(reviewLag);
     }
 
     private static void mapCodingTime(LeadTimeMetrics leadTimeMetrics, LeadTimeResponseContractLeadTime leadTime) {
         final MetricsContract codingTime = new MetricsContract();
-        codingTime.setTendencyPercentage(BigDecimal.valueOf(leadTimeMetrics.getAverageCodingTimePercentageTendency()));
-        codingTime.setValue(BigDecimal.valueOf(leadTimeMetrics.getAverageCodingTime()));
+        codingTime.setTendencyPercentage(floatToBigDecimal(leadTimeMetrics.getAverageCodingTimePercentageTendency()));
+        codingTime.setValue(floatToBigDecimal(leadTimeMetrics.getAverageCodingTime()));
         leadTime.setCodingTime(codingTime);
     }
 
     private static void mapAverage(LeadTimeMetrics leadTimeMetrics, LeadTimeResponseContractLeadTime leadTime) {
         final MetricsContract average = new MetricsContract();
-        average.setTendencyPercentage(BigDecimal.valueOf(leadTimeMetrics.getAverageTendencyPercentage()));
-        average.setValue(BigDecimal.valueOf(leadTimeMetrics.getAverage()));
+        average.setTendencyPercentage(floatToBigDecimal(leadTimeMetrics.getAverageTendencyPercentage()));
+        average.setValue(floatToBigDecimal(leadTimeMetrics.getAverage()));
         leadTime.setAverage(average);
+    }
+
+    private static BigDecimal floatToBigDecimal(final Float floatToConvert) {
+        return new BigDecimal(Float.toString(floatToConvert));
     }
 }

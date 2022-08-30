@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.Com
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestWithCommitsAndCommentsDTO;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -101,6 +102,18 @@ public interface PullRequestMapper {
                 .authorLogin(pullRequestFullViewDTO.getAuthorLogin())
                 .commitNumber(pullRequestFullViewDTO.getCommitNumber())
                 .status(pullRequestFullViewDTO.getState())
+                .build();
+    }
+
+    static PullRequestView withCommitsAndCommentsToDomain(final PullRequestWithCommitsAndCommentsDTO pullRequestWithCommitsAndCommentsDTO) {
+        return PullRequestView.builder()
+                .id(pullRequestWithCommitsAndCommentsDTO.getId())
+                .status(pullRequestWithCommitsAndCommentsDTO.getState())
+                .mergeDate(isNull(pullRequestWithCommitsAndCommentsDTO.getMergeDate()) ? null :
+                        Date.from(pullRequestWithCommitsAndCommentsDTO.getMergeDate().toInstant()))
+                .creationDate(Date.from(pullRequestWithCommitsAndCommentsDTO.getCreationDate().toInstant()))
+                .comments(pullRequestWithCommitsAndCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
+                .commits(pullRequestWithCommitsAndCommentsDTO.getCommits().stream().map(CommitMapper::entityToDomain).toList())
                 .build();
     }
 

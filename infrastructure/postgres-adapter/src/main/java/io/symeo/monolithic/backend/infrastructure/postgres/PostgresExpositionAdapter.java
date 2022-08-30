@@ -38,6 +38,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final CustomPullRequestViewRepository customPullRequestViewRepository;
     private final CommitRepository commitRepository;
     private final CommentRepository commentRepository;
+    private final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
 
     @Override
     public void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests) {
@@ -167,10 +168,23 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<PullRequestView> readPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
                                                                                             Date startDate,
                                                                                             Date endDate) throws SymeoException {
-        return readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(teamId, startDate, endDate, 0,
-                200, "creation_date", "asc");
+        try {
+            return pullRequestWithCommitsAndCommentsRepository.findAllMergedByTeamIdForStartDateAndEndDate(teamId,
+                            startDate, endDate)
+                    .stream()
+                    .map(PullRequestMapper::withCommitsAndCommentsToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read PR with commits and comments for teamId %s", teamId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
     }
 }

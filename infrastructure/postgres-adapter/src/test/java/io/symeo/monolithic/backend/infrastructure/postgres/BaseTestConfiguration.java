@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.infrastructure.postgres;
 
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomPullRequestViewRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestWithCommitsAndCommentsRepository;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
