@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -68,5 +70,15 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
                     .message("Failed to create organizations")
                     .build();
         }
+    }
+
+    @Override
+    public void saveOrganizationSettings(OrganizationSettings organizationSettings) {
+
+    }
+
+    @Override
+    public Optional<OrganizationSettings> findOrganizationSettingsForOrganizationId(UUID organizationId) {
+        return Optional.empty();
     }
 }
