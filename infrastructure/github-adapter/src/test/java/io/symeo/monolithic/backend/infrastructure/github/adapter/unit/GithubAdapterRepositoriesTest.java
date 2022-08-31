@@ -95,5 +95,6 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
         // Then
         assertThat(repository.getName()).isEqualTo(githubRepositoryDTO.getName());
         assertThat(repository.getVcsOrganizationName()).isEqualTo(githubRepositoryDTO.getOwner().getLogin());
+        assertThat(repository.getDefaultBranch()).isEqualTo((String) githubRepositoryDTO.getAdditionalProperties().get("default_branch"));
     }
 }

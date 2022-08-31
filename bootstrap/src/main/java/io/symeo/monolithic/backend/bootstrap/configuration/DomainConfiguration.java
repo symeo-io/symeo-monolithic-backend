@@ -8,6 +8,7 @@ import io.symeo.monolithic.backend.domain.query.CurveQuery;
 import io.symeo.monolithic.backend.domain.query.DeliveryQuery;
 import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.service.DataProcessingJobService;
+import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.service.account.*;
 import io.symeo.monolithic.backend.domain.service.insights.LeadTimeService;
 import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
@@ -49,9 +50,10 @@ public class DomainConfiguration {
                                                              final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
                                                              final RepositoryService repositoryService,
                                                              final JobManager jobManager,
-                                                             final SymeoJobApiAdapter symeoJobApiAdapter) {
+                                                             final SymeoJobApiAdapter symeoJobApiAdapter,
+                                                             final OrganizationSettingsService organizationSettingsService) {
         return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter,
-                repositoryService, jobManager, symeoJobApiAdapter);
+                repositoryService, jobManager, symeoJobApiAdapter, organizationSettingsService);
     }
 
     @Bean
@@ -123,5 +125,11 @@ public class DomainConfiguration {
     @Bean
     public LeadTimeFacadeAdapter leadTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter) {
         return new LeadTimeService(expositionStorageAdapter);
+    }
+
+    @Bean
+    public OrganizationSettingsService organizationSettingsService(final ExpositionStorageAdapter expositionStorageAdapter,
+                                                                   final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
+        return new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
     }
 }

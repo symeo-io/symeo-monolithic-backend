@@ -178,4 +178,9 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
                     .build();
         }
     }
+
+    @Override
+    public String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) {
+        return null;
+    }
 }
