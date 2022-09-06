@@ -72,7 +72,7 @@ create table exposition_storage.commit
         constraint sha_commit_id primary key,
     pull_request_id             varchar(100)                              not null,
     author_login                varchar(200)                              not null,
-    message                     varchar(400),
+    message                     varchar(10000),
     date                        timestamp(6) with time zone               not null,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null
