@@ -93,6 +93,7 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
     protected static final String TEAM_REST_API = "/api/v1/teams";
     protected static final String REPOSITORIES_REST_API_GET = "/api/v1/repositories";
     protected static final String ORGANIZATIONS_REST_API_USERS = "/api/v1/organizations/users";
+    protected static final String ORGANIZATION_REST_API_SETTINGS = "/ap1/v1/organization/settings";
     protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_HISTOGRAM = "/api/v1/teams/goals/time-to-merge" +
             "/histogram";
     protected static final String TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES = "/api/v1/teams/goals/time-to-merge" +
