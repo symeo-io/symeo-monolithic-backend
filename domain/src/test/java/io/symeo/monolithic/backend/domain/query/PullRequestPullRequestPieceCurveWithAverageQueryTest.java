@@ -56,18 +56,21 @@ public class PullRequestPullRequestPieceCurveWithAverageQueryTest {
                 .standardCode(TeamStandard.PULL_REQUEST_SIZE)
                 .teamId(teamId)
                 .build();
+        final Date startDate = stringToDate("2019-01-01");
+        final Date endDate = stringToDate("2019-06-01");
 
         // When
         when(teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildPullRequestSize()))
                 .thenReturn(teamGoal);
-        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization, teamId))
+        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization, teamId, startDate, endDate))
                 .thenReturn(pullRequestPullRequestSizeViews);
-        final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage = curveQuery.computePullRequestSizeCurve(organization,
-                teamId, stringToDate("2019-01-01"), stringToDate("2019-06-01"));
+        final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage =
+                curveQuery.computePullRequestSizeCurve(organization,
+                        teamId, startDate, endDate);
 
         // Then
-        assertThat(pullRequestPieceCurveWithAverage.getAverageCurve().getData()).hasSize(4);
-        assertThat(pullRequestPieceCurveWithAverage.getPullRequestPieceCurve().getData()).hasSize(8);
+        assertThat(pullRequestPieceCurveWithAverage.getAverageCurve().getData()).hasSize(5);
+        assertThat(pullRequestPieceCurveWithAverage.getPullRequestPieceCurve().getData()).hasSize(10);
         assertThat(pullRequestPieceCurveWithAverage.getLimit()).isEqualTo(Integer.parseInt(teamGoal.getValue()));
     }
 
@@ -103,18 +106,21 @@ public class PullRequestPullRequestPieceCurveWithAverageQueryTest {
                 .standardCode(TeamStandard.TIME_TO_MERGE)
                 .teamId(teamId)
                 .build();
+        final Date startDate = stringToDate("2019-01-01");
+        final Date endDate = stringToDate("2019-06-01");
 
         // When
         when(teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildTimeToMerge()))
                 .thenReturn(teamGoal);
-        when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(organization, teamId))
+        when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(organization, teamId, startDate, endDate))
                 .thenReturn(pullRequestPullRequestSizeViews);
-        final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage = curveQuery.computeTimeToMergeCurve(organization,
-                teamId, stringToDate("2019-01-01"), stringToDate("2019-06-01"));
+        final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage =
+                curveQuery.computeTimeToMergeCurve(organization,
+                        teamId, startDate, endDate);
 
         // Then
-        assertThat(pullRequestPieceCurveWithAverage.getAverageCurve().getData()).hasSize(4);
-        assertThat(pullRequestPieceCurveWithAverage.getPullRequestPieceCurve().getData()).hasSize(8);
+        assertThat(pullRequestPieceCurveWithAverage.getAverageCurve().getData()).hasSize(5);
+        assertThat(pullRequestPieceCurveWithAverage.getPullRequestPieceCurve().getData()).hasSize(10);
         assertThat(pullRequestPieceCurveWithAverage.getLimit()).isEqualTo(Integer.parseInt(teamGoal.getValue()));
     }
 

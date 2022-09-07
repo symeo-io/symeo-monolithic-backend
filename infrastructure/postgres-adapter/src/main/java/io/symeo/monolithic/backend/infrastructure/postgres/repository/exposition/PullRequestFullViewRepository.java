@@ -8,16 +8,14 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomPullRequestViewRepository.ACTIVE_PULL_REQUEST_SQL_FILTERS;
+
 public interface PullRequestFullViewRepository extends JpaRepository<PullRequestFullViewDTO, String> {
 
     @Query(value = "select count(pr.id)" +
             " from exposition_storage.pull_request pr" +
             " where (" +
-            "           pr.creation_date < :endDate " +
-            "               and (" +
-            "                   pr.merge_date >= :startDate or pr.close_date >= :startDate" +
-            "                   or (pr.merge_date is null and pr.close_date is null)" +
-            "                   )" +
+            ACTIVE_PULL_REQUEST_SQL_FILTERS +
             "      )" +
             "    and pr.vcs_repository_id in (select ttr.repository_id" +
             "                                 from exposition_storage.team_to_repository ttr" +
