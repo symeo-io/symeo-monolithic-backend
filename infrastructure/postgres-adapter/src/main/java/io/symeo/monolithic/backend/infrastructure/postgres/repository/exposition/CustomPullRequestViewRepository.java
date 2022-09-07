@@ -28,8 +28,8 @@ public class CustomPullRequestViewRepository {
             "       pr.vcs_repository," +
             "       pr.author_login" +
             " from exposition_storage.pull_request pr" +
-            " where (pr.merge_date is null and pr.creation_date <= ':endDate')" +
-            "   or (pr.merge_date >= ':startDate' and pr.merge_date <= ':endDate')" +
+            " where ((pr.merge_date is null and pr.creation_date <= ':endDate')" +
+            "   or (pr.merge_date >= ':startDate' and pr.merge_date <= ':endDate'))" +
             "    and pr.vcs_repository_id in (select ttr.repository_id" +
             "                                 from exposition_storage.team_to_repository ttr" +
             "                                 where ttr.team_id = ':teamId')" +
@@ -49,8 +49,8 @@ public class CustomPullRequestViewRepository {
                 .replace(":teamId", teamId.toString())
                 .replace(":endRange", Integer.toString(end))
                 .replace(":startRange", Integer.toString(start))
-                .replace(":startDate", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(startDate))
-                .replace(":endDate", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(endDate));
+                .replace(":startDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startDate))
+                .replace(":endDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endDate));
         final List<PullRequestFullViewDTO> resultList = entityManager.createNativeQuery(baseQuery,
                         PullRequestFullViewDTO.class)
                 .getResultList();
