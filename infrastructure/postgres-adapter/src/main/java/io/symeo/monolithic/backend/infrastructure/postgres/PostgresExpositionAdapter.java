@@ -23,7 +23,6 @@ import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.PO
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.buildPagination;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.SortingMapper.directionToPostgresSortingValue;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper.sortingParameterToDatabaseAttribute;
-import static java.util.Optional.ofNullable;
 
 @AllArgsConstructor
 @Slf4j
@@ -59,29 +58,13 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PullRequest> findAllPullRequestsForOrganizationAndTeamId(Organization organization, UUID teamId) throws SymeoException {
+    public List<PullRequestView> readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(final Organization organization,
+                                                                                                                 final UUID teamId,
+                                                                                                                 final Date startDate,
+                                                                                                                 final Date endDate) throws SymeoException {
         try {
-            return ofNullable(teamId)
-                    .map(uuid -> pullRequestRepository.findAllByOrganizationIdAndTeamId(organization.getId(), uuid))
-                    .orElseGet(() -> pullRequestRepository.findAllByOrganizationId(organization.getId()))
-                    .stream().map(PullRequestMapper::entityToDomain).toList();
-        } catch (Exception e) {
-            LOGGER.error("Failed to find all pull requests for organization {}", organization, e);
-            throw SymeoException.builder()
-                    .code(POSTGRES_EXCEPTION)
-                    .message("Failed to find all pull requests for organization")
-                    .build();
-        }
-    }
-
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<PullRequestView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(final Organization organization,
-                                                                                       final UUID teamId) throws SymeoException {
-        try {
-            return pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamId(
-                            organization.getId(), teamId)
+            return pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamIdBetweenStartDateAndEndDate(
+                            organization.getId(), teamId, startDate, endDate)
                     .stream()
                     .map(PullRequestCurveMapper::dtoToView)
                     .toList();
@@ -95,12 +78,13 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<PullRequestView> readPullRequestsSizeViewForOrganizationAndTeam(Organization organization,
-                                                                                UUID teamId) throws SymeoException {
+    public List<PullRequestView> readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(Organization organization,
+                                                                                                         UUID teamId,
+                                                                                                         Date startDate,
+                                                                                                         Date endDate) throws SymeoException {
         try {
-            return pullRequestSizeRepository.findPullRequestSizeDTOsByOrganizationIdAndTeamId(organization.getId(),
-                            teamId)
+            return pullRequestSizeRepository.findPullRequestSizeDTOsByOrganizationIdAndTeamIdForBetweenStartDateAndEndDate(organization.getId(),
+                            teamId, startDate, endDate)
                     .stream()
                     .map(PullRequestCurveMapper::dtoToView)
                     .toList();

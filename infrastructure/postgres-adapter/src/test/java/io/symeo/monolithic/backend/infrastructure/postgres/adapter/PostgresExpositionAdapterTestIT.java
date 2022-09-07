@@ -213,54 +213,6 @@ public class PostgresExpositionAdapterTestIT {
         assertThat(repositories).hasSize(3);
     }
 
-    @Test
-    void should_find_all_pull_requests_given_an_organization_given_a_null_team_id() throws SymeoException {
-        // Given
-        final Organization organization = Organization.builder()
-                .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
-                .build();
-        pullRequestRepository.saveAll(
-                List.of(
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(1, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(2, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(3, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(4, organization))
-                )
-        );
-
-        // When
-        final List<PullRequest> allPullRequestsForOrganization =
-                postgresExpositionAdapter.findAllPullRequestsForOrganizationAndTeamId(organization, null);
-
-        // Then
-        assertThat(allPullRequestsForOrganization).hasSize(4);
-    }
-
-    @Test
-    void should_find_all_pull_requests_given_an_organization_given_a_team_id() throws SymeoException {
-        // Given
-        final Organization organization = Organization.builder()
-                .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
-                .build();
-        pullRequestRepository.saveAll(
-                List.of(
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(1, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(2, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(3, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(4, organization))
-                )
-        );
-
-        // When
-        final List<PullRequest> allPullRequestsForOrganization =
-                postgresExpositionAdapter.findAllPullRequestsForOrganizationAndTeamId(organization, null);
-
-        // Then
-        assertThat(allPullRequestsForOrganization).hasSize(4);
-    }
-
 
     @Test
     void should_read_pr_time_and_pr_size_to_merge_view_given_a_null_team_id() throws SymeoException {
@@ -298,7 +250,7 @@ public class PostgresExpositionAdapterTestIT {
                 postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
                         teamEntity.getId());
         final List<PullRequestView> pullRequestSizeViews =
-                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization,
+                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
                         teamEntity.getId());
 
         // Then
@@ -341,7 +293,7 @@ public class PostgresExpositionAdapterTestIT {
                 postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
                         teamEntity.getId());
         final List<PullRequestView> pullRequestSizeViews =
-                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization,
+                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
                         teamEntity.getId());
 
         // Then

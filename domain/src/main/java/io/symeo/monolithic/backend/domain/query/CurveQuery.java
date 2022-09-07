@@ -35,18 +35,17 @@ public class CurveQuery {
         final List<Date> rangeDates = getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
                 range, organization.getTimeZone());
         final List<PullRequestView> pullRequestLimitViews =
-                expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
-                                teamId)
+                expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(organization,
+                                teamId, startDate, endDate)
                         .stream()
                         .map(pullRequestLimitView -> pullRequestLimitView.addStartDateRangeFromRangeDates(rangeDates))
                         .map(PullRequestView::addTimeLimit)
-                        .filter(pullRequestView -> pullRequestView.isInDateRange(startDate,
-                                endDate))
                         .toList();
         return buildPullRequestCurve(pullRequestLimitViews, Integer.parseInt(currentTeamGoal.getValue()));
     }
 
-    public PullRequestPieceCurveWithAverage computePullRequestSizeCurve(final Organization organization, final UUID teamId,
+    public PullRequestPieceCurveWithAverage computePullRequestSizeCurve(final Organization organization,
+                                                                        final UUID teamId,
                                                                         final Date startDate, final Date endDate) throws SymeoException {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildPullRequestSize());
@@ -54,12 +53,11 @@ public class CurveQuery {
         final List<Date> rangeDates = getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
                 range, organization.getTimeZone());
         final List<PullRequestView> pullRequestSizeViews =
-                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId)
+                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
+                                teamId, startDate, endDate)
                         .stream()
                         .map(pullRequestLimitView -> pullRequestLimitView.addStartDateRangeFromRangeDates(rangeDates))
                         .map(PullRequestView::addSizeLimit)
-                        .filter(pullRequestView -> pullRequestView.isInDateRange(startDate,
-                                endDate))
                         .toList();
         return buildPullRequestCurve(pullRequestSizeViews, Integer.parseInt(currentTeamGoal.getValue()));
     }
@@ -68,19 +66,14 @@ public class CurveQuery {
                                                  Date endDate) throws SymeoException {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildPullRequestSize());
-        final List<PullRequestView> pullRequestSizeViews =
-                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId);
-        final List<PullRequestView> currentPullRequestViews = pullRequestSizeViews
-                .stream()
-                .filter(pullRequestView -> pullRequestView.isInDateRange(startDate,
-                        endDate))
-                .toList();
-        final List<PullRequestView> previousPullRequestViews = pullRequestSizeViews
-                .stream()
-                .filter(pullRequestView -> pullRequestView.isInDateRange(
-                        getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone()),
-                        startDate))
-                .toList();
+        final List<PullRequestView> currentPullRequestViews =
+                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
+                        teamId, startDate, endDate);
+        final List<PullRequestView> previousPullRequestViews =
+                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
+                        teamId, getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
+                                organization.getTimeZone()),
+                        startDate);
         return buildSizeMetricsFromPullRequests(currentTeamGoal.getValueAsInteger(), currentPullRequestViews,
                 previousPullRequestViews);
     }
@@ -89,19 +82,14 @@ public class CurveQuery {
                                                         Date endDate) throws SymeoException {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildTimeToMerge());
-        final List<PullRequestView> pullRequestSizeViews =
-                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId);
-        final List<PullRequestView> currentPullRequestViews = pullRequestSizeViews
-                .stream()
-                .filter(pullRequestView -> pullRequestView.isInDateRange(startDate,
-                        endDate))
-                .toList();
-        final List<PullRequestView> previousPullRequestViews = pullRequestSizeViews
-                .stream()
-                .filter(pullRequestView -> pullRequestView.isInDateRange(
-                        getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone()),
-                        startDate))
-                .toList();
+        final List<PullRequestView> currentPullRequestViews =
+                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
+                        teamId, startDate, endDate);
+        final List<PullRequestView> previousPullRequestViews =
+                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
+                        teamId, getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
+                                organization.getTimeZone()),
+                        startDate);
         return buildTimeToMergeMetricsFromPullRequests(currentTeamGoal.getValueAsInteger(), endDate,
                 startDate, currentPullRequestViews,
                 previousPullRequestViews);

@@ -60,7 +60,7 @@ public class PullRequestPullRequestPieceCurveWithAverageQueryTest {
         // When
         when(teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildPullRequestSize()))
                 .thenReturn(teamGoal);
-        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId))
+        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization, teamId))
                 .thenReturn(pullRequestPullRequestSizeViews);
         final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage = curveQuery.computePullRequestSizeCurve(organization,
                 teamId, stringToDate("2019-01-01"), stringToDate("2019-06-01"));
@@ -107,7 +107,7 @@ public class PullRequestPullRequestPieceCurveWithAverageQueryTest {
         // When
         when(teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildTimeToMerge()))
                 .thenReturn(teamGoal);
-        when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamId))
+        when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(organization, teamId))
                 .thenReturn(pullRequestPullRequestSizeViews);
         final PullRequestPieceCurveWithAverage pullRequestPieceCurveWithAverage = curveQuery.computeTimeToMergeCurve(organization,
                 teamId, stringToDate("2019-01-01"), stringToDate("2019-06-01"));

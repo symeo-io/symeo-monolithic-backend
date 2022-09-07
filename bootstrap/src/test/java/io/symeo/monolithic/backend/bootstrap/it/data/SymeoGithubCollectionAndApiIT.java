@@ -435,7 +435,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
     void should_return_time_to_merge_view() {
         // When
         final List<PullRequestTimeToMergeDTO> timeToMergeDTOsByOrganizationIdAndTeamId =
-                pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamId(organizationId, teamId);
+                pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamIdBetweenStartDateAndEndDate(organizationId, teamId);
 
         // Then
         assertThat(timeToMergeDTOsByOrganizationIdAndTeamId).hasSize(pullRequestRepository.findAll().size());

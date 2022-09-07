@@ -17,13 +17,16 @@ public interface ExpositionStorageAdapter {
 
     List<Repository> readRepositoriesForOrganization(Organization organization);
 
-    List<PullRequest> findAllPullRequestsForOrganizationAndTeamId(Organization organization, UUID teamId) throws SymeoException;
+    List<PullRequestView> readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(Organization organization,
+                                                                                                          UUID teamId
+            , Date startDate,
+                                                                                                          Date endDate) throws SymeoException;
 
-    List<PullRequestView> readPullRequestsTimeToMergeViewForOrganizationAndTeam(Organization organization,
-                                                                                UUID teamId) throws SymeoException;
-
-    List<PullRequestView> readPullRequestsSizeViewForOrganizationAndTeam(Organization organization, UUID teamId)
+    List<PullRequestView> readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(Organization organization, UUID teamId,
+                                                                                                  Date startDate,
+                                                                                                  Date endDate)
             throws SymeoException;
+
 
     List<PullRequestView> readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(UUID teamId,
                                                                                                  Date startDate,
@@ -38,8 +41,8 @@ public interface ExpositionStorageAdapter {
             throws SymeoException;
 
     List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
-                                                                                           Date startDate
-            , Date endDate) throws SymeoException;
+                                                                                           Date startDate, Date endDate)
+            throws SymeoException;
 
     String findDefaultMostUsedBranchForOrganizationId(UUID organizationId);
 }
