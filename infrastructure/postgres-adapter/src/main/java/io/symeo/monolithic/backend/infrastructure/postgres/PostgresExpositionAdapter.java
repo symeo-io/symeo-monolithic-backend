@@ -164,7 +164,17 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
-    public String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) {
-        return null;
+    public String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) throws SymeoException {
+        try {
+            return repositoryRepository.findDefaultMostUsedBranchForOrganizationId(organizationId);
+        } catch (Exception e) {
+            final String message = String.format("Failed to find default most used branch for organizationId %s",
+                    organizationId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
     }
 }

@@ -1,8 +1,12 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.account;
 
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 
 import java.util.UUID;
@@ -55,4 +59,29 @@ public interface OrganizationMapper {
                 .build();
     }
 
+    static OrganizationSettingsEntity settingsToEntity(final OrganizationSettings organizationSettings) {
+        return OrganizationSettingsEntity.builder()
+                .id(isNull(organizationSettings.getId()) ? UUID.randomUUID() : organizationSettings.getId())
+                .organizationId(organizationSettings.getOrganizationId())
+                .tagRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex())
+                .pullRequestMergedOnBranchRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex())
+                .build();
+    }
+
+    static OrganizationSettings settingsToDomain(final OrganizationSettingsEntity organizationSettingsEntity) {
+        return OrganizationSettings.builder()
+                .id(organizationSettingsEntity.getId())
+                .organizationId(organizationSettingsEntity.getOrganizationId())
+                .deliverySettings(
+                        DeliverySettings.builder()
+                                .deployDetectionSettings(
+                                        DeployDetectionSettings.builder()
+                                                .tagRegex(organizationSettingsEntity.getTagRegex())
+                                                .pullRequestMergedOnBranchRegex(organizationSettingsEntity.getPullRequestMergedOnBranchRegex())
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
+    }
 }

@@ -16,6 +16,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.Onboar
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationSettingsRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -46,10 +47,13 @@ public class PostgresAccountUserAdapterTestIT {
     private OrganizationRepository organizationRepository;
     @Autowired
     private OnboardingRepository onboardingRepository;
+    @Autowired
+    private OrganizationSettingsRepository organizationSettingsRepository;
 
     @AfterEach
     void tearDown() {
         userRepository.deleteAll();
+        organizationSettingsRepository.deleteAll();
         vcsOrganizationRepository.deleteAll();
         organizationRepository.deleteAll();
         organizationRepository.deleteAll();
@@ -104,7 +108,8 @@ public class PostgresAccountUserAdapterTestIT {
         final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(vcsOrganizationRepository, organizationRepository);
+                new PostgresAccountOrganizationAdapter(vcsOrganizationRepository, organizationRepository,
+                        organizationSettingsRepository);
         final String externalId = faker.name().firstName();
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
