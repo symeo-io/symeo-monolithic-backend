@@ -162,11 +162,11 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.piece_curve[0].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[0].label").isEqualTo(branchName)
-                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-02-01")
+                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-01-01")
                 .jsonPath("$.curves.piece_curve[1].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[1].label").isEqualTo(branchName)
                 .jsonPath("$.curves.piece_curve[2].value").isEqualTo(0)
-                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-09")
+                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-01")
                 .jsonPath("$.curves.piece_curve[2].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[2].label").isEqualTo(branchName);
     }
@@ -243,12 +243,12 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-03-01")
                 .jsonPath("$.curves.piece_curve[0].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[0].label").isEqualTo(branchName)
-                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(1700)
-                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-03-01")
+                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(300)
+                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-01-01")
                 .jsonPath("$.curves.piece_curve[1].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[1].label").isEqualTo(branchName)
-                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(300)
-                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-09")
+                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(1000)
+                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-01")
                 .jsonPath("$.curves.piece_curve[2].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[2].label").isEqualTo(branchName);
 

@@ -19,12 +19,10 @@ import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPu
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import io.symeo.monolithic.backend.infrastructure.json.local.storage.properties.JsonStorageProperties;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestTimeToMergeDTO;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
@@ -79,7 +77,6 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
     @Autowired
     public CommitRepository commitRepository;
     private static final UUID organizationId = UUID.randomUUID();
-    private static final UUID teamId = UUID.randomUUID();
 
     private static String TMP_DIR;
 
@@ -406,39 +403,6 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         });
         final List<CommitEntity> commitEntities = commitRepository.findAll();
         assertThat(commitEntities).hasSize(12);
-    }
-
-    @Order(3)
-    @Test
-    void should_return_pull_requests_linked_to_team_id() {
-        // Given
-        final List<String> repositoryIds =
-                repositoryRepository.findAll().stream().map(RepositoryEntity::getId).toList();
-        final TeamEntity teamEntity = TeamEntity.builder()
-                .organizationId(organizationId)
-                .id(teamId)
-                .repositoryIds(repositoryIds)
-                .name(FAKER.ancient().god())
-                .build();
-        teamRepository.save(teamEntity);
-
-        // When
-        final List<PullRequestEntity> allByOrganizationIdAndTeamId =
-                pullRequestRepository.findAllByOrganizationIdAndTeamId(organizationId, teamId);
-
-        // Then
-        assertThat(allByOrganizationIdAndTeamId).hasSize(pullRequestRepository.findAll().size());
-    }
-
-    @Order(4)
-    @Test
-    void should_return_time_to_merge_view() {
-        // When
-        final List<PullRequestTimeToMergeDTO> timeToMergeDTOsByOrganizationIdAndTeamId =
-                pullRequestTimeToMergeRepository.findTimeToMergeDTOsByOrganizationIdAndTeamIdBetweenStartDateAndEndDate(organizationId, teamId);
-
-        // Then
-        assertThat(timeToMergeDTOsByOrganizationIdAndTeamId).hasSize(pullRequestRepository.findAll().size());
     }
 
     private static GithubRepositoryDTO[] updateRepositoryOrganization(GithubRepositoryDTO[] githubRepositoryDTOS,

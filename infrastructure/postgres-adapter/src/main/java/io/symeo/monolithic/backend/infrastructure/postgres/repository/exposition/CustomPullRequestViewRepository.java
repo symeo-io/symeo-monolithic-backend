@@ -14,7 +14,8 @@ public class CustomPullRequestViewRepository {
 
     private final EntityManager entityManager;
 
-    public static final String ACTIVE_PULL_REQUEST_SQL_FILTERS = "pr.is_draft is false and pr.creation_date < :endDate and (" +
+    public static final String ACTIVE_PULL_REQUEST_SQL_FILTERS = "pr.is_draft is false and pr.creation_date < " +
+            ":endDate and (" +
             "(pr.merge_date is not  null and pr.merge_date >= :startDate) or (pr.merge_date is null and pr.close_date" +
             " is null)" +
             ")";

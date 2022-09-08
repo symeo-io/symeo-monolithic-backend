@@ -15,7 +15,6 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.Com
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
-import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
@@ -218,78 +217,31 @@ public class PostgresExpositionAdapterTestIT {
 
 
     @Test
-    void should_read_pr_time_and_pr_size_to_merge_view_given_a_null_team_id() throws SymeoException {
-        // Given
-        final Organization organization = Organization.builder()
-                .id(UUID.randomUUID())
-                .name(faker.name().firstName())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
-                .build();
-        organizationRepository.save(OrganizationMapper.domainToEntity(organization));
-        final List<PullRequestEntity> pullRequestEntities = pullRequestRepository.saveAll(
-                List.of(
-
-                )
-        );
-        repositoryRepository.saveAll(
-                List.of(
-                        RepositoryEntity.builder().id(pullRequestEntities.get(0).getVcsRepositoryId()).name(faker.dragonBall().character()).organizationId(organization.getId()).build(),
-                        RepositoryEntity.builder().id(pullRequestEntities.get(1).getVcsRepositoryId()).name(faker.dragonBall().character()).organizationId(organization.getId()).build()
-                )
-        );
-        final TeamEntity teamEntity =
-                teamRepository.save(TeamEntity.builder().name(faker.rickAndMorty().character()).organizationId(organization.getId()).id(UUID.randomUUID())
-                        .repositoryIds(
-                                List.of(pullRequestEntities.get(0).getVcsRepositoryId(),
-                                        pullRequestEntities.get(1).getVcsRepositoryId()
-                                )).build());
-        final Date startDate = DateHelper.stringToDate("2022-08-15");
-        final Date endDate = DateHelper.stringToDate("2022-08-25");
-
-        // When
-        final List<PullRequestView> pullRequestTimeViews =
-                postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(organization,
-                        teamEntity.getId(), startDate, endDate);
-        final List<PullRequestView> pullRequestSizeViews =
-                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
-                        teamEntity.getId(), startDate, endDate);
-
-        // Then
-        assertThat(pullRequestTimeViews).hasSize(2);
-        assertThat(pullRequestSizeViews).hasSize(2);
-    }
-
-    @Test
     void should_read_pr_time_and_pr_size_to_merge_view_given_a_team_id() throws SymeoException {
         // Given
+        final Date startDate = DateHelper.stringToDate("2022-08-15");
+        final Date endDate = DateHelper.stringToDate("2022-08-25");
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         organizationRepository.save(OrganizationMapper.domainToEntity(organization));
-        final List<PullRequestEntity> pullRequestEntities = pullRequestRepository.saveAll(
+        final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(
                 List.of(
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(1, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(2, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(3, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(4, organization))
+                        RepositoryEntity.builder().id("1").name(faker.dragonBall().character()).organizationId(organization.getId()).build(),
+                        RepositoryEntity.builder().id("2").name(faker.dragonBall().character()).organizationId(organization.getId()).build()
                 )
         );
-        repositoryRepository.saveAll(
-                List.of(
-                        RepositoryEntity.builder().id(pullRequestEntities.get(0).getVcsRepositoryId()).name(faker.dragonBall().character()).organizationId(organization.getId()).build(),
-                        RepositoryEntity.builder().id(pullRequestEntities.get(1).getVcsRepositoryId()).name(faker.dragonBall().character()).organizationId(organization.getId()).build()
-                )
+        final String repositoryId = repositoryEntities.get(0).getId();
+        pullRequestRepository.saveAll(
+                buildPullRequestStubs(organization.getId(), repositoryId, startDate, endDate)
         );
         final TeamEntity teamEntity =
                 teamRepository.save(TeamEntity.builder().name(faker.rickAndMorty().character()).organizationId(organization.getId()).id(UUID.randomUUID())
                         .repositoryIds(
-                                List.of(pullRequestEntities.get(0).getVcsRepositoryId(),
-                                        pullRequestEntities.get(1).getVcsRepositoryId()
+                                List.of(repositoryId
                                 )).build());
-        final Date startDate = DateHelper.stringToDate("2022-08-15");
-        final Date endDate = DateHelper.stringToDate("2022-08-25");
 
         // When
         final List<PullRequestView> pullRequestTimeViews =
@@ -300,8 +252,8 @@ public class PostgresExpositionAdapterTestIT {
                         teamEntity.getId(), startDate, endDate);
 
         // Then
-        assertThat(pullRequestTimeViews).hasSize(2);
-        assertThat(pullRequestSizeViews).hasSize(2);
+        assertThat(pullRequestTimeViews).hasSize(6);
+        assertThat(pullRequestSizeViews).hasSize(6);
     }
 
 
@@ -613,6 +565,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr2 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -624,6 +578,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr3 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -635,6 +591,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr4 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -646,6 +604,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr5 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -657,6 +617,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr6 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -668,6 +630,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr7 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -679,6 +643,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr8 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -690,6 +656,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr9 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -701,6 +669,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr10 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -712,6 +682,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr11 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -723,6 +695,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr12 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -734,6 +708,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr13 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -745,6 +721,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr14 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -756,6 +734,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr15 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -767,6 +747,8 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
                 .build();
         final PullRequestEntity pr16 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -779,6 +761,7 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
                 .build();
         final PullRequestEntity pr17 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -791,6 +774,7 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
                 .build();
         final PullRequestEntity pr18 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -803,6 +787,7 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
                 .build();
         final PullRequestEntity pr19 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
@@ -815,7 +800,9 @@ public class PostgresExpositionAdapterTestIT {
                 .vcsRepositoryId(repositoryId)
                 .authorLogin(faker.dragonBall().character())
                 .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
                 .build();
-        return List.of(pr1, pr2, pr3, pr4, pr5, pr6, pr7, pr8, pr9, pr10, pr11, pr12, pr13, pr14, pr15, pr16, pr17, pr18, pr19);
+        return List.of(pr1, pr2, pr3, pr4, pr5, pr6, pr7, pr8, pr9, pr10, pr11, pr12, pr13, pr14, pr15, pr16, pr17,
+                pr18, pr19);
     }
 }
