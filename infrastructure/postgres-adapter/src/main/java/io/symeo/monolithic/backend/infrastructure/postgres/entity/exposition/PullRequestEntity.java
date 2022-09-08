@@ -44,8 +44,9 @@ public class PullRequestEntity {
     ZonedDateTime closeDate;
     @Column(name = "is_merged")
     Boolean isMerged;
-    @Column(name = "is_draft")
-    Boolean isDraft;
+    @Column(name = "is_draft", nullable = false)
+    @Builder.Default
+    Boolean isDraft = false;
     @Column(name = "state")
     String state;
     @Column(name = "vcs_url")

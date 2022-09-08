@@ -46,7 +46,7 @@ public class HistogramQueryTest {
         // When
         when(teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildTimeToMerge()))
                 .thenReturn(teamGoal);
-        when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamId))
+        when(expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(organization, teamId, startDate, endDate))
                 .thenReturn(pullRequestViews);
         histogramQuery.computePullRequestTimeToMergeHistogram(organization, teamId, startDate, endDate);
 
@@ -91,7 +91,7 @@ public class HistogramQueryTest {
         // When
         when(teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildPullRequestSize()))
                 .thenReturn(teamGoal);
-        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId))
+        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization, teamId, startDate, endDate))
                 .thenReturn(pullRequestViews);
         histogramQuery.computePullRequestSizeHistogram(organization, teamId, startDate, endDate);
 

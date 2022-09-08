@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
@@ -14,7 +15,6 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.Com
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
-import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
@@ -27,6 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +65,7 @@ public class PostgresExpositionAdapterTestIT {
     @Autowired
     private PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
     private PostgresExpositionAdapter postgresExpositionAdapter;
+
 
     @AfterEach
     void tearDown() {
@@ -213,140 +215,45 @@ public class PostgresExpositionAdapterTestIT {
         assertThat(repositories).hasSize(3);
     }
 
-    @Test
-    void should_find_all_pull_requests_given_an_organization_given_a_null_team_id() throws SymeoException {
-        // Given
-        final Organization organization = Organization.builder()
-                .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
-                .build();
-        pullRequestRepository.saveAll(
-                List.of(
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(1, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(2, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(3, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(4, organization))
-                )
-        );
-
-        // When
-        final List<PullRequest> allPullRequestsForOrganization =
-                postgresExpositionAdapter.findAllPullRequestsForOrganizationAndTeamId(organization, null);
-
-        // Then
-        assertThat(allPullRequestsForOrganization).hasSize(4);
-    }
-
-    @Test
-    void should_find_all_pull_requests_given_an_organization_given_a_team_id() throws SymeoException {
-        // Given
-        final Organization organization = Organization.builder()
-                .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
-                .build();
-        pullRequestRepository.saveAll(
-                List.of(
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(1, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(2, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(3, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(4, organization))
-                )
-        );
-
-        // When
-        final List<PullRequest> allPullRequestsForOrganization =
-                postgresExpositionAdapter.findAllPullRequestsForOrganizationAndTeamId(organization, null);
-
-        // Then
-        assertThat(allPullRequestsForOrganization).hasSize(4);
-    }
-
-
-    @Test
-    void should_read_pr_time_and_pr_size_to_merge_view_given_a_null_team_id() throws SymeoException {
-        // Given
-        final Organization organization = Organization.builder()
-                .id(UUID.randomUUID())
-                .name(faker.name().firstName())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
-                .build();
-        organizationRepository.save(OrganizationMapper.domainToEntity(organization));
-        final List<PullRequestEntity> pullRequestEntities = pullRequestRepository.saveAll(
-                List.of(
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(1, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(2, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(3, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(4, organization))
-                )
-        );
-        repositoryRepository.saveAll(
-                List.of(
-                        RepositoryEntity.builder().id(pullRequestEntities.get(0).getVcsRepositoryId()).name(faker.dragonBall().character()).organizationId(organization.getId()).build(),
-                        RepositoryEntity.builder().id(pullRequestEntities.get(1).getVcsRepositoryId()).name(faker.dragonBall().character()).organizationId(organization.getId()).build()
-                )
-        );
-        final TeamEntity teamEntity =
-                teamRepository.save(TeamEntity.builder().name(faker.rickAndMorty().character()).organizationId(organization.getId()).id(UUID.randomUUID())
-                        .repositoryIds(
-                                List.of(pullRequestEntities.get(0).getVcsRepositoryId(),
-                                        pullRequestEntities.get(1).getVcsRepositoryId()
-                                )).build());
-
-
-        // When
-        final List<PullRequestView> pullRequestTimeViews =
-                postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
-                        teamEntity.getId());
-        final List<PullRequestView> pullRequestSizeViews =
-                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization,
-                        teamEntity.getId());
-
-        // Then
-        assertThat(pullRequestTimeViews).hasSize(2);
-        assertThat(pullRequestSizeViews).hasSize(2);
-    }
 
     @Test
     void should_read_pr_time_and_pr_size_to_merge_view_given_a_team_id() throws SymeoException {
         // Given
+        final Date startDate = DateHelper.stringToDate("2022-08-15");
+        final Date endDate = DateHelper.stringToDate("2022-08-25");
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         organizationRepository.save(OrganizationMapper.domainToEntity(organization));
-        final List<PullRequestEntity> pullRequestEntities = pullRequestRepository.saveAll(
+        final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(
                 List.of(
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(1, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(2, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(3, organization)),
-                        PullRequestMapper.domainToEntity(buildPullRequestForOrganization(4, organization))
+                        RepositoryEntity.builder().id("1").name(faker.dragonBall().character()).organizationId(organization.getId()).build(),
+                        RepositoryEntity.builder().id("2").name(faker.dragonBall().character()).organizationId(organization.getId()).build()
                 )
         );
-        repositoryRepository.saveAll(
-                List.of(
-                        RepositoryEntity.builder().id(pullRequestEntities.get(0).getVcsRepositoryId()).name(faker.dragonBall().character()).organizationId(organization.getId()).build(),
-                        RepositoryEntity.builder().id(pullRequestEntities.get(1).getVcsRepositoryId()).name(faker.dragonBall().character()).organizationId(organization.getId()).build()
-                )
+        final String repositoryId = repositoryEntities.get(0).getId();
+        pullRequestRepository.saveAll(
+                buildPullRequestStubs(organization.getId(), repositoryId, startDate, endDate)
         );
         final TeamEntity teamEntity =
                 teamRepository.save(TeamEntity.builder().name(faker.rickAndMorty().character()).organizationId(organization.getId()).id(UUID.randomUUID())
                         .repositoryIds(
-                                List.of(pullRequestEntities.get(0).getVcsRepositoryId(),
-                                        pullRequestEntities.get(1).getVcsRepositoryId()
+                                List.of(repositoryId
                                 )).build());
 
         // When
         final List<PullRequestView> pullRequestTimeViews =
-                postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization,
-                        teamEntity.getId());
+                postgresExpositionAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(organization,
+                        teamEntity.getId(), startDate, endDate);
         final List<PullRequestView> pullRequestSizeViews =
-                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization,
-                        teamEntity.getId());
+                postgresExpositionAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
+                        teamEntity.getId(), startDate, endDate);
 
         // Then
-        assertThat(pullRequestTimeViews).hasSize(2);
-        assertThat(pullRequestSizeViews).hasSize(2);
+        assertThat(pullRequestTimeViews).hasSize(6);
+        assertThat(pullRequestSizeViews).hasSize(6);
     }
 
 
@@ -642,5 +549,260 @@ public class PostgresExpositionAdapterTestIT {
                 .organizationId(organization.getId())
                 .vcsOrganizationId(organization.getVcsOrganization().getVcsId())
                 .build();
+    }
+
+
+    private List<PullRequestEntity> buildPullRequestStubs(final UUID organizationId, final String repositoryId,
+                                                          final Date startDate,
+                                                          final Date endDate) {
+        final PullRequestEntity pr1 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-1")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(2))
+                .mergeDate(null)
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr2 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-2")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .mergeDate(null)
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr3 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-3")
+                .organizationId(organizationId)
+                .creationDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(2))
+                .mergeDate(null)
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr4 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-4")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(3))
+                .mergeDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(1))
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr5 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-5")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(2))
+                .mergeDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr6 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-6")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(2))
+                .mergeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(3))
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr7 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-7")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .mergeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr8 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-8")
+                .organizationId(organizationId)
+                .creationDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .mergeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(2))
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr9 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-5")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .mergeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(1))
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr10 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-10")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(3))
+                .closeDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(1))
+                .mergeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr11 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-11")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(2))
+                .closeDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .mergeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr12 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-12")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(2))
+                .closeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(3))
+                .mergeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr13 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-13")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .closeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .mergeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr14 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-14")
+                .organizationId(organizationId)
+                .creationDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .closeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(2))
+                .mergeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr15 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-15")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .closeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(1))
+                .mergeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr16 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-16")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(2))
+                .mergeDate(null)
+                .closeDate(null)
+                .isDraft(true)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .build();
+        final PullRequestEntity pr17 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-17")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .mergeDate(null)
+                .closeDate(null)
+                .isDraft(true)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .build();
+        final PullRequestEntity pr18 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-18")
+                .organizationId(organizationId)
+                .creationDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(2))
+                .mergeDate(null)
+                .closeDate(null)
+                .isDraft(true)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .build();
+        final PullRequestEntity pr19 = PullRequestEntity.builder()
+                .code(faker.harryPotter().book())
+                .id(faker.rickAndMorty().character() + "-19")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(3))
+                .mergeDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(1))
+                .closeDate(null)
+                .isDraft(true)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .build();
+        return List.of(pr1, pr2, pr3, pr4, pr5, pr6, pr7, pr8, pr9, pr10, pr11, pr12, pr13, pr14, pr15, pr16, pr17,
+                pr18, pr19);
     }
 }

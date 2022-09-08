@@ -30,7 +30,7 @@ public class HistogramQuery {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildTimeToMerge());
         final List<PullRequestView> pullRequests =
-                expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeam(organization, teamId);
+                expositionStorageAdapter.readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(organization, teamId, startDate, endDate);
         final List<Date> rangeDates =
                 DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate, RANGE,
                         organization.getTimeZone());
@@ -48,7 +48,8 @@ public class HistogramQuery {
         final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildPullRequestSize());
         final List<PullRequestView> pullRequests =
-                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeam(organization, teamId);
+                expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization, teamId,
+                        startDate, endDate);
         final List<Date> rangeDates =
                 DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate, RANGE,
                         organization.getTimeZone());
