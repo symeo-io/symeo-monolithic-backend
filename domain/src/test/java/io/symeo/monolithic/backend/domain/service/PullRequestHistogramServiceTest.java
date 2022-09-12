@@ -13,7 +13,7 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
-import io.symeo.monolithic.backend.domain.query.PullRequestPullRequestPieceCurveWithAverageQueryTest;
+import io.symeo.monolithic.backend.domain.query.CurveQueryTest;
 import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
@@ -52,17 +52,17 @@ public class PullRequestHistogramServiceTest {
                 team.getId(), 500);
 
         final List<PullRequestView> pullRequestViews = List.of(
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(2000, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(400, stringToDate("2021-01-01"), null, null, PullRequest.OPEN),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(200, stringToDate("2022-05-01"), null, null, PullRequest.OPEN),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(1000, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(1000, stringToDate("2022-01-01"), stringToDate("2022-01-15"),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(2000, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(400, stringToDate("2021-01-01"), null, null, PullRequest.OPEN),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(200, stringToDate("2022-05-01"), null, null, PullRequest.OPEN),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(1000, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(1000, stringToDate("2022-01-01"), stringToDate("2022-01-15"),
                         null, PullRequest.MERGE),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(2000, stringToDate("2022-01-11"), stringToDate("2022-03-01"),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(2000, stringToDate("2022-01-11"), stringToDate("2022-03-01"),
                         null, PullRequest.MERGE),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(100, stringToDate("2022-01-21"), stringToDate("2022-01-30"),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(100, stringToDate("2022-01-21"), stringToDate("2022-01-30"),
                         null, PullRequest.MERGE),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(100, stringToDate("2022-01-21"), stringToDate("2022-04-01"),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(100, stringToDate("2022-01-21"), stringToDate("2022-04-01"),
                         null, PullRequest.MERGE)
         );
 
@@ -121,18 +121,18 @@ public class PullRequestHistogramServiceTest {
                 team.getId(), 5);
 
         final List<PullRequestView> pullRequestViews = List.of(
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2021-01-01"), null, null, PullRequest.OPEN),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), stringToDate("2022-01-03"), null, PullRequest.MERGE),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), stringToDate("2022-01-15"),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2021-01-01"), null, null, PullRequest.OPEN),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), stringToDate("2022-01-03"), null, PullRequest.MERGE),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), null, null, PullRequest.OPEN),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), stringToDate("2022-01-15"),
                         null, PullRequest.MERGE),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-05-01"), null, null, PullRequest.OPEN),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-11"), stringToDate("2022-03-01"),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-05-01"), null, null, PullRequest.OPEN),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-11"), stringToDate("2022-03-01"),
                         null, PullRequest.MERGE),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-21"), stringToDate("2022-01-30"),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-21"), stringToDate("2022-01-30"),
                         null, PullRequest.MERGE),
-                PullRequestPullRequestPieceCurveWithAverageQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-21"), stringToDate("2022-04-01"),
+                CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-21"), stringToDate("2022-04-01"),
                         null, PullRequest.MERGE)
         );
 
