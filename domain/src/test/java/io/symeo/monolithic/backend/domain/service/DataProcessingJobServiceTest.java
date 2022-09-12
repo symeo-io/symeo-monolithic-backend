@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobManager;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectCommitsJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
@@ -72,8 +73,11 @@ public class DataProcessingJobServiceTest {
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob()).isNotNull();
-        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getCode()).isEqualTo(InitializeOrganizationSettingsJobRunnable.JOB_CODE);
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getCode()).isEqualTo(CollectCommitsJobRunnable.JOB_CODE);
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getNextJob()).isNotNull();
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getNextJob().getCode()).isEqualTo(InitializeOrganizationSettingsJobRunnable.JOB_CODE);
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
 
 
     }

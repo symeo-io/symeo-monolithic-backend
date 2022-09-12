@@ -17,4 +17,8 @@ public class Commit {
     public static String getNameFromPullRequest(final PullRequest pullRequest) {
         return ALL + "_for_pr_number_" + pullRequest.getNumber();
     }
+
+    public static String getNameFromRepository(final Repository repository) {
+        return ALL + "_for_repository_" + repository.getId();
+    }
 }

@@ -119,4 +119,11 @@ public class VcsService {
             throws SymeoException {
         return deliveryCommand.collectCommentsForRepositoryAndPullRequest(repository, pullRequest);
     }
+
+    public void collectCommitsForOrganization(Organization organization) throws SymeoException {
+        for (Repository repository : deliveryQuery.readRepositoriesForOrganization(organization)) {
+            List<Commit> commits = deliveryCommand.collectCommitsForRepository(repository);
+            expositionStorageAdapter.saveCommits(commits);
+        }
+    }
 }

@@ -197,9 +197,9 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
 
     @Override
-    public byte[] getRawCommits(final String vcsOrganizationName,
-                                final String repositoryName,
-                                final int pullRequestNumber) throws SymeoException {
+    public byte[] getRawCommitsForPullRequestNumber(final String vcsOrganizationName,
+                                                    final String repositoryName,
+                                                    final int pullRequestNumber) throws SymeoException {
         final GithubCommitsDTO[] githubCommitsDTO = githubHttpClient.getCommitsForPullRequestNumber(vcsOrganizationName,
                 repositoryName, pullRequestNumber);
         try {

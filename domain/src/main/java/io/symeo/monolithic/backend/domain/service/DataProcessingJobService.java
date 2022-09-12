@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.domain.service;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobManager;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectCommitsJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
@@ -67,8 +68,18 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .vcsService(vcsService)
                                 .build())
                         .organizationId(organization.getId())
-                        .nextJob(getInitializeOrganizationSettingsJob(organization))
+                        .nextJob(getCollectCommits(organization))
                         .build();
+    }
+
+    private Job getCollectCommits(final Organization organization) {
+        return Job.builder()
+                .jobRunnable(
+                        CollectCommitsJobRunnable.builder().build()
+                )
+                .organizationId(organization.getId())
+                .nextJob(getInitializeOrganizationSettingsJob(organization))
+                .build();
     }
 
     private Job getInitializeOrganizationSettingsJob(final Organization organization) {
