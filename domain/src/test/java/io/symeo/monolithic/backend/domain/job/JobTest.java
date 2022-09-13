@@ -34,6 +34,11 @@ public class JobTest {
                     public List<Task> getTasks() {
                         return null;
                     }
+
+                    @Override
+                    public void setTasks(List<Task> tasks) {
+
+                    }
                 }).build();
 
         // When

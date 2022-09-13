@@ -56,6 +56,6 @@ public class Job {
     }
 
     public List<Task> getTasks() {
-        return this.jobRunnable.getTasks();
+        return isNull(this.tasks) ? this.jobRunnable.getTasks() : this.tasks;
     }
 }

@@ -80,6 +80,11 @@ public class JobManagerTest {
             public List<Task> getTasks() {
                 return null;
             }
+
+            @Override
+            public void setTasks(List<Task> tasks) {
+
+            }
         };
         final Job job = Job.builder()
                 .organizationId(organizationId)

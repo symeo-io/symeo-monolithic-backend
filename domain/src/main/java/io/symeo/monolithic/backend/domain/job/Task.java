@@ -1,11 +1,16 @@
 package io.symeo.monolithic.backend.domain.job;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
-@Value
-@Builder
+@Data
+@Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
+    public static final String TO_DO = "TO_DO";
+    @NonNull
     Object input;
-    String status;
+    @NonNull
+    @Builder.Default
+    String status = TO_DO;
 }

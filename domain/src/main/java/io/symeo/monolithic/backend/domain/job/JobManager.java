@@ -52,7 +52,7 @@ public class JobManager implements JobFacadeAdapter {
                 LOGGER.info("Job {} finished", jobFinished);
                 if (nonNull(job.getNextJob())) {
                     LOGGER.info("Launching nextJob for job {}", job);
-                    this.start(job.nextJob);
+                    this.start(job.getNextJob());
                 }
             } catch (SymeoException symeoException) {
                 LOGGER.error("Error while running job {}", job, symeoException);

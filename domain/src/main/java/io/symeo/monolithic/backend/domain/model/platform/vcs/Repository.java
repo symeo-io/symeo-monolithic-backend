@@ -1,12 +1,16 @@
 package io.symeo.monolithic.backend.domain.model.platform.vcs;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Value
+@Data
 @Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Repository {
     public static final String ALL = "repositories";
     String id;

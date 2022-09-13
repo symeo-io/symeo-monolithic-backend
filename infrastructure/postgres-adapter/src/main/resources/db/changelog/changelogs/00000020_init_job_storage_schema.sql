@@ -1,3 +1,7 @@
+create schema job_storage;
+
+create sequence job_storage.job_sequence;
+
 create table job_storage.job
 (
     id                          bigint                                    not null
@@ -11,7 +15,3 @@ create table job_storage.job
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null
 );
-
-create schema job_storage;
-
-create sequence job_storage.job_sequence;

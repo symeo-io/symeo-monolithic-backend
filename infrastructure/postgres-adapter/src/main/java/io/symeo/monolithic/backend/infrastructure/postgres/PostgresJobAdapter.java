@@ -88,6 +88,7 @@ public class PostgresJobAdapter implements JobStorage {
             throw SymeoException.builder()
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to save job " + job.getId())
+                    .rootException(e)
                     .build();
         }
     }

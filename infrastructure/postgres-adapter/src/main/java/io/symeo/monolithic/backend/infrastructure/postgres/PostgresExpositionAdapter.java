@@ -4,6 +4,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.pagination.Pagination;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
@@ -176,5 +177,10 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
                     .message(message)
                     .build();
         }
+    }
+
+    @Override
+    public void saveCommits(List<Commit> commits) {
+
     }
 }
