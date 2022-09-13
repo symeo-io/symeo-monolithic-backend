@@ -8,7 +8,7 @@ import io.symeo.monolithic.backend.application.rest.api.adapter.service.Reposito
 import io.symeo.monolithic.backend.domain.port.in.*;
 import io.symeo.monolithic.backend.domain.query.CurveQuery;
 import io.symeo.monolithic.backend.domain.query.HistogramQuery;
-import io.symeo.monolithic.backend.domain.service.insights.LeadTimeService;
+import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -66,8 +66,9 @@ public class RestApiConfiguration {
 
     @Bean
     public OrganizationRestApiAdapter organizationRestApiAdapter(final AuthenticationService authenticationService,
-                                                                 final UserFacadeAdapter userFacadeAdapter) {
-        return new OrganizationRestApiAdapter(authenticationService, userFacadeAdapter);
+                                                                 final UserFacadeAdapter userFacadeAdapter,
+                                                                 final OrganizationSettingsService organizationSettingsService) {
+        return new OrganizationRestApiAdapter(authenticationService, userFacadeAdapter, organizationSettingsService);
     }
 
     @Bean

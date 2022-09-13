@@ -65,4 +65,16 @@ create table account_storage.team_goal
     technical_modification_date timestamp(6) with time zone default now() not null,
     constraint fk_team_goal_team_id foreign key (team_id) references account_storage.team (id),
     constraint team_goal_standard_code_team_id_unique unique (standard_code, team_id)
-)
+);
+
+create table account_storage.organization_settings
+(
+    id                          uuid                                      not null
+        constraint organization_settings_id primary key,
+    organization_id             uuid                                      not null,
+    tag_regex                   varchar(1000),
+    pr_merged_on_branch_regex   varchar(1000),
+    technical_creation_date     timestamp(6) with time zone default now() not null,
+    technical_modification_date timestamp(6) with time zone default now() not null,
+    constraint fk_organization_settings_organization_id foreign key (organization_id) references account_storage.organization (id)
+);

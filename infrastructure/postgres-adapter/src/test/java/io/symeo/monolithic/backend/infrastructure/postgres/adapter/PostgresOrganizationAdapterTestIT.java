@@ -3,10 +3,13 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationSettingsRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,11 +34,13 @@ public class PostgresOrganizationAdapterTestIT {
     private OrganizationRepository organizationRepository;
     @Autowired
     private VcsOrganizationRepository vcsOrganizationRepository;
-
+    @Autowired
+    private OrganizationSettingsRepository organizationSettingsRepository;
     private PostgresAccountOrganizationAdapter postgresOrganizationAdapter;
 
     @AfterEach
     void tearDown() {
+        organizationSettingsRepository.deleteAll();
         vcsOrganizationRepository.deleteAll();
         organizationRepository.deleteAll();
     }
@@ -42,7 +48,7 @@ public class PostgresOrganizationAdapterTestIT {
     @BeforeEach
     void setUp() {
         postgresOrganizationAdapter = new PostgresAccountOrganizationAdapter(vcsOrganizationRepository,
-                organizationRepository);
+                organizationRepository, organizationSettingsRepository);
     }
 
     @Test
@@ -110,5 +116,28 @@ public class PostgresOrganizationAdapterTestIT {
         assertThat(symeoException.getMessage()).isEqualTo(String.format("Organization not found for id %s",
                 organizationId));
         assertThat(symeoException.getCode()).isEqualTo("F.ORGANIZATION_NAME_NOT_FOUND");
+    }
+
+    @Test
+    void should_save_and_find_organization_settings() throws SymeoException {
+        // Given
+        final OrganizationEntity organizationEntity = OrganizationEntity.builder()
+                .id(UUID.randomUUID())
+                .name(faker.rickAndMorty().character())
+                .build();
+        organizationRepository.save(organizationEntity);
+        OrganizationSettings organizationSettings =
+                OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organizationEntity.getId(),
+                        faker.rickAndMorty().location());
+
+        // When
+        postgresOrganizationAdapter.saveOrganizationSettings(organizationSettings);
+        // Then
+        assertThat(organizationSettingsRepository.findAll()).hasSize(1);
+
+        // When
+        final Optional<OrganizationSettings> organizationSettingsForOrganizationId =
+                postgresOrganizationAdapter.findOrganizationSettingsForOrganizationId(organizationEntity.getId());
+        assertThat(organizationSettingsForOrganizationId.isPresent()).isTrue();
     }
 }

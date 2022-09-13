@@ -48,8 +48,10 @@ public class PostgresConfiguration {
 
     @Bean
     public PostgresAccountOrganizationAdapter postgresOrganizationAdapter(final VcsOrganizationRepository vcsOrganizationRepository,
-                                                                          final OrganizationRepository organizationRepository) {
-        return new PostgresAccountOrganizationAdapter(vcsOrganizationRepository, organizationRepository);
+                                                                          final OrganizationRepository organizationRepository,
+                                                                          final OrganizationSettingsRepository organizationSettingsRepository) {
+        return new PostgresAccountOrganizationAdapter(vcsOrganizationRepository, organizationRepository,
+                organizationSettingsRepository);
     }
 
     @Bean

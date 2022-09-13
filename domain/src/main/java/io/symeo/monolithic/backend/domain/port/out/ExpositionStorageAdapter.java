@@ -44,5 +44,5 @@ public interface ExpositionStorageAdapter {
                                                                                            Date startDate, Date endDate)
             throws SymeoException;
 
-    String findDefaultMostUsedBranchForOrganizationId(UUID organizationId);
+    String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) throws SymeoException;
 }

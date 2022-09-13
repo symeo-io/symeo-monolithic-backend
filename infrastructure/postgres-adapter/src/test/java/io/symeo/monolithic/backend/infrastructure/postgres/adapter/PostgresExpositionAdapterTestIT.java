@@ -515,6 +515,48 @@ public class PostgresExpositionAdapterTestIT {
         assertThat(pullRequestViews.get(1).getComments()).hasSize(1);
     }
 
+
+    @Test
+    void should_find_default_most_used_branch_given_an_organization_id() throws SymeoException {
+        // Given
+        final Organization organization1 = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .build();
+        final Organization organization2 = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .build();
+        final String defaultBranch1 = faker.rickAndMorty().character();
+        final String defaultBranch2 = faker.rickAndMorty().location();
+        final List<RepositoryEntity> repositoryEntities = List.of(
+                RepositoryEntity.builder().id("1L").defaultBranch(defaultBranch1).name(faker.gameOfThrones().character())
+                        .vcsOrganizationName(faker.name().firstName()).organizationId(organization1.getId()).build(),
+                RepositoryEntity.builder().id("2L").defaultBranch(defaultBranch1).name(faker.gameOfThrones().character())
+                        .vcsOrganizationName(faker.name().firstName()).organizationId(organization1.getId()).build(),
+                RepositoryEntity.builder().id("3L").defaultBranch(defaultBranch2).name(faker.gameOfThrones().character())
+                        .vcsOrganizationName(faker.name().firstName()).organizationId(organization1.getId()).build(),
+
+                RepositoryEntity.builder().id("4L").defaultBranch(defaultBranch1).name(faker.gameOfThrones().character())
+                        .vcsOrganizationName(faker.name().firstName()).organizationId(organization2.getId()).build(),
+                RepositoryEntity.builder().id("5L").defaultBranch(defaultBranch2).name(faker.gameOfThrones().character())
+                        .vcsOrganizationName(faker.name().firstName()).organizationId(organization2.getId()).build(),
+                RepositoryEntity.builder().id("6L").defaultBranch(defaultBranch2).name(faker.gameOfThrones().character())
+                        .vcsOrganizationName(faker.name().firstName()).organizationId(organization2.getId()).build()
+        );
+        repositoryRepository.saveAll(repositoryEntities);
+
+        // When
+        final String branch1 =
+                postgresExpositionAdapter.findDefaultMostUsedBranchForOrganizationId(organization1.getId());
+        final String branch2 =
+                postgresExpositionAdapter.findDefaultMostUsedBranchForOrganizationId(organization2.getId());
+
+        // Then
+        assertThat(branch1).isEqualTo(defaultBranch1);
+        assertThat(branch2).isEqualTo(defaultBranch2);
+    }
+
     private Repository buildRepository(Organization organization) {
         return Repository.builder()
                 .name(faker.pokemon().name())

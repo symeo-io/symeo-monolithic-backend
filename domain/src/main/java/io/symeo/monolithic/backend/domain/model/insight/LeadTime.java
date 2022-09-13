@@ -27,16 +27,9 @@ public class LeadTime {
         final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
         final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
         final Date mergeDate = pullRequestView.getMergeDate();
-        final Date creationDate = pullRequestView.getCreationDate();
-        final Commit lastCommitBeforeFirstReview =
-                getLastCommitBeforeFirstReview(commitsOrderByDate,
-                        commentsOrderByDate);
-        final Commit lastCommit = commitsOrderByDate.get(commitsOrderByDate.size() - 1);
-        final Long codingTime = computeCodingTime(creationDate, lastCommitBeforeFirstReview);
-        final Long reviewLag = computeReviewLag(lastCommitBeforeFirstReview, commentsOrderByDate, mergeDate,
-                lastCommit);
-        final Long reviewTime = computeReviewTime(commentsOrderByDate, mergeDate,
-                lastCommit);
+        final Long codingTime = computeCodingTime(commitsOrderByDate);
+        final Long reviewLag = computeReviewLag(commitsOrderByDate, commentsOrderByDate, mergeDate);
+        final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);
         final Long deployTime = computeDeployTime();
         return LeadTime.builder()
                 .codingTime(codingTime)
@@ -52,14 +45,16 @@ public class LeadTime {
         return null;
     }
 
-    private static Long computeReviewTime(final List<Comment> commentsOrderByDate,
-                                          final Date mergeDate, final Commit lastCommit) {
+    private static Long computeReviewTime(final List<Commit> commitsOrderByDate,
+                                          final List<Comment> commentsOrderByDate,
+                                          final Date mergeDate) {
         if (!commentsOrderByDate.isEmpty()) {
             final Comment lastComment = commentsOrderByDate.get(commentsOrderByDate.size() - 1);
             return getNumberOfMinutesBetweenDates(lastComment.getCreationDate(), mergeDate);
         } else {
-            final Long minutesBetweenLastCommitAndMerge = getNumberOfMinutesBetweenDates(lastCommit.getDate(),
-                    mergeDate);
+            final Long minutesBetweenLastCommitAndMerge =
+                    getNumberOfMinutesBetweenDates(commitsOrderByDate.get(commitsOrderByDate.size() - 1).getDate(),
+                            mergeDate);
             if (minutesBetweenLastCommitAndMerge <= getDefaultReviewTimeMinutes()) {
                 return minutesBetweenLastCommitAndMerge;
             } else {
@@ -68,15 +63,17 @@ public class LeadTime {
         }
     }
 
-    private static Long computeReviewLag(final Commit lastCommitBeforeFirstReview,
-                                         final List<Comment> commentsOrderByDate, final Date mergeDate,
-                                         final Commit lastCommit) {
+    private static Long computeReviewLag(final List<Commit> commitsOrderByDate,
+                                         final List<Comment> commentsOrderByDate, final Date mergeDate) {
         if (!commentsOrderByDate.isEmpty()) {
             final Comment firstComment = commentsOrderByDate.get(0);
+            final Commit lastCommitBeforeFirstReview = getLastCommitBeforeFirstReview(commitsOrderByDate,
+                    commentsOrderByDate);
             return getNumberOfMinutesBetweenDates(lastCommitBeforeFirstReview.getDate(),
                     firstComment.getCreationDate());
         } else {
-            final Long minutesBetweenLastCommitAndMerge = getNumberOfMinutesBetweenDates(lastCommit.getDate(),
+            final Long minutesBetweenLastCommitAndMerge =
+                    getNumberOfMinutesBetweenDates(commitsOrderByDate.get(commitsOrderByDate.size() - 1).getDate(),
                     mergeDate);
             if (minutesBetweenLastCommitAndMerge <= getDefaultReviewTimeMinutes()) {
                 return 0L;
@@ -90,11 +87,12 @@ public class LeadTime {
         return 60L;
     }
 
-    private static Long computeCodingTime(final Date pullRequestCreationDate,
-                                          final Commit lastCommitBeforeFirstReview) {
-
-        return getNumberOfMinutesBetweenDates(pullRequestCreationDate,
-                lastCommitBeforeFirstReview.getDate());
+    private static Long computeCodingTime(final List<Commit> commitsOrderByDate) {
+        if (commitsOrderByDate.size() == 1) {
+            return 0L;
+        }
+        return getNumberOfMinutesBetweenDates(commitsOrderByDate.get(0).getDate(),
+                commitsOrderByDate.get(commitsOrderByDate.size() - 1).getDate());
     }
 
     private static Commit getLastCommitBeforeFirstReview(List<Commit> commitsOrderByDate,

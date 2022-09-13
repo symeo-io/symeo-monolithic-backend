@@ -19,7 +19,7 @@ public class OrganizationSettingsServiceTest {
     private final static Faker faker = new Faker();
 
     @Test
-    void should_initialize_organization_settings_with_deploy_detection_default_most_used_branch_given_no_existing_settings() {
+    void should_initialize_organization_settings_with_deploy_detection_default_most_used_branch_given_no_existing_settings() throws SymeoException {
         //
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
@@ -43,12 +43,13 @@ public class OrganizationSettingsServiceTest {
         verify(accountOrganizationStorageAdapter, times(1))
                 .saveOrganizationSettings(
                         OrganizationSettings.
-                                initializeFromDefaultBranch(defaultMostUsedBranch)
+                                initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
+                                        defaultMostUsedBranch)
                 );
     }
 
     @Test
-    void should_not_initialize_organization_settings_for_existing_settings() {
+    void should_not_initialize_organization_settings_for_existing_settings() throws SymeoException {
         // Given
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
@@ -61,7 +62,8 @@ public class OrganizationSettingsServiceTest {
 
         // When
         when(accountOrganizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
-                .thenReturn(Optional.ofNullable(OrganizationSettings.initializeFromDefaultBranch(faker.rickAndMorty().character())));
+                .thenReturn(Optional.ofNullable(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
+                        faker.rickAndMorty().character())));
         organizationSettingsService.initializeOrganizationSettingsForOrganization(organization);
 
         // Then
@@ -81,20 +83,21 @@ public class OrganizationSettingsServiceTest {
                 .id(UUID.randomUUID())
                 .build();
         final Optional<OrganizationSettings> optionalOrganizationSettings =
-                Optional.of(OrganizationSettings.initializeFromDefaultBranch(faker.rickAndMorty().character()));
+                Optional.of(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
+                        faker.rickAndMorty().character()));
 
         // When
         when(accountOrganizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
                 .thenReturn(optionalOrganizationSettings);
         final OrganizationSettings organizationSettings =
-                organizationSettingsService.findForOrganizationId(organization);
+                organizationSettingsService.getOrganizationSettingsForOrganization(organization);
 
         // Then
         assertThat(organizationSettings).isEqualTo(optionalOrganizationSettings.get());
     }
 
     @Test
-    void should_raise_functional_not_found_exception() {
+    void should_raise_functional_not_found_exception() throws SymeoException {
         // Given
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
@@ -110,7 +113,7 @@ public class OrganizationSettingsServiceTest {
         when(accountOrganizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
                 .thenReturn(Optional.empty());
         try {
-            organizationSettingsService.findForOrganizationId(organization);
+            organizationSettingsService.getOrganizationSettingsForOrganization(organization);
         } catch (SymeoException symeoException) {
             expectedSymeoException = symeoException;
         }

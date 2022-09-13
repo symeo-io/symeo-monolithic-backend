@@ -15,7 +15,7 @@ public interface AccountOrganizationStorageAdapter {
 
     List<Organization> findAllOrganization() throws SymeoException;
 
-    void saveOrganizationSettings(OrganizationSettings organizationSettings);
+    void saveOrganizationSettings(OrganizationSettings organizationSettings) throws SymeoException;
 
-    Optional<OrganizationSettings> findOrganizationSettingsForOrganizationId(UUID organizationId);
+    Optional<OrganizationSettings> findOrganizationSettingsForOrganizationId(UUID organizationId) throws SymeoException;
 }

@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAda
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationSettingsRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.ORGANIZATION_NAME_NOT_FOUND;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
-import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper.entityToDomain;
+import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper.*;
 
 @AllArgsConstructor
 @Slf4j
@@ -27,6 +28,7 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
 
     private final VcsOrganizationRepository vcsOrganizationRepository;
     private final OrganizationRepository organizationRepository;
+    private final OrganizationSettingsRepository organizationSettingsRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -45,7 +47,7 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
     @Override
     public Organization createOrganization(Organization organization) throws SymeoException {
         try {
-            final VcsOrganizationEntity vcsOrganizationEntity = OrganizationMapper.vcsDomainToEntity(organization);
+            final VcsOrganizationEntity vcsOrganizationEntity = vcsDomainToEntity(organization);
             return entityToDomain(vcsOrganizationRepository.save(vcsOrganizationEntity));
         } catch (Exception e) {
             LOGGER.error("Failed to create organization {}", organization, e);
@@ -73,12 +75,29 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
     }
 
     @Override
-    public void saveOrganizationSettings(OrganizationSettings organizationSettings) {
-
+    public void saveOrganizationSettings(OrganizationSettings organizationSettings) throws SymeoException {
+        try {
+            organizationSettingsRepository.save(settingsToEntity(organizationSettings));
+        } catch (Exception e) {
+            LOGGER.error("Failed to save organizationSettings", e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message("Failed to save organizationSettings")
+                    .build();
+        }
     }
 
     @Override
-    public Optional<OrganizationSettings> findOrganizationSettingsForOrganizationId(UUID organizationId) {
-        return Optional.empty();
+    @Transactional(readOnly = true)
+    public Optional<OrganizationSettings> findOrganizationSettingsForOrganizationId(UUID organizationId) throws SymeoException {
+        try {
+            return organizationSettingsRepository.findByOrganizationId(organizationId).map(OrganizationMapper::settingsToDomain);
+        } catch (Exception e) {
+            LOGGER.error("Failed to find organizationSettings", e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message("Failed to find organizationSettings")
+                    .build();
+        }
     }
 }
