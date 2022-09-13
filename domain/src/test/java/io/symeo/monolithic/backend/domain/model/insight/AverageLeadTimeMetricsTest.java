@@ -1,16 +1,19 @@
 package io.symeo.monolithic.backend.domain.model.insight;
 
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Date;
 import java.util.Optional;
 
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics.buildFromCurrentAndPreviousLeadTimes;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AverageLeadTimeMetricsTest {
 
     @Test
-    void should_compute_lead_time_metrics_given_current_and_previous_average_lead_time() {
+    void should_compute_lead_time_metrics_given_current_and_previous_average_lead_time() throws SymeoException {
         // Given
         final Optional<AverageLeadTime> currentLeadTime = Optional.of(
                 AverageLeadTime.builder()
@@ -28,12 +31,18 @@ public class AverageLeadTimeMetricsTest {
                         .averageReviewTime(66.2f)
                         .build()
         );
+        final Date previousStartDate = stringToDate("2020-01-01");
+        final Date currentStartDate = stringToDate("2020-01-02");
+        final Date currentEndDate = stringToDate("2020-01-03");
 
 
         // When
         final Optional<LeadTimeMetrics> optionalLeadTimeMetrics = buildFromCurrentAndPreviousLeadTimes(
                 currentLeadTime,
-                previousLeadTime
+                previousLeadTime,
+                previousStartDate,
+                currentStartDate,
+                currentEndDate
         );
 
         // Then
@@ -50,7 +59,7 @@ public class AverageLeadTimeMetricsTest {
     }
 
     @Test
-    void should_compute_lead_time_given_no_previous_lead_time() {
+    void should_compute_lead_time_given_no_previous_lead_time() throws SymeoException {
         // Given
         final Optional<AverageLeadTime> currentLeadTime = Optional.of(
                 AverageLeadTime.builder()
@@ -61,12 +70,17 @@ public class AverageLeadTimeMetricsTest {
                         .build()
         );
         final Optional<AverageLeadTime> previousLeadTime = Optional.empty();
-
+        final Date previousStartDate = stringToDate("2020-01-01");
+        final Date currentStartDate = stringToDate("2020-01-02");
+        final Date currentEndDate = stringToDate("2020-01-03");
 
         // When
         final Optional<LeadTimeMetrics> optionalLeadTimeMetrics = buildFromCurrentAndPreviousLeadTimes(
                 currentLeadTime,
-                previousLeadTime
+                previousLeadTime,
+                previousStartDate,
+                currentStartDate,
+                currentEndDate
         );
 
         // Then
@@ -83,7 +97,7 @@ public class AverageLeadTimeMetricsTest {
     }
 
     @Test
-    void should_no_compute_lead_time_for_empty_lead_times() {
+    void should_no_compute_lead_time_for_empty_lead_times() throws SymeoException {
         // Given
         final Optional<AverageLeadTime> previousLeadTime = Optional.of(
                 AverageLeadTime.builder()
@@ -93,12 +107,19 @@ public class AverageLeadTimeMetricsTest {
                         .averageReviewTime(10.2f)
                         .build()
         );
+        final Date previousStartDate = stringToDate("2020-01-01");
+        final Date currentStartDate = stringToDate("2020-01-02");
+        final Date currentEndDate = stringToDate("2020-01-03");
 
         // When
         final Optional<LeadTimeMetrics> optionalLeadTimeMetrics1 =
-                buildFromCurrentAndPreviousLeadTimes(Optional.empty(), previousLeadTime);
+                buildFromCurrentAndPreviousLeadTimes(Optional.empty(), previousLeadTime, previousStartDate,
+                        currentStartDate,
+                        currentEndDate);
         final Optional<LeadTimeMetrics> optionalLeadTimeMetrics2 =
-                buildFromCurrentAndPreviousLeadTimes(Optional.empty(), Optional.empty());
+                buildFromCurrentAndPreviousLeadTimes(Optional.empty(), Optional.empty(), previousStartDate,
+                        currentStartDate,
+                        currentEndDate);
 
         // Then
         assertThat(optionalLeadTimeMetrics1).isEmpty();

@@ -41,7 +41,8 @@ public class LeadTimeService implements LeadTimeFacadeAdapter {
                         , startDate);
         final Optional<AverageLeadTime> previousLeadTime =
                 AverageLeadTime.buildFromPullRequestWithCommitsViews(previousPullRequestWithCommitsViews);
-        return buildFromCurrentAndPreviousLeadTimes(currentLeadTime, previousLeadTime);
+        return buildFromCurrentAndPreviousLeadTimes(currentLeadTime, previousLeadTime, previousStartDate, startDate,
+                endDate);
     }
 
 

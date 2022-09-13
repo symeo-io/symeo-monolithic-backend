@@ -15,23 +15,35 @@ public class Metrics {
     Double previousAverage;
     Double currentPercentage;
     Double previousPercentage;
+    Date currentStartDate;
+    Date currentEndDate;
+    Date previousStartDate;
+    Date previousEndDate;
 
     public static Metrics buildTimeToMergeMetricsFromPullRequests(final int limit, final Date currentEndDate,
-                                                                  final Date previousEndDate,
+                                                                  final Date currentStartDate,
+                                                                  final Date previousStartDate,
                                                                   final List<PullRequestView> currentPullRequestViews,
                                                                   final List<PullRequestView> previousPullRequestViews) {
         final Metrics currentMetrics = computeAverageAndPercentageTimeToMergeMetric(limit, currentEndDate,
                 currentPullRequestViews);
-        final Metrics previousMetrics = computeAverageAndPercentageTimeToMergeMetric(limit, previousEndDate,
+        final Metrics previousMetrics = computeAverageAndPercentageTimeToMergeMetric(limit, currentStartDate,
                 previousPullRequestViews);
 
         return currentMetrics.toBuilder()
                 .previousAverage(previousMetrics.currentAverage)
                 .previousPercentage(previousMetrics.currentPercentage)
+                .previousStartDate(previousStartDate)
+                .previousEndDate(currentStartDate)
+                .currentStartDate(currentStartDate)
+                .currentEndDate(currentEndDate)
                 .build();
     }
 
     public static Metrics buildSizeMetricsFromPullRequests(final int limit,
+                                                           final Date currentEndDate,
+                                                           final Date currentStartDate,
+                                                           final Date previousStartDate,
                                                            final List<PullRequestView> currentPullRequestViews,
                                                            final List<PullRequestView> previousPullRequestViews) {
         final Metrics currentMetrics = computeAverageAndPercentagePullRequestSizeMetric(limit,
@@ -42,6 +54,10 @@ public class Metrics {
         return currentMetrics.toBuilder()
                 .previousAverage(previousMetrics.currentAverage)
                 .previousPercentage(previousMetrics.currentPercentage)
+                .previousStartDate(previousStartDate)
+                .previousEndDate(currentStartDate)
+                .currentStartDate(currentStartDate)
+                .currentEndDate(currentEndDate)
                 .build();
     }
 

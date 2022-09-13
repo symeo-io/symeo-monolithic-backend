@@ -69,12 +69,15 @@ public class CurveQuery {
         final List<PullRequestView> currentPullRequestViews =
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
                         teamId, startDate, endDate);
+        final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate,
+                endDate,
+                organization.getTimeZone());
         final List<PullRequestView> previousPullRequestViews =
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
-                        teamId, getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
-                                organization.getTimeZone()),
+                        teamId, previousStartDate,
                         startDate);
-        return buildSizeMetricsFromPullRequests(currentTeamGoal.getValueAsInteger(), currentPullRequestViews,
+        return buildSizeMetricsFromPullRequests(currentTeamGoal.getValueAsInteger(), endDate, startDate,
+                previousStartDate, currentPullRequestViews,
                 previousPullRequestViews);
     }
 
@@ -85,13 +88,15 @@ public class CurveQuery {
         final List<PullRequestView> currentPullRequestViews =
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
                         teamId, startDate, endDate);
+        final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate,
+                endDate,
+                organization.getTimeZone());
         final List<PullRequestView> previousPullRequestViews =
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
-                        teamId, getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
-                                organization.getTimeZone()),
+                        teamId, previousStartDate,
                         startDate);
         return buildTimeToMergeMetricsFromPullRequests(currentTeamGoal.getValueAsInteger(), endDate,
-                startDate, currentPullRequestViews,
+                startDate, previousStartDate, currentPullRequestViews,
                 previousPullRequestViews);
     }
 

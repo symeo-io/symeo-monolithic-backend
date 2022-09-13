@@ -20,12 +20,12 @@ public class DateHelper {
     public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-    public static String dateToString(final Date now) {
-        return new SimpleDateFormat(DATE_PATTERN).format(now);
+    public static String dateToString(final Date date) {
+        return new SimpleDateFormat(DATE_PATTERN).format(date);
     }
 
-    public static String dateTimeToString(final Date now) {
-        return new SimpleDateFormat(DATE_TIME_PATTERN).format(now);
+    public static String dateTimeToString(final Date date) {
+        return new SimpleDateFormat(DATE_TIME_PATTERN).format(date);
     }
 
     public static Date stringToDateTime(final String dateTimeString) {

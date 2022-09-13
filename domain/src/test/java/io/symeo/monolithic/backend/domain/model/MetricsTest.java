@@ -68,11 +68,12 @@ public class MetricsTest {
         );
         final int teamGoalLimit = 5;
         final Date currentEndDate = stringToDate("2020-03-01");
-        final Date previousEndDate = stringToDate("2020-02-01");
+        final Date currentStartDate = stringToDate("2020-02-01");
+        final Date previousStartDate = stringToDate("2020-01-01");
 
         // When
         final Metrics metrics = Metrics.buildTimeToMergeMetricsFromPullRequests(teamGoalLimit, currentEndDate,
-                previousEndDate, currentPRView,
+                currentStartDate, previousStartDate, currentPRView,
                 previousPRView);
 
         // Then
@@ -83,11 +84,15 @@ public class MetricsTest {
         assertThat(metrics.getPreviousPercentage()).isEqualTo(25D);
         assertThat(metrics.getAverageTendency()).isEqualTo(47.4);
         assertThat(metrics.getPercentageTendency()).isEqualTo(60D);
+        assertThat(metrics.getCurrentEndDate()).isEqualTo(currentEndDate);
+        assertThat(metrics.getCurrentStartDate()).isEqualTo(currentStartDate);
+        assertThat(metrics.getPreviousEndDate()).isEqualTo(currentStartDate);
+        assertThat(metrics.getPreviousStartDate()).isEqualTo(previousStartDate);
     }
 
 
     @Test
-    void should_compute_pull_request_size_metrics_given_pull_requests_and_team_goal_limit() {
+    void should_compute_pull_request_size_metrics_given_pull_requests_and_team_goal_limit() throws SymeoException {
         // Given
         final List<PullRequestView> previousPRViews = List.of(
                 PullRequestView.builder().addedLineNumber(200).deletedLineNumber(100).build(),
@@ -106,9 +111,13 @@ public class MetricsTest {
                 PullRequestView.builder().addedLineNumber(200).deletedLineNumber(20).build()
         );
         final int limit = 1000;
+        final Date currentEndDate = stringToDate("2020-01-01");
+        final Date currentStartDate = stringToDate("2020-02-01");
+        final Date previousStartDate = stringToDate("2020-03-01");
 
         // When
-        final Metrics metrics = Metrics.buildSizeMetricsFromPullRequests(limit, currentPRViews, previousPRViews);
+        final Metrics metrics = Metrics.buildSizeMetricsFromPullRequests(limit, currentEndDate,
+                currentStartDate, previousStartDate, currentPRViews, previousPRViews);
 
         // Then
         assertThat(metrics).isNotNull();
@@ -118,6 +127,10 @@ public class MetricsTest {
         assertThat(metrics.getPreviousPercentage()).isEqualTo(40);
         assertThat(metrics.getAverageTendency()).isEqualTo(-59.4);
         assertThat(metrics.getPercentageTendency()).isEqualTo(114.3);
+        assertThat(metrics.getCurrentEndDate()).isEqualTo(currentEndDate);
+        assertThat(metrics.getCurrentStartDate()).isEqualTo(currentStartDate);
+        assertThat(metrics.getPreviousEndDate()).isEqualTo(currentStartDate);
+        assertThat(metrics.getPreviousStartDate()).isEqualTo(previousStartDate);
     }
 
     @Test
@@ -126,9 +139,10 @@ public class MetricsTest {
 
         // When
         final Metrics timeToMergeMetricsFromPullRequests = Metrics.buildTimeToMergeMetricsFromPullRequests(5,
-                new Date(), new Date(), List.of(),
+                new Date(), new Date(), new Date(), List.of(),
                 List.of());
-        final Metrics sizeMetricsFromPullRequests = Metrics.buildSizeMetricsFromPullRequests(1000, List.of(),
+        final Metrics sizeMetricsFromPullRequests = Metrics.buildSizeMetricsFromPullRequests(1000, new Date(),
+                new Date(), new Date(), List.of(),
                 List.of());
 
         // Then

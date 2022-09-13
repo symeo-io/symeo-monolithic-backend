@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.domain.model.insight;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static java.lang.Math.round;
@@ -21,25 +22,37 @@ public class LeadTimeMetrics {
     Float averageReviewLagPercentageTendency;
     Float averageReviewTime;
     Float averageReviewTimePercentageTendency;
+    Date currentStartDate;
+    Date currentEndDate;
+    Date previousStartDate;
+    Date previousEndDate;
 
 
     public static Optional<LeadTimeMetrics> buildFromCurrentAndPreviousLeadTimes(final Optional<AverageLeadTime> optionalCurrentLeadTime,
-                                                                                 final Optional<AverageLeadTime> optionalPreviousLeadTime) {
+                                                                                 final Optional<AverageLeadTime> optionalPreviousLeadTime,
+                                                                                 final Date previousStartDate,
+                                                                                 final Date currentStartDate,
+                                                                                 final Date currentEndDate) {
         if (optionalPreviousLeadTime.isEmpty() && optionalCurrentLeadTime.isEmpty()) {
             return empty();
         } else if (optionalCurrentLeadTime.isPresent() && optionalPreviousLeadTime.isPresent()) {
             final AverageLeadTime currentAverageLeadTime = optionalCurrentLeadTime.get();
             final AverageLeadTime previousAverageLeadTime = optionalPreviousLeadTime.get();
-            return getLeadTimeMetricsForCurrentAndPreviousLeadTimePresents(currentAverageLeadTime, previousAverageLeadTime);
+            return getLeadTimeMetricsForCurrentAndPreviousLeadTimePresents(currentAverageLeadTime,
+                    previousAverageLeadTime, previousStartDate, currentStartDate, currentEndDate);
         } else if (optionalCurrentLeadTime.isPresent()) {
             final AverageLeadTime currentAverageLeadTime = optionalCurrentLeadTime.get();
-            return getLeadTimeMetricsWithNoPreviousLeadTime(currentAverageLeadTime);
+            return getLeadTimeMetricsWithNoPreviousLeadTime(currentAverageLeadTime, previousStartDate,
+                    currentStartDate, currentEndDate);
         } else {
             return empty();
         }
     }
 
-    private static Optional<LeadTimeMetrics> getLeadTimeMetricsWithNoPreviousLeadTime(AverageLeadTime currentAverageLeadTime) {
+    private static Optional<LeadTimeMetrics> getLeadTimeMetricsWithNoPreviousLeadTime(final AverageLeadTime currentAverageLeadTime,
+                                                                                      final Date previousStartDate,
+                                                                                      final Date currentStartDate,
+                                                                                      final Date currentEndDate) {
         return of(LeadTimeMetrics.builder()
                 .average(currentAverageLeadTime.getAverageValue())
                 .averageTendencyPercentage(EMPTY_PERCENTAGE)
@@ -49,14 +62,23 @@ public class LeadTimeMetrics {
                 .averageReviewLagPercentageTendency(EMPTY_PERCENTAGE)
                 .averageReviewTime(currentAverageLeadTime.getAverageReviewTime())
                 .averageReviewTimePercentageTendency(EMPTY_PERCENTAGE)
+                .previousStartDate(previousStartDate)
+                .previousEndDate(currentStartDate)
+                .currentStartDate(currentStartDate)
+                .currentEndDate(currentEndDate)
                 .build());
     }
 
-    private static Optional<LeadTimeMetrics> getLeadTimeMetricsForCurrentAndPreviousLeadTimePresents(AverageLeadTime currentAverageLeadTime, AverageLeadTime previousAverageLeadTime) {
+    private static Optional<LeadTimeMetrics> getLeadTimeMetricsForCurrentAndPreviousLeadTimePresents(final AverageLeadTime currentAverageLeadTime,
+                                                                                                     final AverageLeadTime previousAverageLeadTime,
+                                                                                                     final Date previousStartDate,
+                                                                                                     final Date currentStartDate,
+                                                                                                     final Date currentEndDate) {
         return of(LeadTimeMetrics.builder()
                 .average(currentAverageLeadTime.getAverageValue())
                 .averageTendencyPercentage(
-                        getTendencyPercentage(currentAverageLeadTime.getAverageValue(), previousAverageLeadTime.getAverageValue())
+                        getTendencyPercentage(currentAverageLeadTime.getAverageValue(),
+                                previousAverageLeadTime.getAverageValue())
                 )
                 .averageCodingTime(currentAverageLeadTime.getAverageCodingTime())
                 .averageCodingTimePercentageTendency(
@@ -73,6 +95,10 @@ public class LeadTimeMetrics {
                         getTendencyPercentage(currentAverageLeadTime.getAverageReviewTime(),
                                 previousAverageLeadTime.getAverageReviewTime())
                 )
+                .previousStartDate(previousStartDate)
+                .previousEndDate(currentStartDate)
+                .currentStartDate(currentStartDate)
+                .currentEndDate(currentEndDate)
                 .build());
     }
 
