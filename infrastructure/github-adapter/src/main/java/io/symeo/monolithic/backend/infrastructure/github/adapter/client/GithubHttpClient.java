@@ -59,10 +59,10 @@ public class GithubHttpClient {
                 GithubRepositoryDTO[].class);
     }
 
-    public GithubPullRequestDTO[] getPullRequestsForRepositoryAndOrganization(final String organizationName,
-                                                                              final String repositoryName,
-                                                                              final Integer page,
-                                                                              final Integer size) throws SymeoException {
+    public GithubPullRequestDTO[] getPullRequestsForRepositoryAndOrganizationOrderByDescDate(final String organizationName,
+                                                                                             final String repositoryName,
+                                                                                             final Integer page,
+                                                                                             final Integer size) throws SymeoException {
         final String uri =
                 api
                         + "repos/"
@@ -133,6 +133,26 @@ public class GithubHttpClient {
                 organizationName,
                 GithubCommentsDTO[].class
         );
+    }
+
+    public GithubCommitsDTO[] getCommitsForRepositoryAndOrganization(final String vcsOrganizationName,
+                                                                     final String repositoryName,
+                                                                     final Integer page,
+                                                                     final Integer size) throws SymeoException {
+        final String uri =
+                api
+                        + "repos/"
+                        + vcsOrganizationName
+                        + "/" +
+                        repositoryName
+                        + "/commits?per_page="
+                        + size.toString()
+                        + "&page="
+                        + page.toString();
+        return get(
+                uri,
+                vcsOrganizationName,
+                GithubCommitsDTO[].class);
     }
 
     private <ResponseBody> ResponseBody get(String uri, String organizationName,

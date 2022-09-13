@@ -22,7 +22,7 @@ public class SymeoMonolithicBackendConfiguration {
             "execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient" +
                     ".getRepositoriesForOrganizationName(..)) || execution(* io.symeo.monolithic.backend" +
                     ".infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getPullRequestsForRepositoryAndOrganization(..)) " +
+                    ".getPullRequestsForRepositoryAndOrganizationOrderByDescDate(..)) " +
                     "|| execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
                     ".GithubHttpClient.getPullRequestDetailsForPullRequestNumber" +
                     "(..))"

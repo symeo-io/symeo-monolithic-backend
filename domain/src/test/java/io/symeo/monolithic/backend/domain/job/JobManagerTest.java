@@ -62,15 +62,22 @@ public class JobManagerTest {
         final JobStorage jobStorage = mock(JobStorage.class);
         final JobManager jobManager = new JobManager(executor, jobStorage);
         final UUID organizationId = UUID.randomUUID();
+        final SymeoException symeoException =
+                SymeoException.getSymeoException(faker.gameOfThrones().character(),
+                        faker.dragonBall().character(), new NullPointerException());
         final JobRunnable jobRunnableMock = new JobRunnable() {
             @Override
             public void run() throws SymeoException {
-                throw SymeoException.getSymeoException(faker.gameOfThrones().character(),
-                        faker.dragonBall().character());
+                throw symeoException;
             }
 
             @Override
             public String getCode() {
+                return null;
+            }
+
+            @Override
+            public List<Task> getTasks() {
                 return null;
             }
         };
@@ -94,11 +101,13 @@ public class JobManagerTest {
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
         assertThat(captorAllValues.get(0)).isEqualTo(job);
         assertThat(captorAllValues.get(1)).isEqualTo(jobStarted);
-        assertThat(captorAllValues.get(2).getCode()).isEqualTo(jobStarted.failed().getCode());
-        assertThat(captorAllValues.get(2).getId()).isEqualTo(jobStarted.failed().getId());
-        assertThat(captorAllValues.get(2).getStatus()).isEqualTo(jobStarted.failed().getStatus());
-        assertThat(captorAllValues.get(2).getOrganizationId()).isEqualTo(jobStarted.failed().getOrganizationId());
+        final Job failed = jobStarted.failed(symeoException);
+        assertThat(captorAllValues.get(2).getCode()).isEqualTo(failed.getCode());
+        assertThat(captorAllValues.get(2).getId()).isEqualTo(failed.getId());
+        assertThat(captorAllValues.get(2).getStatus()).isEqualTo(failed.getStatus());
+        assertThat(captorAllValues.get(2).getOrganizationId()).isEqualTo(failed.getOrganizationId());
         assertThat(captorAllValues.get(2).getEndDate()).isNotNull();
+        assertThat(captorAllValues.get(2).getError()).isEqualTo(symeoException.toString());
     }
 
 
@@ -193,5 +202,78 @@ public class JobManagerTest {
         assertThat(jobCodeCaptor.getValue()).isEqualTo(jobCode);
         assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
         assertThat(integerArgumentCaptor.getValue()).isEqualTo(numberOfJobToFind);
+    }
+
+
+    @Test
+    void should_find_all_failed_jobs_given_an_organization_id_and_a_team_id() throws SymeoException {
+        // Given
+        final Executor executor = Runnable::run;
+        final JobStorage jobStorage = mock(JobStorage.class);
+        final JobManager jobManager = new JobManager(executor, jobStorage);
+        final UUID organizationId = UUID.randomUUID();
+        final UUID teamId = UUID.randomUUID();
+
+        // When
+        final List<Job> failedJobs = List.of(
+                Job.builder()
+                        .id(4L)
+                        .code(faker.dragonBall().character() + "-4")
+                        .status(Job.FAILED)
+                        .organizationId(organizationId)
+                        .teamId(teamId)
+                        .build()
+        );
+        when(jobStorage.findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(organizationId, teamId))
+                .thenReturn(
+                        failedJobs
+                );
+        final List<Job> lastFailedJobsForOrganizationIdAndTeamIdForEachJobCode =
+                jobManager.findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(organizationId, teamId);
+
+        // Then
+        assertThat(lastFailedJobsForOrganizationIdAndTeamIdForEachJobCode).isEqualTo(failedJobs);
+    }
+
+    @Test
+    void should_restart_failed_jobs() throws SymeoException {
+        // Given
+        final Executor executor = Runnable::run;
+        final JobStorage jobStorage = mock(JobStorage.class);
+        final JobManager jobManager = new JobManager(executor, jobStorage);
+        final UUID organizationId = UUID.randomUUID();
+        final UUID teamId = UUID.randomUUID();
+        final JobRunnable failedJobRunnable1 = mock(JobRunnable.class);
+        final JobRunnable failedJobRunnable2 = mock(JobRunnable.class);
+
+        // When
+        jobManager.restartFailedJobs(List.of(
+                Job.builder()
+                        .id(1L)
+                        .code(faker.dragonBall().character() + "-4")
+                        .status(Job.FAILED)
+                        .organizationId(organizationId)
+                        .teamId(teamId)
+                        .jobRunnable(failedJobRunnable1)
+                        .build(),
+                Job.builder()
+                        .id(2L)
+                        .code(faker.dragonBall().character() + "-4")
+                        .status(Job.FAILED)
+                        .organizationId(organizationId)
+                        .teamId(teamId)
+                        .jobRunnable(failedJobRunnable2)
+                        .build()
+        ));
+
+        // Then
+        final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+        verify(jobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
+        verify(failedJobRunnable1, times(1)).run();
+        verify(failedJobRunnable2, times(1)).run();
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getStatus()).isEqualTo(Job.RESTARTED);
+        assertThat(jobArgumentCaptor.getAllValues().get(2).getStatus()).isEqualTo(Job.RESTARTED);
+        assertThat(jobArgumentCaptor.getAllValues().get(1).getStatus()).isEqualTo(Job.FINISHED);
+        assertThat(jobArgumentCaptor.getAllValues().get(3).getStatus()).isEqualTo(Job.FINISHED);
     }
 }

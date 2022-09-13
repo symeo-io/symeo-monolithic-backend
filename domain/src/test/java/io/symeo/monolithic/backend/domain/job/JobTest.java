@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +28,11 @@ public class JobTest {
                     @Override
                     public String getCode() {
                         return jobCode;
+                    }
+
+                    @Override
+                    public List<Task> getTasks() {
+                        return null;
                     }
                 }).build();
 

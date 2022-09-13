@@ -17,7 +17,7 @@ import java.util.UUID;
 @Builder
 @Table(name = "job", schema = "job_storage")
 @EntityListeners(AuditingEntityListener.class)
-public class JobEntity  {
+public class JobEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -31,6 +31,10 @@ public class JobEntity  {
     private UUID organizationId;
     @Column(name = "status", nullable = false)
     private String status;
+    @Column(name = "error")
+    String error;
+    @Column(name = "tasks", nullable = false)
+    byte[] tasks;
     @Column(name = "end_date")
     private ZonedDateTime endDate;
     @Column(name = "technical_creation_date", updatable = false)

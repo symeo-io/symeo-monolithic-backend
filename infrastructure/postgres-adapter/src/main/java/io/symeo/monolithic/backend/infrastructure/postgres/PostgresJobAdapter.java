@@ -4,13 +4,16 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 
@@ -34,11 +37,14 @@ public class PostgresJobAdapter implements JobStorage {
     @Transactional(readOnly = true)
     public List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws SymeoException {
         try {
-            return jobRepository.findAllByCodeAndAndOrganizationIdOrderByTechnicalModificationDate(code,
-                            organization.getId())
-                    .stream()
-                    .map(JobMapper::entityToDomain)
-                    .toList();
+            List<Job> jobs = new ArrayList<>();
+            for (JobEntity jobEntity :
+                    jobRepository.findAllByCodeAndAndOrganizationIdOrderByTechnicalModificationDate(code,
+                            organization.getId())) {
+                Job job = JobMapper.entityToDomain(jobEntity);
+                jobs.add(job);
+            }
+            return jobs;
         } catch (Exception e) {
             LOGGER.error("Failed to read jobs for code {} and organization {}", code, organization, e);
             throw SymeoException.builder()
@@ -50,14 +56,18 @@ public class PostgresJobAdapter implements JobStorage {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Job> findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(String code, Organization organization,
+    public List<Job> findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(String code,
+                                                                                     Organization organization,
                                                                                      int numberOfJobsToFind) throws SymeoException {
         try {
-            return jobRepository.findLastJobsForCodeAndOrganizationAndLimitByTechnicalModificationDate(code,
-                            organization.getId(), numberOfJobsToFind)
-                    .stream()
-                    .map(JobMapper::entityToDomain)
-                    .toList();
+            List<Job> jobs = new ArrayList<>();
+            for (JobEntity jobEntity :
+                    jobRepository.findLastJobsForCodeAndOrganizationAndLimitByTechnicalModificationDate(code,
+                            organization.getId(), numberOfJobsToFind)) {
+                Job job = JobMapper.entityToDomain(jobEntity);
+                jobs.add(job);
+            }
+            return jobs;
         } catch (Exception e) {
             final String message = String.format("Failed to read last %s jobs for code %s and organization %s",
                     numberOfJobsToFind, code,
@@ -80,5 +90,10 @@ public class PostgresJobAdapter implements JobStorage {
                     .message("Failed to save job " + job.getId())
                     .build();
         }
+    }
+
+    @Override
+    public List<Job> findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(UUID organizationId, UUID teamId) {
+        return null;
     }
 }

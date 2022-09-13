@@ -7,13 +7,14 @@ import io.symeo.monolithic.backend.domain.port.out.RawStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 
 import java.util.List;
+import java.util.UUID;
 
 public class DeliveryQuery {
 
-    private final RawStorageAdapter rawStorageAdapter;
+    private final TestAdapter rawStorageAdapter;
     private final VersionControlSystemAdapter versionControlSystemAdapter;
 
-    public DeliveryQuery(RawStorageAdapter rawStorageAdapter,
+    public DeliveryQuery(TestAdapter rawStorageAdapter,
                          VersionControlSystemAdapter versionControlSystemAdapter) {
         this.rawStorageAdapter = rawStorageAdapter;
         this.versionControlSystemAdapter = versionControlSystemAdapter;
@@ -24,5 +25,22 @@ public class DeliveryQuery {
                 rawStorageAdapter.read(organization.getId(),
                         versionControlSystemAdapter.getName(), Repository.ALL);
         return versionControlSystemAdapter.repositoriesBytesToDomain(repositoriesBytes);
+    }
+
+    public static class TestAdapter implements RawStorageAdapter {
+        @Override
+        public void save(UUID organizationId, String adapterName, String contentName, byte[] bytes) throws SymeoException {
+
+        }
+
+        @Override
+        public byte[] read(UUID organizationId, String adapterName, String contentName) throws SymeoException {
+            return new byte[0];
+        }
+
+        @Override
+        public boolean exists(UUID organizationId, String adapterName, String contentName) throws SymeoException {
+            return false;
+        }
     }
 }

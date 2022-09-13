@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.domain.job.runnable;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.JobRunnable;
+import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
@@ -45,5 +46,15 @@ public class CollectRepositoriesJobRunnable implements JobRunnable {
     @Override
     public String getCode() {
         return JOB_CODE;
+    }
+
+    @Override
+    public List<Task> getTasks() {
+        return null;
+    }
+
+    @Override
+    public void setTasks(List<Task> tasks) {
+
     }
 }

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 
 import static java.util.Objects.nonNull;
@@ -26,24 +27,37 @@ public class JobManager implements JobFacadeAdapter {
         Job jobStarted = job.toBuilder().id(jobCreated.getId()).build().started();
         jobStorage.updateJob(jobStarted);
         LOGGER.info("Job {} started", jobStarted);
-        executor.execute(getRunnable(job.getJobRunnable(), jobStarted));
+        executor.execute(getRunnable(jobStarted));
         return jobStarted;
     }
 
-    private Runnable getRunnable(final JobRunnable jobRunnable, final Job job) {
+    public void restartFailedJobs(final List<Job> failedJobs) throws SymeoException {
+        LOGGER.info("Starting to restart {} failed jobs", failedJobs.size());
+        for (Job failedJob : failedJobs) {
+            restartJob(failedJob);
+        }
+    }
+
+    private void restartJob(Job failedJob) throws SymeoException {
+        final Job restartedJob = failedJob.restarted();
+        jobStorage.updateJob(restartedJob);
+        executor.execute(getRunnable(restartedJob));
+    }
+
+    private Runnable getRunnable(final Job job) {
         return () -> {
             try {
-                jobRunnable.run();
+                job.getJobRunnable().run();
                 final Job jobFinished = jobStorage.updateJob(job.finished());
                 LOGGER.info("Job {} finished", jobFinished);
                 if (nonNull(job.getNextJob())) {
                     LOGGER.info("Launching nextJob for job {}", job);
                     this.start(job.nextJob);
                 }
-            } catch (SymeoException e) {
-                LOGGER.error("Error while running job {}", job, e);
+            } catch (SymeoException symeoException) {
+                LOGGER.error("Error while running job {}", job, symeoException);
                 try {
-                    jobStorage.updateJob(job.failed());
+                    jobStorage.updateJob(job.failed(symeoException));
                 } catch (SymeoException ex) {
                     LOGGER.error("Error while updating job {} to jobStorage", job, ex);
                 }
@@ -63,4 +77,10 @@ public class JobManager implements JobFacadeAdapter {
         return jobStorage.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode, organization,
                 numberOfJobToFind);
     }
+
+    public List<Job> findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(final UUID organizationId,
+                                                                                final UUID teamId) {
+        return jobStorage.findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(organizationId, teamId);
+    }
+
 }
