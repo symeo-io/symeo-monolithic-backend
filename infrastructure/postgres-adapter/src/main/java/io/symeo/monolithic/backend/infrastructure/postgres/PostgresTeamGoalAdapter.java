@@ -32,6 +32,7 @@ public class PostgresTeamGoalAdapter implements TeamGoalStorage {
             final String message = String.format("Failed to save team goal %s", teamGoal);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -50,6 +51,7 @@ public class PostgresTeamGoalAdapter implements TeamGoalStorage {
             final String message = String.format("Failed to read team goals for teamId %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -64,6 +66,7 @@ public class PostgresTeamGoalAdapter implements TeamGoalStorage {
             final String message = String.format("Failed to delete team goal for id %s", teamGoalId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -78,6 +81,7 @@ public class PostgresTeamGoalAdapter implements TeamGoalStorage {
             final String message = String.format("Failed to update team goal for id %s and value %s", id, value);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();

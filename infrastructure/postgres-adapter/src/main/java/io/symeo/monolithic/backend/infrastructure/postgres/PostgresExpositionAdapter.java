@@ -72,6 +72,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
         } catch (Exception e) {
             LOGGER.error("Failed to read all PR time to merge curve for organization {}", organization, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to read all PR time to merge curve for organization")
                     .build();
@@ -93,6 +94,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             LOGGER.error("Failed to read all PR time to merge curve for organization {}", organization, e);
             throw SymeoException.builder()
                     .code(POSTGRES_EXCEPTION)
+                    .rootException(e)
                     .message("Failed to read all PR time to merge curve for organization")
                     .build();
         }
@@ -119,6 +121,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             final String message = String.format("Failed to find all PR details for teamId %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -136,6 +139,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             final String message = String.format("Failed to count PR details for teamId %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -158,6 +162,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             final String message = String.format("Failed to read PR with commits and comments for teamId %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -173,6 +178,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
                     organizationId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();

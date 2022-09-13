@@ -46,6 +46,7 @@ public class DateHelper {
             throw SymeoException.builder()
                     .code(SymeoExceptionCode.FAILED_TO_PARSE_DATE)
                     .message(message)
+                    .rootException(e)
                     .build();
         }
     }

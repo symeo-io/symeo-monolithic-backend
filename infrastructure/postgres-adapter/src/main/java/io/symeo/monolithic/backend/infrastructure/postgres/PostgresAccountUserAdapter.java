@@ -43,6 +43,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
             final String message = String.format("Failed to create user for mail %s", email);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -73,6 +74,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
             final String message = String.format("Failed to find all users for organization %s", organization);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -89,6 +91,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
             final String message = String.format("Failed to save users %s", users);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -103,6 +106,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
             final String message = String.format("Failed to save user %s", user);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -124,6 +128,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
             final String message = String.format("Failed to remove organization for user id %s", id);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -140,6 +145,7 @@ public class PostgresAccountUserAdapter implements UserStorageAdapter {
             final String message = String.format("Failed to users for emails %s", String.join(", ", emails));
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();

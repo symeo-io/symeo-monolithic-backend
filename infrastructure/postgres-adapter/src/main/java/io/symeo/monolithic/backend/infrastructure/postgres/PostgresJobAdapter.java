@@ -48,6 +48,7 @@ public class PostgresJobAdapter implements JobStorage {
         } catch (Exception e) {
             LOGGER.error("Failed to read jobs for code {} and organization {}", code, organization, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to read jobs for code " + code + " and organization " + organization)
                     .build();
@@ -74,6 +75,7 @@ public class PostgresJobAdapter implements JobStorage {
                     organization);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();

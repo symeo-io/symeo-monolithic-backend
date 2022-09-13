@@ -31,6 +31,14 @@ public class SymeoException extends Exception {
                 .build();
     }
 
+    public static SymeoException getSymeoException(final String message, final String code) {
+        return SymeoException.builder()
+                .message(message)
+                .code(code)
+                .build();
+    }
+
+
     @Override
     public String toString() {
         final String rootExceptionAsString = Objects.isNull(this.rootException) ?

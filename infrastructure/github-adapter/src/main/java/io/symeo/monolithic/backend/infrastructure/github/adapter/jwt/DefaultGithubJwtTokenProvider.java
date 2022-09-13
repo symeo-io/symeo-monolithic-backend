@@ -43,6 +43,7 @@ public class DefaultGithubJwtTokenProvider implements GithubJwtTokenProvider {
             final String message = "Error while generating JWT token for Github App";
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(GITHUB_APP_JWT_GENERATION)
                     .message(message)
                     .build();

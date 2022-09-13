@@ -277,6 +277,7 @@ public class GithubHttpClient {
         LOGGER.error(message, e);
         return SymeoException.builder()
                 .code(INVALID_URI_FOR_GITHUB)
+                .rootException(e)
                 .message(message)
                 .build();
     }
