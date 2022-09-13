@@ -51,24 +51,32 @@ public class UserService implements UserFacadeAdapter {
     public List<User> inviteUsersForOrganization(final Organization organization, final User authenticatedUser,
                                                  final List<User> users) throws SymeoException {
         final List<User> existingUsers =
-                userStorageAdapter.getUsersFromEmails(users.stream().map(User::getEmail).toList());
-        final List<String> existingEmails = existingUsers.stream().map(User::getEmail).toList();
+                userStorageAdapter.getUsersFromEmails(users.stream()
+                        .map(User::getEmail)
+                        .toList());
+        final List<String> existingEmails = existingUsers.stream()
+                .map(User::getEmail)
+                .toList();
         final List<User> newUsers =
-                users.stream().filter(user -> !existingEmails.contains(user.getEmail())).collect(Collectors.toList());
+                users.stream()
+                        .filter(user -> !existingEmails.contains(user.getEmail()))
+                        .collect(Collectors.toList());
         // TODO : handle other use cases
         final List<User> existingNewUsersToUpdate =
-                existingUsers.stream().filter(user -> isNull(user.getOrganization()) && user.getStatus().equals(User.PENDING))
+                existingUsers.stream()
+                        .filter(user -> isNull(user.getOrganization()))
                         .toList();
-        newUsers.addAll(updateOnboardingForExistingNewUsers(existingNewUsersToUpdate));
+        newUsers.addAll(updateUserStatusAndOnboardingForExistingNewUsers(existingNewUsersToUpdate));
         final List<User> createdUsers =
                 userStorageAdapter.saveUsers(updateNewUserWithOrganizationAndOnboarding(organization, newUsers));
         emailDeliveryAdapter.sendInvitationForUsers(organization, authenticatedUser, createdUsers);
         return createdUsers;
     }
 
-    private List<User> updateOnboardingForExistingNewUsers(List<User> existingNewUsersToUpdate) {
+    private List<User> updateUserStatusAndOnboardingForExistingNewUsers(List<User> existingNewUsersToUpdate) {
         return existingNewUsersToUpdate.stream()
                 .map(user -> user.toBuilder()
+                        .status(User.ACTIVE)
                         .onboarding(
                                 user.getOnboarding().toBuilder()
                                         .hasConfiguredTeam(true)
