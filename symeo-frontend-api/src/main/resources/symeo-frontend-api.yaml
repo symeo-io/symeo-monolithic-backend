@@ -1742,6 +1742,18 @@ components:
         metrics:
           type: object
           properties:
+            current_start_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            current_end_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            previous_start_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            previous_end_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
             average:
               $ref: '#/components/schemas/MetricsContract'
             meeting_goal:
@@ -1808,6 +1820,18 @@ components:
         lead_time:
           type: object
           properties:
+            current_start_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            current_end_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            previous_start_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            previous_end_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
             average:
               $ref: '#/components/schemas/MetricsContract'
             coding_time:

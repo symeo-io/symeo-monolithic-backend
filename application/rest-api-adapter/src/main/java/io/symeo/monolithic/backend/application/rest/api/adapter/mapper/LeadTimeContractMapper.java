@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
+
 public interface LeadTimeContractMapper {
 
 
@@ -36,6 +38,10 @@ public interface LeadTimeContractMapper {
         mapReviewLag(leadTimeMetrics, leadTime);
         mapReviewTime(leadTimeMetrics, leadTime);
         mapDeployTime(leadTimeMetrics, leadTime);
+        leadTime.setPreviousStartDate(dateToString(leadTimeMetrics.getPreviousStartDate()));
+        leadTime.setPreviousEndDate(dateToString(leadTimeMetrics.getPreviousEndDate()));
+        leadTime.setCurrentStartDate(dateToString(leadTimeMetrics.getCurrentStartDate()));
+        leadTime.setCurrentEndDate(dateToString(leadTimeMetrics.getCurrentEndDate()));
         return leadTime;
     }
 
