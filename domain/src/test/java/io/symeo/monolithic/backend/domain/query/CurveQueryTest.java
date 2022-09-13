@@ -180,6 +180,10 @@ public class CurveQueryTest {
         assertThat(metrics.getCurrentAverage()).isEqualTo(680);
         assertThat(metrics.getPreviousAverage()).isEqualTo(600);
         assertThat(metrics.getAverageTendency()).isEqualTo(13.3);
+        assertThat(metrics.getCurrentStartDate()).isEqualTo(stringToDate("2020-01-01"));
+        assertThat(metrics.getCurrentEndDate()).isEqualTo(stringToDate("2020-02-01"));
+        assertThat(metrics.getPreviousEndDate()).isEqualTo(stringToDate("2020-01-01"));
+        assertThat(metrics.getPreviousStartDate()).isEqualTo(stringToDate("2019-12-01"));
     }
     @Test
     void should_compute_pull_request_pull_request_time_to_merge_metrics_for_organisation_and_team() throws SymeoException {
@@ -234,6 +238,10 @@ public class CurveQueryTest {
         assertThat(metrics.getCurrentAverage()).isEqualTo(4.8);
         assertThat(metrics.getPreviousAverage()).isEqualTo(3.5);
         assertThat(metrics.getAverageTendency()).isEqualTo(37.1);
+        assertThat(metrics.getCurrentStartDate()).isEqualTo(stringToDate("2020-01-01"));
+        assertThat(metrics.getCurrentEndDate()).isEqualTo(stringToDate("2020-02-01"));
+        assertThat(metrics.getPreviousEndDate()).isEqualTo(stringToDate("2020-01-01"));
+        assertThat(metrics.getPreviousStartDate()).isEqualTo(stringToDate("2019-12-01"));
     }
 
     public static PullRequestView buildPullRequestPullRequestLimitView(final Integer limit,

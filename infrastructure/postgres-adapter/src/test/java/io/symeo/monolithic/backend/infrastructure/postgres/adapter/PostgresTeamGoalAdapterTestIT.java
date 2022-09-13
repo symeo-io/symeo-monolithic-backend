@@ -139,7 +139,7 @@ public class PostgresTeamGoalAdapterTestIT {
         final TeamGoalEntity teamGoalEntityToDelete =
                 TeamGoalEntity.builder().teamId(teamEntity1.getId()).value(faker.pokemon().name()).standardCode(faker.dragonBall().character()).id(UUID.randomUUID()).build();
         final TeamGoalEntity teamGoalToKeep =
-                TeamGoalEntity.builder().teamId(teamEntity1.getId()).value(faker.pokemon().name()).standardCode(faker.dragonBall().character()).id(UUID.randomUUID()).build();
+                TeamGoalEntity.builder().teamId(teamEntity1.getId()).value(faker.rickAndMorty().character()).standardCode(faker.ancient().god()).id(UUID.randomUUID()).build();
         teamGoalRepository.saveAll(
                 List.of(
                         teamGoalEntityToDelete,
