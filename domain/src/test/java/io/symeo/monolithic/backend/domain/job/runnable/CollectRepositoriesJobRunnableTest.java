@@ -34,11 +34,11 @@ public class CollectRepositoriesJobRunnableTest {
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build()
         );
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
-                new CollectRepositoriesJobRunnable(vcsService, organisation, repositoryService);
+                new CollectRepositoriesJobRunnable(vcsService, repositoryService);
 
         // When
         when(vcsService.collectRepositoriesForOrganization(organisation)).thenReturn(repositories);
-        collectRepositoriesJobRunnable.run();
+        collectRepositoriesJobRunnable.run(List.of());
 
         // Then
         ArgumentCaptor<List<Repository>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -56,7 +56,7 @@ public class CollectRepositoriesJobRunnableTest {
         final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
-                new CollectRepositoriesJobRunnable(vcsService, organisation, repositoryService);
+                new CollectRepositoriesJobRunnable(vcsService, repositoryService);
 
         // When
         doThrow(SymeoException.class)
@@ -64,7 +64,7 @@ public class CollectRepositoriesJobRunnableTest {
                 .collectRepositoriesForOrganization(organisation);
         SymeoException symeoException = null;
         try {
-            collectRepositoriesJobRunnable.run();
+            collectRepositoriesJobRunnable.run(List.of());
         } catch (SymeoException e) {
             symeoException = e;
         }

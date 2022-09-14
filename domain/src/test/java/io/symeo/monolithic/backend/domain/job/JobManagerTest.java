@@ -30,28 +30,30 @@ public class JobManagerTest {
         final Job job = Job.builder()
                 .organizationId(organizationId)
                 .jobRunnable(jobRunnableMock)
+                .tasks(List.of())
                 .build();
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
         final Job jobCreated = job.toBuilder().id(faker.number().randomNumber()).build();
         final Job jobStarted = jobCreated.started();
+        final Job jobFinished = jobStarted.finished();
 
 
         // When
         when(jobStorage.createJob(jobArgumentCaptor.capture())).thenReturn(jobCreated);
         when(jobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
-        when(jobStorage.updateJob(jobStarted.finished())).thenReturn(jobStarted.finished());
+        when(jobStorage.updateJob(jobFinished)).thenReturn(jobFinished);
         jobManager.start(job);
 
         // Then
         verify(jobStorage, times(2)).updateJob(jobArgumentCaptor.capture());
-        verify(jobRunnableMock, times(1)).run();
+        verify(jobRunnableMock, times(1)).run(anyList());
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
         assertThat(captorAllValues.get(0)).isEqualTo(job);
         assertThat(captorAllValues.get(1)).isEqualTo(jobStarted);
-        assertThat(captorAllValues.get(2).getCode()).isEqualTo(jobStarted.finished().getCode());
-        assertThat(captorAllValues.get(2).getStatus()).isEqualTo(jobStarted.finished().getStatus());
-        assertThat(captorAllValues.get(2).getOrganizationId()).isEqualTo(jobStarted.finished().getOrganizationId());
-        assertThat(captorAllValues.get(2).getId()).isEqualTo(jobStarted.finished().getId());
+        assertThat(captorAllValues.get(2).getCode()).isEqualTo(jobFinished.getCode());
+        assertThat(captorAllValues.get(2).getStatus()).isEqualTo(jobFinished.getStatus());
+        assertThat(captorAllValues.get(2).getOrganizationId()).isEqualTo(jobFinished.getOrganizationId());
+        assertThat(captorAllValues.get(2).getId()).isEqualTo(jobFinished.getId());
         assertThat(captorAllValues.get(2).getEndDate()).isNotNull();
     }
 
@@ -65,9 +67,10 @@ public class JobManagerTest {
         final SymeoException symeoException =
                 SymeoException.getSymeoException(faker.gameOfThrones().character(),
                         faker.dragonBall().character(), new NullPointerException());
+        final Task expectedTask = Task.builder().input(faker.name().firstName()).build();
         final JobRunnable jobRunnableMock = new JobRunnable() {
             @Override
-            public void run() throws SymeoException {
+            public void run(List<Task> tasks) throws SymeoException {
                 throw symeoException;
             }
 
@@ -78,27 +81,25 @@ public class JobManagerTest {
 
             @Override
             public List<Task> getTasks() {
-                return null;
+                return List.of(expectedTask);
             }
 
-            @Override
-            public void setTasks(List<Task> tasks) {
-
-            }
         };
         final Job job = Job.builder()
                 .organizationId(organizationId)
                 .jobRunnable(jobRunnableMock)
+                .tasks(List.of())
                 .build();
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
         final Job jobCreated = job.toBuilder().id(faker.number().randomNumber()).build();
         final Job jobStarted = jobCreated.started();
+        final Job jobFinished = jobStarted.finished();
 
 
         // When
         when(jobStorage.createJob(jobArgumentCaptor.capture())).thenReturn(jobCreated);
         when(jobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
-        when(jobStorage.updateJob(jobStarted.finished())).thenReturn(jobStarted.finished());
+        when(jobStorage.updateJob(jobFinished)).thenReturn(jobFinished);
         jobManager.start(job);
 
         // Then
@@ -113,6 +114,7 @@ public class JobManagerTest {
         assertThat(captorAllValues.get(2).getOrganizationId()).isEqualTo(failed.getOrganizationId());
         assertThat(captorAllValues.get(2).getEndDate()).isNotNull();
         assertThat(captorAllValues.get(2).getError()).isEqualTo(symeoException.toString());
+        assertThat(captorAllValues.get(2).getTasks()).isEqualTo(List.of(expectedTask));
     }
 
 
@@ -125,16 +127,25 @@ public class JobManagerTest {
         final UUID organizationId = UUID.randomUUID();
         final JobRunnable jobRunnableMock = mock(JobRunnable.class);
         final JobRunnable nextJobRunnableMock = mock(JobRunnable.class);
+        final List<Task> expectedTasks = List.of(
+                Task.builder().input(faker.name().firstName()).build(),
+                Task.builder().input(faker.name().firstName()).build()
+        );
+        final List<Task> nextExpectedTasks = List.of(
+                Task.builder().input(faker.name().firstName()).build(),
+                Task.builder().input(faker.name().firstName()).build()
+        );
         final Job nextJob = Job.builder()
                 .organizationId(organizationId)
                 .jobRunnable(nextJobRunnableMock)
+                .tasks(nextExpectedTasks)
                 .build();
         final Job job = Job.builder()
                 .organizationId(organizationId)
                 .jobRunnable(jobRunnableMock)
                 .nextJob(nextJob)
+                .tasks(expectedTasks)
                 .build();
-
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
         final Job jobCreated = job.toBuilder().id(faker.number().randomNumber()).build();
         final Job nextJobCreated = nextJob.toBuilder().id(faker.number().randomNumber() - 1L).build();
@@ -147,18 +158,27 @@ public class JobManagerTest {
         when(jobStorage.createJob(nextJob)).thenReturn(nextJobCreated);
         when(jobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
         when(jobStorage.updateJob(nextJobStarted)).thenReturn(nextJobStarted);
-        when(jobStorage.updateJob(jobStarted.finished())).thenReturn(jobStarted.finished());
-        when(jobStorage.updateJob(nextJobStarted.finished())).thenReturn(nextJobStarted.finished());
+        when(jobRunnableMock.getTasks()).thenReturn(expectedTasks);
+        when(nextJobRunnableMock.getTasks()).thenReturn(nextExpectedTasks);
+        final Job finished = jobStarted.finished();
+        final Job nextFinished = nextJobStarted.finished();
+        when(jobStorage.updateJob(finished)).thenReturn(finished);
+        when(jobStorage.updateJob(nextFinished)).thenReturn(nextFinished);
         jobManager.start(job);
 
         // Then
         verify(jobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
-        verify(jobRunnableMock, times(1)).run();
+        verify(jobRunnableMock, times(1)).run(expectedTasks);
+        verify(nextJobRunnableMock, times(1)).run(nextExpectedTasks);
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
         assertThat(captorAllValues.get(0)).isEqualTo(jobStarted);
+        assertThat(captorAllValues.get(0).getTasks()).isEqualTo(expectedTasks);
         assertThat(captorAllValues.get(1).getEndDate()).isNotNull();
+        assertThat(captorAllValues.get(1).getTasks()).isEqualTo(expectedTasks);
         assertThat(captorAllValues.get(2)).isEqualTo(nextJobStarted);
+        assertThat(captorAllValues.get(2).getTasks()).isEqualTo(nextExpectedTasks);
         assertThat(captorAllValues.get(3).getEndDate()).isNotNull();
+        assertThat(captorAllValues.get(3).getTasks()).isEqualTo(nextExpectedTasks);
 
     }
 
@@ -227,6 +247,7 @@ public class JobManagerTest {
                         .status(Job.FAILED)
                         .organizationId(organizationId)
                         .teamId(teamId)
+                        .tasks(List.of())
                         .build()
         );
         when(jobStorage.findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(organizationId, teamId))
@@ -260,6 +281,7 @@ public class JobManagerTest {
                         .organizationId(organizationId)
                         .teamId(teamId)
                         .jobRunnable(failedJobRunnable1)
+                        .tasks(List.of())
                         .build(),
                 Job.builder()
                         .id(2L)
@@ -268,14 +290,15 @@ public class JobManagerTest {
                         .organizationId(organizationId)
                         .teamId(teamId)
                         .jobRunnable(failedJobRunnable2)
+                        .tasks(List.of())
                         .build()
         ));
 
         // Then
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
         verify(jobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
-        verify(failedJobRunnable1, times(1)).run();
-        verify(failedJobRunnable2, times(1)).run();
+        verify(failedJobRunnable1, times(1)).run(List.of());
+        verify(failedJobRunnable2, times(1)).run(List.of());
         assertThat(jobArgumentCaptor.getAllValues().get(0).getStatus()).isEqualTo(Job.RESTARTED);
         assertThat(jobArgumentCaptor.getAllValues().get(2).getStatus()).isEqualTo(Job.RESTARTED);
         assertThat(jobArgumentCaptor.getAllValues().get(1).getStatus()).isEqualTo(Job.FINISHED);

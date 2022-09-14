@@ -47,7 +47,7 @@ public class JobManager implements JobFacadeAdapter {
     private Runnable getRunnable(final Job job) {
         return () -> {
             try {
-                job.getJobRunnable().run();
+                job.getJobRunnable().run(job.getTasks());
                 final Job jobFinished = jobStorage.updateJob(job.finished());
                 LOGGER.info("Job {} finished", jobFinished);
                 if (nonNull(job.getNextJob())) {

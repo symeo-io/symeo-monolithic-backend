@@ -3,11 +3,12 @@ package io.symeo.monolithic.backend.domain.service;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobManager;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectCommitsJobRunnable;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
+import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
@@ -50,45 +51,53 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                         .organizationId(organization.getId())
                         .jobRunnable(
                                 CollectRepositoriesJobRunnable.builder()
-                                        .organization(organization)
                                         .vcsService(vcsService)
                                         .repositoryService(repositoryService)
                                         .build()
                         )
-                        .nextJob(getCollectPullRequestsJob(organization))
+                        .tasks(
+                                List.of(
+                                        Task.builder()
+                                                .input(organization)
+                                                .build()
+                                )
+                        )
                         .build()
         );
     }
 
-    private Job getCollectPullRequestsJob(final Organization organization) {
+    private Job getCollectVcsDataForRepositoriesJo(final Organization organization,
+                                                   final List<Repository> repositories) {
         return
                 Job.builder()
-                        .jobRunnable(CollectPullRequestsJobRunnable.builder()
+                        .jobRunnable(CollectVcsDataForRepositoriesJobRunnable.builder()
                                 .organization(organization)
                                 .vcsService(vcsService)
                                 .build())
                         .organizationId(organization.getId())
-                        .nextJob(getCollectCommits(organization))
+                        .nextJob(getInitializeOrganizationSettingsJob(organization))
+                        .tasks(
+                                repositories.stream()
+                                        .map(repository -> Task.builder().input(repository).build())
+                                        .toList()
+                        )
                         .build();
     }
 
-    private Job getCollectCommits(final Organization organization) {
-        return Job.builder()
-                .jobRunnable(
-                        CollectCommitsJobRunnable.builder().build()
-                )
-                .organizationId(organization.getId())
-                .nextJob(getInitializeOrganizationSettingsJob(organization))
-                .build();
-    }
 
     private Job getInitializeOrganizationSettingsJob(final Organization organization) {
         return Job.builder()
                 .jobRunnable(
                         InitializeOrganizationSettingsJobRunnable.builder()
                                 .organizationSettingsService(organizationSettingsService)
-                                .organization(organization)
                                 .build()
+                )
+                .tasks(
+                        List.of(
+                                Task.builder()
+                                        .input(organization)
+                                        .build()
+                        )
                 )
                 .organizationId(organization.getId())
                 .build();

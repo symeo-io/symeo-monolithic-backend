@@ -29,6 +29,7 @@ public interface JobMapper {
                 .code(job.getCode())
                 .status(job.getStatus())
                 .organizationId(job.getOrganizationId())
+                .error(job.getError())
                 .tasks(OBJECT_MAPPER.writeValueAsString(job.getTasks()))
                 .endDate(nonNull(job.getEndDate()) ? ZonedDateTime.ofInstant(job.getEndDate().toInstant(),
                         ZoneId.systemDefault()) : null)
@@ -45,6 +46,7 @@ public interface JobMapper {
                 .creationDate(isNull(jobEntity.getTechnicalCreationDate()) ? null :
                         Date.from(jobEntity.getTechnicalCreationDate().toInstant()))
                 .tasks(isNull(jobEntity.getTasks()) ? null : taskEntityToDomain(jobEntity))
+                .error(jobEntity.getError())
                 .build();
     }
 

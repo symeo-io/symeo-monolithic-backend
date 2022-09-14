@@ -6,11 +6,9 @@ import java.util.List;
 
 public interface JobRunnable {
 
-    void run() throws SymeoException;
+    void run(List<Task> tasks) throws SymeoException;
 
     String getCode();
 
     List<Task> getTasks();
-
-    void setTasks(List<Task> tasks);
 }

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JobTest {
 
@@ -19,9 +21,10 @@ public class JobTest {
         final String jobCode = faker.ancient().god();
         final Job job = Job.builder()
                 .organizationId(UUID.randomUUID())
+                .tasks(List.of())
                 .jobRunnable(new JobRunnable() {
                     @Override
-                    public void run() throws SymeoException {
+                    public void run(List<Task> tasks) {
 
                     }
 
@@ -35,10 +38,6 @@ public class JobTest {
                         return null;
                     }
 
-                    @Override
-                    public void setTasks(List<Task> tasks) {
-
-                    }
                 }).build();
 
         // When
@@ -54,6 +53,7 @@ public class JobTest {
         final String expectedCode = faker.name().firstName();
         final Job job = Job.builder()
                 .organizationId(UUID.randomUUID())
+                .tasks(List.of())
                 .code(expectedCode)
                 .build();
 
@@ -65,4 +65,58 @@ public class JobTest {
         assertThat(code).isEqualTo(expectedCode);
 
     }
+
+    @Test
+    void should_return_finished_job() {
+        // Given
+        final JobRunnable jobRunnable = mock(JobRunnable.class);
+        final Job job = Job.builder()
+                .organizationId(UUID.randomUUID())
+                .tasks(List.of())
+                .code(faker.rickAndMorty().character())
+                .jobRunnable(jobRunnable)
+                .build();
+        final List<Task> expectedTasks = List.of(
+                Task.builder().input(faker.name().firstName()).build(),
+                Task.builder().input(faker.name().firstName()).build()
+        );
+
+        // When
+        when(jobRunnable.getTasks()).thenReturn(expectedTasks);
+        final Job finishedJob = job.finished();
+
+        // Then
+        assertThat(finishedJob.getTasks()).isEqualTo(expectedTasks);
+        assertThat(finishedJob.getStatus()).isEqualTo(Job.FINISHED);
+    }
+
+    @Test
+    void should_return_failed_job() {
+        // Given
+        final JobRunnable jobRunnable = mock(JobRunnable.class);
+        final Job job = Job.builder()
+                .organizationId(UUID.randomUUID())
+                .tasks(List.of())
+                .code(faker.rickAndMorty().character())
+                .jobRunnable(jobRunnable)
+                .build();
+        final List<Task> expectedTasks = List.of(
+                Task.builder().input(faker.name().firstName()).build(),
+                Task.builder().input(faker.name().firstName()).build()
+        );
+        final SymeoException expectedSymeoException =
+                SymeoException.builder().message(faker.name().firstName()).code(faker.dragonBall().character()).build();
+
+        // When
+        when(jobRunnable.getTasks()).thenReturn(expectedTasks);
+        final Job failedJob =
+                job.failed(expectedSymeoException);
+
+        // Then
+        assertThat(failedJob.getTasks()).isEqualTo(expectedTasks);
+        assertThat(failedJob.getStatus()).isEqualTo(Job.FAILED);
+        assertThat(failedJob.getError()).isEqualTo(expectedSymeoException.toString());
+    }
+
+
 }

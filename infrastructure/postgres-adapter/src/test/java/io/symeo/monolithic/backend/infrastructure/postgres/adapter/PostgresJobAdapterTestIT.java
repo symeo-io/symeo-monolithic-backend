@@ -70,7 +70,7 @@ public class PostgresJobAdapterTestIT {
     private JobRunnable generateJobRunnableStubForRepositoriesCollectionJob() {
         return new JobRunnable() {
             @Override
-            public void run() {
+            public void run(List<Task> tasks) {
 
             }
 
@@ -86,10 +86,6 @@ public class PostgresJobAdapterTestIT {
                         ;
             }
 
-            @Override
-            public void setTasks(List<Task> tasks) {
-
-            }
         };
     }
 

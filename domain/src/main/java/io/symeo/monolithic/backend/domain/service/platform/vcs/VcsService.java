@@ -126,4 +126,17 @@ public class VcsService {
             expositionStorageAdapter.saveCommits(commits);
         }
     }
+
+    public void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Organization organization,
+                                                                                      Repository repository) {
+
+    }
+
+    public List<String> collectAllBranches(Organization organization) {
+        return null;
+    }
+
+    public void collectCommitsForBranch(String branch) {
+
+    }
 }

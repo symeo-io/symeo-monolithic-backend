@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.bootstrap.it.data;
 import io.symeo.monolithic.backend.bootstrap.ITGithubJwtTokenProvider;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -20,7 +20,6 @@ import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.Github
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import io.symeo.monolithic.backend.infrastructure.json.local.storage.properties.JsonStorageProperties;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
@@ -385,10 +384,10 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         assertThat(repositoriesJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
         assertThat(repositoriesJobs.get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
         final List<Job> pullRequestsJobs =
-                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectPullRequestsJobRunnable.JOB_CODE, organization);
+                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectVcsDataForRepositoriesJobRunnable.JOB_CODE, organization);
         assertThat(pullRequestsJobs).hasSize(1);
         assertThat(pullRequestsJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
-        assertThat(pullRequestsJobs.get(0).getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
+        assertThat(pullRequestsJobs.get(0).getCode()).isEqualTo(CollectVcsDataForRepositoriesJobRunnable.JOB_CODE);
         final Path rawStorageOrganizationPath = Paths.get(TMP_DIR + "/" + organization.getId().toString());
         assertThat(Files.exists(rawStorageOrganizationPath)).isTrue();
         assertThat(Files.exists(rawStorageOrganizationPath.resolve("github"))).isTrue();

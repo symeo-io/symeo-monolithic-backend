@@ -7,12 +7,13 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class CollectPullRequestsJobRunnableTest {
+public class CollectVcsDataForRepositoriesJobRunnableTest {
 
     private final Faker faker = new Faker();
 
@@ -23,11 +24,11 @@ public class CollectPullRequestsJobRunnableTest {
         final String organisationName = faker.name().username();
         Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
-        final CollectPullRequestsJobRunnable collectPullRequestsJobRunnable =
-                new CollectPullRequestsJobRunnable(vcsService, organisation);
+        final CollectVcsDataForRepositoriesJobRunnable collectVcsDataForRepositoriesJobRunnable =
+                new CollectVcsDataForRepositoriesJobRunnable(vcsService, organisation);
 
         // When
-        collectPullRequestsJobRunnable.run();
+        collectVcsDataForRepositoriesJobRunnable.run(List.of());
 
         // Then
         verify(vcsService, times(1)).collectPullRequestsForOrganization(organisation);
@@ -40,8 +41,8 @@ public class CollectPullRequestsJobRunnableTest {
         final String organisationName = faker.name().username();
         Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
-        final CollectPullRequestsJobRunnable collectPullRequestsJobRunnable =
-                new CollectPullRequestsJobRunnable(vcsService, organisation);
+        final CollectVcsDataForRepositoriesJobRunnable collectVcsDataForRepositoriesJobRunnable =
+                new CollectVcsDataForRepositoriesJobRunnable(vcsService, organisation);
 
         // When
         doThrow(SymeoException.class)
@@ -49,7 +50,7 @@ public class CollectPullRequestsJobRunnableTest {
                 .collectPullRequestsForOrganization(organisation);
         SymeoException symeoException = null;
         try {
-            collectPullRequestsJobRunnable.run();
+            collectVcsDataForRepositoriesJobRunnable.run(List.of());
         } catch (SymeoException e) {
             symeoException = e;
         }

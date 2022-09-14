@@ -10,14 +10,17 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public class InitializeOrganizationSettingsJobRunnable implements JobRunnable {
+public class InitializeOrganizationSettingsJobRunnable extends AbstractTasksRunnable<Organization> implements JobRunnable {
 
     public static final String JOB_CODE = "INITIALIZE_ORGANIZATION_SETTINGS_JOB";
     private final OrganizationSettingsService organizationSettingsService;
-    private final Organization organization;
 
     @Override
-    public void run() throws SymeoException {
+    public void run(final List<Task> tasks) throws SymeoException {
+        executeAllTasks(this::initializeOrganizationSettingsForOrganization, tasks);
+    }
+
+    private void initializeOrganizationSettingsForOrganization(Organization organization) throws SymeoException {
         organizationSettingsService.initializeOrganizationSettingsForOrganization(organization);
     }
 
@@ -26,13 +29,4 @@ public class InitializeOrganizationSettingsJobRunnable implements JobRunnable {
         return JOB_CODE;
     }
 
-    @Override
-    public List<Task> getTasks() {
-        return null;
-    }
-
-    @Override
-    public void setTasks(List<Task> tasks) {
-
-    }
 }

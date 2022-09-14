@@ -9,52 +9,42 @@ import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @AllArgsConstructor
-@Value
+@Data
 @Builder
 @Slf4j
-public class CollectRepositoriesJobRunnable implements JobRunnable {
+public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<Organization> implements JobRunnable {
 
     VcsService vcsService;
-    Organization organization;
     RepositoryService repositoryService;
 
     public static final String JOB_CODE = "COLLECT_REPOSITORIES_FOR_ORGANIZATION_JOB";
 
     @Override
-    public void run() throws SymeoException {
-        try {
-            List<Repository> repositories = vcsService.collectRepositoriesForOrganization(organization);
-            repositories =
-                    repositories.stream()
-                            .map(repository -> repository.toBuilder()
-                                    .organizationId(organization.getId())
-                                    .vcsOrganizationName(organization.getVcsOrganization().getName())
-                                    .build()).toList();
-            repositoryService.saveRepositories(repositories);
-        } catch (SymeoException e) {
-            LOGGER.error("Error while collecting repositories for organization {}", organization);
-            throw e;
-        }
+    public void run(final List<Task> tasks) throws SymeoException {
+        executeAllTasks(this::collectRepositoriesForOrganization, tasks);
+    }
+
+    private void collectRepositoriesForOrganization(Organization organization) throws SymeoException {
+        LOGGER.info("Starting to collect repositories for organization {}", organization);
+        List<Repository> repositories = vcsService.collectRepositoriesForOrganization(organization);
+        repositories =
+                repositories.stream()
+                        .map(repository -> repository.toBuilder()
+                                .organizationId(organization.getId())
+                                .vcsOrganizationName(organization.getVcsOrganization().getName())
+                                .build()).toList();
+        repositoryService.saveRepositories(repositories);
+        LOGGER.info("Repositories Collection finished for organization {}", organization);
     }
 
     @Override
     public String getCode() {
         return JOB_CODE;
-    }
-
-    @Override
-    public List<Task> getTasks() {
-        return null;
-    }
-
-    @Override
-    public void setTasks(List<Task> tasks) {
-
     }
 }

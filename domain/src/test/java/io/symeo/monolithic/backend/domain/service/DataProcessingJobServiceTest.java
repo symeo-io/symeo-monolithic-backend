@@ -4,10 +4,8 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobManager;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectCommitsJobRunnable;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
-import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -70,14 +68,8 @@ public class DataProcessingJobServiceTest {
         assertThat(jobArgumentCaptor.getAllValues().get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
         assertThat(jobArgumentCaptor.getAllValues().get(0).getOrganizationId()).isEqualTo(organisation.getId());
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob()).isNotNull();
-        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
+        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getCode()).isEqualTo(CollectVcsDataForRepositoriesJobRunnable.JOB_CODE);
         assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
-        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob()).isNotNull();
-        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getCode()).isEqualTo(CollectCommitsJobRunnable.JOB_CODE);
-        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
-        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getNextJob()).isNotNull();
-        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getNextJob().getCode()).isEqualTo(InitializeOrganizationSettingsJobRunnable.JOB_CODE);
-        assertThat(jobArgumentCaptor.getAllValues().get(0).getNextJob().getNextJob().getNextJob().getOrganizationId()).isEqualTo(organisation.getId());
 
 
     }

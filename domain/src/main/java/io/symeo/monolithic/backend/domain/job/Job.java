@@ -33,6 +33,7 @@ public class Job {
     Job nextJob;
     String code;
     String error;
+    @NonNull
     List<Task> tasks;
 
     public String getCode() {
@@ -48,14 +49,18 @@ public class Job {
     }
 
     public Job failed(final SymeoException symeoException) {
-        return this.toBuilder().status(FAILED).endDate(new Date()).error(symeoException.toString()).build();
+        return this.toBuilder()
+                .status(FAILED)
+                .endDate(new Date())
+                .tasks(jobRunnable.getTasks())
+                .error(symeoException.toString()).build();
     }
 
     public Job finished() {
-        return this.toBuilder().status(FINISHED).endDate(new Date()).build();
-    }
-
-    public List<Task> getTasks() {
-        return isNull(this.tasks) ? this.jobRunnable.getTasks() : this.tasks;
+        return this.toBuilder()
+                .status(FINISHED)
+                .endDate(new Date())
+                .tasks(jobRunnable.getTasks())
+                .build();
     }
 }

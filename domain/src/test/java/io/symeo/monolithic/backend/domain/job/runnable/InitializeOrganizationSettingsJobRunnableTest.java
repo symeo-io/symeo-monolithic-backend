@@ -5,6 +5,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,11 +21,10 @@ public class InitializeOrganizationSettingsJobRunnableTest {
         final InitializeOrganizationSettingsJobRunnable initializeOrganizationSettingsJobRunnable =
                 InitializeOrganizationSettingsJobRunnable.builder()
                         .organizationSettingsService(organizationSettingsService)
-                        .organization(organization)
                         .build();
 
         // When
-        initializeOrganizationSettingsJobRunnable.run();
+        initializeOrganizationSettingsJobRunnable.run(List.of());
 
         // Then
         verify(organizationSettingsService, times(1)).initializeOrganizationSettingsForOrganization(organization);
