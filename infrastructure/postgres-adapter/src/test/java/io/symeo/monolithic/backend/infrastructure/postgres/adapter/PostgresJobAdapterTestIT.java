@@ -1,6 +1,5 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
@@ -12,6 +11,7 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.postgres.PostgresJobAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -23,11 +23,11 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper.OBJECT_MAPPER;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper.entityToDomain;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -107,15 +107,14 @@ public class PostgresJobAdapterTestIT {
     }
 
     @Test
-    void should_find_all_jobs_order_by_update_date_given_a_code_and_an_organization_id() throws SymeoException,
-            JsonProcessingException {
+    void should_find_all_jobs_order_by_update_date_given_a_code_and_an_organization_id() throws SymeoException {
         // Given
         final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
         final String jobCode = CollectRepositoriesJobRunnable.JOB_CODE;
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
-        jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId()).tasks(OBJECT_MAPPER.writeValueAsBytes(List.of())).build());
-        jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode).organizationId(organization.getId()).tasks(OBJECT_MAPPER.writeValueAsBytes(List.of())).build());
-        jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId()).tasks(OBJECT_MAPPER.writeValueAsBytes(List.of())).build());
+        jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId()).tasks("[]").build());
+        jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode).organizationId(organization.getId()).tasks("[]").build());
+        jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId()).tasks("[]").build());
 
         // When
         final List<Job> jobs =
@@ -138,14 +137,26 @@ public class PostgresJobAdapterTestIT {
         final String jobCode = CollectRepositoriesJobRunnable.JOB_CODE;
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final JobEntity jobEntity1 =
-                jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId())
-                        .tasks(OBJECT_MAPPER.writeValueAsBytes(List.of())).build());
-        final JobEntity jobEntity2 =
-                jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode)
-                        .organizationId(organization.getId()).tasks(OBJECT_MAPPER.writeValueAsBytes(List.of())).build());
-        final JobEntity jobEntity3 =
-                jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId())
-                        .tasks(OBJECT_MAPPER.writeValueAsBytes(List.of())).build());
+                jobRepository.save(
+                        JobMapper.domainToEntity(Job.builder()
+                                .status(Job.FAILED).code(jobCode).organizationId(organization.getId())
+                                .tasks(List.of())
+                                .build())
+                );
+
+        final JobEntity jobEntity2 = jobRepository.save(
+                JobMapper.domainToEntity(Job.builder()
+                        .status(Job.FINISHED).endDate(new Date()).code(jobCode)
+                        .organizationId(organization.getId()).tasks(List.of())
+                        .tasks(List.of())
+                        .build())
+        );
+        final JobEntity jobEntity3 = jobRepository.save(
+                JobMapper.domainToEntity(Job.builder().status(Job.STARTED)
+                        .code(jobCode)
+                        .organizationId(organization.getId())
+                        .tasks(List.of()).build()));
+
 
         // When
         final List<Job> lastJobsForCodeAndOrganizationAndLimit1 =

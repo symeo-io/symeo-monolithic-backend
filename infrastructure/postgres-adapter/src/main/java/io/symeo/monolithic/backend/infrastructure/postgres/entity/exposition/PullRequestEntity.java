@@ -1,6 +1,5 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition;
 
-import com.sun.istack.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -24,7 +23,6 @@ public class PullRequestEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    @NotNull
     String id;
     @Column(name = "code", nullable = false)
     String code;

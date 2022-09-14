@@ -29,7 +29,7 @@ public interface JobMapper {
                 .code(job.getCode())
                 .status(job.getStatus())
                 .organizationId(job.getOrganizationId())
-                .tasks(OBJECT_MAPPER.writeValueAsBytes(job.getTasks()))
+                .tasks(OBJECT_MAPPER.writeValueAsString(job.getTasks()))
                 .endDate(nonNull(job.getEndDate()) ? ZonedDateTime.ofInstant(job.getEndDate().toInstant(),
                         ZoneId.systemDefault()) : null)
                 .build();

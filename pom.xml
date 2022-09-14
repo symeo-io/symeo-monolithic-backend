@@ -44,6 +44,7 @@
         <sendgrid-java.version>4.9.3</sendgrid-java.version>
         <logback-classic.version>1.2.9</logback-classic.version>
         <logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
+        <hibernate-types.version>2.19.2</hibernate-types.version>
     </properties>
 
     <dependencyManagement>
@@ -95,6 +96,11 @@
                 <groupId>net.logstash.logback</groupId>
                 <artifactId>logstash-logback-encoder</artifactId>
                 <version>${logstash-logback-encoder.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vladmihalcea</groupId>
+                <artifactId>hibernate-types-55</artifactId>
+                <version>${hibernate-types.version}</version>
             </dependency>
 
             <!-- Test -->
