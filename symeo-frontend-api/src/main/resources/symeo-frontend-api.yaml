@@ -1328,7 +1328,7 @@ paths:
       tags:
         - Organization
       summary: Update organization settings
-      operationId: UpdateOrganizationSettings
+      operationId: updateOrganizationSettings
       description: |
         Update organization settings
       requestBody:
@@ -1336,15 +1336,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateOrganizationSettings'
+              $ref: '#/components/schemas/OrganizationSettingsContract'
       responses:
         "200":
           description: 'Successfully change organization settings'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SymeoErrorsContract'
+                $ref: '#/components/schemas/OrganizationSettingsResponseContract'
               example:
+                settings:
+                  delivery:
+                    deploy_detection:
+                      tag_regex: null
+                      pull_request_merged_on_branch_regex: ^staging$
                 errors:
                   [ ]
         "401":
@@ -1605,14 +1610,6 @@ components:
           type: array
           items:
             type: string
-    UpdateOrganizationSettings:
-      type: object
-      properties:
-        tag_regex:
-          type: string
-          nullable: true
-        pull_request_merged_on_branch_regex:
-          type: string
     TeamsResponseContract:
       type: object
       properties:
