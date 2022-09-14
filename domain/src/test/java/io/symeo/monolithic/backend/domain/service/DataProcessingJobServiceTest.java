@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobManager;
+import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
@@ -107,6 +108,8 @@ public class DataProcessingJobServiceTest {
         verify(jobManager, times(1)).start(jobArgumentCaptor.capture());
         final Job job = jobArgumentCaptor.getValue();
         assertThat(job.getCode()).isEqualTo(CollectVcsDataForRepositoriesJobRunnable.JOB_CODE);
+        job.getTasks().stream().map(Task::getInput).map(o -> (Repository) o)
+                .forEach(repository -> assertThat(repository.getOrganizationId()).isEqualTo(organizationId));
     }
 
     @Test
@@ -144,6 +147,8 @@ public class DataProcessingJobServiceTest {
         verify(jobManager, times(1)).start(jobArgumentCaptor.capture());
         final Job job = jobArgumentCaptor.getValue();
         assertThat(job.getCode()).isEqualTo(CollectVcsDataForRepositoriesJobRunnable.JOB_CODE);
+        job.getTasks().stream().map(Task::getInput).map(o -> (Repository) o)
+                .forEach(repository -> assertThat(repository.getOrganizationId()).isEqualTo(organizationId));
     }
 
     @Test

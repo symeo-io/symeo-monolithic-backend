@@ -45,7 +45,9 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         final Organization organization =
                 accountOrganizationStorageAdapter.findOrganizationById(organizationId);
         final List<Repository> repositories =
-                expositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId);
+                populateRepositoriesWithOrganizationId(
+                        expositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId),
+                        organizationId);
         collectVcsDataForRepositoriesAndOrganization(organization, repositories);
     }
 
@@ -54,7 +56,9 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         final Organization organization =
                 accountOrganizationStorageAdapter.findOrganizationById(organizationId);
         final List<Repository> repositories =
-                expositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(organization.getId());
+                populateRepositoriesWithOrganizationId(
+                        expositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(
+                                organization.getId()), organizationId);
         collectVcsDataForRepositoriesAndOrganization(organization, repositories);
     }
 
@@ -123,4 +127,11 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                 .build();
     }
 
+
+    private List<Repository> populateRepositoriesWithOrganizationId(final List<Repository> repositories,
+                                                                    final UUID organizationId) {
+        return repositories.stream()
+                .map(repository -> repository.toBuilder().organizationId(organizationId).build())
+                .toList();
+    }
 }

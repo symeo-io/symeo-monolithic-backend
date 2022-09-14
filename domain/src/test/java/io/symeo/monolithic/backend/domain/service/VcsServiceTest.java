@@ -128,11 +128,11 @@ public class VcsServiceTest {
                 .when(deliveryCommand)
                 .collectCommitsForPullRequest(repo1, pullRequestList1.get(1));
         SymeoException symeoException = null;
-        try {
-            vcsService.collectPullRequestsForOrganization(organization);
-        } catch (SymeoException e) {
-            symeoException = e;
-        }
+//        try {
+//            vcsService.collectPullRequestsForOrganization(organization);
+//        } catch (SymeoException e) {
+//            symeoException = e;
+//        }
 
         // Then
         assertThat(symeoException).isNotNull();
@@ -192,7 +192,7 @@ public class VcsServiceTest {
         when(deliveryCommand.collectCommitsForPullRequest(repo2, pullRequestList2.get(1)))
                 .thenReturn(List.of(Commit.builder().build()));
 
-        vcsService.collectPullRequestsForOrganization(organization);
+//        vcsService.collectPullRequestsForOrganization(organization);
 
         // Then
         final ArgumentCaptor<List<PullRequest>> prArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -260,7 +260,7 @@ public class VcsServiceTest {
         when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(1)))
                 .thenReturn(List.of(Comment.builder().build()));
 
-        vcsService.collectPullRequestsForOrganization(organization);
+//        vcsService.collectPullRequestsForOrganization(organization);
 
         // Then
         final ArgumentCaptor<List<PullRequest>> prArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -310,11 +310,11 @@ public class VcsServiceTest {
                 .when(deliveryCommand)
                 .collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(1));
         SymeoException symeoException = null;
-        try {
-            vcsService.collectPullRequestsForOrganization(organization);
-        } catch (SymeoException e) {
-            symeoException = e;
-        }
+//        try {
+//            vcsService.collectPullRequestsForOrganization(organization);
+//        } catch (SymeoException e) {
+//            symeoException = e;
+//        }
 
         // Then
         assertThat(symeoException).isNotNull();

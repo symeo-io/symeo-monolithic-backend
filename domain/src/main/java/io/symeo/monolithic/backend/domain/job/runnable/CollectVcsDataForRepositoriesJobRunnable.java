@@ -26,7 +26,7 @@ public class CollectVcsDataForRepositoriesJobRunnable extends AbstractTasksRunna
         executeAllTasks(this::collectVcsDataForRepository, tasks);
     }
 
-    private void collectVcsDataForRepository(final Repository repository) {
+    private void collectVcsDataForRepository(final Repository repository) throws SymeoException {
         LOGGER.info("Starting to collect VCS data for organization {} and repository {}", organization, repository);
         vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repository);
         List<String> allBranches = vcsService.collectAllBranchesForOrganizationAndRepository(organization, repository);
