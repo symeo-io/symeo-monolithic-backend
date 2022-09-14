@@ -9,7 +9,9 @@ import io.symeo.monolithic.backend.domain.port.out.TeamStandardStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
 import lombok.AllArgsConstructor;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -52,6 +54,14 @@ class TeamGoalService implements TeamGoalFacadeAdapter {
                         .code(SymeoExceptionCode.TEAM_STANDARD_NOT_FOUND)
                         .message(String.format("Team standard not found for code %s", teamStandard.getCode()))
                         .build());
+    }
+
+    @Override
+    public Optional<TeamGoal> getOptionalTeamGoalForTeamIdAndTeamStandard(final UUID teamId, final TeamStandard teamStandard) throws SymeoException {
+        final List<TeamGoal> teamGoals = teamGoalStorage.readForTeamId(teamId);
+        return teamGoals
+                .stream().filter(teamGoal -> teamGoal.getStandardCode().equals(teamStandard.getCode()))
+                .findFirst();
     }
 
     private static void validateTeamGoals(final List<TeamGoal> teamGoals, final UUID teamId) throws SymeoException {

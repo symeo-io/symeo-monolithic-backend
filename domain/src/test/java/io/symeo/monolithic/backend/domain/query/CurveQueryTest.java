@@ -13,8 +13,10 @@ import io.symeo.monolithic.backend.domain.port.in.TeamGoalFacadeAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getPreviousStartDateFromStartDateAndEndDate;
@@ -238,6 +240,88 @@ public class CurveQueryTest {
         assertThat(metrics.getCurrentAverage()).isEqualTo(4.8);
         assertThat(metrics.getPreviousAverage()).isEqualTo(3.5);
         assertThat(metrics.getAverageTendency()).isEqualTo(37.1);
+        assertThat(metrics.getCurrentStartDate()).isEqualTo(stringToDate("2020-01-01"));
+        assertThat(metrics.getCurrentEndDate()).isEqualTo(stringToDate("2020-02-01"));
+        assertThat(metrics.getPreviousEndDate()).isEqualTo(stringToDate("2020-01-01"));
+        assertThat(metrics.getPreviousStartDate()).isEqualTo(stringToDate("2019-12-01"));
+    }
+
+    @Test
+    void should_compute_pull_request_pull_request_size_metrics_for_organisation_and_team_without_team_goal() throws SymeoException {
+        // Given
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final TeamGoalFacadeAdapter teamGoalFacadeAdapter = mock(TeamGoalFacadeAdapter.class);
+        final CurveQuery curveQuery = new CurveQuery(expositionStorageAdapter, teamGoalFacadeAdapter);
+        final UUID teamId = UUID.randomUUID();
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final List<PullRequestView> currentPullRequestViews = List.of(
+                buildPullRequestPullRequestLimitView(2000, stringToDate("2020-01-01"), stringToDate("2020-01-15"),
+                        null, PullRequest.OPEN)
+        );
+
+        final List<PullRequestView> previousPullRequestViews = List.of(
+                buildPullRequestPullRequestLimitView(300, stringToDate("2019-12-25"), null, null, PullRequest.MERGE)
+        );
+        final Optional<TeamGoal> optionalTeamGoal = Optional.empty();
+        final Date startDate = stringToDate("2020-01-01");
+        final Date endDate = stringToDate("2020-02-01");
+
+        // When
+        when(teamGoalFacadeAdapter.getOptionalTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildTimeToMerge()))
+                .thenReturn(optionalTeamGoal);
+        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization, teamId, startDate, endDate))
+                .thenReturn(currentPullRequestViews);
+        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization, teamId, getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
+                organization.getTimeZone()), startDate))
+                .thenReturn(previousPullRequestViews);
+
+        final Metrics metrics = curveQuery.computePullRequestSizeMetrics(organization,
+                teamId, startDate, endDate);
+
+        // Then
+        assertThat(metrics.getCurrentAverage()).isEqualTo(2000);
+        assertThat(metrics.getPreviousAverage()).isEqualTo(300);
+        assertThat(metrics.getCurrentStartDate()).isEqualTo(stringToDate("2020-01-01"));
+        assertThat(metrics.getCurrentEndDate()).isEqualTo(stringToDate("2020-02-01"));
+        assertThat(metrics.getPreviousEndDate()).isEqualTo(stringToDate("2020-01-01"));
+        assertThat(metrics.getPreviousStartDate()).isEqualTo(stringToDate("2019-12-01"));
+    }@Test
+    void should_compute_pull_request_pull_request_time_to_merge_metrics_for_organisation_and_team_without_team_goal() throws SymeoException {
+        // Given
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final TeamGoalFacadeAdapter teamGoalFacadeAdapter = mock(TeamGoalFacadeAdapter.class);
+        final CurveQuery curveQuery = new CurveQuery(expositionStorageAdapter, teamGoalFacadeAdapter);
+        final UUID teamId = UUID.randomUUID();
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final List<PullRequestView> currentPullRequestViews = List.of(
+                buildPullRequestPullRequestLimitView(2000, stringToDate("2020-01-01"), stringToDate("2020-01-15"),
+                        null, PullRequest.OPEN)
+        );
+
+        final List<PullRequestView> previousPullRequestViews = List.of(
+                buildPullRequestPullRequestLimitView(300, stringToDate("2019-12-25"), stringToDate("2019-12-30"),
+                null, PullRequest.MERGE)
+        );
+
+        final Optional<TeamGoal> optionalTeamGoal = Optional.empty();
+        final Date startDate = stringToDate("2020-01-01");
+        final Date endDate = stringToDate("2020-02-01");
+
+        // When
+        when(teamGoalFacadeAdapter.getOptionalTeamGoalForTeamIdAndTeamStandard(teamId, TeamStandard.buildTimeToMerge()))
+                .thenReturn(optionalTeamGoal);
+        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization, teamId, startDate, endDate))
+                .thenReturn(currentPullRequestViews);
+        when(expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization, teamId, getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
+                organization.getTimeZone()), startDate))
+                .thenReturn(previousPullRequestViews);
+
+        final Metrics metrics = curveQuery.computePullRequestTimeToMergeMetrics(organization,
+                teamId, startDate, endDate);
+
+        // Then
+        assertThat(metrics.getCurrentAverage()).isEqualTo(14);
+        assertThat(metrics.getPreviousAverage()).isEqualTo(5);
         assertThat(metrics.getCurrentStartDate()).isEqualTo(stringToDate("2020-01-01"));
         assertThat(metrics.getCurrentEndDate()).isEqualTo(stringToDate("2020-02-01"));
         assertThat(metrics.getPreviousEndDate()).isEqualTo(stringToDate("2020-01-01"));

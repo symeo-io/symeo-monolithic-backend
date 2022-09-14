@@ -5,6 +5,7 @@ import io.symeo.monolithic.backend.domain.model.account.TeamGoal;
 import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface TeamGoalFacadeAdapter {
@@ -17,4 +18,6 @@ public interface TeamGoalFacadeAdapter {
     void updateTeamGoalForTeam(UUID id, Integer value) throws SymeoException;
 
     TeamGoal getTeamGoalForTeamIdAndTeamStandard(UUID teamId, TeamStandard teamStandard) throws SymeoException;
+
+    Optional<TeamGoal> getOptionalTeamGoalForTeamIdAndTeamStandard(UUID teamId, TeamStandard teamStandard) throws SymeoException;
 }

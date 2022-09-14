@@ -8,11 +8,12 @@ import io.symeo.monolithic.backend.domain.port.out.TeamGoalStorage;
 import io.symeo.monolithic.backend.domain.port.out.TeamStandardStorage;
 import io.symeo.monolithic.backend.domain.service.account.TeamGoalService;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
+import org.assertj.core.error.OptionalShouldBeEmpty;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -125,6 +126,30 @@ public class TeamGoalServiceTest {
 
         // Then
         assertThat(teamGoal).isEqualTo(expectedTeamGoal);
+    }
+
+    @Test
+    void should_return_empty_team_goal_given_a_id_and_a_team_standard_code() throws SymeoException {
+        // Given
+        final TeamStandardStorage teamStandardStorage = mock(TeamStandardStorage.class);
+        final TeamGoalStorage teamGoalStorage = mock(TeamGoalStorage.class);
+        final TeamGoalService teamGoalService = new TeamGoalService(teamStandardStorage, teamGoalStorage);
+        final UUID teamId = UUID.randomUUID();
+        final Optional<TeamGoal> expectedTeamGoal = Optional.empty();
+
+        // When
+        when(teamGoalStorage.readForTeamId(teamId))
+                .thenReturn(
+                        List.of(
+                                TeamGoal.builder().teamId(teamId).standardCode(faker.dragonBall().character()).build()
+                ));
+
+        final Optional<TeamGoal> teamGoal = teamGoalService.getOptionalTeamGoalForTeamIdAndTeamStandard(teamId,
+                TeamStandard.buildTimeToMerge());
+
+        // Then
+        assertThat(teamGoal).isEqualTo(expectedTeamGoal);
+
     }
 
     @Test
