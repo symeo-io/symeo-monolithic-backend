@@ -1322,6 +1322,45 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+    patch:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Organization
+      summary: Update organization settings
+      operationId: UpdateOrganizationSettings
+      description: |
+        Update organization settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationSettings'
+      responses:
+        "200":
+          description: 'Successfully change organization settings'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+
 
 components:
   securitySchemes:
@@ -1566,6 +1605,14 @@ components:
           type: array
           items:
             type: string
+    UpdateOrganizationSettings:
+      type: object
+      properties:
+        tag_regex:
+          type: string
+          nullable: true
+        pull_request_merged_on_branch_regex:
+          type: string
     TeamsResponseContract:
       type: object
       properties:
