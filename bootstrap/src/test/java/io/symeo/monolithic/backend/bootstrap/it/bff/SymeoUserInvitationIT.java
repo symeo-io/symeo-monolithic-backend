@@ -151,4 +151,39 @@ public class SymeoUserInvitationIT extends AbstractSymeoBackForFrontendApiIT {
         final Optional<UserEntity> user = userRepository.findById(id);
         assertThat(user.get().getOrganizationEntities()).isEmpty();
     }
+
+    @Order(5)
+    @Test
+    void should_add_active_user_to_invited_organization() {
+        // Given
+        final UserEntity userEntity = userRepository.save(UserEntity.builder()
+                .id(UUID.randomUUID())
+                .email(faker.harryPotter().character())
+                .status(User.ACTIVE)
+                .onboardingEntity(
+                        OnboardingEntity.builder()
+                                .hasConfiguredTeam(false)
+                                .hasConnectedToVcs(false)
+                                .id(UUID.randomUUID())
+                                .build()
+                )
+                .build());
+        final UserRequestContract userRequestContract1 = new UserRequestContract();
+        userRequestContract1.email(userEntity.getEmail());
+
+        // When
+        client.post()
+                .uri(getApiURI(ORGANIZATIONS_REST_API_USERS))
+                .body(BodyInserters.fromValue(List.of(userRequestContract1)))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.users[0].id").isNotEmpty()
+                .jsonPath("$.users[0].status").isEqualTo(User.ACTIVE)
+                .jsonPath("$.users[0].email").isEqualTo(userEntity.getEmail());
+
+    }
 }

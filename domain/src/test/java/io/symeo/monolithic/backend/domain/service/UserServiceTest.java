@@ -237,7 +237,7 @@ public class UserServiceTest {
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOrganization()).isEqualTo(organization));
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOnboarding().getHasConfiguredTeam()).isTrue());
         usersCaptor.getAllValues().get(0).forEach(user -> assertThat(user.getOnboarding().getHasConnectedToVcs()).isTrue());
-        usersCaptor.getAllValues().get(1).forEach(user -> assertThat(user.getStatus()).isEqualTo(User.PENDING));
+        assertThat(usersCaptor.getAllValues().get(0).get(2).getStatus()).isEqualTo(User.ACTIVE);
     }
 
     @Test
