@@ -127,16 +127,19 @@ public class VcsService {
         }
     }
 
-    public void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Organization organization,
-                                                                                      Repository repository) {
+    public void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(final Organization organization,
+                                                                                      final Repository repository) {
 
     }
 
-    public List<String> collectAllBranches(Organization organization) {
+    public List<String> collectAllBranchesForOrganizationAndRepository(final Organization organization,
+                                                                       final Repository repository) {
         return null;
     }
 
-    public void collectCommitsForBranch(String branch) {
+    public void collectCommitsForForOrganizationAndRepositoryAndBranch(final Organization organization,
+                                                                       final Repository repository,
+                                                                       final String branch) {
 
     }
 }

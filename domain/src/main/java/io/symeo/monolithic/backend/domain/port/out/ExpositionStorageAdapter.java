@@ -49,4 +49,8 @@ public interface ExpositionStorageAdapter {
 
     void saveCommits(List<Commit> commits);
 
+    List<Repository> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException;
+
+    List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException;
+
 }

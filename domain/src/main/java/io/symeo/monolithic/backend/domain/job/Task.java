@@ -18,4 +18,8 @@ public class Task {
     public Task done() {
         return this.toBuilder().status(DONE).build();
     }
+
+    public static Task newTaskForInput(final Object input) {
+        return Task.builder().input(input).build();
+    }
 }

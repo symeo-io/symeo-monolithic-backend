@@ -29,9 +29,9 @@ public class CollectVcsDataForRepositoriesJobRunnable extends AbstractTasksRunna
     private void collectVcsDataForRepository(final Repository repository) {
         LOGGER.info("Starting to collect VCS data for organization {} and repository {}", organization, repository);
         vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repository);
-        List<String> allBranches = vcsService.collectAllBranches(organization);
+        List<String> allBranches = vcsService.collectAllBranchesForOrganizationAndRepository(organization, repository);
         for (String branch : allBranches) {
-            vcsService.collectCommitsForBranch(branch);
+            vcsService.collectCommitsForForOrganizationAndRepositoryAndBranch(organization, repository, branch);
         }
         LOGGER.info("VCS data collection finished for organization {} and repository {}", organization, repository);
     }

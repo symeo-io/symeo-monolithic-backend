@@ -24,10 +24,11 @@ public class TeamServiceTest {
     private final Faker faker = new Faker();
 
     @Test
-    void should_create_and_return_teams() throws SymeoException {
+    void should_create_and_start_vcs_data_collection_then_return_teams() throws SymeoException {
         // Given
         final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
-        final TeamService teamService = new TeamService(accountTeamStorage);
+        final DataProcessingJobService dataProcessingJobAdapter = mock(DataProcessingJobService.class);
+        final TeamService teamService = new TeamService(accountTeamStorage, dataProcessingJobAdapter);
         final Organization organization =
                 Organization.builder().id(UUID.randomUUID()).vcsOrganization(VcsOrganization.builder().build()).build();
         final String teamName1 = faker.name().firstName();
@@ -63,7 +64,7 @@ public class TeamServiceTest {
                 User.builder()
                         .organizations(
                                 List.of(
-                                        Organization.builder().id(UUID.randomUUID())
+                                        Organization.builder().id(organization.getId())
                                                 .vcsOrganization(VcsOrganization.builder().build())
                                                 .build()))
                         .build());
@@ -71,13 +72,18 @@ public class TeamServiceTest {
         // Then
         assertThat(userArgumentCaptor.getValue().getOnboarding().getHasConfiguredTeam()).isTrue();
         assertThat(teamsArgumentCaptor.getValue()).hasSize(2);
+        verify(dataProcessingJobAdapter, times(2)).startToCollectVcsDataForOrganizationIdAndTeamId(any(), any());
+        verify(dataProcessingJobAdapter, times(1)).startToCollectVcsDataForOrganizationIdAndTeamId(organization.getId(),
+                expectedTeam1.getId());
+        verify(dataProcessingJobAdapter, times(1)).startToCollectVcsDataForOrganizationIdAndTeamId(organization.getId(),
+                expectedTeam2.getId());
     }
 
     @Test
     void should_return_teams_for_organization() throws SymeoException {
         // Given
         final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
-        final TeamService teamService = new TeamService(accountTeamStorage);
+        final TeamService teamService = new TeamService(accountTeamStorage, mock(DataProcessingJobService.class));
         final Organization organization =
                 Organization.builder().id(UUID.randomUUID()).vcsOrganization(VcsOrganization.builder().build()).build();
 
@@ -94,7 +100,7 @@ public class TeamServiceTest {
     void should_delete_team_given_a_team_id() throws SymeoException {
         // Given
         final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
-        final TeamService teamService = new TeamService(accountTeamStorage);
+        final TeamService teamService = new TeamService(accountTeamStorage, mock(DataProcessingJobService.class));
         final UUID teamId = UUID.randomUUID();
 
         // When
@@ -108,13 +114,13 @@ public class TeamServiceTest {
     void should_update_team_given_a_team() throws SymeoException {
         // Given
         final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
-        final TeamService teamService = new TeamService(accountTeamStorage);
+        final TeamService teamService = new TeamService(accountTeamStorage, mock(DataProcessingJobService.class));
         final Team team = Team.builder().id(UUID.randomUUID()).build();
 
         // When
         teamService.update(team);
 
         // Then
-        verify(accountTeamStorage,times(1)).update(team);
+        verify(accountTeamStorage, times(1)).update(team);
     }
 }

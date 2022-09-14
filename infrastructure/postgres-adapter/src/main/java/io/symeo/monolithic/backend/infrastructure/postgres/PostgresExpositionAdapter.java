@@ -187,6 +187,45 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     public void saveCommits(List<Commit> commits) {
+        // TODO : to implement
+        throw new RuntimeException();
+    }
 
+    @Override
+    public List<Repository> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
+        try {
+            return repositoryRepository.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId)
+                    .stream()
+                    .map(RepositoryMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to find repositories for organizationId %s and teamId %s",
+                    organizationId, teamId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException {
+        try {
+            return repositoryRepository.findAllRepositoriesLinkedToTeamsForOrganizationId(organizationId)
+                    .stream()
+                    .map(RepositoryMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to find repositories for organizationId %s",
+                    organizationId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
     }
 }

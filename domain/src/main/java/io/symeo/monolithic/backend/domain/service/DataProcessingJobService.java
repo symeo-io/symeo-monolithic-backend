@@ -11,6 +11,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -30,13 +31,31 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     private final JobManager jobManager;
     private final SymeoJobApiAdapter symeoJobApiAdapter;
     private final OrganizationSettingsService organizationSettingsService;
+    private final ExpositionStorageAdapter expositionStorageAdapter;
 
     @Override
-    public void start(final UUID organizationId) throws SymeoException {
-        LOGGER.info("Starting to collect data for organization {}", organizationId);
+    public void startToCollectRepositoriesForOrganizationId(final UUID organizationId) throws SymeoException {
         final Organization organization =
                 accountOrganizationStorageAdapter.findOrganizationById(organizationId);
-        collectRepositories(organization);
+        collectRepositoriesForOrganization(organization);
+    }
+
+    @Override
+    public void startToCollectVcsDataForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
+        final Organization organization =
+                accountOrganizationStorageAdapter.findOrganizationById(organizationId);
+        final List<Repository> repositories =
+                expositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId);
+        collectVcsDataForRepositoriesAndOrganization(organization, repositories);
+    }
+
+    @Override
+    public void startToCollectVcsDataForOrganizationId(UUID organizationId) throws SymeoException {
+        final Organization organization =
+                accountOrganizationStorageAdapter.findOrganizationById(organizationId);
+        final List<Repository> repositories =
+                expositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(organization.getId());
+        collectVcsDataForRepositoriesAndOrganization(organization, repositories);
     }
 
     @Override
@@ -45,7 +64,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         organizations.forEach(organization -> symeoJobApiAdapter.startJobForOrganizationId(organization.getId()));
     }
 
-    private void collectRepositories(final Organization organization) throws SymeoException {
+    private void collectRepositoriesForOrganization(final Organization organization) throws SymeoException {
         jobManager.start(
                 Job.builder()
                         .organizationId(organization.getId())
@@ -66,9 +85,9 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         );
     }
 
-    private Job getCollectVcsDataForRepositoriesJo(final Organization organization,
-                                                   final List<Repository> repositories) {
-        return
+    private void collectVcsDataForRepositoriesAndOrganization(final Organization organization,
+                                                              final List<Repository> repositories) throws SymeoException {
+        jobManager.start(
                 Job.builder()
                         .jobRunnable(CollectVcsDataForRepositoriesJobRunnable.builder()
                                 .organization(organization)
@@ -81,7 +100,8 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                         .map(repository -> Task.builder().input(repository).build())
                                         .toList()
                         )
-                        .build();
+                        .build()
+        );
     }
 
 

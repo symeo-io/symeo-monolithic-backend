@@ -25,10 +25,10 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
     @Override
     public ResponseEntity<Void> startDataProcessingJob(final UUID organizationId) {
         try {
-            dataProcessingJobAdapter.start(organizationId);
+            dataProcessingJobAdapter.startToCollectVcsDataForOrganizationId(organizationId);
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {
-            LOGGER.error("Error while starting data collection job for organizationId {}", organizationId, e);
+            LOGGER.error("Error while starting vcs data collection job for organizationId {}", organizationId, e);
             return ResponseEntity.internalServerError().build();
         }
     }

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 
 import java.io.IOException;
@@ -13,7 +15,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
@@ -51,15 +52,22 @@ public interface JobMapper {
     }
 
     private static List<Task> taskEntityToDomain(final JobEntity jobEntity) throws IOException {
-        if (jobEntity.getCode().equals(CollectRepositoriesJobRunnable.JOB_CODE)) {
-            return Stream.of(OBJECT_MAPPER.readValue(jobEntity.getTasks(), Task[].class))
-                    .map(task -> task.toBuilder()
-                            .input(OBJECT_MAPPER.convertValue(task.getInput(), Organization.class))
-                            .build())
-                    .collect(Collectors.toList());
-        } else {
-            // TODO : handle exception
-            throw new RuntimeException();
+        switch (jobEntity.getCode()) {
+            case CollectRepositoriesJobRunnable.JOB_CODE:
+                return Stream.of(OBJECT_MAPPER.readValue(jobEntity.getTasks(), Task[].class))
+                        .map(task -> task.toBuilder()
+                                .input(OBJECT_MAPPER.convertValue(task.getInput(), Organization.class))
+                                .build())
+                        .toList();
+            case CollectVcsDataForRepositoriesJobRunnable.JOB_CODE:
+                return Stream.of(OBJECT_MAPPER.readValue(jobEntity.getTasks(), Task[].class))
+                        .map(task -> task.toBuilder()
+                                .input(OBJECT_MAPPER.convertValue(task.getInput(), Repository.class))
+                                .build())
+                        .toList();
+            default:
+                // TODO : handle exception
+                throw new RuntimeException();
         }
     }
 }

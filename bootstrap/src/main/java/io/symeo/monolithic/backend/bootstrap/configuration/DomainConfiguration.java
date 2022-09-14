@@ -51,9 +51,11 @@ public class DomainConfiguration {
                                                              final RepositoryService repositoryService,
                                                              final JobManager jobManager,
                                                              final SymeoJobApiAdapter symeoJobApiAdapter,
-                                                             final OrganizationSettingsService organizationSettingsService) {
+                                                             final OrganizationSettingsService organizationSettingsService,
+                                                             final ExpositionStorageAdapter expositionStorageAdapter) {
         return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter,
-                repositoryService, jobManager, symeoJobApiAdapter, organizationSettingsService);
+                repositoryService, jobManager, symeoJobApiAdapter, organizationSettingsService,
+                expositionStorageAdapter);
     }
 
     @Bean
@@ -81,8 +83,9 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public TeamFacadeAdapter teamFacadeAdapter(final AccountTeamStorage accountTeamStorage) {
-        return new TeamService(accountTeamStorage);
+    public TeamFacadeAdapter teamFacadeAdapter(final AccountTeamStorage accountTeamStorage,
+                                               final DataProcessingJobAdapter dataProcessingJobAdapter) {
+        return new TeamService(accountTeamStorage, dataProcessingJobAdapter);
     }
 
     @Bean

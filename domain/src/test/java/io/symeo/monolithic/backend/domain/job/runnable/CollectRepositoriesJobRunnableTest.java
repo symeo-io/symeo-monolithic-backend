@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.domain.job.runnable;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -38,7 +39,7 @@ public class CollectRepositoriesJobRunnableTest {
 
         // When
         when(vcsService.collectRepositoriesForOrganization(organisation)).thenReturn(repositories);
-        collectRepositoriesJobRunnable.run(List.of());
+        collectRepositoriesJobRunnable.run(List.of(Task.builder().input(organisation).build()));
 
         // Then
         ArgumentCaptor<List<Repository>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -64,7 +65,7 @@ public class CollectRepositoriesJobRunnableTest {
                 .collectRepositoriesForOrganization(organisation);
         SymeoException symeoException = null;
         try {
-            collectRepositoriesJobRunnable.run(List.of());
+            collectRepositoriesJobRunnable.run(List.of(Task.newTaskForInput(organisation)));
         } catch (SymeoException e) {
             symeoException = e;
         }
