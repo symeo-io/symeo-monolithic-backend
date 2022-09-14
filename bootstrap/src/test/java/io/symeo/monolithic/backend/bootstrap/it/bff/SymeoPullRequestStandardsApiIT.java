@@ -92,22 +92,77 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.errors[0].message").isEqualTo(String.format("Team not found for id %s",
                         teamId));
     }
-
     @Order(2)
     @Test
-    void should_get_time_to_merge_histogram_given_a_team_id() throws SymeoException {
+    public void should_get_pull_request_size_metrics_given_a_team_id_without_team_goal() throws SymeoException {
         // Given
+
         final List<RepositoryEntity> repositoryEntities = generateRepositoriesStubsForOrganization();
         repositoryRepository.saveAll(repositoryEntities);
         teamRepository.save(
                 TeamEntity.builder().id(currentTeamId).name(faker.dragonBall().character())
                         .organizationId(organizationId).repositoryIds(List.of(repositoryEntities.get(0).getId())).build());
-        teamGoalRepository.save(TeamGoalEntity.builder().teamId(currentTeamId).id(UUID.randomUUID()).standardCode(TeamStandard.TIME_TO_MERGE).value("5").build());
         final String startDate = "2022-01-01";
         final String endDate = "2022-03-01";
         pullRequestRepository.saveAll(
                 generatePullRequestsStubsForOrganization(OrganizationMapper.entityToDomain(organizationRepository
                         .findById(organizationId).get()), startDate));
+        final String requestSizeMetricsStartDate = "2022-01-15";
+        final String requestSizeMetricsEndDate = "2022-02-01";
+
+        // When
+        client.get()
+                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_METRICS, getParams(currentTeamId, requestSizeMetricsStartDate,
+                        requestSizeMetricsEndDate)))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.metrics.current_start_date").isEqualTo(requestSizeMetricsStartDate)
+                .jsonPath("$.metrics.current_end_date").isEqualTo(requestSizeMetricsEndDate)
+                .jsonPath("$.metrics.previous_end_date").isEqualTo(requestSizeMetricsStartDate)
+                .jsonPath("$.metrics.previous_start_date").isEqualTo("2021-12-29")
+                .jsonPath("$.metrics.average.value").isEqualTo(1175.0)
+                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(17.5)
+                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
+                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
+    }
+    @Order(3)
+    @Test
+    public void should_get_time_to_merge_metrics_given_a_team_id_without_team_goal() throws SymeoException {
+        // Given
+        final String requestTimeToMergeMetricsStartDate = "2022-01-15";
+        final String requestTimeToMergeMetricsEndDate = "2022-02-01";
+
+        // When
+        client.get()
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_METRICS, getParams(currentTeamId, requestTimeToMergeMetricsStartDate,
+                        requestTimeToMergeMetricsEndDate)))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.metrics.current_start_date").isEqualTo(requestTimeToMergeMetricsStartDate)
+                .jsonPath("$.metrics.current_end_date").isEqualTo(requestTimeToMergeMetricsEndDate)
+                .jsonPath("$.metrics.previous_end_date").isEqualTo(requestTimeToMergeMetricsStartDate)
+                .jsonPath("$.metrics.previous_start_date").isEqualTo("2021-12-29")
+                .jsonPath("$.metrics.average.value").isEqualTo(10.2)
+                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(183.3)
+                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
+                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
+    }
+
+    @Order(4)
+    @Test
+    void should_get_time_to_merge_histogram_given_a_team_id() throws SymeoException {
+        // Given
+        teamGoalRepository.save(TeamGoalEntity.builder().teamId(currentTeamId).id(UUID.randomUUID()).standardCode(TeamStandard.TIME_TO_MERGE).value("5").build());
+        final String startDate = "2022-01-01";
+        final String endDate = "2022-03-01";
 
         // When
         client.get()
@@ -134,7 +189,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.histogram.data[3].start_date_range").isEqualTo("2022-01-22");
     }
 
-    @Order(3)
+    @Order(5)
     @Test
     void should_get_time_to_merge_curves_given_a_team_id() {
         // Given
@@ -172,7 +227,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
     }
 
 
-    @Order(4)
+    @Order(6)
     @Test
     void should_call_pull_request_size_api_and_return_an_error_for_team_not_existing() {
         // Given
@@ -211,7 +266,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
     }
 
 
-    @Order(5)
+    @Order(7)
     @Test
     void should_get_pull_request_size_curves_given_a_team_id() {
         // Given
@@ -255,7 +310,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
 
     }
 
-    @Order(6)
+    @Order(8)
     @Test
     void should_get_pull_request_size_histogram_given_a_team_id() {
         // Given
@@ -305,7 +360,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.histogram.data[9].start_date_range").isEqualTo("2022-03-01");
     }
 
-    @Order(7)
+    @Order(9)
     @Test
     public void should_get_pull_request_size_metrics_given_a_team_id() {
         // Given
@@ -332,7 +387,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
     }
 
-    @Order(8)
+    @Order(10)
     @Test
     public void should_get_time_to_merge_metrics_given_a_team_id() {
         // Given
@@ -359,7 +414,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
     }
 
-    @Order(9)
+    @Order(11)
     @Test
     void should_raise_an_exception_for_invalid_page_size() {
         // Given

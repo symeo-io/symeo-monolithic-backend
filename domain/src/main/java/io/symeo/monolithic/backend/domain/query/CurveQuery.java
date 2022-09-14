@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getPreviousStartDateFromStartDateAndEndDate;
@@ -64,7 +65,7 @@ public class CurveQuery {
 
     public Metrics computePullRequestSizeMetrics(Organization organization, UUID teamId, Date startDate,
                                                  Date endDate) throws SymeoException {
-        final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
+        final Optional<TeamGoal> optionalCurrentTeamGoal = teamGoalFacadeAdapter.getOptionalTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildPullRequestSize());
         final List<PullRequestView> currentPullRequestViews =
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
@@ -76,14 +77,15 @@ public class CurveQuery {
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
                         teamId, previousStartDate,
                         startDate);
-        return buildSizeMetricsFromPullRequests(currentTeamGoal.getValueAsInteger(), endDate, startDate,
+        return buildSizeMetricsFromPullRequests(optionalCurrentTeamGoal.map(TeamGoal::getValueAsInteger)
+                        .orElse(1000), endDate, startDate,
                 previousStartDate, currentPullRequestViews,
                 previousPullRequestViews);
     }
 
     public Metrics computePullRequestTimeToMergeMetrics(Organization organization, UUID teamId, Date startDate,
                                                         Date endDate) throws SymeoException {
-        final TeamGoal currentTeamGoal = teamGoalFacadeAdapter.getTeamGoalForTeamIdAndTeamStandard(teamId,
+        final Optional<TeamGoal> optionalCurrentTeamGoal = teamGoalFacadeAdapter.getOptionalTeamGoalForTeamIdAndTeamStandard(teamId,
                 TeamStandard.buildTimeToMerge());
         final List<PullRequestView> currentPullRequestViews =
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
@@ -95,7 +97,8 @@ public class CurveQuery {
                 expositionStorageAdapter.readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(organization,
                         teamId, previousStartDate,
                         startDate);
-        return buildTimeToMergeMetricsFromPullRequests(currentTeamGoal.getValueAsInteger(), endDate,
+        return buildTimeToMergeMetricsFromPullRequests(optionalCurrentTeamGoal.map(TeamGoal::getValueAsInteger)
+                        .orElse(5), endDate,
                 startDate, previousStartDate, currentPullRequestViews,
                 previousPullRequestViews);
     }
