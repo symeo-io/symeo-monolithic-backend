@@ -128,7 +128,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(17.5)
                 .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
                 .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
-    }@Order(3)
+    }
+    @Order(3)
     @Test
     public void should_get_time_to_merge_metrics_given_a_team_id_without_team_goal() throws SymeoException {
         // Given

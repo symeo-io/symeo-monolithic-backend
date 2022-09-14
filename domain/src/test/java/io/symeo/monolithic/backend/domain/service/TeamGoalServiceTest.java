@@ -129,13 +129,12 @@ public class TeamGoalServiceTest {
     }
 
     @Test
-    void should_return_empty_team_goal_given_a_id_and_a_team_standard_code() throws SymeoException {
+    void should_return_empty_team_goal_given_a_team_id_and_a_team_standard_code() throws SymeoException {
         // Given
         final TeamStandardStorage teamStandardStorage = mock(TeamStandardStorage.class);
         final TeamGoalStorage teamGoalStorage = mock(TeamGoalStorage.class);
         final TeamGoalService teamGoalService = new TeamGoalService(teamStandardStorage, teamGoalStorage);
         final UUID teamId = UUID.randomUUID();
-        final Optional<TeamGoal> expectedTeamGoal = Optional.empty();
 
         // When
         when(teamGoalStorage.readForTeamId(teamId))
@@ -148,7 +147,7 @@ public class TeamGoalServiceTest {
                 TeamStandard.buildTimeToMerge());
 
         // Then
-        assertThat(teamGoal).isEqualTo(expectedTeamGoal);
+        assertThat(teamGoal.isEmpty()).isTrue();
 
     }
 
