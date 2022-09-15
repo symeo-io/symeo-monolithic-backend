@@ -1298,6 +1298,7 @@ paths:
                 $ref: '#/components/schemas/OrganizationSettingsResponseContract'
               example:
                 settings:
+                  id: id
                   delivery:
                     deploy_detection:
                       tag_regex: null
@@ -1949,6 +1950,8 @@ components:
     OrganizationSettingsContract:
       type: object
       properties:
+        id:
+          type: string
         delivery:
           $ref: '#/components/schemas/DeliverySettingsContract'
     DeliverySettingsContract:
