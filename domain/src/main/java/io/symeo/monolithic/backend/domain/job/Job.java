@@ -33,8 +33,8 @@ public class Job {
     Job nextJob;
     String code;
     String error;
-    @NonNull
-    List<Task> tasks;
+    @Builder.Default
+    List<Task> tasks = List.of();
 
     public String getCode() {
         return isNull(code) ? this.jobRunnable.getCode() : this.code;

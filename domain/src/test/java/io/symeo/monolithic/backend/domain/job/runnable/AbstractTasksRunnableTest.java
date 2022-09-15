@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,20 +19,20 @@ public class AbstractTasksRunnableTest {
     @Test
     void should_execute_all_tasks_given_tasks_and_symeo_consumer() throws SymeoException {
         // Given
-        final SimpleTasksRunnableImplementation simpleTasksRunnableImplementation =
-                new SimpleTasksRunnableImplementation();
-        final SymeoConsumer<Repository> symeoConsumer = mock(SymeoConsumer.class);
-        final List<Task> tasks = List.of(
+        final List<Task> tasks = new ArrayList<>(List.of(
                 Task.builder()
                         .input(Repository.builder().id(faker.rickAndMorty().character()).build())
                         .build(),
                 Task.builder()
                         .input(Repository.builder().id(faker.dragonBall().character()).build())
-                        .build()
+                        .build())
         );
+        final SymeoConsumer<Repository> symeoConsumer = mock(SymeoConsumer.class);
+        final SimpleTasksRunnableImplementation simpleTasksRunnableImplementation =
+                new SimpleTasksRunnableImplementation(tasks);
 
         // When
-        simpleTasksRunnableImplementation.executeAllTasks(symeoConsumer, tasks);
+        simpleTasksRunnableImplementation.run(symeoConsumer);
 
         // Then
         verify(symeoConsumer, times(1)).accept((Repository) tasks.get(0).getInput());
@@ -41,8 +42,15 @@ public class AbstractTasksRunnableTest {
         executedTasks.forEach(task -> assertThat(task.getStatus()).isEqualTo(Task.DONE));
     }
 
-
     private static class SimpleTasksRunnableImplementation extends AbstractTasksRunnable<Repository> {
+
+        public SimpleTasksRunnableImplementation(List<Task> tasks) {
+            this.tasks = tasks;
+        }
+
+        public void run(SymeoConsumer<Repository> symeoConsumer) throws SymeoException {
+            executeAllTasks(symeoConsumer);
+        }
 
     }
 }

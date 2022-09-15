@@ -2,10 +2,10 @@ package io.symeo.monolithic.backend.domain.job.runnable;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
@@ -34,12 +34,18 @@ public class CollectRepositoriesJobRunnableTest {
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build(),
                 Repository.builder().name(faker.name().firstName()).vcsOrganizationId(vcsOrganizationId).build()
         );
+        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
+                mock(AccountOrganizationStorageAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
-                new CollectRepositoriesJobRunnable(vcsService, repositoryService);
+                new CollectRepositoriesJobRunnable(vcsService, repositoryService,
+                        accountOrganizationStorageAdapter, organisation.getId());
 
         // When
+        when(accountOrganizationStorageAdapter.findOrganizationById(organisation.getId()))
+                .thenReturn(organisation);
         when(vcsService.collectRepositoriesForOrganization(organisation)).thenReturn(repositories);
-        collectRepositoriesJobRunnable.run(List.of(Task.builder().input(organisation).build()));
+        collectRepositoriesJobRunnable.initializeTasks();
+        collectRepositoriesJobRunnable.run();
 
         // Then
         ArgumentCaptor<List<Repository>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -56,16 +62,22 @@ public class CollectRepositoriesJobRunnableTest {
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
+        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
+                mock(AccountOrganizationStorageAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
-                new CollectRepositoriesJobRunnable(vcsService, repositoryService);
+                new CollectRepositoriesJobRunnable(vcsService, repositoryService,
+                        accountOrganizationStorageAdapter, organisation.getId());
 
         // When
+        when(accountOrganizationStorageAdapter.findOrganizationById(organisation.getId()))
+                .thenReturn(organisation);
         doThrow(SymeoException.class)
                 .when(vcsService)
                 .collectRepositoriesForOrganization(organisation);
         SymeoException symeoException = null;
+        collectRepositoriesJobRunnable.initializeTasks();
         try {
-            collectRepositoriesJobRunnable.run(List.of(Task.newTaskForInput(organisation)));
+            collectRepositoriesJobRunnable.run();
         } catch (SymeoException e) {
             symeoException = e;
         }

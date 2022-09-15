@@ -93,52 +93,6 @@ public class VcsServiceTest {
     }
 
     @Test
-    void should_raise_an_exception_while_collection_commits() throws SymeoException {
-        // Given
-        final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
-        final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
-        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final VcsService vcsService = new VcsService(deliveryCommand,
-                deliveryQuery, expositionStorageAdapter);
-        final String vcsOrganizationId = faker.name().name();
-        final Organization organization = Organization.builder()
-                .vcsOrganization(VcsOrganization.builder().build()).name(faker.name().firstName()).build();
-        final Repository repo1 =
-                Repository.builder().name(faker.pokemon().name() + "1").vcsOrganizationId(vcsOrganizationId).build();
-        final List<Repository> expectedRepositories = List.of(
-                repo1
-        );
-        final List<PullRequest> pullRequestList1 = List.of(
-                PullRequest.builder().id(faker.pokemon().name()).number(11).build(),
-                PullRequest.builder().id(faker.hacker().abbreviation()).number(12).build(),
-                PullRequest.builder().id(faker.animal().name()).number(13).build()
-        );
-
-        // When
-        when(deliveryQuery.readRepositoriesForOrganization(organization))
-                .thenReturn(
-                        expectedRepositories
-                );
-        when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(0)))
-                .thenReturn(pullRequestList1);
-        when(deliveryCommand.collectCommitsForPullRequest(repo1, pullRequestList1.get(0)))
-                .thenReturn(List.of(Commit.builder().build()));
-
-        doThrow(SymeoException.class)
-                .when(deliveryCommand)
-                .collectCommitsForPullRequest(repo1, pullRequestList1.get(1));
-        SymeoException symeoException = null;
-//        try {
-//            vcsService.collectPullRequestsForOrganization(organization);
-//        } catch (SymeoException e) {
-//            symeoException = e;
-//        }
-
-        // Then
-        assertThat(symeoException).isNotNull();
-    }
-
-    @Test
     void should_collect_pull_requests_with_commits_given_an_organization() throws SymeoException {
         // Given
         final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
@@ -176,6 +130,8 @@ public class VcsServiceTest {
                 PullRequest.builder().id(faker.pokemon().name()).number(21).build(),
                 PullRequest.builder().id(faker.hacker().abbreviation()).number(22).build()
         );
+        vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo1);
+        vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo2);
 
         when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(0)))
                 .thenReturn(pullRequestList1);
@@ -260,7 +216,8 @@ public class VcsServiceTest {
         when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(1)))
                 .thenReturn(List.of(Comment.builder().build()));
 
-//        vcsService.collectPullRequestsForOrganization(organization);
+        vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo1);
+        vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo2);
 
         // Then
         final ArgumentCaptor<List<PullRequest>> prArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -272,52 +229,6 @@ public class VcsServiceTest {
                     assertThat(pullRequest.getOrganizationId()).isEqualTo(organization.getId());
                     assertThat(pullRequest.getComments()).isNotEmpty();
                 });
-    }
-
-    @Test
-    void should_raise_an_exception_while_collection_comments() throws SymeoException {
-        // Given
-        final DeliveryCommand deliveryCommand = mock(DeliveryCommand.class);
-        final DeliveryQuery deliveryQuery = mock(DeliveryQuery.class);
-        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
-        final VcsService vcsService = new VcsService(deliveryCommand,
-                deliveryQuery, expositionStorageAdapter);
-        final String vcsOrganizationId = faker.name().name();
-        final Organization organization = Organization.builder()
-                .vcsOrganization(VcsOrganization.builder().build()).name(faker.name().firstName()).build();
-        final Repository repo1 =
-                Repository.builder().name(faker.pokemon().name() + "1").vcsOrganizationId(vcsOrganizationId).build();
-        final List<Repository> expectedRepositories = List.of(
-                repo1
-        );
-        final List<PullRequest> pullRequestList1 = List.of(
-                PullRequest.builder().id(faker.pokemon().name()).number(11).build(),
-                PullRequest.builder().id(faker.hacker().abbreviation()).number(12).build(),
-                PullRequest.builder().id(faker.animal().name()).number(13).build()
-        );
-
-        // When
-        when(deliveryQuery.readRepositoriesForOrganization(organization))
-                .thenReturn(
-                        expectedRepositories
-                );
-        when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(0)))
-                .thenReturn(pullRequestList1);
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(0)))
-                .thenReturn(List.of(Comment.builder().build()));
-
-        doThrow(SymeoException.class)
-                .when(deliveryCommand)
-                .collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(1));
-        SymeoException symeoException = null;
-//        try {
-//            vcsService.collectPullRequestsForOrganization(organization);
-//        } catch (SymeoException e) {
-//            symeoException = e;
-//        }
-
-        // Then
-        assertThat(symeoException).isNotNull();
     }
 
 

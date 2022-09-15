@@ -24,7 +24,12 @@ public class JobTest {
                 .tasks(List.of())
                 .jobRunnable(new JobRunnable() {
                     @Override
-                    public void run(List<Task> tasks) {
+                    public void run() {
+
+                    }
+
+                    @Override
+                    public void initializeTasks() throws SymeoException {
 
                     }
 

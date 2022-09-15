@@ -69,10 +69,6 @@ public class PostgresJobAdapterTestIT {
 
     private JobRunnable generateJobRunnableStubForRepositoriesCollectionJob() {
         return new JobRunnable() {
-            @Override
-            public void run(List<Task> tasks) {
-
-            }
 
             @Override
             public String getCode() {
@@ -86,6 +82,15 @@ public class PostgresJobAdapterTestIT {
                         ;
             }
 
+            @Override
+            public void run() throws SymeoException {
+
+            }
+
+            @Override
+            public void initializeTasks() throws SymeoException {
+
+            }
         };
     }
 

@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.bootstrap.it.data;
 import io.symeo.monolithic.backend.bootstrap.ITGithubJwtTokenProvider;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -384,10 +384,10 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         assertThat(repositoriesJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
         assertThat(repositoriesJobs.get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
         final List<Job> pullRequestsJobs =
-                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectVcsDataForRepositoriesJobRunnable.JOB_CODE, organization);
+                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectVcsDataForOrganizationJobRunnable.JOB_CODE, organization);
         assertThat(pullRequestsJobs).hasSize(1);
         assertThat(pullRequestsJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
-        assertThat(pullRequestsJobs.get(0).getCode()).isEqualTo(CollectVcsDataForRepositoriesJobRunnable.JOB_CODE);
+        assertThat(pullRequestsJobs.get(0).getCode()).isEqualTo(CollectVcsDataForOrganizationJobRunnable.JOB_CODE);
         final Path rawStorageOrganizationPath = Paths.get(TMP_DIR + "/" + organization.getId().toString());
         assertThat(Files.exists(rawStorageOrganizationPath)).isTrue();
         assertThat(Files.exists(rawStorageOrganizationPath.resolve("github"))).isTrue();

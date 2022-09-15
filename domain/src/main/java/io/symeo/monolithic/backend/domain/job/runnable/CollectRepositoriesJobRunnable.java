@@ -5,29 +5,44 @@ import io.symeo.monolithic.backend.domain.job.JobRunnable;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.NonNull;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
-@Data
+@Value
 @Builder
 @Slf4j
 public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<Organization> implements JobRunnable {
 
-    VcsService vcsService;
-    RepositoryService repositoryService;
+    @NonNull VcsService vcsService;
+    @NonNull RepositoryService repositoryService;
+    @NonNull AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
+    @NonNull UUID organizationId;
 
     public static final String JOB_CODE = "COLLECT_REPOSITORIES_FOR_ORGANIZATION_JOB";
 
     @Override
-    public void run(final List<Task> tasks) throws SymeoException {
-        executeAllTasks(this::collectRepositoriesForOrganization, tasks);
+    public void initializeTasks() throws SymeoException {
+        final Organization organization =
+                accountOrganizationStorageAdapter.findOrganizationById(organizationId);
+        this.tasks = new ArrayList<>(List.of(
+                Task.newTaskForInput(organization)
+        ));
+    }
+
+    @Override
+    public void run() throws SymeoException {
+        executeAllTasks(this::collectRepositoriesForOrganization);
     }
 
     private void collectRepositoriesForOrganization(Organization organization) throws SymeoException {

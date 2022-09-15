@@ -12,6 +12,7 @@ import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.service.account.*;
 import io.symeo.monolithic.backend.domain.service.insights.LeadTimeService;
 import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
+import io.symeo.monolithic.backend.domain.service.job.JobService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -134,5 +135,10 @@ public class DomainConfiguration {
     public OrganizationSettingsService organizationSettingsService(final ExpositionStorageAdapter expositionStorageAdapter,
                                                                    final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
         return new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+    }
+
+    @Bean
+    public JobFacadeAdapter jobFacadeAdapter(final JobStorage jobStorage) {
+        return new JobService(jobStorage);
     }
 }

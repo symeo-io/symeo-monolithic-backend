@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
@@ -54,12 +55,9 @@ public interface JobMapper {
     private static List<Task> taskEntityToDomain(final JobEntity jobEntity) throws IOException {
         switch (jobEntity.getCode()) {
             case CollectRepositoriesJobRunnable.JOB_CODE:
-                return Stream.of(OBJECT_MAPPER.readValue(jobEntity.getTasks(), Task[].class))
-                        .map(task -> task.toBuilder()
-                                .input(OBJECT_MAPPER.convertValue(task.getInput(), Organization.class))
-                                .build())
-                        .toList();
-            case CollectVcsDataForRepositoriesJobRunnable.JOB_CODE:
+            case InitializeOrganizationSettingsJobRunnable.JOB_CODE:
+                return mapTasksInputToOrganization(jobEntity);
+            case CollectVcsDataForOrganizationJobRunnable.JOB_CODE:
                 return Stream.of(OBJECT_MAPPER.readValue(jobEntity.getTasks(), Task[].class))
                         .map(task -> task.toBuilder()
                                 .input(OBJECT_MAPPER.convertValue(task.getInput(), Repository.class))
@@ -69,5 +67,13 @@ public interface JobMapper {
                 // TODO : handle exception
                 throw new RuntimeException();
         }
+    }
+
+    private static List<Task> mapTasksInputToOrganization(JobEntity jobEntity) throws JsonProcessingException {
+        return Stream.of(OBJECT_MAPPER.readValue(jobEntity.getTasks(), Task[].class))
+                .map(task -> task.toBuilder()
+                        .input(OBJECT_MAPPER.convertValue(task.getInput(), Organization.class))
+                        .build())
+                .toList();
     }
 }

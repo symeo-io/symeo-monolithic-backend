@@ -2,8 +2,6 @@ package io.symeo.monolithic.backend.domain.job;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -46,7 +44,8 @@ public class JobManagerTest {
 
         // Then
         verify(jobStorage, times(2)).updateJob(jobArgumentCaptor.capture());
-        verify(jobRunnableMock, times(1)).run(anyList());
+        verify(jobRunnableMock, times(1)).run();
+        verify(jobRunnableMock, times(1)).initializeTasks();
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
         assertThat(captorAllValues.get(0)).isEqualTo(job);
         assertThat(captorAllValues.get(1)).isEqualTo(jobStarted);
@@ -70,8 +69,13 @@ public class JobManagerTest {
         final Task expectedTask = Task.builder().input(faker.name().firstName()).build();
         final JobRunnable jobRunnableMock = new JobRunnable() {
             @Override
-            public void run(List<Task> tasks) throws SymeoException {
+            public void run() throws SymeoException {
                 throw symeoException;
+            }
+
+            @Override
+            public void initializeTasks() throws SymeoException {
+
             }
 
             @Override
@@ -168,8 +172,10 @@ public class JobManagerTest {
 
         // Then
         verify(jobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
-        verify(jobRunnableMock, times(1)).run(expectedTasks);
-        verify(nextJobRunnableMock, times(1)).run(nextExpectedTasks);
+        verify(jobRunnableMock, times(1)).run();
+        verify(jobRunnableMock, times(1)).initializeTasks();
+        verify(nextJobRunnableMock, times(1)).run();
+        verify(nextJobRunnableMock, times(1)).initializeTasks();
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
         assertThat(captorAllValues.get(0)).isEqualTo(jobStarted);
         assertThat(captorAllValues.get(0).getTasks()).isEqualTo(expectedTasks);
@@ -182,84 +188,6 @@ public class JobManagerTest {
 
     }
 
-    @Test
-    void should_find_all_jobs_order_by_update_date_desc_given_a_code_and_organization() throws SymeoException {
-        // Given
-        final Executor executor = Runnable::run;
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobManager jobManager = new JobManager(executor, jobStorage);
-        final Organization organization = Organization.builder().build();
-
-        // When
-        final List<Job> allJobsByCodeAndOrganizationOrderByUpdateDate =
-                jobManager.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectRepositoriesJobRunnable.JOB_CODE, organization);
-
-        // Then
-        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<Organization> organizationArgumentCaptor = ArgumentCaptor.forClass(Organization.class);
-        verify(jobStorage, times(1))
-                .findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(stringArgumentCaptor.capture(),
-                        organizationArgumentCaptor.capture());
-        assertThat(stringArgumentCaptor.getValue()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
-        assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
-    }
-
-    @Test
-    void find_last_jobs_for_code_and_organization_and_limit() throws SymeoException {
-        // Given
-        final Executor executor = Runnable::run;
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobManager jobManager = new JobManager(executor, jobStorage);
-        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
-        final int numberOfJobToFind = faker.number().randomDigit();
-        final String jobCode = faker.ancient().god();
-
-
-        // When
-        jobManager.findLastJobsForCodeAndOrganizationAndLimit(jobCode, organization, numberOfJobToFind);
-
-        // Then
-        final ArgumentCaptor<String> jobCodeCaptor = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<Organization> organizationArgumentCaptor = ArgumentCaptor.forClass(Organization.class);
-        final ArgumentCaptor<Integer> integerArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
-        verify(jobStorage, times(1)).findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCodeCaptor.capture(),
-                organizationArgumentCaptor.capture(), integerArgumentCaptor.capture());
-        assertThat(jobCodeCaptor.getValue()).isEqualTo(jobCode);
-        assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
-        assertThat(integerArgumentCaptor.getValue()).isEqualTo(numberOfJobToFind);
-    }
-
-
-    @Test
-    void should_find_all_failed_jobs_given_an_organization_id_and_a_team_id() throws SymeoException {
-        // Given
-        final Executor executor = Runnable::run;
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobManager jobManager = new JobManager(executor, jobStorage);
-        final UUID organizationId = UUID.randomUUID();
-        final UUID teamId = UUID.randomUUID();
-
-        // When
-        final List<Job> failedJobs = List.of(
-                Job.builder()
-                        .id(4L)
-                        .code(faker.dragonBall().character() + "-4")
-                        .status(Job.FAILED)
-                        .organizationId(organizationId)
-                        .teamId(teamId)
-                        .tasks(List.of())
-                        .build()
-        );
-        when(jobStorage.findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(organizationId, teamId))
-                .thenReturn(
-                        failedJobs
-                );
-        final List<Job> lastFailedJobsForOrganizationIdAndTeamIdForEachJobCode =
-                jobManager.findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(organizationId, teamId);
-
-        // Then
-        assertThat(lastFailedJobsForOrganizationIdAndTeamIdForEachJobCode).isEqualTo(failedJobs);
-    }
 
     @Test
     void should_restart_failed_jobs() throws SymeoException {
@@ -297,8 +225,8 @@ public class JobManagerTest {
         // Then
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
         verify(jobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
-        verify(failedJobRunnable1, times(1)).run(List.of());
-        verify(failedJobRunnable2, times(1)).run(List.of());
+        verify(failedJobRunnable1, times(1)).run();
+        verify(failedJobRunnable2, times(1)).run();
         assertThat(jobArgumentCaptor.getAllValues().get(0).getStatus()).isEqualTo(Job.RESTARTED);
         assertThat(jobArgumentCaptor.getAllValues().get(2).getStatus()).isEqualTo(Job.RESTARTED);
         assertThat(jobArgumentCaptor.getAllValues().get(1).getStatus()).isEqualTo(Job.FINISHED);
