@@ -9,7 +9,11 @@ import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAda
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
+import java.util.UUID;
+
+import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 
 @AllArgsConstructor
 public class OrganizationSettingsService implements OrganizationSettingsFacade {
@@ -40,5 +44,23 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
                                         organization.getId()))
                                 .build()
                 );
+    }
+
+    @Override
+    public void updateOrganizationSettings(final OrganizationSettings organizationSettings) throws SymeoException {
+        try {
+            accountOrganizationStorageAdapter.saveOrganizationSettings(organizationSettings);
+        } catch (Exception e) {
+            throw SymeoException.builder()
+                    .code(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND)
+                    .message(String.format("OrganizationSettings not found for organizationSettingsId %s",
+                            organizationSettings))
+                    .build();
+        }
+    }
+
+    @Override
+    public Optional<OrganizationSettings> getOrganizationSettingsForId(UUID organizationSettingsId) {
+        return accountOrganizationStorageAdapter.findOrganizationSettingsForId(organizationSettingsId);
     }
 }

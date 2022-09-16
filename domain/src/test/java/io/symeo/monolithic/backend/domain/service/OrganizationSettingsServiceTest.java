@@ -4,6 +4,8 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
@@ -123,5 +125,72 @@ public class OrganizationSettingsServiceTest {
         assertThat(expectedSymeoException.getCode()).isEqualTo(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND);
         assertThat(expectedSymeoException.getMessage()).isEqualTo(String.format("OrganizationSettings not found for " +
                 "organizationId %s", organization.getId()));
+    }
+
+    @Test
+    void should_get_organization_settings_given_an_organization_settings_id() throws SymeoException {
+        // Given
+        final UUID organizationSettingsId = UUID.randomUUID();
+        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
+                mock(AccountOrganizationStorageAdapter.class);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final OrganizationSettingsService organizationSettingsService =
+                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+        final Optional<OrganizationSettings> optionalOrganizationSettings = Optional.of(OrganizationSettings.builder()
+                .id(organizationSettingsId)
+                .organizationId(UUID.randomUUID())
+                .deliverySettings(
+                        DeliverySettings.builder()
+                                .deployDetectionSettings(
+                                        DeployDetectionSettings.builder()
+                                                .tagRegex(faker.gameOfThrones().dragon())
+                                                .pullRequestMergedOnBranchRegex(faker.rickAndMorty().character())
+                                                .build()
+                                )
+                                .build()
+                )
+                .build());
+
+        // When
+        when(accountOrganizationStorageAdapter.findOrganizationSettingsForId(organizationSettingsId))
+                .thenReturn(optionalOrganizationSettings);
+        final Optional<OrganizationSettings> organizationSettings =
+                organizationSettingsService.getOrganizationSettingsForId(organizationSettingsId);
+
+        // Then
+        assertThat(organizationSettings).isEqualTo(optionalOrganizationSettings);
+    }
+
+    @Test
+    void should_update_organization_settings_given_organization_settings() throws SymeoException {
+        // Given
+        final UUID organizationSettingsId = UUID.randomUUID();
+        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
+                mock(AccountOrganizationStorageAdapter.class);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final OrganizationSettingsService organizationSettingsService =
+                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+        final OrganizationSettings organizationSettings = OrganizationSettings.builder()
+                .id(organizationSettingsId)
+                .organizationId(UUID.randomUUID())
+                .deliverySettings(
+                        DeliverySettings.builder()
+                                .deployDetectionSettings(
+                                        DeployDetectionSettings.builder()
+                                                .tagRegex(faker.gameOfThrones().dragon())
+                                                .pullRequestMergedOnBranchRegex(faker.rickAndMorty().character())
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
+
+        // When
+        accountOrganizationStorageAdapter.saveOrganizationSettings(organizationSettings);
+
+        // Then
+        verify(accountOrganizationStorageAdapter,times(1)).saveOrganizationSettings(organizationSettings);
+
+
     }
 }
