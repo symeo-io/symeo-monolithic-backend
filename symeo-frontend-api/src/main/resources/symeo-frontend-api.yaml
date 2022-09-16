@@ -1298,6 +1298,7 @@ paths:
                 $ref: '#/components/schemas/OrganizationSettingsResponseContract'
               example:
                 settings:
+                  id: id
                   delivery:
                     deploy_detection:
                       tag_regex: null
@@ -1322,6 +1323,50 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+    patch:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Organization
+      summary: Update organization settings
+      operationId: updateOrganizationSettings
+      description: |
+        Update organization settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationSettingsContract'
+      responses:
+        "200":
+          description: 'Successfully change organization settings'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationSettingsResponseContract'
+              example:
+                settings:
+                  delivery:
+                    deploy_detection:
+                      tag_regex: null
+                      pull_request_merged_on_branch_regex: ^staging$
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+
 
 components:
   securitySchemes:
@@ -1905,6 +1950,8 @@ components:
     OrganizationSettingsContract:
       type: object
       properties:
+        id:
+          type: string
         delivery:
           $ref: '#/components/schemas/DeliverySettingsContract'
     DeliverySettingsContract:
