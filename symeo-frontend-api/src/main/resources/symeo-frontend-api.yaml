@@ -1952,6 +1952,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
         delivery:
           $ref: '#/components/schemas/DeliverySettingsContract'
     DeliverySettingsContract:
