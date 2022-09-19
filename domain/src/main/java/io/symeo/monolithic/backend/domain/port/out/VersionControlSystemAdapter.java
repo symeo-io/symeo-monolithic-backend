@@ -19,9 +19,13 @@ public interface VersionControlSystemAdapter {
 
     List<PullRequest> pullRequestsBytesToDomain(byte[] bytes);
 
-    byte[] getRawCommits(final String vcsOrganizationName,
-                         final String repositoryName,
-                         final int pullRequestNumber) throws SymeoException;
+    byte[] getRawCommitsForPullRequestNumber(final String vcsOrganizationName,
+                                             final String repositoryName,
+                                             final int pullRequestNumber) throws SymeoException;
+
+    byte[] getRawCommitsForRepository(final String vcsOrganizationName,
+                                      final String repositoryName,
+                                      final byte[] alreadyCollectedCommits) throws SymeoException;
 
     List<Commit> commitsBytesToDomain(byte[] rawCommits);
 

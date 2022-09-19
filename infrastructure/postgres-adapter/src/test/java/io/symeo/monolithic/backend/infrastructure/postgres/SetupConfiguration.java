@@ -13,7 +13,7 @@ public class SetupConfiguration extends BaseTestConfiguration {
   @Bean
   public DataSource hikariDataSource() {
     HikariConfig hikari = new HikariConfig();
-    hikari.setJdbcUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1");
+    hikari.setJdbcUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;INIT=create domain if not exists jsonb as text;MODE=PostgreSQL");
     hikari.setPassword("sa");
     hikari.setUsername("sa");
     hikari.setAutoCommit(true);

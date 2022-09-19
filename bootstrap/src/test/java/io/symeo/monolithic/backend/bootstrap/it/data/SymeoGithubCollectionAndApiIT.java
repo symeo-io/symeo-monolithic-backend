@@ -3,8 +3,8 @@ package io.symeo.monolithic.backend.bootstrap.it.data;
 import io.symeo.monolithic.backend.bootstrap.ITGithubJwtTokenProvider;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationAndTeamJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
@@ -135,7 +135,8 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
     @Order(2)
     @Test
-    void should_collect_github_repositories_with_pull_requests_and_commits_for_a_given_organization() throws SymeoException, IOException, InterruptedException {
+    void should_collect_github_repositories_for_a_given_organization() throws SymeoException, IOException,
+            InterruptedException {
         // Given
         jsonStorageProperties.setRootDirectory(TMP_DIR);
         final GithubInstallationDTO[] githubInstallationDTOS = getStubsFromClassT("github_stubs",
@@ -193,9 +194,62 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                                 )
                         )
         );
+
+        // When
+        client.get()
+                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_id",
+                        organizationId.toString()))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful();
+
+        Thread.sleep(2000L);
+        final List<Job> repositoriesJobs =
+                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectRepositoriesJobRunnable.JOB_CODE, organization);
+        assertThat(repositoriesJobs).hasSize(1);
+        assertThat(repositoriesJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
+        assertThat(repositoriesJobs.get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
+        final Path rawStorageOrganizationPath = Paths.get(TMP_DIR + "/" + organization.getId().toString());
+        assertThat(Files.exists(rawStorageOrganizationPath)).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github"))).isTrue();
+        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("repositories.json"))).isTrue();
+        final List<RepositoryEntity> allRepositoryEntities = repositoryRepository.findAll();
+        assertThat(allRepositoryEntities).hasSize(githubRepositoryDTOS.length);
+        allRepositoryEntities.forEach(repositoryEntity -> assertThat(repositoryEntity.getOrganizationId()).isEqualTo(organization.getId()));
+
+    }
+
+
+    @Test
+    void should_collect_github_vcs_data_for_a_given_organization() throws IOException, SymeoException,
+            InterruptedException {
+        // Given
+        final GithubInstallationDTO[] githubInstallationDTOS = getStubsFromClassT("github_stubs",
+                "get_app_installations.json", GithubInstallationDTO[].class);
+        final GithubInstallationDTO githubInstallationDTO = githubInstallationDTOS[0];
+        final String organizationName = githubInstallationDTO.getAccount().getLogin();
+        final GithubInstallationAccessTokenDTO githubInstallationAccessTokenDTO = getStubsFromClassT(
+                "github_stubs",
+                "post_app_installation_1.json",
+                GithubInstallationAccessTokenDTO.class);
+        final GithubRepositoryDTO[] githubRepositoryDTOS = updateRepositoryOrganization(getStubsFromClassT(
+                "github_stubs",
+                "get_repositories_page_0.json",
+                GithubRepositoryDTO[].class), organizationName);
         final GithubPullRequestDTO[] githubPullRequestDTOS = updatePullRequestsDates(getStubsFromClassT("github_stubs"
                 , "get_pr_repo_1.json",
                 GithubPullRequestDTO[].class));
+        teamRepository.save(
+                TeamEntity.builder()
+                        .organizationId(organizationId)
+                        .name(FAKER.name().firstName())
+                        .id(UUID.randomUUID())
+                        .repositoryIds(List.of(repositoryRepository.findAll().get(0).getId()))
+                        .build()
+        );
+
+        // When
         wireMockServer.stubFor(
                 get(
                         urlEqualTo(String.format("/repos/%s/%s/pulls?sort=updated&direction=desc&state=all&per_page" +
@@ -222,7 +276,6 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                                 )
                         )
         );
-
         wireMockServer.stubFor(
                 get(
                         urlEqualTo(String.format("/repos/%s/%s/pulls/%s", organizationName,
@@ -368,8 +421,6 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                                 )
                         )
         );
-
-        // When
         client.get()
                 .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_id",
                         organizationId.toString()))
@@ -377,29 +428,19 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                 // Then
                 .expectStatus()
                 .is2xxSuccessful();
+        Thread.sleep(2000);
 
-        Thread.sleep(2000L);
-        final List<Job> repositoriesJobs =
-                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectRepositoriesJobRunnable.JOB_CODE, organization);
-        assertThat(repositoriesJobs).hasSize(1);
-        assertThat(repositoriesJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
-        assertThat(repositoriesJobs.get(0).getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
+        // Then
+        final Organization organization = accountOrganizationStorageAdapter.findOrganizationById(organizationId);
         final List<Job> pullRequestsJobs =
-                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectPullRequestsJobRunnable.JOB_CODE, organization);
-        assertThat(pullRequestsJobs).hasSize(1);
+                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organization);
+        assertThat(pullRequestsJobs).hasSize(2);
         assertThat(pullRequestsJobs.get(0).getStatus()).isEqualTo(Job.FINISHED);
-        assertThat(pullRequestsJobs.get(0).getCode()).isEqualTo(CollectPullRequestsJobRunnable.JOB_CODE);
+        assertThat(pullRequestsJobs.get(0).getCode()).isEqualTo(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE);
+        assertThat(pullRequestsJobs.get(0).getOrganizationId()).isEqualTo(organizationId);
         final Path rawStorageOrganizationPath = Paths.get(TMP_DIR + "/" + organization.getId().toString());
-        assertThat(Files.exists(rawStorageOrganizationPath)).isTrue();
-        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github"))).isTrue();
-        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("repositories.json"))).isTrue();
         assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_github-495382833" +
                 ".json"))).isTrue();
-        assertThat(Files.exists(rawStorageOrganizationPath.resolve("github").resolve("pull_requests_github-512630813" +
-                ".json"))).isTrue();
-        final List<RepositoryEntity> allRepositoryEntities = repositoryRepository.findAll();
-        assertThat(allRepositoryEntities).hasSize(githubRepositoryDTOS.length);
-        allRepositoryEntities.forEach(repositoryEntity -> assertThat(repositoryEntity.getOrganizationId()).isEqualTo(organization.getId()));
         final List<PullRequestEntity> allPullRequestEntities = pullRequestRepository.findAll();
         assertThat(allPullRequestEntities).hasSize(githubPullRequestDTOS.length);
         allPullRequestEntities.forEach(pullRequestEntity -> {

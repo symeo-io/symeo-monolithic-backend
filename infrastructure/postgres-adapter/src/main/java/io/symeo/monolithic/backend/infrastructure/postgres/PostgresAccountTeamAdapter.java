@@ -42,6 +42,7 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
         } catch (Exception e) {
             LOGGER.error("Failed to create teams {}", teams, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to create teams " + String.join(",", teams.stream().map(Team::getName).toList()))
                     .build();
@@ -59,6 +60,7 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
         } catch (Exception e) {
             LOGGER.error("Failed to find teams for organization {}", organization, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to find teams by organization " + organization.toString())
                     .build();
@@ -74,6 +76,7 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
             final String message = String.format("Failed to delete team for id %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -88,6 +91,7 @@ public class PostgresAccountTeamAdapter implements AccountTeamStorage {
             final String message = String.format("Failed to update team %s", team);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();

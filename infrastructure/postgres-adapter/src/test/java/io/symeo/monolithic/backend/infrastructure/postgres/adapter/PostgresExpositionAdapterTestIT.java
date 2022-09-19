@@ -15,6 +15,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.Com
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
+import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
@@ -556,6 +557,99 @@ public class PostgresExpositionAdapterTestIT {
         assertThat(branch1).isEqualTo(defaultBranch1);
         assertThat(branch2).isEqualTo(defaultBranch2);
     }
+
+    @Test
+    void should_find_repositories_given_a_team_id_and_an_organization_id() throws SymeoException {
+        // Given
+        final String vcsOrganizationName = faker.name().name();
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .name(faker.animal().name())
+                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
+                .build();
+        organizationRepository.save(OrganizationMapper.domainToEntity(organization));
+        final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(List.of(
+                RepositoryEntity.builder().id(faker.dragonBall().character())
+                        .organizationId(organization.getId())
+                        .name(faker.ancient().god() + "-1")
+                        .defaultBranch(faker.ancient().hero())
+                        .vcsOrganizationName(vcsOrganizationName)
+                        .build(),
+                RepositoryEntity.builder().id(faker.rickAndMorty().character())
+                        .name(faker.ancient().god() + "-2")
+                        .defaultBranch(faker.ancient().hero())
+                        .organizationId(organization.getId())
+                        .vcsOrganizationName(vcsOrganizationName)
+                        .build()
+        ));
+        final TeamEntity teamEntity = teamRepository.save(
+                TeamEntity.builder()
+                        .organizationId(organization.getId())
+                        .name(faker.name().firstName())
+                        .id(UUID.randomUUID())
+                        .repositoryIds(
+                                repositoryEntities.stream().map(RepositoryEntity::getId).toList()
+                        )
+                        .build());
+
+        // When
+        final List<Repository> allRepositoriesForOrganizationIdAndTeamId =
+                postgresExpositionAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(),
+                        teamEntity.getId());
+
+        // Then
+        final List<Repository> expectedRepositories =
+                repositoryEntities.stream().map(RepositoryMapper::entityToDomain).toList();
+        allRepositoriesForOrganizationIdAndTeamId.forEach(repository ->
+                assertThat(expectedRepositories.stream()
+                        .anyMatch(expectedRepository -> expectedRepository.equals(repository)))
+                        .isTrue()
+        );
+    }
+
+    @Test
+    void should_find_repositories_given_an_organization_id() throws SymeoException {
+        // Given
+        final String vcsOrganizationName = faker.name().name();
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .name(faker.animal().name())
+                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
+                .build();
+        organizationRepository.save(OrganizationMapper.domainToEntity(organization));
+        final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(List.of(
+                RepositoryEntity.builder().id(faker.dragonBall().character())
+                        .organizationId(organization.getId())
+                        .name(faker.ancient().god() + "-1")
+                        .defaultBranch(faker.ancient().hero())
+                        .vcsOrganizationName(vcsOrganizationName)
+                        .build(),
+                RepositoryEntity.builder().id(faker.rickAndMorty().character())
+                        .name(faker.ancient().god() + "-2")
+                        .defaultBranch(faker.ancient().hero())
+                        .organizationId(organization.getId())
+                        .vcsOrganizationName(vcsOrganizationName)
+                        .build()
+        ));
+        teamRepository.save(
+                TeamEntity.builder()
+                        .organizationId(organization.getId())
+                        .name(faker.name().firstName())
+                        .id(UUID.randomUUID())
+                        .repositoryIds(
+                                List.of(repositoryEntities.get(0).getId())
+                        )
+                        .build());
+
+        // When
+        final List<Repository> allRepositoriesForOrganizationIdAndTeamId =
+                postgresExpositionAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(organization.getId());
+
+        // Then
+        assertThat(allRepositoriesForOrganizationIdAndTeamId).hasSize(1);
+        assertThat(allRepositoriesForOrganizationIdAndTeamId.get(0).getId()).isEqualTo(repositoryEntities.get(0).getId());
+    }
+
 
     private Repository buildRepository(Organization organization) {
         return Repository.builder()

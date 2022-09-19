@@ -12,6 +12,7 @@ import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.service.account.*;
 import io.symeo.monolithic.backend.domain.service.insights.LeadTimeService;
 import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
+import io.symeo.monolithic.backend.domain.service.job.JobService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -51,9 +52,11 @@ public class DomainConfiguration {
                                                              final RepositoryService repositoryService,
                                                              final JobManager jobManager,
                                                              final SymeoJobApiAdapter symeoJobApiAdapter,
-                                                             final OrganizationSettingsService organizationSettingsService) {
+                                                             final OrganizationSettingsService organizationSettingsService,
+                                                             final ExpositionStorageAdapter expositionStorageAdapter) {
         return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter,
-                repositoryService, jobManager, symeoJobApiAdapter, organizationSettingsService);
+                repositoryService, jobManager, symeoJobApiAdapter, organizationSettingsService,
+                expositionStorageAdapter);
     }
 
     @Bean
@@ -81,8 +84,9 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public TeamFacadeAdapter teamFacadeAdapter(final AccountTeamStorage accountTeamStorage) {
-        return new TeamService(accountTeamStorage);
+    public TeamFacadeAdapter teamFacadeAdapter(final AccountTeamStorage accountTeamStorage,
+                                               final DataProcessingJobAdapter dataProcessingJobAdapter) {
+        return new TeamService(accountTeamStorage, dataProcessingJobAdapter);
     }
 
     @Bean
@@ -131,5 +135,10 @@ public class DomainConfiguration {
     public OrganizationSettingsService organizationSettingsService(final ExpositionStorageAdapter expositionStorageAdapter,
                                                                    final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
         return new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+    }
+
+    @Bean
+    public JobFacadeAdapter jobFacadeAdapter(final JobStorage jobStorage) {
+        return new JobService(jobStorage);
     }
 }

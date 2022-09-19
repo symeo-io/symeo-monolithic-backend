@@ -23,4 +23,21 @@ public interface RepositoryRepository extends JpaRepository<RepositoryEntity, St
                     "      order by count desc" +
                     "      limit 1) as result")
     String findDefaultMostUsedBranchForOrganizationId(@Param("organizationId") UUID organizationId);
+
+    @Query(nativeQuery = true,
+            value = "select distinct r.*" +
+                    " from exposition_storage.team_to_repository ttr" +
+                    " left join exposition_storage.repository r on r.id = ttr.repository_id" +
+                    " where ttr.team_id = :teamId" +
+                    " and r.organization_id = :organizationId")
+    List<RepositoryEntity> findAllRepositoriesForOrganizationIdAndTeamId(@Param("organizationId") UUID organizationId,
+                                                                         @Param("teamId") UUID teamId);
+
+
+    @Query(nativeQuery = true,
+            value = "select distinct r.*" +
+                    " from exposition_storage.team_to_repository ttr" +
+                    " left join exposition_storage.repository r on r.id = ttr.repository_id" +
+                    " and r.organization_id = :organizationId")
+    List<RepositoryEntity> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId);
 }

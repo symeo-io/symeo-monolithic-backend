@@ -5,6 +5,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.Team;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.domain.port.in.TeamFacadeAdapter;
 import io.symeo.monolithic.backend.domain.port.out.AccountTeamStorage;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class TeamService implements TeamFacadeAdapter {
 
     private final AccountTeamStorage accountTeamStorage;
+    private final DataProcessingJobAdapter dataProcessingJobAdapter;
 
     @Override
     public List<Team> createTeamsForNameAndRepositoriesAndUser(final Map<String, List<String>> repositoryIdsMappedToTeamName,
@@ -31,7 +33,12 @@ public class TeamService implements TeamFacadeAdapter {
                         .organizationId(user.getOrganization().getId())
                         .build()
         ));
-        return accountTeamStorage.createTeamsForUser(teams, user);
+        final List<Team> createdTeams = accountTeamStorage.createTeamsForUser(teams, user);
+        for (Team createdTeam : createdTeams) {
+            dataProcessingJobAdapter.startToCollectVcsDataForOrganizationIdAndTeamId(user.getOrganization().getId(),
+                    createdTeam.getId());
+        }
+        return createdTeams;
     }
 
     @Override

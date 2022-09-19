@@ -14,9 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static java.util.Objects.nonNull;
 
 @AllArgsConstructor
 @Slf4j
@@ -26,87 +23,47 @@ public class VcsService {
     private final DeliveryQuery deliveryQuery;
     private final ExpositionStorageAdapter expositionStorageAdapter;
 
-    public void collectPullRequestsForOrganization(final Organization organization) throws SymeoException {
-        getPullRequestsForOrganizationAccount(organization);
+    public void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Organization organization,
+                                                                                      Repository repository) throws SymeoException {
+        final List<PullRequest> pullRequests = new ArrayList<>();
+        for (PullRequest pullRequest : collectPullRequestForRepository(repository)) {
+            final PullRequest updatedPullRequest = pullRequest.toBuilder()
+                    .organizationId(organization.getId())
+                    .vcsOrganizationId(organization.getVcsOrganization().getVcsId())
+                    .build();
+            pullRequests.add(updatedPullRequest.toBuilder()
+                    .commits(collectCommitsForRepositoryAndPullRequest(repository, updatedPullRequest))
+                    .comments(collectCommentsForRepositoryAndPullRequest(repository, updatedPullRequest))
+                    .build());
+        }
+        expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequests);
     }
 
-    private void getPullRequestsForOrganizationAccount(final Organization organization) throws SymeoException {
-        final AtomicReference<SymeoException> symeoExceptionAtomicReference = new AtomicReference<>();
-        deliveryQuery.readRepositoriesForOrganization(organization)
-                .stream()
-                .map(repository -> repository.toBuilder().organizationId(organization.getId()).build())
-                .forEach(
-                        repository -> {
-                            try {
-                                collectAndSavePullRequestsDetailsWithCommitsAndComments(organization,
-                                        symeoExceptionAtomicReference, repository);
-                            } catch (SymeoException e) {
-                                LOGGER.error("Error while collecting PR for repository {}", repository, e);
-                                symeoExceptionAtomicReference.set(e);
-                            }
-                        }
-                );
-        if (nonNull(symeoExceptionAtomicReference.get())) {
-            throw symeoExceptionAtomicReference.get();
+
+    public void collectCommitsForOrganization(Organization organization) throws SymeoException {
+        for (Repository repository : deliveryQuery.readRepositoriesForOrganization(organization)) {
+            List<Commit> commits = deliveryCommand.collectCommitsForRepository(repository);
+            expositionStorageAdapter.saveCommits(commits);
         }
     }
 
-    private void collectAndSavePullRequestsDetailsWithCommitsAndComments(Organization organization,
-                                                                         AtomicReference<SymeoException> symeoExceptionAtomicReference,
-                                                                         Repository repository) throws SymeoException {
-        expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(collectPullRequestForRepository(repository)
-                .stream()
-                .map(pullRequest -> pullRequest.toBuilder()
-                        .organizationId(organization.getId())
-                        .vcsOrganizationId(organization.getVcsOrganization().getId())
-                        .build()
-                )
-                .map(pullRequest -> populatePullRequestWithCommits(symeoExceptionAtomicReference, repository,
-                        pullRequest))
-                .map(pullRequest -> populatePullRequestWithComments(symeoExceptionAtomicReference, repository,
-                        pullRequest))
-                .toList());
+    public List<String> collectAllBranchesForOrganizationAndRepository(final Organization organization,
+                                                                       final Repository repository) {
+        return List.of();
     }
 
-    private PullRequest populatePullRequestWithCommits(final AtomicReference<SymeoException> symeoExceptionAtomicReference,
-                                                       final Repository repository, final PullRequest pullRequest) {
-        List<Commit> commits;
-        try {
-            commits = collectCommitsForRepositoryAndPullRequest(repository, pullRequest);
-        } catch (SymeoException e) {
-            LOGGER.error("Error while collection commits for PR {}",
-                    pullRequest, e);
-            symeoExceptionAtomicReference.set(e);
-            commits = new ArrayList<>();
-        }
-        return pullRequest.toBuilder()
-                .commits(commits)
-                .build();
-    }
+    public void collectCommitsForForOrganizationAndRepositoryAndBranch(final Organization organization,
+                                                                       final Repository repository,
+                                                                       final String branch) {
 
-    private PullRequest populatePullRequestWithComments(final AtomicReference<SymeoException> symeoExceptionAtomicReference,
-                                                        final Repository repository, final PullRequest pullRequest) {
-        List<Comment> comments;
-        try {
-            comments = collectCommentsForRepositoryAndPullRequest(repository, pullRequest);
-        } catch (SymeoException e) {
-            LOGGER.error("Error while collection comments for PR {}",
-                    pullRequest, e);
-            symeoExceptionAtomicReference.set(e);
-            comments = new ArrayList<>();
-        }
-        return pullRequest.toBuilder()
-                .comments(comments)
-                .build();
-    }
-
-
-    private List<PullRequest> collectPullRequestForRepository(final Repository repository) throws SymeoException {
-        return deliveryCommand.collectPullRequestsForRepository(repository);
     }
 
     public List<Repository> collectRepositoriesForOrganization(Organization organization) throws SymeoException {
         return deliveryCommand.collectRepositoriesForOrganization(organization);
+    }
+
+    private List<PullRequest> collectPullRequestForRepository(final Repository repository) throws SymeoException {
+        return deliveryCommand.collectPullRequestsForRepository(repository);
     }
 
     private List<Commit> collectCommitsForRepositoryAndPullRequest(final Repository repository,

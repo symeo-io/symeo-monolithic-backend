@@ -46,21 +46,22 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
                             getBucketKey(organizationId.toString(), adapterName, contentName)));
             return IOUtils.toByteArray(s3Object.getObjectContent());
         } catch (SdkClientException sdkClientException) {
-            throw getSymeoException("A technical error happened with AWS API", AWS_API_EXCEPTION);
+            throw getSymeoException("A technical error happened with AWS API", AWS_API_EXCEPTION, sdkClientException);
         } catch (IOException e) {
-            throw getSymeoException("Failed to serialize AWS S3 Content", AWS_S3_SERIALIZATION_EXCEPTION);
+            throw getSymeoException("Failed to serialize AWS S3 Content", AWS_S3_SERIALIZATION_EXCEPTION, e);
         }
     }
 
     @Override
     public boolean exists(UUID organizationId, String adapterName, String contentName) throws SymeoException {
         try {
-            return amazonS3.doesObjectExist(amazonS3Properties.getRawBucketName(), getBucketKey(organizationId.toString(),
-                    adapterName, contentName));
+            return amazonS3.doesObjectExist(amazonS3Properties.getRawBucketName(),
+                    getBucketKey(organizationId.toString(),
+                            adapterName, contentName));
         } catch (SdkClientException sdkClientException) {
             LOGGER.error("Error while checking if bucket {} {} {} exists", organizationId, adapterName,
                     contentName, sdkClientException);
-            throw getSymeoException("A technical error happened with AWS API", AWS_API_EXCEPTION);
+            throw getSymeoException("A technical error happened with AWS API", AWS_API_EXCEPTION, sdkClientException);
         }
     }
 
@@ -79,7 +80,7 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
             }
         } catch (SdkClientException sdkClientException) {
             LOGGER.error("A technical exception happened with AWS SDK Client", sdkClientException);
-            throw getSymeoException("A technical error happened with AWS API", AWS_API_EXCEPTION);
+            throw getSymeoException("A technical error happened with AWS API", AWS_API_EXCEPTION, sdkClientException);
         }
     }
 

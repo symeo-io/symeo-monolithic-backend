@@ -34,7 +34,7 @@ paths:
     get:
       tags:
         - DataProcessingJob
-      summary: Start data collection jobs for all organizations
+      summary: Start data collection jobs for all teams of all organizations
       operationId: startAllDataCollectionJobs
       description: |
         Start to collect and process data from clients' platforms

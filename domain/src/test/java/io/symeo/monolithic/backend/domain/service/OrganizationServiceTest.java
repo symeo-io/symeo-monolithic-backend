@@ -61,7 +61,7 @@ public class OrganizationServiceTest {
 
         // Then
         assertThat(result).isEqualTo(expectedOrganization);
-        verify(dataProcessingJobAdapter, times(1)).start(uuiDArgumentCaptor.capture());
+        verify(dataProcessingJobAdapter, times(1)).startToCollectRepositoriesForOrganizationId(uuiDArgumentCaptor.capture());
         assertThat(uuiDArgumentCaptor.getValue()).isEqualTo(organization.getId());
     }
 }

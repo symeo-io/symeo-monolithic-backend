@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper.mapPullRequestDtoToDomain;
 import static java.util.Objects.isNull;
 
 @AllArgsConstructor
@@ -83,7 +84,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                                                   final byte[] alreadyRawCollectedPullRequests) throws SymeoException {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
-                this.githubHttpClient.getPullRequestsForRepositoryAndOrganization(
+                this.githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
                         repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
         if (isNull(githubPullRequestDTOS) || githubPullRequestDTOS.length == 0) {
             return new byte[0];
@@ -93,7 +94,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         while (githubPullRequestDTOS.length == properties.getSize()) {
             page += 1;
             githubPullRequestDTOS =
-                    this.githubHttpClient.getPullRequestsForRepositoryAndOrganization(
+                    this.githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
                             repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
             githubPullRequestDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
         }
@@ -101,7 +102,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         try {
             List<GithubPullRequestDTO> githubDetailedPullRequests = null;
             if (alreadyRawCollectedPullRequests == null || alreadyRawCollectedPullRequests.length == 0) {
-                githubDetailedPullRequests = new ArrayList<>(getGithubPullRequestDTOsWithParallelStream(repository,
+                githubDetailedPullRequests = new ArrayList<>(getGithubPullRequestDTOs(repository,
                         githubPullRequestDTOList));
             } else {
                 githubDetailedPullRequests = getIncrementalGithubPullRequests(repository,
@@ -117,9 +118,9 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     }
 
-    private List<GithubPullRequestDTO> getGithubPullRequestDTOsWithParallelStream(Repository repository,
-                                                                                  List<GithubPullRequestDTO> githubPullRequestDTOList) {
-        return githubPullRequestDTOList.parallelStream()
+    private List<GithubPullRequestDTO> getGithubPullRequestDTOs(Repository repository,
+                                                                List<GithubPullRequestDTO> githubPullRequestDTOList) {
+        return githubPullRequestDTOList.stream()
                 .map(githubPullRequestDTO -> {
                     try {
                         return Optional.of(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
@@ -175,7 +176,9 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                 return List.of();
             }
             final GithubPullRequestDTO[] githubPullRequestDTOS = getGithubPullRequestDTOSFromBytes(bytes);
-            return Arrays.stream(githubPullRequestDTOS).map(githubPullRequestDTO -> GithubMapper.mapPullRequestDtoToDomain(githubPullRequestDTO, this.getName())).toList();
+            return Arrays.stream(githubPullRequestDTOS)
+                    .map(githubPullRequestDTO -> mapPullRequestDtoToDomain(githubPullRequestDTO, this.getName()))
+                    .toList();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -197,9 +200,9 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
 
     @Override
-    public byte[] getRawCommits(final String vcsOrganizationName,
-                                final String repositoryName,
-                                final int pullRequestNumber) throws SymeoException {
+    public byte[] getRawCommitsForPullRequestNumber(final String vcsOrganizationName,
+                                                    final String repositoryName,
+                                                    final int pullRequestNumber) throws SymeoException {
         final GithubCommitsDTO[] githubCommitsDTO = githubHttpClient.getCommitsForPullRequestNumber(vcsOrganizationName,
                 repositoryName, pullRequestNumber);
         try {
@@ -248,6 +251,33 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                         repositoryName, pullRequestNumber);
         try {
             return dtoToBytes(githubCommentsDTOS);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public byte[] getRawCommitsForRepository(final String vcsOrganizationName, final String repositoryName,
+                                             final byte[] alreadyCollectedCommits) throws SymeoException {
+        int page = 1;
+        GithubCommitsDTO[] githubCommitsDTOS =
+                githubHttpClient.getCommitsForRepositoryAndOrganization(vcsOrganizationName, repositoryName, page,
+                        properties.getSize());
+        if (isNull(githubCommitsDTOS) || githubCommitsDTOS.length == 0) {
+            return new byte[0];
+        }
+        final List<GithubCommitsDTO> githubCommitsDTOList =
+                new ArrayList<>(List.of(githubCommitsDTOS));
+        while (githubCommitsDTOS.length == properties.getSize()) {
+            page += 1;
+            githubCommitsDTOS =
+                    this.githubHttpClient.getCommitsForRepositoryAndOrganization(
+                            vcsOrganizationName, repositoryName, page, properties.getSize());
+            githubCommitsDTOList.addAll(Arrays.stream(githubCommitsDTOS).toList());
+        }
+
+        try {
+            return dtoToBytes(githubCommitsDTOList.toArray());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

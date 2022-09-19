@@ -63,11 +63,11 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
 
         // When
         // All PRs by repo
-        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getVcsOrganizationName(),
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(),
                 repository.getName(), 1, 3)).thenReturn(githubPullRequestStubs1);
-        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getVcsOrganizationName(),
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(),
                 repository.getName(), 2, 3)).thenReturn(githubPullRequestStubs2);
-        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getVcsOrganizationName(),
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(),
                 repository.getName(), 3, 3)).thenReturn(githubPullRequestStubs3);
 
         // PR details by PR
@@ -89,7 +89,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
 
         // Then
-        verify(githubHttpClient, times(3)).getPullRequestsForRepositoryAndOrganization(any(), any(), any(), any());
+        verify(githubHttpClient, times(3)).getPullRequestsForRepositoryAndOrganizationOrderByDescDate(any(), any(), any(), any());
         verify(githubHttpClient, times(7)).getPullRequestDetailsForPullRequestNumber(any(), any(), any());
         final List<PullRequest> expectedResults = Stream.of(pr74, pr75,
                 pr76, pr77,
@@ -135,7 +135,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
 
         // When
         // All PRs by repo
-        when(githubHttpClient.getPullRequestsForRepositoryAndOrganization(repository.getVcsOrganizationName(),
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(),
                 repository.getName(), 1, 10))
                 .thenReturn(githubPullRequestStubs1);
         // PR details by PR
@@ -155,7 +155,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
                 rawPullRequestsAlreadyCollected);
 
         // Then
-        verify(githubHttpClient, times(1)).getPullRequestsForRepositoryAndOrganization(any(), any(), any(), any());
+        verify(githubHttpClient, times(1)).getPullRequestsForRepositoryAndOrganizationOrderByDescDate(any(), any(), any(), any());
         verify(githubHttpClient, times(4)).getPullRequestDetailsForPullRequestNumber(anyString(), any(), any());
         final List<PullRequest> expectedResults =
                 Stream.of(pr74, pr75, pr76, pr77, pr78, pr79).map(pr -> GithubMapper.mapPullRequestDtoToDomain(pr,

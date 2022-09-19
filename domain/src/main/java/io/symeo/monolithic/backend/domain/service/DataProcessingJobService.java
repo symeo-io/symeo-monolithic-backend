@@ -3,12 +3,14 @@ package io.symeo.monolithic.backend.domain.service;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobManager;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectPullRequestsJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationAndTeamJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationJobRunnable;
 import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -28,13 +30,67 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     private final JobManager jobManager;
     private final SymeoJobApiAdapter symeoJobApiAdapter;
     private final OrganizationSettingsService organizationSettingsService;
+    private final ExpositionStorageAdapter expositionStorageAdapter;
 
     @Override
-    public void start(final UUID organizationId) throws SymeoException {
-        LOGGER.info("Starting to collect data for organization {}", organizationId);
-        final Organization organization =
-                accountOrganizationStorageAdapter.findOrganizationById(organizationId);
-        collectRepositories(organization);
+    public void startToCollectRepositoriesForOrganizationId(final UUID organizationId) throws SymeoException {
+        jobManager.start(
+                Job.builder()
+                        .organizationId(organizationId)
+                        .jobRunnable(
+                                CollectRepositoriesJobRunnable.builder()
+                                        .vcsService(vcsService)
+                                        .repositoryService(repositoryService)
+                                        .organizationId(organizationId)
+                                        .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                        .build()
+                        )
+                        .build()
+        );
+    }
+
+    @Override
+    public void startToCollectVcsDataForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
+        jobManager.start(
+                Job.builder()
+                        .jobRunnable(CollectVcsDataForOrganizationAndTeamJobRunnable.builder()
+                                .organizationId(organizationId)
+                                .teamId(teamId)
+                                .expositionStorageAdapter(expositionStorageAdapter)
+                                .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                .vcsService(vcsService)
+                                .build())
+                        .organizationId(organizationId)
+                        .nextJob(getInitializeOrganizationSettingsJob(organizationId))
+                        .teamId(teamId)
+                        .build());
+    }
+
+    @Override
+    public void startToCollectVcsDataForOrganizationId(UUID organizationId) throws SymeoException {
+        jobManager.start(
+                Job.builder()
+                        .organizationId(organizationId)
+                        .jobRunnable(
+                                CollectRepositoriesJobRunnable.builder()
+                                        .vcsService(vcsService)
+                                        .repositoryService(repositoryService)
+                                        .organizationId(organizationId)
+                                        .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                        .build()
+                        )
+                        .nextJob(
+                                Job.builder()
+                                        .jobRunnable(CollectVcsDataForOrganizationJobRunnable.builder()
+                                                .organizationId(organizationId)
+                                                .expositionStorageAdapter(expositionStorageAdapter)
+                                                .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                                .vcsService(vcsService)
+                                                .build())
+                                        .organizationId(organizationId)
+                                        .nextJob(getInitializeOrganizationSettingsJob(organizationId))
+                                        .build())
+                        .build());
     }
 
     @Override
@@ -43,43 +99,17 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         organizations.forEach(organization -> symeoJobApiAdapter.startJobForOrganizationId(organization.getId()));
     }
 
-    private void collectRepositories(final Organization organization) throws SymeoException {
-        jobManager.start(
-                Job.builder()
-                        .organizationId(organization.getId())
-                        .jobRunnable(
-                                CollectRepositoriesJobRunnable.builder()
-                                        .organization(organization)
-                                        .vcsService(vcsService)
-                                        .repositoryService(repositoryService)
-                                        .build()
-                        )
-                        .nextJob(getCollectPullRequestsJob(organization))
-                        .build()
-        );
-    }
 
-    private Job getCollectPullRequestsJob(final Organization organization) {
-        return
-                Job.builder()
-                        .jobRunnable(CollectPullRequestsJobRunnable.builder()
-                                .organization(organization)
-                                .vcsService(vcsService)
-                                .build())
-                        .organizationId(organization.getId())
-                        .nextJob(getInitializeOrganizationSettingsJob(organization))
-                        .build();
-    }
-
-    private Job getInitializeOrganizationSettingsJob(final Organization organization) {
+    private Job getInitializeOrganizationSettingsJob(final UUID organizationId) {
         return Job.builder()
                 .jobRunnable(
                         InitializeOrganizationSettingsJobRunnable.builder()
                                 .organizationSettingsService(organizationSettingsService)
-                                .organization(organization)
+                                .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                .organizationId(organizationId)
                                 .build()
                 )
-                .organizationId(organization.getId())
+                .organizationId(organizationId)
                 .build();
     }
 

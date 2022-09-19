@@ -1,7 +1,10 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.entity.job;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,7 +20,11 @@ import java.util.UUID;
 @Builder
 @Table(name = "job", schema = "job_storage")
 @EntityListeners(AuditingEntityListener.class)
-public class JobEntity  {
+@TypeDef(
+        name = "json",
+        typeClass = JsonType.class
+)
+public class JobEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -29,8 +36,16 @@ public class JobEntity  {
     private String code;
     @Column(name = "organization_id", nullable = false)
     private UUID organizationId;
+    @Column(name = "team_id")
+    private UUID teamId;
     @Column(name = "status", nullable = false)
     private String status;
+    @Column(name = "error")
+    String error;
+    @Lob
+    @Type(type = "json")
+    @Column(name = "tasks", nullable = false, columnDefinition = "jsonb")
+    String tasks;
     @Column(name = "end_date")
     private ZonedDateTime endDate;
     @Column(name = "technical_creation_date", updatable = false)

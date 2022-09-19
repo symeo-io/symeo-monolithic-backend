@@ -23,6 +23,7 @@ public class PostgresAccountOnboardingAdapter implements AccountOnboardingStorag
         } catch (Exception e) {
             LOGGER.error("Failed to update onboarding {}", onboarding);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to update onboarding + " + onboarding.getId())
                     .build();

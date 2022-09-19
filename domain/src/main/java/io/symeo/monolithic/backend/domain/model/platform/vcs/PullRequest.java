@@ -46,8 +46,8 @@ public class PullRequest {
     List<Comment> comments = List.of();
 
 
-    public static String getNameFromRepository(String repositoryName) {
-        return ALL + "_" + repositoryName;
+    public static String getNameFromRepositoryId(String repositoryId) {
+        return ALL + "_" + repositoryId;
     }
 
     public String getStatus() {

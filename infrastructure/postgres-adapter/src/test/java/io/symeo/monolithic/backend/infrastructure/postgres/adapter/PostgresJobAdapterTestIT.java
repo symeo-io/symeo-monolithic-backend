@@ -4,8 +4,10 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobRunnable;
+import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.postgres.PostgresJobAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
@@ -19,11 +21,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
-import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper.*;
+import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper.entityToDomain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -43,19 +48,10 @@ public class PostgresJobAdapterTestIT {
     void should_save_and_update_job() throws SymeoException {
         // Given
         final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
+        final UUID organizationId = UUID.randomUUID();
         final Job job = Job.builder()
-                .organizationId(UUID.randomUUID())
-                .jobRunnable(new JobRunnable() {
-                    @Override
-                    public void run() {
-
-                    }
-
-                    @Override
-                    public String getCode() {
-                        return faker.dragonBall().character();
-                    }
-                })
+                .organizationId(organizationId)
+                .jobRunnable(generateJobRunnableStubForRepositoriesCollectionJob())
                 .build();
 
         // When
@@ -71,15 +67,55 @@ public class PostgresJobAdapterTestIT {
         assertThat(jobCreated.getId()).isEqualTo(jobFinishedUpdated.getId());
     }
 
+    private JobRunnable generateJobRunnableStubForRepositoriesCollectionJob() {
+        return new JobRunnable() {
+
+            @Override
+            public String getCode() {
+                return CollectRepositoriesJobRunnable.JOB_CODE;
+            }
+
+            @Override
+            public List<Task> getTasks() {
+                return
+                        generateTasksStubForRepositoriesCollection()
+                        ;
+            }
+
+            @Override
+            public void run() throws SymeoException {
+
+            }
+
+            @Override
+            public void initializeTasks() throws SymeoException {
+
+            }
+        };
+    }
+
+    private List<Task> generateTasksStubForRepositoriesCollection() {
+        return List.of(Task.builder()
+                .input(
+                        Organization.builder()
+                                .name(faker.name().firstName())
+                                .timeZone(TimeZone.getDefault())
+                                .id(UUID.randomUUID())
+                                .vcsOrganization(VcsOrganization.builder().vcsId(faker.rickAndMorty().character()).build())
+                                .build()
+                )
+                .build());
+    }
+
     @Test
     void should_find_all_jobs_order_by_update_date_given_a_code_and_an_organization_id() throws SymeoException {
         // Given
         final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
         final String jobCode = CollectRepositoriesJobRunnable.JOB_CODE;
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
-        jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId()).build());
-        jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode).organizationId(organization.getId()).build());
-        jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId()).build());
+        jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId()).tasks("[]").build());
+        jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode).organizationId(organization.getId()).tasks("[]").build());
+        jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId()).tasks("[]").build());
 
         // When
         final List<Job> jobs =
@@ -96,28 +132,48 @@ public class PostgresJobAdapterTestIT {
     }
 
     @Test
-    void should_find_last_jobs_for_code_and_organization_and_limit() throws SymeoException {
+    void should_find_last_jobs_for_code_and_organization_and_limit() throws SymeoException, IOException {
         // Given
         final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
         final String jobCode = CollectRepositoriesJobRunnable.JOB_CODE;
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final UUID organizationId = organization.getId();
+        final UUID teamId = UUID.randomUUID();
         final JobEntity jobEntity1 =
-                jobRepository.save(JobEntity.builder().status(Job.FAILED).code(jobCode).organizationId(organization.getId()).build());
-        final JobEntity jobEntity2 =
-                jobRepository.save(JobEntity.builder().status(Job.FINISHED).endDate(ZonedDateTime.now()).code(jobCode).organizationId(organization.getId()).build());
-        final JobEntity jobEntity3 =
-                jobRepository.save(JobEntity.builder().status(Job.STARTED).code(jobCode).organizationId(organization.getId()).build());
+                jobRepository.save(
+                        JobMapper.domainToEntity(Job.builder()
+                                .status(Job.FAILED).code(jobCode).organizationId(organizationId)
+                                .teamId(teamId)
+                                .tasks(List.of())
+                                .build())
+                );
+
+        final JobEntity jobEntity2 = jobRepository.save(
+                JobMapper.domainToEntity(Job.builder()
+                        .status(Job.FINISHED).endDate(new Date()).code(jobCode)
+                        .organizationId(organizationId).tasks(List.of())
+                        .tasks(List.of())
+                        .teamId(teamId)
+                        .build())
+        );
+        final JobEntity jobEntity3 = jobRepository.save(
+                JobMapper.domainToEntity(Job.builder().status(Job.STARTED)
+                        .code(jobCode)
+                        .organizationId(organizationId)
+                        .teamId(teamId)
+                        .tasks(List.of()).build()));
+
 
         // When
         final List<Job> lastJobsForCodeAndOrganizationAndLimit1 =
-                postgresJobAdapter.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode,
-                        organization, 1);
+                postgresJobAdapter.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(jobCode,
+                        organizationId, teamId, 1);
         final List<Job> lastJobsForCodeAndOrganizationAndLimit2 =
-                postgresJobAdapter.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode,
-                        organization, 2);
+                postgresJobAdapter.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(jobCode,
+                        organizationId, teamId, 2);
         final List<Job> lastJobsForCodeAndOrganizationAndLimit3 =
-                postgresJobAdapter.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode,
-                        organization, 3);
+                postgresJobAdapter.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(jobCode,
+                        organizationId, teamId, 3);
 
         // Then
         assertThat(lastJobsForCodeAndOrganizationAndLimit1).hasSize(1);

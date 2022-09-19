@@ -52,6 +52,7 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
         } catch (Exception e) {
             LOGGER.error("Failed to create organization {}", organization, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to create organization " + organization.getName())
                     .build();
@@ -68,6 +69,7 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
         } catch (Exception e) {
             LOGGER.error("Failed to find all organizations", e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to create organizations")
                     .build();
@@ -81,6 +83,7 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
         } catch (Exception e) {
             LOGGER.error("Failed to save organizationSettings", e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to save organizationSettings")
                     .build();
@@ -95,6 +98,7 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
         } catch (Exception e) {
             LOGGER.error("Failed to find organizationSettings", e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to find organizationSettings")
                     .build();

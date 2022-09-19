@@ -39,6 +39,7 @@ public class RepositoryRetryService {
             LOGGER.error("Error while putting thread to sleep in retry", e);
             throw SymeoException.builder()
                     .code(INTERRUPTED_THREAD)
+                    .rootException(e)
                     .message("Error while putting thread to sleep in retry")
                     .build();
         }

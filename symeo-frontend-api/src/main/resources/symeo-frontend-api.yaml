@@ -1017,7 +1017,7 @@ paths:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
 
-  /api/v1/jobs/status:
+  /api/v1/jobs/vcs-data-collection/status:
     get:
       security:
         - bearerAuth: [ ]
@@ -1025,17 +1025,18 @@ paths:
         - Job
       parameters:
         - in: query
-          name: job_code
+          name: team_id
           required: true
           schema:
             type: string
-      summary: Get last two jobs linked to job code
-      operationId: getLastTwoJobsForCode
+            format: uuid
+      summary: Get last two vcs data collection jobs linked to a team id
+      operationId: getLastTwoVcsDataCollectionJobsForTeamId
       description: |
-        Get last two jobs linked to job code
+        Get last two vcs data collection jobs linked to a team id
       responses:
         "200":
-          description: 'Successfully get last two jobs for code'
+          description: 'Successfully get last two vcs data collection jobs for teamId'
           content:
             application/json:
               schema:
@@ -1045,7 +1046,7 @@ paths:
                   current_job:
                     - id: 49b377f1-9533-488c-ba29-e1f6224a333c
                       status: STARTED
-                      code: COLLECT_PULL_REQUESTS_FOR_ORGANIZATION_JOB
+                      code: COLLECT_VCS_DATA_FOR_REPOSITORIES_JOB
                       creation_date: 2022-07-21T17:32:28Z
                       end_date: null
                   previous_job: null

@@ -4,6 +4,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.pagination.Pagination;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
@@ -71,6 +72,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
         } catch (Exception e) {
             LOGGER.error("Failed to read all PR time to merge curve for organization {}", organization, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to read all PR time to merge curve for organization")
                     .build();
@@ -92,6 +94,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             LOGGER.error("Failed to read all PR time to merge curve for organization {}", organization, e);
             throw SymeoException.builder()
                     .code(POSTGRES_EXCEPTION)
+                    .rootException(e)
                     .message("Failed to read all PR time to merge curve for organization")
                     .build();
         }
@@ -118,6 +121,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             final String message = String.format("Failed to find all PR details for teamId %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -135,6 +139,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             final String message = String.format("Failed to count PR details for teamId %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -157,6 +162,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             final String message = String.format("Failed to read PR with commits and comments for teamId %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();
@@ -172,6 +178,51 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
                     organizationId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public void saveCommits(List<Commit> commits) {
+        // TODO : to implement
+        throw new RuntimeException();
+    }
+
+    @Override
+    public List<Repository> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
+        try {
+            return repositoryRepository.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId)
+                    .stream()
+                    .map(RepositoryMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to find repositories for organizationId %s and teamId %s",
+                    organizationId, teamId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException {
+        try {
+            return repositoryRepository.findAllRepositoriesLinkedToTeamsForOrganizationId(organizationId)
+                    .stream()
+                    .map(RepositoryMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to find repositories for organizationId %s",
+                    organizationId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message(message)
                     .build();

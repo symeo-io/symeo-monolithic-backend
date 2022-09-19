@@ -52,6 +52,7 @@ public class SendgridApiClient {
             final String message = String.format("Failed to send mail %s to email %s", mail, email);
             LOGGER.error(message, ex);
             throw SymeoException.builder()
+                    .rootException(ex)
                     .code(SymeoExceptionCode.SENDGRID_EXCEPTION)
                     .message(message)
                     .build();

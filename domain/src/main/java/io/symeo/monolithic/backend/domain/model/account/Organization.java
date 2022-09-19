@@ -2,14 +2,18 @@ package io.symeo.monolithic.backend.domain.model.account;
 
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.ZoneId;
 import java.util.*;
 
 @Builder(toBuilder = true)
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Organization {
     UUID id;
     String name;
