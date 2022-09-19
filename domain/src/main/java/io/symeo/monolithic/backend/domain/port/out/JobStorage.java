@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.domain.port.out;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
+import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface JobStorage {
                                                                                          UUID teamId, int i) throws SymeoException;
 
     List<Job> findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(UUID organizationId, UUID teamId);
+
+    void updateJobWithTasksForJobId(Long jobId, List<Task> tasks) throws SymeoException;
 }

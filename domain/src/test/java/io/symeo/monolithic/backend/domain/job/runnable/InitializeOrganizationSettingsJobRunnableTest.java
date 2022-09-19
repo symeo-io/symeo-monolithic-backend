@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.domain.job.runnable;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import org.junit.jupiter.api.Test;
 
@@ -25,13 +26,14 @@ public class InitializeOrganizationSettingsJobRunnableTest {
                         .organizationSettingsService(organizationSettingsService)
                         .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
                         .organizationId(organization1.getId())
+                        .jobStorage(mock(JobStorage.class))
                         .build();
 
         // When
         when(accountOrganizationStorageAdapter.findOrganizationById(organization1.getId()))
                 .thenReturn(organization1);
         initializeOrganizationSettingsJobRunnable.initializeTasks();
-        initializeOrganizationSettingsJobRunnable.run();
+        initializeOrganizationSettingsJobRunnable.run(6L);
 
         // Then
         verify(organizationSettingsService, times(1)).initializeOrganizationSettingsForOrganization(organization1);

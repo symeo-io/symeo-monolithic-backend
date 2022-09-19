@@ -33,10 +33,14 @@ public interface JobMapper {
                 .organizationId(job.getOrganizationId())
                 .teamId(job.getTeamId())
                 .error(job.getError())
-                .tasks(OBJECT_MAPPER.writeValueAsString(job.getTasks()))
+                .tasks(mapTasksToJsonString(job.getTasks()))
                 .endDate(nonNull(job.getEndDate()) ? ZonedDateTime.ofInstant(job.getEndDate().toInstant(),
                         ZoneId.systemDefault()) : null)
                 .build();
+    }
+
+    static String mapTasksToJsonString(final List<Task> tasks) throws JsonProcessingException {
+        return OBJECT_MAPPER.writeValueAsString(tasks);
     }
 
     static Job entityToDomain(final JobEntity jobEntity) throws IOException {

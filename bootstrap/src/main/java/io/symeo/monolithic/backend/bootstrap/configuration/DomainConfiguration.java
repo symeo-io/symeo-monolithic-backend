@@ -53,10 +53,11 @@ public class DomainConfiguration {
                                                              final JobManager jobManager,
                                                              final SymeoJobApiAdapter symeoJobApiAdapter,
                                                              final OrganizationSettingsService organizationSettingsService,
-                                                             final ExpositionStorageAdapter expositionStorageAdapter) {
+                                                             final ExpositionStorageAdapter expositionStorageAdapter,
+                                                             final JobStorage jobStorage) {
         return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter,
                 repositoryService, jobManager, symeoJobApiAdapter, organizationSettingsService,
-                expositionStorageAdapter);
+                expositionStorageAdapter, jobStorage);
     }
 
     @Bean

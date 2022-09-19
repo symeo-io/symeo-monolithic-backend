@@ -45,7 +45,7 @@ public class JobManager {
         return () -> {
             try {
                 job.getJobRunnable().initializeTasks();
-                job.getJobRunnable().run();
+                job.getJobRunnable().run(job.getId());
                 final Job jobFinished = jobStorage.updateJob(job.finished());
                 LOGGER.info("Job {} finished", jobFinished);
                 if (nonNull(job.getNextJob())) {

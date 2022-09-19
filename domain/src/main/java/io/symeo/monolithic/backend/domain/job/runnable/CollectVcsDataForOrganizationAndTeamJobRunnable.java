@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +35,8 @@ public class CollectVcsDataForOrganizationAndTeamJobRunnable extends AbstractTas
     final UUID organizationId;
     @NonNull
     final UUID teamId;
+    @NonNull
+    final JobStorage jobStorage;
 
     @Override
     public void initializeTasks() throws SymeoException {
@@ -46,8 +49,8 @@ public class CollectVcsDataForOrganizationAndTeamJobRunnable extends AbstractTas
     }
 
     @Override
-    public void run() throws SymeoException {
-        executeAllTasks(this::collectVcsDataForRepository);
+    public void run(final Long jobId) throws SymeoException {
+        executeAllTasks(this::collectVcsDataForRepository, jobStorage, jobId);
     }
 
     private void collectVcsDataForRepository(Repository repository) throws SymeoException {

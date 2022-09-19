@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<Organi
     @NonNull RepositoryService repositoryService;
     @NonNull AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
     @NonNull UUID organizationId;
+    @NonNull JobStorage jobStorage;
 
     public static final String JOB_CODE = "COLLECT_REPOSITORIES_FOR_ORGANIZATION_JOB";
 
@@ -41,8 +43,8 @@ public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<Organi
     }
 
     @Override
-    public void run() throws SymeoException {
-        executeAllTasks(this::collectRepositoriesForOrganization);
+    public void run(final Long jobId) throws SymeoException {
+        executeAllTasks(this::collectRepositoriesForOrganization, jobStorage, jobId);
     }
 
     private void collectRepositoriesForOrganization(Organization organization) throws SymeoException {

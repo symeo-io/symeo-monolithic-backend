@@ -63,4 +63,10 @@ public class Job {
                 .tasks(jobRunnable.getTasks())
                 .build();
     }
+
+    public double getProgressionPercentage() {
+        final List<Task> tasks = this.getTasks();
+        long tasksDoneCount = tasks.stream().filter(task -> task.getStatus().equals(Task.DONE)).count();
+        return Math.round(100 * tasksDoneCount / (tasks.size() * 1.0)) / 100D;
+    }
 }

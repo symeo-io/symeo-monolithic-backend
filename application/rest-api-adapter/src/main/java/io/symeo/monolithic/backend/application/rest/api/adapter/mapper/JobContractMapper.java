@@ -2,11 +2,11 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.frontend.contract.api.model.JobContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.LastJobsContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.LastJobsResponseContract;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.exceptionToContract;
@@ -46,6 +46,7 @@ public interface JobContractMapper {
         jobContract.setCreationDate(dateTimeToString(job.getCreationDate()));
         jobContract.setEndDate(isNull(job.getEndDate()) ? null :
                 dateTimeToString(job.getEndDate()));
+        jobContract.setProgressionPercentage(BigDecimal.valueOf(job.getProgressionPercentage()));
         return jobContract;
     }
 }

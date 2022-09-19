@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
@@ -83,7 +84,7 @@ public class PostgresJobAdapterTestIT {
             }
 
             @Override
-            public void run() throws SymeoException {
+            public void run(final Long jobId) throws SymeoException {
 
             }
 
@@ -185,5 +186,29 @@ public class PostgresJobAdapterTestIT {
         assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(0)).isEqualTo(entityToDomain(jobEntity3));
         assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(1)).isEqualTo(entityToDomain(jobEntity2));
         assertThat(lastJobsForCodeAndOrganizationAndLimit3.get(2)).isEqualTo(entityToDomain(jobEntity1));
+    }
+
+
+    @Test
+    void should_update_job_with_tasks_given_a_job_id() throws SymeoException, JsonProcessingException {
+        // Given
+        final JobEntity jobEntity = jobRepository.save(
+                JobEntity
+                        .builder()
+                        .organizationId(UUID.randomUUID())
+                        .code(faker.dragonBall().character())
+                        .tasks("{}")
+                        .status(Job.CREATED)
+                        .build()
+        );
+        final Long id = jobEntity.getId();
+        final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
+        final List<Task> tasks = List.of(Task.builder().input(2).build());
+
+        // When
+        postgresJobAdapter.updateJobWithTasksForJobId(id, tasks);
+
+        // Then
+        assertThat(jobRepository.findById(id).get().getTasks()).isEqualTo(JobMapper.mapTasksToJsonString(tasks));
     }
 }
