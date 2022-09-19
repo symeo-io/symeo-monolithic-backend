@@ -1,8 +1,8 @@
 # symeo-monolithic-backend
 
+## Create a new environment
 
-
-
+Follow [this documentation](./documentation/environment/new-environment.md).
 
 ## Github-adapter
 
