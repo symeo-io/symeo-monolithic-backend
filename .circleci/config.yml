@@ -155,6 +155,16 @@ workflows:
             branches:
               only:
                 - demo
+      - deploy:
+          requires:
+            - build-and-test
+          context:
+            - production
+            - slack-notifications
+          filters:
+            branches:
+              only:
+                - main
   build-infrastructure:
     jobs:
       - build-and-test:
@@ -189,3 +199,14 @@ workflows:
               ignore: /.*/
             tags:
               only: /^infrastructure-demo-.+$/
+      - build-aws-infrastructure:
+          requires:
+            - build-and-test
+          context:
+            - production
+            - slack-notifications
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^infrastructure-production-.+$/
