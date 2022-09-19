@@ -11,6 +11,7 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -38,10 +39,11 @@ public class DataProcessingJobServiceTest {
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
         final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
+        final JobStorage jobStorage = mock(JobStorage.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
                         accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
-                        organizationSettingsService, mock(ExpositionStorageAdapter.class));
+                        organizationSettingsService, mock(ExpositionStorageAdapter.class), jobStorage);
         final String organisationName = faker.name().username();
         final String vcsOrganizationId = faker.rickAndMorty().character();
         final UUID organizationId = UUID.randomUUID();
@@ -81,11 +83,12 @@ public class DataProcessingJobServiceTest {
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
         final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
+        final JobStorage jobStorage = mock(JobStorage.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
                         accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
-                        organizationSettingsService, expositionStorageAdapter);
+                        organizationSettingsService, expositionStorageAdapter, jobStorage);
         final UUID teamId = UUID.randomUUID();
         final UUID organizationId = UUID.randomUUID();
         final List<Repository> repositories = List.of(
@@ -122,10 +125,11 @@ public class DataProcessingJobServiceTest {
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
         final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final JobStorage jobStorage = mock(JobStorage.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
                         accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
-                        organizationSettingsService, expositionStorageAdapter);
+                        organizationSettingsService, expositionStorageAdapter, jobStorage);
         final UUID organizationId = UUID.randomUUID();
         final List<Repository> repositories = List.of(
                 Repository.builder().id(faker.dragonBall().character()).build(),
@@ -162,10 +166,11 @@ public class DataProcessingJobServiceTest {
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
         final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
+        final JobStorage jobStorage = mock(JobStorage.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
                         accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
-                        organizationSettingsService, mock(ExpositionStorageAdapter.class));
+                        organizationSettingsService, mock(ExpositionStorageAdapter.class), jobStorage);
         final List<Organization> organizations = List.of(
                 Organization.builder().id(UUID.randomUUID()).build(),
                 Organization.builder().id(UUID.randomUUID()).build()

@@ -1748,6 +1748,7 @@ components:
         - status
         - code
         - creation_date
+        - progression_percentage
       properties:
         id:
           type: integer
@@ -1760,6 +1761,8 @@ components:
           type: string
         end_date:
           type: string
+        progression_percentage:
+          type: number
     LastJobsContract:
       type: object
       required:

@@ -5,6 +5,7 @@ import io.symeo.monolithic.backend.domain.job.JobRunnable;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import lombok.Builder;
 import lombok.NonNull;
@@ -22,6 +23,7 @@ public class InitializeOrganizationSettingsJobRunnable extends AbstractTasksRunn
     @NonNull OrganizationSettingsService organizationSettingsService;
     @NonNull AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
     @NonNull UUID organizationId;
+    @NonNull JobStorage jobStorage;
 
     @Override
     public void initializeTasks() throws SymeoException {
@@ -33,8 +35,8 @@ public class InitializeOrganizationSettingsJobRunnable extends AbstractTasksRunn
     }
 
     @Override
-    public void run() throws SymeoException {
-        executeAllTasks(this::initializeOrganizationSettingsForOrganization);
+    public void run(final Long jobId) throws SymeoException {
+        executeAllTasks(this::initializeOrganizationSettingsForOrganization, jobStorage, jobId);
     }
 
     private void initializeOrganizationSettingsForOrganization(Organization organization) throws SymeoException {

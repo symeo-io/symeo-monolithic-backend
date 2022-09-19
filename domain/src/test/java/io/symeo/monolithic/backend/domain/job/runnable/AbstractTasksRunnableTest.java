@@ -4,7 +4,9 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +30,10 @@ public class AbstractTasksRunnableTest {
                         .build())
         );
         final SymeoConsumer<Repository> symeoConsumer = mock(SymeoConsumer.class);
+        final JobStorage jobStorage = mock(JobStorage.class);
+        final long jobId = 1L;
         final SimpleTasksRunnableImplementation simpleTasksRunnableImplementation =
-                new SimpleTasksRunnableImplementation(tasks);
+                new SimpleTasksRunnableImplementation(tasks, jobStorage, jobId);
 
         // When
         simpleTasksRunnableImplementation.run(symeoConsumer);
@@ -40,16 +44,30 @@ public class AbstractTasksRunnableTest {
         final List<Task> executedTasks = simpleTasksRunnableImplementation.getTasks();
         assertThat(executedTasks).hasSize(tasks.size());
         executedTasks.forEach(task -> assertThat(task.getStatus()).isEqualTo(Task.DONE));
+        final ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
+        final ArgumentCaptor<List<Task>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        verify(jobStorage, times(tasks.size()))
+                .updateJobWithTasksForJobId(longArgumentCaptor.capture(),
+                        listArgumentCaptor.capture());
+        for (Long jobIdCaptured : longArgumentCaptor.getAllValues()) {
+            assertThat(jobIdCaptured).isEqualTo(jobId);
+        }
     }
 
     private static class SimpleTasksRunnableImplementation extends AbstractTasksRunnable<Repository> {
 
-        public SimpleTasksRunnableImplementation(List<Task> tasks) {
+        private final JobStorage jobStorage;
+        private final Long jobId;
+
+        public SimpleTasksRunnableImplementation(final List<Task> tasks, final JobStorage jobStorage,
+                                                 final Long jobId) {
             this.tasks = tasks;
+            this.jobId = jobId;
+            this.jobStorage = jobStorage;
         }
 
         public void run(SymeoConsumer<Repository> symeoConsumer) throws SymeoException {
-            executeAllTasks(symeoConsumer);
+            executeAllTasks(symeoConsumer, jobStorage, jobId);
         }
 
     }

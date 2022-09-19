@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
@@ -38,14 +39,14 @@ public class CollectRepositoriesJobRunnableTest {
                 mock(AccountOrganizationStorageAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
                 new CollectRepositoriesJobRunnable(vcsService, repositoryService,
-                        accountOrganizationStorageAdapter, organisation.getId());
+                        accountOrganizationStorageAdapter, organisation.getId(),mock(JobStorage.class));
 
         // When
         when(accountOrganizationStorageAdapter.findOrganizationById(organisation.getId()))
                 .thenReturn(organisation);
         when(vcsService.collectRepositoriesForOrganization(organisation)).thenReturn(repositories);
         collectRepositoriesJobRunnable.initializeTasks();
-        collectRepositoriesJobRunnable.run();
+        collectRepositoriesJobRunnable.run(3L);
 
         // Then
         ArgumentCaptor<List<Repository>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -66,7 +67,7 @@ public class CollectRepositoriesJobRunnableTest {
                 mock(AccountOrganizationStorageAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
                 new CollectRepositoriesJobRunnable(vcsService, repositoryService,
-                        accountOrganizationStorageAdapter, organisation.getId());
+                        accountOrganizationStorageAdapter, organisation.getId(),mock(JobStorage.class));
 
         // When
         when(accountOrganizationStorageAdapter.findOrganizationById(organisation.getId()))
@@ -77,7 +78,7 @@ public class CollectRepositoriesJobRunnableTest {
         SymeoException symeoException = null;
         collectRepositoriesJobRunnable.initializeTasks();
         try {
-            collectRepositoriesJobRunnable.run();
+            collectRepositoriesJobRunnable.run(4L);
         } catch (SymeoException e) {
             symeoException = e;
         }

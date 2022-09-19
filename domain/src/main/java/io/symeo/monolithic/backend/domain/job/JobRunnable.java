@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface JobRunnable {
 
-    void run() throws SymeoException;
+    void run(Long jobIb) throws SymeoException;
 
     String getCode();
 

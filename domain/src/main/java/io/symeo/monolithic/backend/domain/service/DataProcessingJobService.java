@@ -11,6 +11,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -31,6 +32,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     private final SymeoJobApiAdapter symeoJobApiAdapter;
     private final OrganizationSettingsService organizationSettingsService;
     private final ExpositionStorageAdapter expositionStorageAdapter;
+    private final JobStorage jobStorage;
 
     @Override
     public void startToCollectRepositoriesForOrganizationId(final UUID organizationId) throws SymeoException {
@@ -43,6 +45,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                         .repositoryService(repositoryService)
                                         .organizationId(organizationId)
                                         .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                        .jobStorage(jobStorage)
                                         .build()
                         )
                         .build()
@@ -59,6 +62,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .expositionStorageAdapter(expositionStorageAdapter)
                                 .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
                                 .vcsService(vcsService)
+                                .jobStorage(jobStorage)
                                 .build())
                         .organizationId(organizationId)
                         .nextJob(getInitializeOrganizationSettingsJob(organizationId))
@@ -77,6 +81,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                         .repositoryService(repositoryService)
                                         .organizationId(organizationId)
                                         .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                        .jobStorage(jobStorage)
                                         .build()
                         )
                         .nextJob(
@@ -86,6 +91,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                                 .expositionStorageAdapter(expositionStorageAdapter)
                                                 .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
                                                 .vcsService(vcsService)
+                                                .jobStorage(jobStorage)
                                                 .build())
                                         .organizationId(organizationId)
                                         .nextJob(getInitializeOrganizationSettingsJob(organizationId))
@@ -107,6 +113,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .organizationSettingsService(organizationSettingsService)
                                 .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
                                 .organizationId(organizationId)
+                                .jobStorage(jobStorage)
                                 .build()
                 )
                 .organizationId(organizationId)

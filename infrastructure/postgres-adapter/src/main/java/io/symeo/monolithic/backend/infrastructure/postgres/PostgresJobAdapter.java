@@ -2,10 +2,10 @@ package io.symeo.monolithic.backend.infrastructure.postgres;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.Job;
+import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
+import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper.*;
 
 @AllArgsConstructor
 @Slf4j
@@ -41,7 +42,7 @@ public class PostgresJobAdapter implements JobStorage {
             for (JobEntity jobEntity :
                     jobRepository.findAllByCodeAndAndOrganizationIdOrderByTechnicalModificationDate(code,
                             organization.getId())) {
-                Job job = JobMapper.entityToDomain(jobEntity);
+                Job job = entityToDomain(jobEntity);
                 jobs.add(job);
             }
             return jobs;
@@ -66,7 +67,7 @@ public class PostgresJobAdapter implements JobStorage {
             for (JobEntity jobEntity :
                     jobRepository.findLastJobsForCodeAndOrganizationAndLimitAndTeamByTechnicalModificationDate(code,
                             organizationId, teamId, numberOfJobsToFind)) {
-                Job job = JobMapper.entityToDomain(jobEntity);
+                Job job = entityToDomain(jobEntity);
                 jobs.add(job);
             }
             return jobs;
@@ -86,12 +87,27 @@ public class PostgresJobAdapter implements JobStorage {
 
     private Job save(Job job) throws SymeoException {
         try {
-            return JobMapper.entityToDomain(jobRepository.save(JobMapper.domainToEntity(job)));
+            return entityToDomain(jobRepository.save(domainToEntity(job)));
         } catch (Exception e) {
             LOGGER.error("Failed to save job {}", job, e);
             throw SymeoException.builder()
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to save job " + job.getId())
+                    .rootException(e)
+                    .build();
+        }
+    }
+
+    @Override
+    public void updateJobWithTasksForJobId(Long jobId, List<Task> tasks) throws SymeoException {
+        try {
+            jobRepository.updateTasksForJobId(jobId, mapTasksToJsonString(tasks));
+        } catch (Exception e) {
+            final String message = String.format("Failed to update job %s with tasks %s", jobId, tasks);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
                     .rootException(e)
                     .build();
         }

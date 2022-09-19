@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +31,7 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter = mock(AccountOrganizationStorageAdapter.class);
         final CollectVcsDataForOrganizationJobRunnable collectVcsDataForOrganizationJobRunnable =
                 new CollectVcsDataForOrganizationJobRunnable(vcsService, organization,
-                        expositionStorageAdapter, accountOrganizationStorageAdapter, organization.getId());
+                        expositionStorageAdapter, accountOrganizationStorageAdapter, organization.getId(),mock(JobStorage.class));
         final List<Repository> repositories = List.of(
                 Repository.builder().id(faker.dragonBall().character()).build(),
                 Repository.builder().id(faker.rickAndMorty().character()).build()
@@ -53,7 +54,7 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
         when(vcsService.collectAllBranchesForOrganizationAndRepository(organization, repo2WithOrgId))
                 .thenReturn(List.of(branch21));
         collectVcsDataForOrganizationJobRunnable.initializeTasks();
-        collectVcsDataForOrganizationJobRunnable.run();
+        collectVcsDataForOrganizationJobRunnable.run(2L);
 
         // Then
         verify(vcsService, times(1)).collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo1WithOrgId);
