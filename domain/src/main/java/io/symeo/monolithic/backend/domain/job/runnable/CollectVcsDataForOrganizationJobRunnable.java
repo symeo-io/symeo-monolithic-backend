@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
-@Data
 @Builder
 @Slf4j
 public class CollectVcsDataForOrganizationJobRunnable extends AbstractTasksRunnable<Repository> implements JobRunnable {
@@ -53,19 +52,7 @@ public class CollectVcsDataForOrganizationJobRunnable extends AbstractTasksRunna
     }
 
     private void collectVcsDataForRepository(Repository repository) throws SymeoException {
-        repository = populateRepositoryWithOrganizationId(repository, organization.getId());
-        LOGGER.info("Starting to collect VCS data for organization {} and repository {}", organization, repository);
-        vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repository);
-        List<String> allBranches = vcsService.collectAllBranchesForOrganizationAndRepository(organization, repository);
-        for (String branch : allBranches) {
-            vcsService.collectCommitsForForOrganizationAndRepositoryAndBranch(organization, repository, branch);
-        }
-        LOGGER.info("VCS data collection finished for organization {} and repository {}", organization, repository);
-    }
-
-    private Repository populateRepositoryWithOrganizationId(final Repository repository,
-                                                            final UUID organizationId) {
-        return repository.toBuilder().organizationId(organizationId).build();
+        vcsService.collectVcsDataForOrganizationAndRepository(organization, repository);
     }
 
     public static final String JOB_CODE = "COLLECT_VCS_DATA_FOR_REPOSITORIES_JOB";

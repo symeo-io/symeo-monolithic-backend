@@ -12,7 +12,6 @@ import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -20,16 +19,20 @@ import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
-@Value
 @Builder
 @Slf4j
 public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<Organization> implements JobRunnable {
 
-    @NonNull VcsService vcsService;
-    @NonNull RepositoryService repositoryService;
-    @NonNull AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
-    @NonNull UUID organizationId;
-    @NonNull JobStorage jobStorage;
+    @NonNull
+    private final VcsService vcsService;
+    @NonNull
+    private final RepositoryService repositoryService;
+    @NonNull
+    private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
+    @NonNull
+    private final UUID organizationId;
+    @NonNull
+    private final JobStorage jobStorage;
 
     public static final String JOB_CODE = "COLLECT_REPOSITORIES_FOR_ORGANIZATION_JOB";
 

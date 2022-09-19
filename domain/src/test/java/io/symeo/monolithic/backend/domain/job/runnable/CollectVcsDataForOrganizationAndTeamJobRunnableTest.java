@@ -14,18 +14,20 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
-public class CollectVcsDataForOrganizationJobRunnableTest {
+public class CollectVcsDataForOrganizationAndTeamJobRunnableTest {
 
     @Test
-    void should_collect_vcs_data_for_organization() throws SymeoException {
+    void should_collect_vcs_data_for_organization_and_team() throws SymeoException {
+        // Given
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final VcsService vcsService = mock(VcsService.class);
+        final UUID teamId = UUID.randomUUID();
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final JobStorage jobStorage = mock(JobStorage.class);
-        final CollectVcsDataForOrganizationJobRunnable jobRunnable =
-                CollectVcsDataForOrganizationJobRunnable
+        final CollectVcsDataForOrganizationAndTeamJobRunnable jobRunnable =
+                CollectVcsDataForOrganizationAndTeamJobRunnable
                         .builder()
                         .organization(
                                 organization
@@ -35,12 +37,13 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
                         .jobStorage(jobStorage)
                         .vcsService(vcsService)
                         .organizationId(organization.getId())
+                        .teamId(teamId)
                         .build();
 
         // When
         when(accountOrganizationStorageAdapter.findOrganizationById(organization.getId()))
                 .thenReturn(organization);
-        when(expositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(organization.getId()))
+        when(expositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId))
                 .thenReturn(List.of(
                         Repository.builder().id("1L").build(),
                         Repository.builder().id("2L").build()
@@ -52,5 +55,4 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
         verify(vcsService, times(2)).collectVcsDataForOrganizationAndRepository(any(), any());
         verify(jobStorage, times(2)).updateJobWithTasksForJobId(any(), any());
     }
-
 }

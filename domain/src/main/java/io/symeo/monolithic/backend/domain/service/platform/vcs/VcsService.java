@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Slf4j
@@ -23,8 +24,20 @@ public class VcsService {
     private final DeliveryQuery deliveryQuery;
     private final ExpositionStorageAdapter expositionStorageAdapter;
 
-    public void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Organization organization,
-                                                                                      Repository repository) throws SymeoException {
+    public void collectVcsDataForOrganizationAndRepository(final Organization organization,
+                                                           Repository repository) throws SymeoException {
+        repository = populateRepositoryWithOrganizationId(repository, organization.getId());
+        LOGGER.info("Starting to collect VCS data for organization {} and repository {}", organization, repository);
+        collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repository);
+        List<String> allBranches = collectAllBranchesForOrganizationAndRepository(organization, repository);
+        for (String branch : allBranches) {
+            collectCommitsForForOrganizationAndRepositoryAndBranch(organization, repository, branch);
+        }
+        LOGGER.info("VCS data collection finished for organization {} and repository {}", organization, repository);
+    }
+
+    private void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Organization organization,
+                                                                                       Repository repository) throws SymeoException {
         final List<PullRequest> pullRequests = new ArrayList<>();
         for (PullRequest pullRequest : collectPullRequestForRepository(repository)) {
             final PullRequest updatedPullRequest = pullRequest.toBuilder()
@@ -39,6 +52,11 @@ public class VcsService {
         expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequests);
     }
 
+    private Repository populateRepositoryWithOrganizationId(final Repository repository,
+                                                            final UUID organizationId) {
+        return repository.toBuilder().organizationId(organizationId).build();
+    }
+
 
     public void collectCommitsForOrganization(Organization organization) throws SymeoException {
         for (Repository repository : deliveryQuery.readRepositoriesForOrganization(organization)) {
@@ -47,14 +65,14 @@ public class VcsService {
         }
     }
 
-    public List<String> collectAllBranchesForOrganizationAndRepository(final Organization organization,
-                                                                       final Repository repository) {
+    private List<String> collectAllBranchesForOrganizationAndRepository(final Organization organization,
+                                                                        final Repository repository) {
         return List.of();
     }
 
-    public void collectCommitsForForOrganizationAndRepositoryAndBranch(final Organization organization,
-                                                                       final Repository repository,
-                                                                       final String branch) {
+    private void collectCommitsForForOrganizationAndRepositoryAndBranch(final Organization organization,
+                                                                        final Repository repository,
+                                                                        final String branch) {
 
     }
 

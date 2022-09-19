@@ -9,21 +9,23 @@ import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Value
 @Builder
 public class InitializeOrganizationSettingsJobRunnable extends AbstractTasksRunnable<Organization> implements JobRunnable {
 
     public static final String JOB_CODE = "INITIALIZE_ORGANIZATION_SETTINGS_JOB";
-    @NonNull OrganizationSettingsService organizationSettingsService;
-    @NonNull AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
-    @NonNull UUID organizationId;
-    @NonNull JobStorage jobStorage;
+    @NonNull
+    private final OrganizationSettingsService organizationSettingsService;
+    @NonNull
+    private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
+    @NonNull
+    private final UUID organizationId;
+    @NonNull
+    private final JobStorage jobStorage;
 
     @Override
     public void initializeTasks() throws SymeoException {

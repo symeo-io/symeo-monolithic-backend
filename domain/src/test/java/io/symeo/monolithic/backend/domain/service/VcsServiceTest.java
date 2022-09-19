@@ -130,8 +130,8 @@ public class VcsServiceTest {
                 PullRequest.builder().id(faker.pokemon().name()).number(21).build(),
                 PullRequest.builder().id(faker.hacker().abbreviation()).number(22).build()
         );
-        vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo1);
-        vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo2);
+        vcsService.collectVcsDataForOrganizationAndRepository(organization, repo1);
+        vcsService.collectVcsDataForOrganizationAndRepository(organization, repo2);
 
         when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(0)))
                 .thenReturn(pullRequestList1);
@@ -222,9 +222,8 @@ public class VcsServiceTest {
         when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(1)
                 .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
                 .thenReturn(List.of(Comment.builder().build()));
-
-        vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo1);
-        vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo2);
+        vcsService.collectVcsDataForOrganizationAndRepository(organization, repo1);
+        vcsService.collectVcsDataForOrganizationAndRepository(organization, repo2);
 
         // Then
         final ArgumentCaptor<List<PullRequest>> prArgumentCaptor = ArgumentCaptor.forClass(List.class);
