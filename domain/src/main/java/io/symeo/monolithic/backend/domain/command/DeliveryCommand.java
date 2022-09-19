@@ -2,10 +2,7 @@ package io.symeo.monolithic.backend.domain.command;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.RawStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 
@@ -94,5 +91,14 @@ public class DeliveryCommand {
                 rawCommitsForRepository
         );
         return versionControlSystemAdapter.commitsBytesToDomain(rawCommitsForRepository);
+    }
+
+    public List<Branch> collectBranchesForOrganizationAndRepository(final Organization organization,
+                                                                    final Repository repository) throws SymeoException {
+        final byte[] rawBranches =
+                versionControlSystemAdapter.getRawBranches(organization.getVcsOrganization().getName(),
+                        repository.getName());
+        rawStorageAdapter.save(organization.getId(), versionControlSystemAdapter.getName(), Branch.ALL, rawBranches);
+        return versionControlSystemAdapter.branchesBytesToDomain(rawBranches);
     }
 }

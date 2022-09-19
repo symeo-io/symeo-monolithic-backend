@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
@@ -153,6 +154,20 @@ public class GithubHttpClient {
                 uri,
                 vcsOrganizationName,
                 GithubCommitsDTO[].class);
+    }
+
+    public GithubBranchDTO[] getBranchesForOrganizationAndRepository(final String vcsOrganizationName,
+                                                                     final String repositoryName) throws SymeoException {
+        final String uri =
+                api
+                        + "repos/"
+                        + vcsOrganizationName
+                        + "/" +
+                        repositoryName
+                        + "/branches";
+        return get(uri,
+                vcsOrganizationName,
+                GithubBranchDTO[].class);
     }
 
     private <ResponseBody> ResponseBody get(String uri, String organizationName,

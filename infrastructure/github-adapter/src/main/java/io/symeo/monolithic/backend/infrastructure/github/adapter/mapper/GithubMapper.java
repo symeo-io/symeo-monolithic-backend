@@ -1,9 +1,7 @@
 package io.symeo.monolithic.backend.infrastructure.github.adapter.mapper;
 
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
@@ -63,4 +61,7 @@ public interface GithubMapper {
                 .build();
     }
 
+    static Branch mapBranchToDomain(GithubBranchDTO githubBranchDTO) {
+        return Branch.builder().name(githubBranchDTO.getName()).build();
+    }
 }

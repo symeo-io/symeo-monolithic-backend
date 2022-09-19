@@ -3,10 +3,7 @@ package io.symeo.monolithic.backend.domain.service.platform.vcs;
 import io.symeo.monolithic.backend.domain.command.DeliveryCommand;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.query.DeliveryQuery;
 import lombok.AllArgsConstructor;
@@ -29,11 +26,17 @@ public class VcsService {
         repository = populateRepositoryWithOrganizationId(repository, organization.getId());
         LOGGER.info("Starting to collect VCS data for organization {} and repository {}", organization, repository);
         collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repository);
-        List<String> allBranches = collectAllBranchesForOrganizationAndRepository(organization, repository);
+        final List<String> allBranches = collectAllBranchesForOrganizationAndRepository(organization, repository)
+                .stream()
+                .map(Branch::getName).toList();
         for (String branch : allBranches) {
             collectCommitsForForOrganizationAndRepositoryAndBranch(organization, repository, branch);
         }
         LOGGER.info("VCS data collection finished for organization {} and repository {}", organization, repository);
+    }
+
+    public List<Repository> collectRepositoriesForOrganization(Organization organization) throws SymeoException {
+        return deliveryCommand.collectRepositoriesForOrganization(organization);
     }
 
     private void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Organization organization,
@@ -57,27 +60,15 @@ public class VcsService {
         return repository.toBuilder().organizationId(organizationId).build();
     }
 
-
-    public void collectCommitsForOrganization(Organization organization) throws SymeoException {
-        for (Repository repository : deliveryQuery.readRepositoriesForOrganization(organization)) {
-            List<Commit> commits = deliveryCommand.collectCommitsForRepository(repository);
-            expositionStorageAdapter.saveCommits(commits);
-        }
-    }
-
-    private List<String> collectAllBranchesForOrganizationAndRepository(final Organization organization,
-                                                                        final Repository repository) {
-        return List.of();
+    private List<Branch> collectAllBranchesForOrganizationAndRepository(final Organization organization,
+                                                                        final Repository repository) throws SymeoException {
+        return deliveryCommand.collectBranchesForOrganizationAndRepository(organization, repository);
     }
 
     private void collectCommitsForForOrganizationAndRepositoryAndBranch(final Organization organization,
                                                                         final Repository repository,
                                                                         final String branch) {
 
-    }
-
-    public List<Repository> collectRepositoriesForOrganization(Organization organization) throws SymeoException {
-        return deliveryCommand.collectRepositoriesForOrganization(organization);
     }
 
     private List<PullRequest> collectPullRequestForRepository(final Repository repository) throws SymeoException {

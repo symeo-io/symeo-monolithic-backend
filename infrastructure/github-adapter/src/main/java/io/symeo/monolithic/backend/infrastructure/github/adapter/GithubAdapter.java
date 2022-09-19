@@ -3,12 +3,10 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
@@ -279,6 +277,31 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         try {
             return dtoToBytes(githubCommitsDTOList.toArray());
         } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public byte[] getRawBranches(String vcsOrganizationName, String repositoryName) throws SymeoException {
+        final GithubBranchDTO[] branchesForOrganizationAndRepository =
+                githubHttpClient.getBranchesForOrganizationAndRepository(vcsOrganizationName, repositoryName);
+        try {
+            return dtoToBytes(branchesForOrganizationAndRepository);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Branch> branchesBytesToDomain(byte[] rawBranches) {
+        if (rawBranches.length == 0) {
+            return List.of();
+        }
+        try {
+            return Arrays.stream(bytesToDto(rawBranches, GithubBranchDTO[].class))
+                    .map(GithubMapper::mapBranchToDomain)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
