@@ -177,6 +177,7 @@ workflows:
               only:
                 - /^infrastructure-staging-.+$/
                 - /^infrastructure-demo-.+$/
+                - /^infrastructure-production-.+$/
       - build-aws-infrastructure:
           requires:
             - build-and-test
