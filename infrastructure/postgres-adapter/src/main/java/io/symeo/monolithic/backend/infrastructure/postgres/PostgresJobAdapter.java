@@ -57,22 +57,24 @@ public class PostgresJobAdapter implements JobStorage {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Job> findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(String code,
-                                                                                     Organization organization,
-                                                                                     int numberOfJobsToFind) throws SymeoException {
+    public List<Job> findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(final String code,
+                                                                                                final UUID organizationId,
+                                                                                                final UUID teamId,
+                                                                                                final int numberOfJobsToFind) throws SymeoException {
         try {
             List<Job> jobs = new ArrayList<>();
             for (JobEntity jobEntity :
-                    jobRepository.findLastJobsForCodeAndOrganizationAndLimitByTechnicalModificationDate(code,
-                            organization.getId(), numberOfJobsToFind)) {
+                    jobRepository.findLastJobsForCodeAndOrganizationAndLimitAndTeamByTechnicalModificationDate(code,
+                            organizationId, teamId, numberOfJobsToFind)) {
                 Job job = JobMapper.entityToDomain(jobEntity);
                 jobs.add(job);
             }
             return jobs;
         } catch (Exception e) {
-            final String message = String.format("Failed to read last %s jobs for code %s and organization %s",
+            final String message = String.format("Failed to read last %s jobs for code %s and organization %s and " +
+                            "team %s",
                     numberOfJobsToFind, code,
-                    organization);
+                    organizationId, teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
                     .rootException(e)

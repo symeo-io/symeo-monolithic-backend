@@ -108,7 +108,7 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
             "-size/curves";
     protected static final String TEAMS_REST_API_PULL_REQUESTS = "/api/v1/teams/pull-requests";
     protected static final String TEAMS_GOALS_REST_API = "/api/v1/teams/goals";
-    protected static final String JOBS_REST_API_STATUS = "/api/v1/jobs/status";
+    protected static final String JOBS_REST_API_VCS_DATA_COLLECTION_STATUS = "/api/v1/jobs/vcs-data-collection/status";
 
     @Autowired
     ITAuthenticationContextProvider authenticationContextProvider;

@@ -21,9 +21,12 @@ public class JobService implements JobFacadeAdapter {
     }
 
     @Override
-    public List<Job> findLastJobsForCodeAndOrganizationAndLimit(String jobCode, Organization organization,
-                                                                int numberOfJobToFind) throws SymeoException {
-        return jobStorage.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode, organization,
+    public List<Job> findLastJobsForCodeAndOrganizationAndLimitAndTeamId(final String jobCode,
+                                                                         final UUID organizationId,
+                                                                         final UUID teamId,
+                                                                         final int numberOfJobToFind) throws SymeoException {
+        return jobStorage.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(jobCode, organizationId,
+                teamId,
                 numberOfJobToFind);
     }
 

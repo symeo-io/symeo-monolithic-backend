@@ -171,11 +171,13 @@ public class VcsServiceTest {
         final VcsService vcsService = new VcsService(deliveryCommand,
                 deliveryQuery, expositionStorageAdapter);
         final String vcsOrganizationId = faker.pokemon().name();
+        final VcsOrganization vcsOrganization =
+                VcsOrganization.builder().name(faker.dragonBall().character()).vcsId(vcsOrganizationId).build();
         final Organization organization = Organization.builder()
                 .name(faker.name().firstName())
                 .id(UUID.randomUUID())
                 .vcsOrganization(
-                        VcsOrganization.builder().name(faker.dragonBall().character()).build()
+                        vcsOrganization
                 )
                 .build();
         final Repository repo1 =
@@ -205,15 +207,20 @@ public class VcsServiceTest {
                 .thenReturn(pullRequestList1);
         when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(1)))
                 .thenReturn(pullRequestList2);
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(0)))
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(0)
+                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
                 .thenReturn(List.of(Comment.builder().build()));
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(1)))
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(1)
+                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
                 .thenReturn(List.of(Comment.builder().build()));
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(2)))
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(2)
+                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
                 .thenReturn(List.of(Comment.builder().build()));
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(0)))
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(0)
+                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
                 .thenReturn(List.of(Comment.builder().build()));
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(1)))
+        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(1)
+                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
                 .thenReturn(List.of(Comment.builder().build()));
 
         vcsService.collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repo1);
@@ -227,7 +234,7 @@ public class VcsServiceTest {
         prArgumentCaptorAllValues.stream().flatMap(Collection::stream)
                 .forEach(pullRequest -> {
                     assertThat(pullRequest.getOrganizationId()).isEqualTo(organization.getId());
-                    assertThat(pullRequest.getComments()).isNotEmpty();
+                    assertThat(pullRequest.getVcsOrganizationId()).isEqualTo(vcsOrganizationId);
                 });
     }
 

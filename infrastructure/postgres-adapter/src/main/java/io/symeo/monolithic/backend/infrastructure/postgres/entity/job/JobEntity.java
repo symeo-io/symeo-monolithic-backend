@@ -36,6 +36,8 @@ public class JobEntity {
     private String code;
     @Column(name = "organization_id", nullable = false)
     private UUID organizationId;
+    @Column(name = "team_id")
+    private UUID teamId;
     @Column(name = "status", nullable = false)
     private String status;
     @Column(name = "error")

@@ -62,6 +62,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .build())
                         .organizationId(organizationId)
                         .nextJob(getInitializeOrganizationSettingsJob(organizationId))
+                        .teamId(teamId)
                         .build());
     }
 
@@ -69,14 +70,26 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     public void startToCollectVcsDataForOrganizationId(UUID organizationId) throws SymeoException {
         jobManager.start(
                 Job.builder()
-                        .jobRunnable(CollectVcsDataForOrganizationJobRunnable.builder()
-                                .organizationId(organizationId)
-                                .expositionStorageAdapter(expositionStorageAdapter)
-                                .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
-                                .vcsService(vcsService)
-                                .build())
                         .organizationId(organizationId)
-                        .nextJob(getInitializeOrganizationSettingsJob(organizationId))
+                        .jobRunnable(
+                                CollectRepositoriesJobRunnable.builder()
+                                        .vcsService(vcsService)
+                                        .repositoryService(repositoryService)
+                                        .organizationId(organizationId)
+                                        .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                        .build()
+                        )
+                        .nextJob(
+                                Job.builder()
+                                        .jobRunnable(CollectVcsDataForOrganizationJobRunnable.builder()
+                                                .organizationId(organizationId)
+                                                .expositionStorageAdapter(expositionStorageAdapter)
+                                                .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                                .vcsService(vcsService)
+                                                .build())
+                                        .organizationId(organizationId)
+                                        .nextJob(getInitializeOrganizationSettingsJob(organizationId))
+                                        .build())
                         .build());
     }
 

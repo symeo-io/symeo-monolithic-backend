@@ -107,6 +107,8 @@ public class DataProcessingJobServiceTest {
         verify(jobManager, times(1)).start(jobArgumentCaptor.capture());
         final Job job = jobArgumentCaptor.getValue();
         assertThat(job.getCode()).isEqualTo(CollectVcsDataForOrganizationJobRunnable.JOB_CODE);
+        assertThat(job.getOrganizationId()).isEqualTo(organizationId);
+        assertThat(job.getTeamId()).isEqualTo(teamId);
     }
 
     @Test
@@ -142,8 +144,12 @@ public class DataProcessingJobServiceTest {
         // Then
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
         verify(jobManager, times(1)).start(jobArgumentCaptor.capture());
-        final Job job = jobArgumentCaptor.getValue();
-        assertThat(job.getCode()).isEqualTo(CollectVcsDataForOrganizationJobRunnable.JOB_CODE);
+        final List<Job> allValues = jobArgumentCaptor.getAllValues();
+        final Job job1 = allValues.get(0);
+        assertThat(job1.getCode()).isEqualTo(CollectRepositoriesJobRunnable.JOB_CODE);
+        assertThat(job1.getOrganizationId()).isEqualTo(organizationId);
+        assertThat(job1.getNextJob().getCode()).isEqualTo(CollectVcsDataForOrganizationJobRunnable.JOB_CODE);
+        assertThat(job1.getNextJob().getOrganizationId()).isEqualTo(organizationId);
     }
 
     @Test

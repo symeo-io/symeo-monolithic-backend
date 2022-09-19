@@ -14,8 +14,9 @@ public interface JobStorage {
 
     List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws SymeoException;
 
-    List<Job> findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(String jobCode,
-                                                                              Organization organization, int i) throws SymeoException;
+    List<Job> findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(String jobCode,
+                                                                                         UUID organizationId,
+                                                                                         UUID teamId, int i) throws SymeoException;
 
     List<Job> findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(UUID organizationId, UUID teamId);
 }

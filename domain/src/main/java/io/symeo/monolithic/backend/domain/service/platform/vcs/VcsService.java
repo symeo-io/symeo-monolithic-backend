@@ -27,11 +27,13 @@ public class VcsService {
                                                                                       Repository repository) throws SymeoException {
         final List<PullRequest> pullRequests = new ArrayList<>();
         for (PullRequest pullRequest : collectPullRequestForRepository(repository)) {
-            pullRequests.add(pullRequest.toBuilder()
+            final PullRequest updatedPullRequest = pullRequest.toBuilder()
                     .organizationId(organization.getId())
-                    .vcsOrganizationId(organization.getVcsOrganization().getId())
-                    .commits(collectCommitsForRepositoryAndPullRequest(repository, pullRequest))
-                    .comments(collectCommentsForRepositoryAndPullRequest(repository, pullRequest))
+                    .vcsOrganizationId(organization.getVcsOrganization().getVcsId())
+                    .build();
+            pullRequests.add(updatedPullRequest.toBuilder()
+                    .commits(collectCommitsForRepositoryAndPullRequest(repository, updatedPullRequest))
+                    .comments(collectCommentsForRepositoryAndPullRequest(repository, updatedPullRequest))
                     .build());
         }
         expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequests);

@@ -56,22 +56,27 @@ public class JobServiceTest {
         // Given
         final JobStorage jobStorage = mock(JobStorage.class);
         final JobService jobService = new JobService(jobStorage);
-        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final UUID organizationId = UUID.randomUUID();
+        final UUID teamId = UUID.randomUUID();
         final int numberOfJobToFind = faker.number().randomDigit();
         final String jobCode = faker.ancient().god();
 
 
         // When
-        jobService.findLastJobsForCodeAndOrganizationAndLimit(jobCode, organization, numberOfJobToFind);
+        jobService.findLastJobsForCodeAndOrganizationAndLimitAndTeamId(jobCode, organizationId, teamId,
+                numberOfJobToFind);
 
         // Then
         final ArgumentCaptor<String> jobCodeCaptor = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<Organization> organizationArgumentCaptor = ArgumentCaptor.forClass(Organization.class);
+        final ArgumentCaptor<UUID> organizationIdArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        final ArgumentCaptor<UUID> teamIdArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
         final ArgumentCaptor<Integer> integerArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
-        verify(jobStorage, times(1)).findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCodeCaptor.capture(),
-                organizationArgumentCaptor.capture(), integerArgumentCaptor.capture());
+        verify(jobStorage, times(1)).findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(jobCodeCaptor.capture(),
+                organizationIdArgumentCaptor.capture(), teamIdArgumentCaptor.capture(),
+                integerArgumentCaptor.capture());
         assertThat(jobCodeCaptor.getValue()).isEqualTo(jobCode);
-        assertThat(organizationArgumentCaptor.getValue()).isEqualTo(organization);
+        assertThat(organizationIdArgumentCaptor.getValue()).isEqualTo(organizationId);
+        assertThat(teamIdArgumentCaptor.getValue()).isEqualTo(teamId);
         assertThat(integerArgumentCaptor.getValue()).isEqualTo(numberOfJobToFind);
     }
 

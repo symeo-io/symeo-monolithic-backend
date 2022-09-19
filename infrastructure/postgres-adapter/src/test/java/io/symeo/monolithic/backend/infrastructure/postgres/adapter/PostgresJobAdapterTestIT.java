@@ -137,10 +137,13 @@ public class PostgresJobAdapterTestIT {
         final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
         final String jobCode = CollectRepositoriesJobRunnable.JOB_CODE;
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final UUID organizationId = organization.getId();
+        final UUID teamId = UUID.randomUUID();
         final JobEntity jobEntity1 =
                 jobRepository.save(
                         JobMapper.domainToEntity(Job.builder()
-                                .status(Job.FAILED).code(jobCode).organizationId(organization.getId())
+                                .status(Job.FAILED).code(jobCode).organizationId(organizationId)
+                                .teamId(teamId)
                                 .tasks(List.of())
                                 .build())
                 );
@@ -148,27 +151,29 @@ public class PostgresJobAdapterTestIT {
         final JobEntity jobEntity2 = jobRepository.save(
                 JobMapper.domainToEntity(Job.builder()
                         .status(Job.FINISHED).endDate(new Date()).code(jobCode)
-                        .organizationId(organization.getId()).tasks(List.of())
+                        .organizationId(organizationId).tasks(List.of())
                         .tasks(List.of())
+                        .teamId(teamId)
                         .build())
         );
         final JobEntity jobEntity3 = jobRepository.save(
                 JobMapper.domainToEntity(Job.builder().status(Job.STARTED)
                         .code(jobCode)
-                        .organizationId(organization.getId())
+                        .organizationId(organizationId)
+                        .teamId(teamId)
                         .tasks(List.of()).build()));
 
 
         // When
         final List<Job> lastJobsForCodeAndOrganizationAndLimit1 =
-                postgresJobAdapter.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode,
-                        organization, 1);
+                postgresJobAdapter.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(jobCode,
+                        organizationId, teamId, 1);
         final List<Job> lastJobsForCodeAndOrganizationAndLimit2 =
-                postgresJobAdapter.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode,
-                        organization, 2);
+                postgresJobAdapter.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(jobCode,
+                        organizationId, teamId, 2);
         final List<Job> lastJobsForCodeAndOrganizationAndLimit3 =
-                postgresJobAdapter.findLastJobsForCodeAndOrganizationAndLimitOrderByUpdateDateDesc(jobCode,
-                        organization, 3);
+                postgresJobAdapter.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(jobCode,
+                        organizationId, teamId, 3);
 
         // Then
         assertThat(lastJobsForCodeAndOrganizationAndLimit1).hasSize(1);

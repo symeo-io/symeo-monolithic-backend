@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationAndTeamJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.service.account.OrganizationService;
@@ -12,6 +13,7 @@ import io.symeo.monolithic.backend.frontend.contract.api.model.UpdateTeamRequest
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
@@ -42,6 +44,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
     public JobRepository jobRepository;
     @Autowired
     public OrganizationService organizationService;
+    private static final UUID organizationId = UUID.randomUUID();
 
     private static final String mail = faker.name().firstName() + "@" + faker.name().firstName() + ".fr";
 
@@ -74,7 +77,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
         final String organizationName = faker.ancient().hero();
         organizationService.createOrganization(
                 Organization.builder()
-                        .id(UUID.randomUUID())
+                        .id(organizationId)
                         .name(organizationName)
                         .vcsOrganization(VcsOrganization.builder().vcsId(faker.rickAndMorty().character()).name(organizationName).build())
                         .build()
@@ -162,7 +165,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
 
     @Order(5)
     @Test
-    void should_configure_two_teams() {
+    void should_configure_two_teams() throws InterruptedException {
         // Given
         final List<RepositoryEntity> allRepositories = repositoryRepository.findAll();
         final CreateTeamRequestContract requestContract1 = new CreateTeamRequestContract();
@@ -197,10 +200,46 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.teams[1].repository_ids[0]").isEqualTo(teams.get(1).getRepositoryIds().get(0))
                 .jsonPath("$.teams[1].repository_ids[1]").isEqualTo(teams.get(1).getRepositoryIds().get(1))
                 .jsonPath("$.teams[1].name").isNotEmpty();
-
+        Thread.sleep(2000);
+        final List<JobEntity> jobRepositoryAll1 =
+                jobRepository.findLastJobsForCodeAndOrganizationAndLimitAndTeamByTechnicalModificationDate(
+                        CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organizationId,
+                        teams.get(0).getId(), 2);
+        final List<JobEntity> jobRepositoryAll2 =
+                jobRepository.findLastJobsForCodeAndOrganizationAndLimitAndTeamByTechnicalModificationDate(
+                        CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organizationId,
+                        teams.get(1).getId(), 2);
+        assertThat(jobRepositoryAll1).hasSize(1);
+        assertThat(jobRepositoryAll1.get(0).getTeamId()).isEqualTo(teams.get(0).getId());
+        assertThat(jobRepositoryAll2).hasSize(1);
+        assertThat(jobRepositoryAll2.get(0).getTeamId()).isEqualTo(teams.get(1).getId());
     }
 
-    @Order(6)
+    @Test
+    @Order(7)
+    void should_return_last_two_vcs_data_collection_job_status_given_a_team_id() {
+        // Given
+        final TeamEntity teamEntity = teamRepository.findAll().get(0);
+        final List<JobEntity> jobs =
+                jobRepository.findLastJobsForCodeAndOrganizationAndLimitAndTeamByTechnicalModificationDate(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organizationId, teamEntity.getId(), 2);
+        final JobEntity jobEntity = jobs.get(0);
+
+        // When
+        client.get()
+                .uri(getApiURI(JOBS_REST_API_VCS_DATA_COLLECTION_STATUS, "team_id", teamEntity.getId().toString()))
+                .exchange()
+                // Then
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.jobs.current_job.id").isEqualTo(jobEntity.getId())
+                .jsonPath("$.jobs.current_job.status").isEqualTo(jobEntity.getStatus())
+                .jsonPath("$.jobs.current_job.code").isEqualTo(jobEntity.getCode())
+                .jsonPath("$.jobs.previous_job").isEmpty();
+    }
+
+    @Order(8)
     @Test
     void should_get_teams() {
         // When
@@ -230,7 +269,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
 
     }
 
-    @Order(7)
+    @Order(9)
     @Test
     void should_get_me_after_team_creation() {
         // Given
@@ -255,7 +294,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
     }
 
 
-    @Order(8)
+    @Order(10)
     @Test
     void should_update_onboarding() {
         // Given
@@ -278,7 +317,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.onboarding.id").isNotEmpty();
     }
 
-    @Order(9)
+    @Order(11)
     @Test
     void should_delete_on_team() {
         // Given
@@ -299,7 +338,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
         assertThat(teamsAfterDelete.get(0).getId()).isNotEqualTo(teamToDelete.getId());
     }
 
-    @Order(10)
+    @Order(12)
     @Test
     void should_update_team() {
         // Given
@@ -330,7 +369,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
         teamsAfterUpdate.get(0).getRepositoryIds().forEach(repositoryId -> assertThat(newRepositoryIds.contains(repositoryId)).isTrue());
     }
 
-    @Order(11)
+    @Order(13)
     @Test
     void should_return_empty_repositories() {
         // Given
@@ -349,7 +388,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.repositories").isEmpty();
     }
 
-    @Order(12)
+    @Order(14)
     @Test
     void should_return_error_for_not_found_organization_to_link_to_current_user() {
         // Given
