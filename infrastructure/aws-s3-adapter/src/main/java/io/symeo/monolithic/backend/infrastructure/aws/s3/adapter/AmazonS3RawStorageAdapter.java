@@ -88,8 +88,10 @@ public class AmazonS3RawStorageAdapter implements RawStorageAdapter {
     private String putObjectToS3andGetContentFileUploadedMd5(String bucketStorage, String bucketKeyId,
                                                              ByteArrayInputStream byteArrayInputStream) throws SymeoException, SdkClientException {
         if (amazonS3.doesBucketExistV2(bucketStorage)) {
+            final ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(byteArrayInputStream.available());
             final PutObjectResult putObjectResult = amazonS3.putObject(bucketStorage, bucketKeyId,
-                    byteArrayInputStream, new ObjectMetadata());
+                    byteArrayInputStream, metadata);
             return putObjectResult.getContentMd5();
         } else {
             LOGGER.error("Failed to upload report {} to S3 bucket {}", bucketKeyId, bucketStorage);
