@@ -15,6 +15,7 @@ public class OrganizationSettings {
     public static OrganizationSettings initializeFromOrganizationIdAndDefaultBranch(final UUID organizationId,
                                                                                     final String defaultMostUsedBranch) {
         return OrganizationSettings.builder()
+                .id(UUID.randomUUID())
                 .organizationId(organizationId)
                 .deliverySettings(
                         DeliverySettings.builder()

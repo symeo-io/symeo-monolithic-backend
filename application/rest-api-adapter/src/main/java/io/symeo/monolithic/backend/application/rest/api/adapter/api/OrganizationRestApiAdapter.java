@@ -83,20 +83,8 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
     public ResponseEntity<SymeoErrorsContract> updateOrganizationSettings(OrganizationSettingsContract organizationSettingsContract) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            final UUID organizationId = authenticatedUser.getOrganization().getId();
-            final Optional<OrganizationSettings> organizationSettings = organizationSettingsFacade.getOrganizationSettingsForId(organizationSettingsContract.getId());
-
-            if (organizationSettings.isPresent() && organizationSettings.get().getOrganizationId().equals(organizationId)) {
-                final OrganizationSettings updatedOrganizationSettings = contractToDomain(organizationSettingsContract, organizationId);
-                organizationSettingsFacade.updateOrganizationSettings(updatedOrganizationSettings);
-                return ok().build();
-            } else {
-                return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(SymeoException.builder()
-                        .code(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND)
-                        .message(String.format("OrganizationSettings not found for organizationId %s or user not authorized to change organizationSettings",
-                                organizationId))
-                        .build()));
-            }
+            organizationSettingsFacade.updateOrganizationSettings(contractToDomain(organizationSettingsContract, authenticatedUser.getOrganization().getId()));
+            return ok().build();
         } catch (SymeoException e) {
             return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
         }

@@ -126,7 +126,7 @@ public class PostgresOrganizationAdapterTestIT {
                 .name(faker.rickAndMorty().character())
                 .build();
         organizationRepository.save(organizationEntity);
-        OrganizationSettings organizationSettings =
+        final OrganizationSettings organizationSettings =
                 OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organizationEntity.getId(),
                         faker.rickAndMorty().location());
 
@@ -139,5 +139,34 @@ public class PostgresOrganizationAdapterTestIT {
         final Optional<OrganizationSettings> organizationSettingsForOrganizationId =
                 postgresOrganizationAdapter.findOrganizationSettingsForOrganizationId(organizationEntity.getId());
         assertThat(organizationSettingsForOrganizationId.isPresent()).isTrue();
+    }
+
+    @Test
+    void should_find_organization_settings_for_organization_settings_id_and_organization_id() throws SymeoException {
+        final UUID organizationId = UUID.randomUUID();
+        final String defaultBranch = faker.rickAndMorty().location();
+        final OrganizationEntity organizationEntity = OrganizationEntity.builder()
+                .id(organizationId)
+                .name(faker.rickAndMorty().character())
+                .build();
+        organizationRepository.save(organizationEntity);
+        final OrganizationSettings organizationSettings =
+                OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organizationEntity.getId(),
+                        defaultBranch);
+        postgresOrganizationAdapter.saveOrganizationSettings(organizationSettings);
+
+        // When
+        final Optional<OrganizationSettings> validOrganizationSettings =
+                postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), organizationId);
+        final Optional<OrganizationSettings> badIdOrganizationSettings =
+                postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(UUID.randomUUID(), organizationId);
+        final Optional<OrganizationSettings> badOrganizationIdOrganizationSettings =
+                postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), UUID.randomUUID());
+        // Then
+        assertThat(validOrganizationSettings).isPresent();
+        assertThat(validOrganizationSettings.get().getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex()).isEqualTo(String.format("^%s$",defaultBranch));
+        assertThat(badIdOrganizationSettings).isEmpty();
+        assertThat(badOrganizationIdOrganizationSettings).isEmpty();
+
     }
 }

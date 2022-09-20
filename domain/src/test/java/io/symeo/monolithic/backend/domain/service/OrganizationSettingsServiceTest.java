@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
+import io.symeo.monolithic.backend.domain.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import org.junit.jupiter.api.Test;
@@ -128,9 +129,10 @@ public class OrganizationSettingsServiceTest {
     }
 
     @Test
-    void should_get_organization_settings_given_an_organization_settings_id() throws SymeoException {
+    void should_get_organization_settings_given_an_organization_settings_id_and_organization_id() throws SymeoException {
         // Given
         final UUID organizationSettingsId = UUID.randomUUID();
+        final UUID organizationId = UUID.randomUUID();
         final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
                 mock(AccountOrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
@@ -152,10 +154,10 @@ public class OrganizationSettingsServiceTest {
                 .build());
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationSettingsForId(organizationSettingsId))
+        when(accountOrganizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettingsId, organizationId))
                 .thenReturn(optionalOrganizationSettings);
         final Optional<OrganizationSettings> organizationSettings =
-                organizationSettingsService.getOrganizationSettingsForId(organizationSettingsId);
+                organizationSettingsService.getOrganizationSettingsForIdAndOrganizationId(organizationSettingsId, organizationId);
 
         // Then
         assertThat(organizationSettings).isEqualTo(optionalOrganizationSettings);
@@ -190,7 +192,5 @@ public class OrganizationSettingsServiceTest {
 
         // Then
         verify(accountOrganizationStorageAdapter,times(1)).saveOrganizationSettings(organizationSettings);
-
-
     }
 }

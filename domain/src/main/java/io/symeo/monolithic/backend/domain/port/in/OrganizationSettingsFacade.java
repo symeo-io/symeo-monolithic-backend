@@ -11,5 +11,5 @@ public interface OrganizationSettingsFacade {
 
     void updateOrganizationSettings(OrganizationSettings organizationSettings) throws SymeoException;
 
-    Optional<OrganizationSettings> getOrganizationSettingsForId(UUID organizationSettingsId) throws SymeoException;
+    Optional<OrganizationSettings> getOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId, UUID organizationId) throws SymeoException;
 }

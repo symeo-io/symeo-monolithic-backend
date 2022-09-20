@@ -1,9 +1,6 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.frontend.contract.api.model.DeliverySettingsContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.DeployDetectionSettingsContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.OrganizationSettingsContract;
@@ -88,17 +85,6 @@ public class SymeoOrganizationSettingsIT extends AbstractSymeoBackForFrontendApi
                 .name(faker.rickAndMorty().character())
                 .build();
         organizationRepository.save(organizationEntity);
-        final String email = faker.gameOfThrones().character();
-        UserMapper.entityToDomain(userRepository.save(
-                UserEntity.builder()
-                        .id(activeUserId)
-                        .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
-                        .organizationEntities(List.of(organizationEntity))
-                        .status(User.ACTIVE)
-                        .email(email)
-                        .build()
-        ));
-        authenticationContextProvider.authorizeUserForMail(email);
 
         final OrganizationSettingsEntity organizationSettingsEntityToUpdate = OrganizationSettingsEntity.builder()
                 .id(organizationSettingsId)
@@ -109,27 +95,27 @@ public class SymeoOrganizationSettingsIT extends AbstractSymeoBackForFrontendApi
 
         organizationSettingsRepository.save(organizationSettingsEntityToUpdate);
 
-            final OrganizationSettingsContract authorizedUpdateOrganizationSettingsContract = new OrganizationSettingsContract();
-            final DeliverySettingsContract deliverySettingsContract = new DeliverySettingsContract();
-            final DeployDetectionSettingsContract deployDetectionSettingsContract = new DeployDetectionSettingsContract();
-            deployDetectionSettingsContract.setTagRegex(faker.gameOfThrones().character());
-            deployDetectionSettingsContract.setPullRequestMergedOnBranchRegex(faker.gameOfThrones().dragon());
-            deliverySettingsContract.setDeployDetection(deployDetectionSettingsContract);
-            authorizedUpdateOrganizationSettingsContract.setDelivery(deliverySettingsContract);
-            authorizedUpdateOrganizationSettingsContract.setId(organizationSettingsId);
+        final OrganizationSettingsContract updateOrganizationSettingsContract = new OrganizationSettingsContract();
+        final DeliverySettingsContract deliverySettingsContract = new DeliverySettingsContract();
+        final DeployDetectionSettingsContract deployDetectionSettingsContract = new DeployDetectionSettingsContract();
+        deployDetectionSettingsContract.setTagRegex(faker.gameOfThrones().character());
+        deployDetectionSettingsContract.setPullRequestMergedOnBranchRegex(faker.gameOfThrones().dragon());
+        deliverySettingsContract.setDeployDetection(deployDetectionSettingsContract);
+        updateOrganizationSettingsContract.setDelivery(deliverySettingsContract);
+        updateOrganizationSettingsContract.setId(organizationSettingsId);
 
         // When
         client.patch()
                 .uri(getApiURI(ORGANIZATION_REST_API_SETTINGS))
-                .body(BodyInserters.fromValue(authorizedUpdateOrganizationSettingsContract))
+                .body(BodyInserters.fromValue(updateOrganizationSettingsContract))
                 .exchange()
 
                 // Then
                 .expectStatus()
                 .is2xxSuccessful();
         final OrganizationSettingsEntity updatedOrganizationSettings = organizationSettingsRepository.findById(organizationSettingsId).get();
-        assertThat(updatedOrganizationSettings.getTagRegex()).isEqualTo(authorizedUpdateOrganizationSettingsContract.getDelivery().getDeployDetection().getTagRegex());
-        assertThat(updatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(authorizedUpdateOrganizationSettingsContract.getDelivery().getDeployDetection().getPullRequestMergedOnBranchRegex());
+        assertThat(updatedOrganizationSettings.getTagRegex()).isEqualTo(updateOrganizationSettingsContract.getDelivery().getDeployDetection().getTagRegex());
+        assertThat(updatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(updateOrganizationSettingsContract.getDelivery().getDeployDetection().getPullRequestMergedOnBranchRegex());
     }
 
     @Test
@@ -149,17 +135,6 @@ public class SymeoOrganizationSettingsIT extends AbstractSymeoBackForFrontendApi
                     .build();
             organizationRepository.save(organizationEntity);
             organizationRepository.save(invalidOrganizationEntity);
-            final String email = faker.gameOfThrones().character();
-            UserMapper.entityToDomain(userRepository.save(
-                    UserEntity.builder()
-                            .id(activeUserId)
-                            .onboardingEntity(OnboardingEntity.builder().id(UUID.randomUUID()).hasConfiguredTeam(true).hasConnectedToVcs(true).build())
-                            .organizationEntities(List.of(organizationEntity))
-                            .status(User.ACTIVE)
-                            .email(email)
-                            .build()
-            ));
-            authenticationContextProvider.authorizeUserForMail(email);
 
             final OrganizationSettingsEntity organizationSettingsEntityToUpdate = OrganizationSettingsEntity.builder()
                     .id(organizationSettingsId)

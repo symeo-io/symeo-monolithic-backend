@@ -4,7 +4,6 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,5 +19,5 @@ public interface AccountOrganizationStorageAdapter {
 
     Optional<OrganizationSettings> findOrganizationSettingsForOrganizationId(UUID organizationId) throws SymeoException;
 
-    Optional<OrganizationSettings> findOrganizationSettingsForId(UUID organizationSettingsId);
+    Optional<OrganizationSettings> findOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId, UUID organizationId);
 }

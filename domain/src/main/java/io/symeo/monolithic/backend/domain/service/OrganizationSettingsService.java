@@ -9,11 +9,8 @@ import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAda
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 import java.util.UUID;
-
-import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 
 @AllArgsConstructor
 public class OrganizationSettingsService implements OrganizationSettingsFacade {
@@ -48,19 +45,20 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
 
     @Override
     public void updateOrganizationSettings(final OrganizationSettings organizationSettings) throws SymeoException {
-        try {
+        final Optional<OrganizationSettings> organizationSettingsToUpdate = getOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), organizationSettings.getOrganizationId());
+        if (organizationSettingsToUpdate.isPresent()) {
             accountOrganizationStorageAdapter.saveOrganizationSettings(organizationSettings);
-        } catch (Exception e) {
+        } else {
             throw SymeoException.builder()
                     .code(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND)
-                    .message(String.format("OrganizationSettings not found for organizationSettingsId %s",
-                            organizationSettings))
+                    .message(String.format("OrganizationSettings not found for organizationSettingsId %s or user not allowed to modify organizationSettings",
+                            organizationSettings.getId()))
                     .build();
         }
     }
 
     @Override
-    public Optional<OrganizationSettings> getOrganizationSettingsForId(UUID organizationSettingsId) {
-        return accountOrganizationStorageAdapter.findOrganizationSettingsForId(organizationSettingsId);
+    public Optional<OrganizationSettings> getOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId, UUID organizationId) {
+        return accountOrganizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettingsId, organizationId);
     }
 }
