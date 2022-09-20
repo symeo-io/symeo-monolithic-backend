@@ -5,7 +5,6 @@ import io.symeo.monolithic.backend.domain.job.JobManager;
 import io.symeo.monolithic.backend.domain.port.in.*;
 import io.symeo.monolithic.backend.domain.port.out.*;
 import io.symeo.monolithic.backend.domain.query.CurveQuery;
-import io.symeo.monolithic.backend.domain.query.DeliveryQuery;
 import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.service.DataProcessingJobService;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
@@ -33,16 +32,9 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public DeliveryQuery deliveryQuery(final RawStorageAdapter rawStorageAdapter,
-                                       final VersionControlSystemAdapter versionControlSystemAdapter) {
-        return new DeliveryQuery(rawStorageAdapter, versionControlSystemAdapter);
-    }
-
-    @Bean
     public VcsService deliveryProcessorService(final DeliveryCommand deliveryCommand,
-                                               final DeliveryQuery deliveryQuery,
                                                final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new VcsService(deliveryCommand, deliveryQuery, expositionStorageAdapter);
+        return new VcsService(deliveryCommand, expositionStorageAdapter);
     }
 
 

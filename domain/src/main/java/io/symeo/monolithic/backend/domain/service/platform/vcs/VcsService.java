@@ -5,11 +5,11 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
-import io.symeo.monolithic.backend.domain.query.DeliveryQuery;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,25 +18,29 @@ import java.util.UUID;
 public class VcsService {
 
     private final DeliveryCommand deliveryCommand;
-    private final DeliveryQuery deliveryQuery;
     private final ExpositionStorageAdapter expositionStorageAdapter;
 
-    public void collectVcsDataForOrganizationAndRepository(final Organization organization,
-                                                           Repository repository) throws SymeoException {
+    public void collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(final Organization organization,
+                                                                                 Repository repository,
+                                                                                 final Date lastCollectionDate) throws SymeoException {
         repository = populateRepositoryWithOrganizationId(repository, organization.getId());
         LOGGER.info("Starting to collect VCS data for organization {} and repository {}", organization, repository);
         collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repository);
         final List<String> allBranches = collectAllBranchesForOrganizationAndRepository(organization, repository)
                 .stream()
                 .map(Branch::getName).toList();
-        for (String branch : allBranches) {
-            collectCommitsForForOrganizationAndRepositoryAndBranch(organization, repository, branch);
-        }
+        collectCommitsForForOrganizationAndRepositoryAndBranchesFromLastCollectionDate(organization, repository,
+                allBranches, lastCollectionDate);
         LOGGER.info("VCS data collection finished for organization {} and repository {}", organization, repository);
     }
 
-    public List<Repository> collectRepositoriesForOrganization(Organization organization) throws SymeoException {
-        return deliveryCommand.collectRepositoriesForOrganization(organization);
+    public void collectRepositoriesForOrganization(Organization organization) throws SymeoException {
+        final List<Repository> repositories = deliveryCommand.collectRepositoriesForOrganization(organization).stream()
+                .map(repository -> repository.toBuilder()
+                        .organizationId(organization.getId())
+                        .vcsOrganizationName(organization.getVcsOrganization().getName())
+                        .build()).toList();
+        expositionStorageAdapter.saveRepositories(repositories);
     }
 
     private void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Organization organization,
@@ -65,10 +69,12 @@ public class VcsService {
         return deliveryCommand.collectBranchesForOrganizationAndRepository(organization, repository);
     }
 
-    private void collectCommitsForForOrganizationAndRepositoryAndBranch(final Organization organization,
-                                                                        final Repository repository,
-                                                                        final String branch) {
-
+    private void collectCommitsForForOrganizationAndRepositoryAndBranchesFromLastCollectionDate(final Organization organization,
+                                                                                                final Repository repository,
+                                                                                                final List<String> branches,
+                                                                                                final Date lastCollectionDate) throws SymeoException {
+        expositionStorageAdapter.saveCommits(deliveryCommand.collectCommitsForForOrganizationAndRepositoryAndBranchesFromLastCollectionDate(organization, repository,
+                branches, lastCollectionDate));
     }
 
     private List<PullRequest> collectPullRequestForRepository(final Repository repository) throws SymeoException {

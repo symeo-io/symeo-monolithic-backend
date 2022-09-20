@@ -42,7 +42,6 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                         .jobRunnable(
                                 CollectRepositoriesJobRunnable.builder()
                                         .vcsService(vcsService)
-                                        .repositoryService(repositoryService)
                                         .organizationId(organizationId)
                                         .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
                                         .jobStorage(jobStorage)
@@ -78,7 +77,6 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                         .jobRunnable(
                                 CollectRepositoriesJobRunnable.builder()
                                         .vcsService(vcsService)
-                                        .repositoryService(repositoryService)
                                         .organizationId(organizationId)
                                         .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
                                         .jobStorage(jobStorage)

@@ -30,7 +30,7 @@ public class DataProcessingJobServiceTest {
 
     // TODO : add unit test raising SymeoException
     @Test
-    void should_start_to_collect_repositories_job_given_an_organization_id() throws SymeoException {
+    void should_collect_repositories_job_given_an_organization_id() throws SymeoException {
         // Given
         final JobManager jobManager = mock(JobManager.class);
         final VcsService vcsService = mock(VcsService.class);
@@ -59,9 +59,6 @@ public class DataProcessingJobServiceTest {
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
         when(accountOrganizationStorageAdapter.findOrganizationById(organizationId)).thenReturn(
                 organisation
-        );
-        when(vcsService.collectRepositoriesForOrganization(organisation)).thenReturn(
-                repositories
         );
         dataProcessingJobService.startToCollectRepositoriesForOrganizationId(organizationId);
 

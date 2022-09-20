@@ -6,6 +6,8 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.RawStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DeliveryCommand {
@@ -100,5 +102,28 @@ public class DeliveryCommand {
                         repository.getName());
         rawStorageAdapter.save(organization.getId(), versionControlSystemAdapter.getName(), Branch.ALL, rawBranches);
         return versionControlSystemAdapter.branchesBytesToDomain(rawBranches);
+    }
+
+    public List<Commit> collectCommitsForForOrganizationAndRepositoryAndBranchesFromLastCollectionDate(final Organization organization,
+                                                                                                       final Repository repository,
+                                                                                                       final List<String> branches,
+                                                                                                       final Date lastCollectionDate) throws SymeoException {
+        final List<Commit> commitsCollected = new ArrayList<>();
+        for (String branchName : branches) {
+            byte[] alreadyCollectedCommits = null;
+            final String contentName = Commit.getNameFromBranch(branchName);
+            if (rawStorageAdapter.exists(organization.getId(), versionControlSystemAdapter.getName(),
+                    contentName)) {
+                alreadyCollectedCommits = rawStorageAdapter.read(organization.getId(),
+                        versionControlSystemAdapter.getName(), contentName);
+            }
+            alreadyCollectedCommits =
+                    versionControlSystemAdapter.getRawCommitsForBranchFromLastCollectionDate(repository.getVcsOrganizationName(),
+                            repository.getName(), branchName, lastCollectionDate, alreadyCollectedCommits);
+            rawStorageAdapter.save(organization.getId(), versionControlSystemAdapter.getName(), contentName,
+                    alreadyCollectedCommits);
+            commitsCollected.addAll(versionControlSystemAdapter.commitsBytesToDomain(alreadyCollectedCommits));
+        }
+        return commitsCollected;
     }
 }

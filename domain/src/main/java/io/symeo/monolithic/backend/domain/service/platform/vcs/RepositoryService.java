@@ -11,10 +11,6 @@ import java.util.List;
 public class RepositoryService {
     private final ExpositionStorageAdapter expositionStorageAdapter;
 
-    public void saveRepositories(List<Repository> repositories) {
-        expositionStorageAdapter.saveRepositories(repositories);
-    }
-
     public List<Repository> getRepositoriesForOrganization(Organization organization) {
         return expositionStorageAdapter.readRepositoriesForOrganization(organization);
     }

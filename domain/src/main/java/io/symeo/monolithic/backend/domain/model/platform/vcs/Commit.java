@@ -21,4 +21,8 @@ public class Commit {
     public static String getNameFromRepository(final Repository repository) {
         return ALL + "_for_repository_" + repository.getId();
     }
+
+    public static String getNameFromBranch(String branchName) {
+        return ALL + "_for_branch_" + branchName;
+    }
 }

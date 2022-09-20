@@ -19,8 +19,8 @@ public interface ExpositionStorageAdapter {
     List<Repository> readRepositoriesForOrganization(Organization organization);
 
     List<PullRequestView> readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(Organization organization,
-                                                                                                          UUID teamId
-            , Date startDate,
+                                                                                                          UUID teamId,
+                                                                                                          Date startDate,
                                                                                                           Date endDate) throws SymeoException;
 
     List<PullRequestView> readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(Organization organization, UUID teamId,

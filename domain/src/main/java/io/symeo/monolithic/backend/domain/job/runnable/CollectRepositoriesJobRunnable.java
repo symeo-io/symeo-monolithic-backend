@@ -4,10 +4,8 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.JobRunnable;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
-import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +23,6 @@ public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<Organi
 
     @NonNull
     private final VcsService vcsService;
-    @NonNull
-    private final RepositoryService repositoryService;
     @NonNull
     private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
     @NonNull
@@ -52,14 +48,7 @@ public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<Organi
 
     private void collectRepositoriesForOrganization(Organization organization) throws SymeoException {
         LOGGER.info("Starting to collect repositories for organization {}", organization);
-        List<Repository> repositories = vcsService.collectRepositoriesForOrganization(organization);
-        repositories =
-                repositories.stream()
-                        .map(repository -> repository.toBuilder()
-                                .organizationId(organization.getId())
-                                .vcsOrganizationName(organization.getVcsOrganization().getName())
-                                .build()).toList();
-        repositoryService.saveRepositories(repositories);
+        vcsService.collectRepositoriesForOrganization(organization);
         LOGGER.info("Repositories Collection finished for organization {}", organization);
     }
 

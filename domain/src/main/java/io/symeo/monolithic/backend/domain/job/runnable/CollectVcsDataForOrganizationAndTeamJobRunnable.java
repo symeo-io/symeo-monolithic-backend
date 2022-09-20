@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.domain.job.runnable;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobRunnable;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
@@ -11,11 +12,11 @@ import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,7 +54,15 @@ public class CollectVcsDataForOrganizationAndTeamJobRunnable extends AbstractTas
     }
 
     private void collectVcsDataForRepository(Repository repository) throws SymeoException {
-        vcsService.collectVcsDataForOrganizationAndRepository(organization, repository);
+        final List<Job> lastJobs =
+                jobStorage.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(this.getCode(),
+                        this.organizationId, this.teamId, 1);
+        Date lastCollectionDate = null;
+        if (lastJobs.size() > 0) {
+            lastCollectionDate = lastJobs.get(0).getCreationDate();
+        }
+        vcsService.collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(organization, repository,
+                lastCollectionDate);
     }
 
     public static final String JOB_CODE = "COLLECT_VCS_DATA_FOR_REPOSITORIES_JOB";
