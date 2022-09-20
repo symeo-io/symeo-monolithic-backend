@@ -170,9 +170,9 @@ public class PostgresOrganizationAdapterTestIT {
         // When
         final Optional<OrganizationSettings> validOrganizationSettings =
                 postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), organizationId);
-        final Optional<OrganizationSettings> badIdOrganizationSettings =
+        final Optional<OrganizationSettings> wrongIdOrganizationSettings =
                 postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(UUID.randomUUID(), organizationId);
-        final Optional<OrganizationSettings> badOrganizationIdOrganizationSettings =
+        final Optional<OrganizationSettings> wrongOrganizationIdOrganizationSettings =
                 postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), UUID.randomUUID());
         // Then
         assertThat(validOrganizationSettings).isPresent();
@@ -181,8 +181,8 @@ public class PostgresOrganizationAdapterTestIT {
         );
         assertThat(validOrganizationSettings.get().getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex()).isEqualTo(
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex());
-        assertThat(badIdOrganizationSettings).isEmpty();
-        assertThat(badOrganizationIdOrganizationSettings).isEmpty();
+        assertThat(wrongIdOrganizationSettings).isEmpty();
+        assertThat(wrongOrganizationIdOrganizationSettings).isEmpty();
 
     }
 }

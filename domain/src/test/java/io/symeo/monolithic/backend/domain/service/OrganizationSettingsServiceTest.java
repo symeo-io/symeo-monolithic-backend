@@ -191,6 +191,51 @@ public class OrganizationSettingsServiceTest {
         accountOrganizationStorageAdapter.saveOrganizationSettings(organizationSettings);
 
         // Then
-        verify(accountOrganizationStorageAdapter,times(1)).saveOrganizationSettings(organizationSettings);
+        verify(accountOrganizationStorageAdapter, times(1)).saveOrganizationSettings(organizationSettings);
+    }
+
+    @Test
+    void should_raise_organization_settings_not_found_exception() {
+        // Given
+        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
+                mock(AccountOrganizationStorageAdapter.class);
+        final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
+        final OrganizationSettingsService organizationSettingsService =
+                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .build();
+        final OrganizationSettings organizationSettings = OrganizationSettings.builder()
+                .id(organization.getId())
+                .organizationId(UUID.randomUUID())
+                .deliverySettings(
+                        DeliverySettings.builder()
+                                .deployDetectionSettings(
+                                        DeployDetectionSettings.builder()
+                                                .tagRegex(faker.gameOfThrones().dragon())
+                                                .pullRequestMergedOnBranchRegex(faker.rickAndMorty().character())
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
+
+        // When
+        SymeoException expectedSymeoException = null;
+        when(accountOrganizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(UUID.randomUUID(), organization.getId()))
+                .thenReturn(Optional.empty());
+        try {
+            organizationSettingsService.updateOrganizationSettings(organizationSettings);
+        } catch (SymeoException symeoException) {
+            expectedSymeoException = symeoException;
+        }
+
+        // Then
+        assertThat(expectedSymeoException).isNotNull();
+        assertThat(expectedSymeoException.getCode()).isEqualTo(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND);
+        assertThat(expectedSymeoException.getMessage()).isEqualTo(
+                String.format("OrganizationSettings not found for organizationSettingsId %s or user not allowed to modify organizationSettings", organizationSettings.getId())
+        );
+
     }
 }
