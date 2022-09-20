@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.MetricsContractMapper.errorsToContract;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.MetricsContractMapper.metricsToContract;
@@ -80,8 +81,19 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return ok(metricsToContract(curveQuery.computePullRequestTimeToMergeMetrics(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return internalServerError().body(errorsToContract(e));
+//
+            return mapSymeoExceptionToResponse(() -> errorsToContract(e), e);
+//            return internalServerError().body(errorsToContract(e));
         }
+    }
+
+
+    private <T> ResponseEntity<T> mapSymeoExceptionToResponse(
+            final Supplier<T> tSupplier, SymeoException symeoException
+    ) {
+//        symeoException.isFunctional() ... // badRequest()
+//            else ... //  internalServerError()
+        return ResponseEntity.internalServerError().body(tSupplier.get());
     }
 
     @Override
