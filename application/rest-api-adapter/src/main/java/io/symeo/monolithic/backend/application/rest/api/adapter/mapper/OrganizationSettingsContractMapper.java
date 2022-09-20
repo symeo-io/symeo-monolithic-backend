@@ -1,6 +1,8 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.frontend.contract.api.model.DeliverySettingsContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.DeployDetectionSettingsContract;
@@ -8,6 +10,7 @@ import io.symeo.monolithic.backend.frontend.contract.api.model.OrganizationSetti
 import io.symeo.monolithic.backend.frontend.contract.api.model.OrganizationSettingsResponseContract;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OrganizationSettingsContractMapper {
 
@@ -30,6 +33,23 @@ public interface OrganizationSettingsContractMapper {
         organizationSettingsContract.setDelivery(deliverySettingsContract);
         organizationSettingsResponseContract.setSettings(organizationSettingsContract);
         return organizationSettingsResponseContract;
+    }
+
+    static OrganizationSettings contractToDomain(final OrganizationSettingsContract organizationSettingsContract, UUID organizationId) {
+        return  OrganizationSettings.builder()
+                .id(organizationSettingsContract.getId())
+                .organizationId(organizationId)
+                .deliverySettings(
+                        DeliverySettings.builder()
+                                .deployDetectionSettings(
+                                        DeployDetectionSettings.builder()
+                                                .tagRegex(organizationSettingsContract.getDelivery().getDeployDetection().getTagRegex())
+                                                .pullRequestMergedOnBranchRegex(organizationSettingsContract.getDelivery().getDeployDetection().getPullRequestMergedOnBranchRegex())
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
     }
 
 

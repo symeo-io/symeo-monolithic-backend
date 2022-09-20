@@ -3,6 +3,8 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
@@ -126,7 +128,7 @@ public class PostgresOrganizationAdapterTestIT {
                 .name(faker.rickAndMorty().character())
                 .build();
         organizationRepository.save(organizationEntity);
-        OrganizationSettings organizationSettings =
+        final OrganizationSettings organizationSettings =
                 OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organizationEntity.getId(),
                         faker.rickAndMorty().location());
 
@@ -139,5 +141,48 @@ public class PostgresOrganizationAdapterTestIT {
         final Optional<OrganizationSettings> organizationSettingsForOrganizationId =
                 postgresOrganizationAdapter.findOrganizationSettingsForOrganizationId(organizationEntity.getId());
         assertThat(organizationSettingsForOrganizationId.isPresent()).isTrue();
+    }
+
+    @Test
+    void should_find_organization_settings_for_organization_settings_id_and_organization_id() throws SymeoException {
+        final UUID organizationId = UUID.randomUUID();
+        final OrganizationEntity organizationEntity = OrganizationEntity.builder()
+                .id(organizationId)
+                .name(faker.rickAndMorty().character())
+                .build();
+        organizationRepository.save(organizationEntity);
+        final OrganizationSettings organizationSettings = OrganizationSettings.builder()
+                .id(UUID.randomUUID())
+                .organizationId(organizationId)
+                .deliverySettings(
+                        DeliverySettings.builder()
+                                .deployDetectionSettings(
+                                        DeployDetectionSettings.builder()
+                                                .tagRegex(faker.gameOfThrones().dragon())
+                                                .pullRequestMergedOnBranchRegex(faker.rickAndMorty().character())
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
+        postgresOrganizationAdapter.saveOrganizationSettings(organizationSettings);
+
+        // When
+        final Optional<OrganizationSettings> validOrganizationSettings =
+                postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), organizationId);
+        final Optional<OrganizationSettings> wrongIdOrganizationSettings =
+                postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(UUID.randomUUID(), organizationId);
+        final Optional<OrganizationSettings> wrongOrganizationIdOrganizationSettings =
+                postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), UUID.randomUUID());
+        // Then
+        assertThat(validOrganizationSettings).isPresent();
+        assertThat(validOrganizationSettings.get().getDeliverySettings().getDeployDetectionSettings().getTagRegex()).isEqualTo(
+                organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex()
+        );
+        assertThat(validOrganizationSettings.get().getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex()).isEqualTo(
+                organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex());
+        assertThat(wrongIdOrganizationSettings).isEmpty();
+        assertThat(wrongOrganizationIdOrganizationSettings).isEmpty();
+
     }
 }

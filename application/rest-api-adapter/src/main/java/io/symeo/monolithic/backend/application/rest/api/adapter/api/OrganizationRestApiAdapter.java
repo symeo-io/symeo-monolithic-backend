@@ -7,23 +7,22 @@ import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.A
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.UserContractMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
 import io.symeo.monolithic.backend.domain.model.account.User;
+import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import io.symeo.monolithic.backend.frontend.contract.api.OrganizationApi;
-import io.symeo.monolithic.backend.frontend.contract.api.model.DeleteUserResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.OrganizationSettingsResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.UserRequestContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.UsersResponseContract;
+import io.symeo.monolithic.backend.frontend.contract.api.model.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OrganizationSettingsContractMapper.domainToContract;
-import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OrganizationSettingsContractMapper.errorToContract;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OrganizationSettingsContractMapper.*;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -78,5 +77,17 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
         } catch (SymeoException e) {
             return internalServerError().body(errorToContract(e));
         }
+    }
+
+    @Override
+    public ResponseEntity<SymeoErrorsContract> updateOrganizationSettings(OrganizationSettingsContract organizationSettingsContract) {
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            organizationSettingsFacade.updateOrganizationSettings(contractToDomain(organizationSettingsContract, authenticatedUser.getOrganization().getId()));
+            return ok().build();
+        } catch (SymeoException e) {
+            return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
+        }
+
     }
 }

@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface OrganizationSettingsRepository extends JpaRepository<OrganizationSettingsEntity, UUID> {
 
     Optional<OrganizationSettingsEntity> findByOrganizationId(UUID organizationId);
+
+    Optional<OrganizationSettingsEntity> findByIdAndOrganizationId(UUID organizationSettingsId, UUID organizationId);
 }
