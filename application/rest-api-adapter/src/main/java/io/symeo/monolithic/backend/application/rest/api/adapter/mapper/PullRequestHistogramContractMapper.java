@@ -37,11 +37,11 @@ public interface PullRequestHistogramContractMapper {
         return ok(getHistogramResponseContract);
     }
 
-    static ResponseEntity<GetHistogramResponseContract> errorToContract(SymeoException e) {
+    static GetHistogramResponseContract errorToContract(SymeoException e) {
         final SymeoErrorContract symeoErrorContract = SymeoErrorContractMapper.exceptionToContract(e);
         final GetHistogramResponseContract getHistogramResponseContract = new GetHistogramResponseContract();
         getHistogramResponseContract.errors(List.of(symeoErrorContract));
-        return internalServerError().body(getHistogramResponseContract);
+        return getHistogramResponseContract;
     }
 
 

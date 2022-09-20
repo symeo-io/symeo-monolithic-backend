@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
+import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OrganizationSettingsContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.RepositoryContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.service.RepositoryRetryService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.RepositoryContractMapper.domainToGetRepositoriesResponseContract;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -35,7 +37,7 @@ public class RepositoryRestApiAdapter implements RepositoryApi {
                     repositoryService.getRepositoriesForOrganization(authenticatedUser.getOrganization()))
             );
         } catch (SymeoException e) {
-            return ResponseEntity.internalServerError().body(RepositoryContractMapper.domainToKo(e));
+            return mapSymeoExceptionToContract(() -> RepositoryContractMapper.domainToKo(e), e);
         }
 
     }

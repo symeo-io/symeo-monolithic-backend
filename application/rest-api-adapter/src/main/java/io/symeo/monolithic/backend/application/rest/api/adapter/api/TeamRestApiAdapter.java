@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
+import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OrganizationSettingsContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.TeamContractMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -73,7 +75,7 @@ public class TeamRestApiAdapter implements TeamApi {
             teamFacadeAdapter.deleteForId(teamId);
             return ok().build();
         } catch (SymeoException e) {
-            return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
+            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
         }
     }
 
@@ -88,7 +90,7 @@ public class TeamRestApiAdapter implements TeamApi {
             teamFacadeAdapter.update(team);
             return ok().build();
         } catch (SymeoException e) {
-            return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
+            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
         }
     }
 }

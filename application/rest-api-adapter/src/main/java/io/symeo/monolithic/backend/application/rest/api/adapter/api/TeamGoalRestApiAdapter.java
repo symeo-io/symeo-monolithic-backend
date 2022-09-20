@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.MetricsContractMapper.errorsToContract;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.MetricsContractMapper.metricsToContract;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.*;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
@@ -44,7 +45,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                     postCreateTeamGoalsRequest.getStandardCode(), postCreateTeamGoalsRequest.getValue());
             return ok().build();
         } catch (SymeoException e) {
-            return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
+            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
         }
     }
 
@@ -56,8 +57,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return ok(PullRequestCurveContractMapper.curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return internalServerError().body(PullRequestCurveContractMapper.errorToContract(e));
-        }
+            return mapSymeoExceptionToContract(() -> PullRequestCurveContractMapper.errorToContract(e), e);}
     }
 
     @Override
@@ -69,7 +69,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return PullRequestHistogramContractMapper.domainToContract(histogramQuery.computePullRequestTimeToMergeHistogram(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate)));
         } catch (SymeoException e) {
-            return PullRequestHistogramContractMapper.errorToContract(e);
+            return mapSymeoExceptionToContract(() -> PullRequestHistogramContractMapper.errorToContract(e), e);
         }
     }
 
@@ -81,19 +81,8 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return ok(metricsToContract(curveQuery.computePullRequestTimeToMergeMetrics(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-//
-            return mapSymeoExceptionToResponse(() -> errorsToContract(e), e);
-//            return internalServerError().body(errorsToContract(e));
+            return mapSymeoExceptionToContract(() -> errorsToContract(e), e);
         }
-    }
-
-
-    private <T> ResponseEntity<T> mapSymeoExceptionToResponse(
-            final Supplier<T> tSupplier, SymeoException symeoException
-    ) {
-//        symeoException.isFunctional() ... // badRequest()
-//            else ... //  internalServerError()
-        return ResponseEntity.internalServerError().body(tSupplier.get());
     }
 
     @Override
@@ -104,7 +93,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return ok(PullRequestCurveContractMapper.curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return internalServerError().body(PullRequestCurveContractMapper.errorToContract(e));
+            return mapSymeoExceptionToContract(() -> PullRequestCurveContractMapper.errorToContract(e), e);
         }
     }
 
@@ -116,7 +105,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return ok(metricsToContract(curveQuery.computePullRequestSizeMetrics(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return internalServerError().body(errorsToContract(e));
+            return mapSymeoExceptionToContract(() -> errorsToContract(e), e);
         }
     }
 
@@ -129,7 +118,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             return PullRequestHistogramContractMapper.domainToContract(histogramQuery.computePullRequestSizeHistogram(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate)));
         } catch (SymeoException e) {
-            return PullRequestHistogramContractMapper.errorToContract(e);
+            return mapSymeoExceptionToContract(() -> PullRequestHistogramContractMapper.errorToContract(e), e);
         }
     }
 
@@ -138,7 +127,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
         try {
             return ok(TeamGoalContractMapper.domainToContract(teamGoalFacadeAdapter.readForTeamId(teamId)));
         } catch (SymeoException e) {
-            return internalServerError().body(TeamGoalContractMapper.errorToContract(e));
+            return mapSymeoExceptionToContract(() -> TeamGoalContractMapper.errorToContract(e), e);
         }
     }
 
@@ -148,7 +137,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             teamGoalFacadeAdapter.deleteTeamGoalForId(teamGoalId);
             return ok().build();
         } catch (SymeoException e) {
-            return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
+            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
         }
     }
 
@@ -159,7 +148,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                     patchTeamGoalsRequest.getValue());
             return ok().build();
         } catch (SymeoException e) {
-            return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
+            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
         }
     }
 

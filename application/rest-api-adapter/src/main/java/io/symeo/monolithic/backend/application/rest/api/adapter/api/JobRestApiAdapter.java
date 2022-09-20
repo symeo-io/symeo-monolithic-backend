@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-import static org.springframework.http.ResponseEntity.internalServerError;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -37,7 +37,7 @@ public class JobRestApiAdapter implements JobApi {
                     teamId,
                     2)));
         } catch (SymeoException e) {
-            return internalServerError().body(JobContractMapper.errorToContract(e));
+            return mapSymeoExceptionToContract(() -> JobContractMapper.errorToContract(e), e);
         }
     }
 }
