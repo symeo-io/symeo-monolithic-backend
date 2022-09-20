@@ -47,7 +47,7 @@ public interface ExpositionStorageAdapter {
 
     String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) throws SymeoException;
 
-    void saveCommits(List<Commit> commits);
+    void saveCommits(List<Commit> commits) throws SymeoException;
 
     List<Repository> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException;
 

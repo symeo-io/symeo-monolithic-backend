@@ -109,59 +109,6 @@ public class DeliveryCommandTest {
 
 
     @Test
-    void should_collect_commits_given_a_pull_request() throws SymeoException {
-        // Given
-        final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
-        final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
-        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
-        final PullRequest pullRequest = PullRequest.builder().number(faker.number().randomDigit()).build();
-        final Repository repository =
-                Repository.builder().vcsOrganizationName(faker.ancient().hero()).name(faker.pokemon().name()).build();
-        final byte[] bytes = faker.ancient().god().getBytes();
-        final List<Commit> commits = List.of(Commit.builder().build());
-
-        // When
-        when(versionControlSystemAdapter.getRawCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
-                repository.getName(),
-                pullRequest.getNumber())).thenReturn(
-                bytes
-        );
-        when(versionControlSystemAdapter.commitsBytesToDomain(bytes))
-                .thenReturn(commits);
-        final List<Commit> commitsResult = deliveryCommand.collectCommitsForPullRequest(repository, pullRequest);
-
-        // Then
-        assertThat(commitsResult).isEqualTo(commits);
-    }
-
-    @Test
-    void should_collect_comments_given_a_pull_request() throws SymeoException {
-        // Given
-        final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
-        final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
-        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
-        final PullRequest pullRequest = PullRequest.builder().number(faker.number().randomDigit()).build();
-        final Repository repository =
-                Repository.builder().vcsOrganizationName(faker.ancient().hero()).name(faker.pokemon().name()).build();
-        final byte[] bytes = faker.ancient().god().getBytes();
-        final List<Comment> comments = List.of(Comment.builder().build());
-
-        // When
-        when(versionControlSystemAdapter.getRawComments(repository.getVcsOrganizationName(), repository.getName(),
-                pullRequest.getNumber())).thenReturn(
-                bytes
-        );
-        when(versionControlSystemAdapter.commentsBytesToDomain(bytes))
-                .thenReturn(comments);
-        final List<Comment> commentsResult = deliveryCommand.collectCommentsForRepositoryAndPullRequest(repository,
-                pullRequest);
-
-        // Then
-        assertThat(commentsResult).isEqualTo(comments);
-    }
-
-
-    @Test
     void should_collect_all_commits_given_a_repository_and_not_already_collected_commits() throws SymeoException {
         // Given
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);

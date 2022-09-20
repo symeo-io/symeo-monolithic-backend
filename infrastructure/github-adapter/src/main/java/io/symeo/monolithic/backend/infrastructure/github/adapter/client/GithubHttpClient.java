@@ -18,6 +18,8 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +28,7 @@ import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.*;
 @Slf4j
 public class GithubHttpClient {
 
+    private static final String GITHUB_QUERY_DATE_FORMAT = "YYYY-MM-dd'T'HH:mm:ssZ";
     private static final String AUTHORIZATION_HEADER_KEY = "Authorization";
     private static final String AUTHORIZATION_HEADER_TOKEN_VALUE = "Bearer ";
     private static final Map<String, String> INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION = new HashMap<>();
@@ -168,6 +171,43 @@ public class GithubHttpClient {
         return get(uri,
                 vcsOrganizationName,
                 GithubBranchDTO[].class);
+    }
+
+    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
+                                                                                                    final String repositoryName,
+                                                                                                    final String branchName,
+                                                                                                    final Date lastCollectionDate,
+                                                                                                    final Integer page,
+                                                                                                    final Integer size) throws SymeoException {
+        String uri =
+                api
+                        + "repos/"
+                        + vcsOrganizationName
+                        + "/"
+                        + repositoryName
+                        + "/commits"
+                        + String.format("?branch=%s", branchName)
+                        + String.format("&since=%s",
+                        new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(lastCollectionDate));
+        return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
+    }
+
+    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
+                                                                              final String repositoryName,
+                                                                              final String branchName,
+                                                                              final Integer page,
+                                                                              final Integer size) throws SymeoException {
+        String uri =
+                api
+                        + "repos/"
+                        + vcsOrganizationName
+                        + "/"
+                        + repositoryName
+                        + "/commits"
+                        + String.format("?branch=%s", branchName)
+                        + String.format("&page=%s", page.toString())
+                        + String.format("&per_page=%s", size.toString());
+        return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
     }
 
     private <ResponseBody> ResponseBody get(String uri, String organizationName,

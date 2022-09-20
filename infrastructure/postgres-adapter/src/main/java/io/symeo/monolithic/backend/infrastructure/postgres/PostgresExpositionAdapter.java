@@ -8,6 +8,7 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
+import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.CommitMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestCurveMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
@@ -36,6 +37,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestFullViewRepository pullRequestFullViewRepository;
     private final CustomPullRequestViewRepository customPullRequestViewRepository;
     private final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
+    private final CommitRepository commitRepository;
 
     @Override
     public void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests) {
@@ -186,9 +188,18 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
-    public void saveCommits(List<Commit> commits) {
-        // TODO : to implement
-        throw new RuntimeException();
+    public void saveCommits(List<Commit> commits) throws SymeoException {
+        try {
+            commitRepository.saveAll(commits.stream().map(CommitMapper::domainToEntity).toList());
+        } catch (Exception e) {
+            final String message = "Failed to save commits";
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .rootException(e)
+                    .message(message)
+                    .build();
+        }
     }
 
     @Override

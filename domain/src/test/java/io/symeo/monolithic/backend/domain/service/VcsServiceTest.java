@@ -5,7 +5,9 @@ import io.symeo.monolithic.backend.domain.command.DeliveryCommand;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
@@ -103,18 +105,6 @@ public class VcsServiceTest {
         );
         when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(0)))
                 .thenReturn(pullRequestList1);
-        when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(1)))
-                .thenReturn(pullRequestList2);
-        when(deliveryCommand.collectCommitsForPullRequest(repo1, pullRequestList1.get(0)))
-                .thenReturn(List.of(Commit.builder().build()));
-        when(deliveryCommand.collectCommitsForPullRequest(repo1, pullRequestList1.get(1)))
-                .thenReturn(List.of(Commit.builder().build()));
-        when(deliveryCommand.collectCommitsForPullRequest(repo1, pullRequestList1.get(2)))
-                .thenReturn(List.of(Commit.builder().build()));
-        when(deliveryCommand.collectCommitsForPullRequest(repo2, pullRequestList2.get(0)))
-                .thenReturn(List.of(Commit.builder().build()));
-        when(deliveryCommand.collectCommitsForPullRequest(repo2, pullRequestList2.get(1)))
-                .thenReturn(List.of(Commit.builder().build()));
         vcsService.collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(organization, repo1,
                 lastCollectionDate1);
         vcsService.collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(organization, repo2,
@@ -176,21 +166,6 @@ public class VcsServiceTest {
                 .thenReturn(pullRequestList1);
         when(deliveryCommand.collectPullRequestsForRepository(expectedRepositories.get(1)))
                 .thenReturn(pullRequestList2);
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(0)
-                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
-                .thenReturn(List.of(Comment.builder().build()));
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(1)
-                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
-                .thenReturn(List.of(Comment.builder().build()));
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo1, pullRequestList1.get(2)
-                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
-                .thenReturn(List.of(Comment.builder().build()));
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(0)
-                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
-                .thenReturn(List.of(Comment.builder().build()));
-        when(deliveryCommand.collectCommentsForRepositoryAndPullRequest(repo2, pullRequestList2.get(1)
-                .toBuilder().organizationId(organization.getId()).vcsOrganizationId(vcsOrganizationId).build()))
-                .thenReturn(List.of(Comment.builder().build()));
         vcsService.collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(organization, repo1,
                 lastCollectionDate1);
         vcsService.collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(organization, repo2,

@@ -11,11 +11,11 @@ public interface VersionControlSystemAdapter {
 
     String getName();
 
-    List<Repository> repositoriesBytesToDomain(byte[] repositoriesBytes);
+    List<Repository> repositoriesBytesToDomain(byte[] repositoriesBytes) throws SymeoException;
 
     byte[] getRawPullRequestsForRepository(Repository repository, byte[] alreadyCollectedPullRequests) throws SymeoException;
 
-    List<PullRequest> pullRequestsBytesToDomain(byte[] bytes);
+    List<PullRequest> pullRequestsBytesToDomain(byte[] bytes) throws SymeoException;
 
     byte[] getRawCommitsForPullRequestNumber(final String vcsOrganizationName,
                                              final String repositoryName,
@@ -25,17 +25,17 @@ public interface VersionControlSystemAdapter {
                                       final String repositoryName,
                                       final byte[] alreadyCollectedCommits) throws SymeoException;
 
-    List<Commit> commitsBytesToDomain(byte[] rawCommits);
+    List<Commit> commitsBytesToDomain(byte[] rawCommits) throws SymeoException;
 
-    List<Comment> commentsBytesToDomain(byte[] rawComments);
+    List<Comment> commentsBytesToDomain(byte[] rawComments) throws SymeoException;
 
     byte[] getRawComments(String vcsOrganizationName, String name, Integer number) throws SymeoException;
 
     byte[] getRawBranches(String vcsOrganizationName, String repositoryName) throws SymeoException;
 
-    List<Branch> branchesBytesToDomain(byte[] rawBranches);
+    List<Branch> branchesBytesToDomain(byte[] rawBranches) throws SymeoException;
 
     byte[] getRawCommitsForBranchFromLastCollectionDate(String vcsOrganizationName, String repositoryName,
                                                         String branchName, Date lastCollectionDate,
-                                                        byte[] alreadyCollectedCommits);
+                                                        byte[] alreadyCollectedCommits) throws SymeoException;
 }

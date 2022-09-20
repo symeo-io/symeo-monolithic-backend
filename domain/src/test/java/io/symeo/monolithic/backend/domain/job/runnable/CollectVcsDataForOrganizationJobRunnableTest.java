@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.domain.job.runnable;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -29,6 +30,7 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final JobStorage jobStorage = mock(JobStorage.class);
         final Date now = new Date();
+        final Date expectedDate = DateHelper.stringToDate("2020-01-01");
         final CollectVcsDataForOrganizationJobRunnable jobRunnable =
                 CollectVcsDataForOrganizationJobRunnable
                         .builder()
@@ -52,7 +54,8 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
                 ));
         when(jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectVcsDataForOrganizationJobRunnable.JOB_CODE, organization))
                 .thenReturn(List.of(
-                        Job.builder().organizationId(organization.getId()).creationDate(now).build(),
+                        Job.builder().organizationId(organization.getId()).creationDate(now).status(Job.FAILED).build(),
+                        Job.builder().organizationId(organization.getId()).creationDate(expectedDate).status(Job.FINISHED).build(),
                         Job.builder().organizationId(organization.getId()).build()
                 ));
         jobRunnable.initializeTasks();
@@ -63,7 +66,7 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
         verify(vcsService, times(2)).collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(any(), any(),
                 dateArgumentCaptor.capture());
         verify(jobStorage, times(2)).updateJobWithTasksForJobId(any(), any());
-        assertThat(dateArgumentCaptor.getValue()).isEqualTo(now);
+        assertThat(dateArgumentCaptor.getValue()).isEqualTo(expectedDate);
     }
 
     @Test

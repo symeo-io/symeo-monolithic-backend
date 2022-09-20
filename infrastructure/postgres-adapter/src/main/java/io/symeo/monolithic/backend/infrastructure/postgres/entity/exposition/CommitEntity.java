@@ -31,7 +31,7 @@ public class CommitEntity {
     @Column(name = "date", nullable = false)
     ZonedDateTime date;
     @ManyToOne
-    @JoinColumn(name = "pull_request_id", nullable = false, updatable = false)
+    @JoinColumn(name = "pull_request_id", updatable = false)
     PullRequestEntity pullRequest;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp

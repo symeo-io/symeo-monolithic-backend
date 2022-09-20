@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.domain.job.runnable;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -31,6 +32,7 @@ public class CollectVcsDataForOrganizationAndTeamJobRunnableTest {
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final JobStorage jobStorage = mock(JobStorage.class);
         final Date now = new Date();
+        final Date expectedDate = DateHelper.stringToDate("2020-01-01");
         final CollectVcsDataForOrganizationAndTeamJobRunnable jobRunnable =
                 CollectVcsDataForOrganizationAndTeamJobRunnable
                         .builder()
@@ -53,8 +55,12 @@ public class CollectVcsDataForOrganizationAndTeamJobRunnableTest {
                         Repository.builder().id("1L").build(),
                         Repository.builder().id("2L").build()
                 ));
-        when(jobStorage.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organization.getId(), teamId, 1))
-                .thenReturn(List.of(Job.builder().organizationId(organization.getId()).creationDate(now).build()));
+        when(jobStorage.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(
+                CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organization.getId(), teamId, 10000))
+                .thenReturn(List.of(
+                        Job.builder().organizationId(organization.getId()).creationDate(now).status(Job.FAILED).build(),
+                        Job.builder().organizationId(organization.getId()).creationDate(expectedDate).status(Job.FINISHED).build()
+                ));
         jobRunnable.initializeTasks();
         jobRunnable.run(1L);
 
@@ -63,7 +69,7 @@ public class CollectVcsDataForOrganizationAndTeamJobRunnableTest {
         verify(vcsService, times(2)).collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(any(), any(),
                 dateArgumentCaptor.capture());
         verify(jobStorage, times(2)).updateJobWithTasksForJobId(any(), any());
-        Assertions.assertThat(dateArgumentCaptor.getValue()).isEqualTo(now);
+        Assertions.assertThat(dateArgumentCaptor.getValue()).isEqualTo(expectedDate);
     }
 
     @Test

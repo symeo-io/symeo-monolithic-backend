@@ -166,7 +166,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
 
 
     @Test
-    void should_return_empty_pull_requests_list_given_an_empty_byte_array_to_map_to_domain() {
+    void should_return_empty_pull_requests_list_given_an_empty_byte_array_to_map_to_domain() throws SymeoException {
         // Given
         final byte[] emptyBytes = new byte[0];
         final GithubProperties githubProperties = new GithubProperties();

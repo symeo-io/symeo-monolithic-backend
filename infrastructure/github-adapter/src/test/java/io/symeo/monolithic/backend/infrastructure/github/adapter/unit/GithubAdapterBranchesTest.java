@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class GithubAdapterBranchesTest extends AbstractGithubAdapterTest {
 
     @Test
-    void should_return_branches() throws IOException {
+    void should_return_branches() throws IOException, SymeoException {
         // Given
         final GithubAdapter githubAdapter = new GithubAdapter(null, null, new ObjectMapper());
         final GithubBranchDTO[] getBranchesForRepos = getStubsFromClassT("get_branches_for_repo",

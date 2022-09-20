@@ -7,6 +7,10 @@ import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCo
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 
+import java.util.List;
+
+import static java.util.Objects.isNull;
+
 public interface GithubMapper {
 
     static Repository mapRepositoryDtoToDomain(final GithubRepositoryDTO githubRepositoryDTO,
@@ -50,6 +54,8 @@ public interface GithubMapper {
                 .sha(githubCommitsDTO.getSha())
                 .date(committer.getDate())
                 .message(githubCommitsDTO.getCommit().getMessage())
+                .parentShaList(isNull(githubCommitsDTO.getParents()) ? List.of() :
+                        githubCommitsDTO.getParents().stream().map(GithubCommitsDTO.GithubCommitParentDTO::getSha).toList())
                 .build();
 
     }

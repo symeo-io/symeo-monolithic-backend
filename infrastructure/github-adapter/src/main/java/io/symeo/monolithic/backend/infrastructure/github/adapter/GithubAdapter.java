@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
@@ -17,14 +18,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper.mapPullRequestDtoToDomain;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @AllArgsConstructor
 @Slf4j
@@ -52,12 +51,8 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                             vcsOrganizationName, page, properties.getSize());
             githubRepositoryDTOList.addAll(Arrays.stream(githubRepositoryDTOS).toList());
         }
+        return dtoToBytes(githubRepositoryDTOList.toArray());
 
-        try {
-            return dtoToBytes(githubRepositoryDTOList.toArray());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -67,14 +62,12 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
 
     @Override
-    public List<Repository> repositoriesBytesToDomain(final byte[] repositoriesBytes) {
-        try {
-            GithubRepositoryDTO[] githubRepositoryDTOS = bytesToDto(repositoriesBytes,
-                    GithubRepositoryDTO[].class);
-            return Arrays.stream(githubRepositoryDTOS).map(githubRepositoryDTO -> GithubMapper.mapRepositoryDtoToDomain(githubRepositoryDTO, getName())).toList();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public List<Repository> repositoriesBytesToDomain(final byte[] repositoriesBytes) throws SymeoException {
+
+        GithubRepositoryDTO[] githubRepositoryDTOS = bytesToDto(repositoriesBytes,
+                GithubRepositoryDTO[].class);
+        return Arrays.stream(githubRepositoryDTOS).map(githubRepositoryDTO -> GithubMapper.mapRepositoryDtoToDomain(githubRepositoryDTO, getName())).toList();
+
     }
 
     @Override
@@ -121,8 +114,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         return githubPullRequestDTOList.stream()
                 .map(githubPullRequestDTO -> {
                     try {
-                        return Optional.of(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
-                                repository.getName(), githubPullRequestDTO.getNumber()));
+                        return Optional.of(getPullRequestDetailsForPullRequestNumber(repository, githubPullRequestDTO));
                     } catch (SymeoException ex) {
                         LOGGER.error("Error while getting PR from github", ex);
                     }
@@ -150,50 +142,80 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             if (optionalAlreadyCollectedPR.isPresent()) {
                 if (optionalAlreadyCollectedPR.get().getUpdatedAt().before(currentGithubPullRequestDTO.getUpdatedAt())) {
                     githubDetailedPullRequests.add(
-                            githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
-                                    repository.getName(), currentGithubPullRequestDTO.getNumber())
+                            getPullRequestDetailsForPullRequestNumber(repository, currentGithubPullRequestDTO)
                     );
                 } else {
                     githubDetailedPullRequests.add(optionalAlreadyCollectedPR.get());
                 }
             } else {
                 githubDetailedPullRequests.add(
-                        githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
-                                repository.getName(), currentGithubPullRequestDTO.getNumber())
+                        getPullRequestDetailsForPullRequestNumber(repository, currentGithubPullRequestDTO)
                 );
             }
         }
         return githubDetailedPullRequests;
     }
 
-
-    @Override
-    public List<PullRequest> pullRequestsBytesToDomain(final byte[] bytes) {
-        try {
-            if (bytes.length == 0) {
-                return List.of();
-            }
-            final GithubPullRequestDTO[] githubPullRequestDTOS = getGithubPullRequestDTOSFromBytes(bytes);
-            return Arrays.stream(githubPullRequestDTOS)
-                    .map(githubPullRequestDTO -> mapPullRequestDtoToDomain(githubPullRequestDTO, this.getName()))
-                    .toList();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(Repository repository,
+                                                                           GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
+        final GithubPullRequestDTO pullRequestDetailsForPullRequestNumber =
+                githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                        repository.getName(), currentGithubPullRequestDTO.getNumber());
+        final GithubCommentsDTO[] commentsForPullRequestNumber =
+                githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
+                        repository.getName(), currentGithubPullRequestDTO.getNumber());
+        final GithubCommitsDTO[] commitsForPullRequestNumber =
+                githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
+                        repository.getName(), currentGithubPullRequestDTO.getNumber());
+        pullRequestDetailsForPullRequestNumber.setGithubCommentsDTOS(commentsForPullRequestNumber);
+        pullRequestDetailsForPullRequestNumber.setGithubCommitsDTOS(commitsForPullRequestNumber);
+        return pullRequestDetailsForPullRequestNumber;
     }
 
-    private GithubPullRequestDTO[] getGithubPullRequestDTOSFromBytes(byte[] bytes) throws IOException {
+
+    @Override
+    public List<PullRequest> pullRequestsBytesToDomain(final byte[] bytes) throws SymeoException {
+        if (bytes.length == 0) {
+            return List.of();
+        }
+        final GithubPullRequestDTO[] githubPullRequestDTOS = getGithubPullRequestDTOSFromBytes(bytes);
+        return Arrays.stream(githubPullRequestDTOS)
+                .map(githubPullRequestDTO -> mapPullRequestDtoToDomain(githubPullRequestDTO, this.getName()))
+                .toList();
+    }
+
+    private GithubPullRequestDTO[] getGithubPullRequestDTOSFromBytes(byte[] bytes) throws SymeoException {
         return bytesToDto(bytes,
                 GithubPullRequestDTO[].class);
     }
 
 
-    public <T> byte[] dtoToBytes(T t) throws JsonProcessingException {
-        return objectMapper.writeValueAsBytes(t);
+    public <T> byte[] dtoToBytes(T t) throws SymeoException {
+        try {
+            return objectMapper.writeValueAsBytes(t);
+        } catch (JsonProcessingException e) {
+            final String message = String.format("Failed to serialize class %s to byte[]", t.getClass().getName());
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(SymeoExceptionCode.GITHUB_JSON_MAPPING_ERROR)
+                    .message(message)
+                    .rootException(e)
+                    .build();
+        }
     }
 
-    public <T> T bytesToDto(byte[] bytes, Class<T> tClass) throws IOException {
-        return objectMapper.readValue(bytes, tClass);
+    public <T> T bytesToDto(byte[] bytes, Class<T> tClass) throws SymeoException {
+        try {
+            return objectMapper.readValue(bytes, tClass);
+        } catch (IOException e) {
+            final String message = String.format("Failed to map byte[] to class %s", tClass.getName());
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(SymeoExceptionCode.GITHUB_JSON_MAPPING_ERROR)
+                    .message(message)
+                    .rootException(e)
+                    .build();
+        }
     }
 
 
@@ -203,42 +225,30 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                                                     final int pullRequestNumber) throws SymeoException {
         final GithubCommitsDTO[] githubCommitsDTO = githubHttpClient.getCommitsForPullRequestNumber(vcsOrganizationName,
                 repositoryName, pullRequestNumber);
-        try {
-            return dtoToBytes(githubCommitsDTO);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return dtoToBytes(githubCommitsDTO);
     }
 
     @Override
-    public List<Commit> commitsBytesToDomain(final byte[] rawCommits) {
+    public List<Commit> commitsBytesToDomain(final byte[] rawCommits) throws SymeoException {
         if (rawCommits.length == 0) {
             return List.of();
         }
-        try {
-            return Arrays.stream(bytesToDto(rawCommits, GithubCommitsDTO[].class))
-                    .map(GithubMapper::mapCommitToDomain)
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return Arrays.stream(bytesToDto(rawCommits, GithubCommitsDTO[].class))
+                .map(GithubMapper::mapCommitToDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Comment> commentsBytesToDomain(final byte[] rawComments) {
+    public List<Comment> commentsBytesToDomain(final byte[] rawComments) throws SymeoException {
         if (rawComments.length == 0) {
             return List.of();
         }
-        try {
-            return Arrays.stream(bytesToDto(rawComments, GithubCommentsDTO[].class))
-                    .map(
-                            (GithubCommentsDTO githubCommentsDTO) ->
-                                    GithubMapper.mapCommentToDomain(githubCommentsDTO, this.getName())
-                    )
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return Arrays.stream(bytesToDto(rawComments, GithubCommentsDTO[].class))
+                .map(
+                        (GithubCommentsDTO githubCommentsDTO) ->
+                                GithubMapper.mapCommentToDomain(githubCommentsDTO, this.getName())
+                )
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -247,11 +257,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         final GithubCommentsDTO[] githubCommentsDTOS =
                 githubHttpClient.getCommentsForPullRequestNumber(vcsOrganizationName,
                         repositoryName, pullRequestNumber);
-        try {
-            return dtoToBytes(githubCommentsDTOS);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return dtoToBytes(githubCommentsDTOS);
     }
 
     @Override
@@ -274,35 +280,87 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             githubCommitsDTOList.addAll(Arrays.stream(githubCommitsDTOS).toList());
         }
 
-        try {
-            return dtoToBytes(githubCommitsDTOList.toArray());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return dtoToBytes(githubCommitsDTOList.toArray());
     }
 
     @Override
     public byte[] getRawBranches(String vcsOrganizationName, String repositoryName) throws SymeoException {
         final GithubBranchDTO[] branchesForOrganizationAndRepository =
                 githubHttpClient.getBranchesForOrganizationAndRepository(vcsOrganizationName, repositoryName);
-        try {
-            return dtoToBytes(branchesForOrganizationAndRepository);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return dtoToBytes(branchesForOrganizationAndRepository);
     }
 
     @Override
-    public List<Branch> branchesBytesToDomain(byte[] rawBranches) {
+    public List<Branch> branchesBytesToDomain(byte[] rawBranches) throws SymeoException {
         if (rawBranches.length == 0) {
             return List.of();
         }
-        try {
-            return Arrays.stream(bytesToDto(rawBranches, GithubBranchDTO[].class))
-                    .map(GithubMapper::mapBranchToDomain)
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return Arrays.stream(bytesToDto(rawBranches, GithubBranchDTO[].class))
+                .map(GithubMapper::mapBranchToDomain)
+                .collect(Collectors.toList());
     }
+
+    @Override
+    public byte[] getRawCommitsForBranchFromLastCollectionDate(String vcsOrganizationName, String repositoryName,
+                                                               String branchName, Date lastCollectionDate,
+                                                               byte[] alreadyCollectedRawGithubCommitsDTOS) throws SymeoException {
+        if (isNull(lastCollectionDate) && (nonNull(alreadyCollectedRawGithubCommitsDTOS) && alreadyCollectedRawGithubCommitsDTOS.length > 0)) {
+            Date lastCollectionDateFromAlreadyCollectedCommits = null;
+            for (GithubCommitsDTO githubCommitsDTO : bytesToDto(alreadyCollectedRawGithubCommitsDTOS,
+                    GithubCommitsDTO[].class)) {
+                final Date commitDate = githubCommitsDTO.getCommit().getCommitter().getDate();
+                if (isNull(lastCollectionDateFromAlreadyCollectedCommits)) {
+                    lastCollectionDateFromAlreadyCollectedCommits = commitDate;
+                } else {
+                    if (commitDate.after(lastCollectionDateFromAlreadyCollectedCommits)) {
+                        lastCollectionDateFromAlreadyCollectedCommits = commitDate;
+                    }
+                }
+            }
+            lastCollectionDate = lastCollectionDateFromAlreadyCollectedCommits;
+        }
+        int page = 1;
+        GithubCommitsDTO[] githubCommitsDTOS = isNull(lastCollectionDate) ?
+                githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranch(vcsOrganizationName,
+                        repositoryName, branchName, page, properties.getSize())
+                :
+                githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName,
+                        repositoryName, branchName, lastCollectionDate, page, properties.getSize());
+        if (isNull(githubCommitsDTOS) || githubCommitsDTOS.length == 0) {
+            return new byte[0];
+        }
+        final List<GithubCommitsDTO> githubCommitsDTOList =
+                new ArrayList<>(List.of(githubCommitsDTOS));
+        while (githubCommitsDTOS.length == properties.getSize()) {
+            page += 1;
+            githubCommitsDTOS = isNull(lastCollectionDate) ?
+                    githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranch(vcsOrganizationName,
+                            repositoryName, branchName, page, properties.getSize())
+                    :
+                    githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName,
+                            repositoryName, branchName, lastCollectionDate, page, properties.getSize());
+            githubCommitsDTOList.addAll(Arrays.stream(githubCommitsDTOS).toList());
+        }
+
+        if (nonNull(alreadyCollectedRawGithubCommitsDTOS) && alreadyCollectedRawGithubCommitsDTOS.length > 0) {
+            final GithubCommitsDTO[] alreadyCollectedGithubCommitsDTOS =
+                    bytesToDto(alreadyCollectedRawGithubCommitsDTOS,
+                            GithubCommitsDTO[].class);
+            githubCommitsDTOList.addAll(
+                    compareAlreadyCollectedCommitsToCurrentCommitsAndReturnNotUpdatedCommits(Arrays.asList(alreadyCollectedGithubCommitsDTOS),
+                            githubCommitsDTOList)
+            );
+        }
+        return dtoToBytes(githubCommitsDTOList.toArray());
+
+    }
+
+    private List<GithubCommitsDTO> compareAlreadyCollectedCommitsToCurrentCommitsAndReturnNotUpdatedCommits(final List<GithubCommitsDTO> alreadyCollectedGithubCommitsDTOS, final List<GithubCommitsDTO> githubCommitsDTOList) {
+        return alreadyCollectedGithubCommitsDTOS.stream()
+                .filter(githubCommitsDTO -> githubCommitsDTOList.stream()
+                        .noneMatch(collectedCommit -> collectedCommit.getSha().equals(githubCommitsDTO.getSha()))
+                )
+                .collect(Collectors.toList());
+    }
+
 }

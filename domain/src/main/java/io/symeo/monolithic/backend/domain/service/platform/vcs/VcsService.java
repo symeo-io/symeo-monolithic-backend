@@ -3,12 +3,14 @@ package io.symeo.monolithic.backend.domain.service.platform.vcs;
 import io.symeo.monolithic.backend.domain.command.DeliveryCommand;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Branch;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +27,7 @@ public class VcsService {
                                                                                  final Date lastCollectionDate) throws SymeoException {
         repository = populateRepositoryWithOrganizationId(repository, organization.getId());
         LOGGER.info("Starting to collect VCS data for organization {} and repository {}", organization, repository);
-        collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(organization, repository);
+        collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(repository);
         final List<String> allBranches = collectAllBranchesForOrganizationAndRepository(organization, repository)
                 .stream()
                 .map(Branch::getName).toList();
@@ -43,20 +45,8 @@ public class VcsService {
         expositionStorageAdapter.saveRepositories(repositories);
     }
 
-    private void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Organization organization,
-                                                                                       Repository repository) throws SymeoException {
-        final List<PullRequest> pullRequests = new ArrayList<>();
-        for (PullRequest pullRequest : collectPullRequestForRepository(repository)) {
-            final PullRequest updatedPullRequest = pullRequest.toBuilder()
-                    .organizationId(organization.getId())
-                    .vcsOrganizationId(organization.getVcsOrganization().getVcsId())
-                    .build();
-            pullRequests.add(updatedPullRequest.toBuilder()
-                    .commits(collectCommitsForRepositoryAndPullRequest(repository, updatedPullRequest))
-                    .comments(collectCommentsForRepositoryAndPullRequest(repository, updatedPullRequest))
-                    .build());
-        }
-        expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequests);
+    private void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Repository repository) throws SymeoException {
+        expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(collectPullRequestForRepository(repository));
     }
 
     private Repository populateRepositoryWithOrganizationId(final Repository repository,
@@ -81,14 +71,4 @@ public class VcsService {
         return deliveryCommand.collectPullRequestsForRepository(repository);
     }
 
-    private List<Commit> collectCommitsForRepositoryAndPullRequest(final Repository repository,
-                                                                   final PullRequest pullRequest) throws SymeoException {
-        return deliveryCommand.collectCommitsForPullRequest(repository, pullRequest);
-    }
-
-    private List<Comment> collectCommentsForRepositoryAndPullRequest(final Repository repository,
-                                                                     final PullRequest pullRequest)
-            throws SymeoException {
-        return deliveryCommand.collectCommentsForRepositoryAndPullRequest(repository, pullRequest);
-    }
 }

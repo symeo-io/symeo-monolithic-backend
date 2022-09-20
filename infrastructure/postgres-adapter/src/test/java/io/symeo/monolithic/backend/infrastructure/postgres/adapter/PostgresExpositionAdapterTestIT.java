@@ -76,6 +76,7 @@ public class PostgresExpositionAdapterTestIT {
         pullRequestRepository.deleteAll();
         repositoryRepository.deleteAll();
         organizationRepository.deleteAll();
+
     }
 
     @BeforeEach
@@ -83,7 +84,7 @@ public class PostgresExpositionAdapterTestIT {
         postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
                 pullRequestFullViewRepository, customPullRequestViewRepository,
-                pullRequestWithCommitsAndCommentsRepository);
+                pullRequestWithCommitsAndCommentsRepository, commitRepository);
     }
 
     @Test

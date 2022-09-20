@@ -52,30 +52,6 @@ public class DeliveryCommand {
         return versionControlSystemAdapter.pullRequestsBytesToDomain(rawPullRequestsForRepository);
     }
 
-    public List<Commit> collectCommitsForPullRequest(final Repository repository, final PullRequest pullRequest) throws SymeoException {
-        final byte[] rawCommits =
-                versionControlSystemAdapter.getRawCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
-                        repository.getName(), pullRequest.getNumber());
-        rawStorageAdapter.save(
-                pullRequest.getOrganizationId(),
-                versionControlSystemAdapter.getName(),
-                Commit.getNameFromPullRequest(pullRequest),
-                rawCommits);
-        return versionControlSystemAdapter.commitsBytesToDomain(rawCommits);
-    }
-
-    public List<Comment> collectCommentsForRepositoryAndPullRequest(final Repository repository,
-                                                                    final PullRequest pullRequest) throws SymeoException {
-        final byte[] rawComments = versionControlSystemAdapter.getRawComments(repository.getVcsOrganizationName(),
-                repository.getName(), pullRequest.getNumber());
-        rawStorageAdapter.save(
-                pullRequest.getOrganizationId(),
-                versionControlSystemAdapter.getName(),
-                Comment.getNameFromPullRequest(pullRequest),
-                rawComments);
-        return versionControlSystemAdapter.commentsBytesToDomain(rawComments);
-    }
-
     public List<Commit> collectCommitsForRepository(Repository repository) throws SymeoException {
         byte[] alreadyCollectedCommits = null;
         if (rawStorageAdapter.exists(repository.getOrganizationId(), versionControlSystemAdapter.getName(),

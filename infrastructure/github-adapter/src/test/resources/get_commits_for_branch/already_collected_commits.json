@@ -1,0 +1,168 @@
+[
+  {
+    "sha": "c28b2160039be6f772b569c0ee76e219b4b1ecaa",
+    "node_id": "C_kwDOHYbxMdoAKGMyOGIyMTYwMDM5YmU2Zjc3MmI1NjljMGVlNzZlMjE5YjRiMWVjYWE",
+    "commit": {
+      "author": {
+        "name": "Ilysse",
+        "email": "pierre.oucif@gadz.org",
+        "date": "2022-09-20T11:52:24Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2022-09-20T11:52:24Z"
+      },
+      "message": "Merge pull request #83 from symeo-io/add-update-organization-settings\n\nadd update config for organization@",
+      "tree": {
+        "sha": "2e90fb5ef910b4cc0e1bcdc87777a14ebfbddd90",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/trees/2e90fb5ef910b4cc0e1bcdc87777a14ebfbddd90"
+      },
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/c28b2160039be6f772b569c0ee76e219b4b1ecaa",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJjKal4CRBK7hj4Ov3rIwAAMnQIAFarYtM44xp5rmxt62Ninclz\n29XdBjKdO12rSG8FPI3B1Hwde1b6Fjt2nYVL3UH6EBRugBrTM9GMZ7Vrl2wL8Sm7\nOvptTuffsDGmQcDUd9IvczisX1U71K35++ctsunw6LXWLP0xz0thK6Y2gS2Zm8yD\nMAyZDS9toVkSVezMXuZXrEQDQ/56zxMNuxOYzr+Vnm3Oh9NE7RHOWcIpsuJ5qETT\nRhiVl/VCAhV3nwrCkLUfGkp/V3eA+BlY5znqD6b4xg2n9Evq3ZdRglMZHykVa2ue\nVI5Sp5pIS40JfOkTrwjfPhQU7heEscVhwZRVMKyP9GIegSYvri+lx+IDV/Ci+rI=\n=/dxy\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree 2e90fb5ef910b4cc0e1bcdc87777a14ebfbddd90\nparent 9cede23fb308c494ccc8890be111bea96739c194\nparent 79d756b57f7133843aea77533d505e3119711e90\nauthor Ilysse <pierre.oucif@gadz.org> 1663674744 +0200\ncommitter GitHub <noreply@github.com> 1663674744 +0200\n\nMerge pull request #83 from symeo-io/add-update-organization-settings\n\nadd update config for organization@"
+      }
+    },
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/c28b2160039be6f772b569c0ee76e219b4b1ecaa",
+    "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/c28b2160039be6f772b569c0ee76e219b4b1ecaa",
+    "comments_url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/c28b2160039be6f772b569c0ee76e219b4b1ecaa/comments",
+    "author": {
+      "login": "PierreOucif",
+      "id": 16590657,
+      "node_id": "MDQ6VXNlcjE2NTkwNjU3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16590657?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/PierreOucif",
+      "html_url": "https://github.com/PierreOucif",
+      "followers_url": "https://api.github.com/users/PierreOucif/followers",
+      "following_url": "https://api.github.com/users/PierreOucif/following{/other_user}",
+      "gists_url": "https://api.github.com/users/PierreOucif/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/PierreOucif/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/PierreOucif/subscriptions",
+      "organizations_url": "https://api.github.com/users/PierreOucif/orgs",
+      "repos_url": "https://api.github.com/users/PierreOucif/repos",
+      "events_url": "https://api.github.com/users/PierreOucif/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/PierreOucif/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "9cede23fb308c494ccc8890be111bea96739c194",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/9cede23fb308c494ccc8890be111bea96739c194",
+        "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/9cede23fb308c494ccc8890be111bea96739c194"
+      },
+      {
+        "sha": "79d756b57f7133843aea77533d505e3119711e90",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/79d756b57f7133843aea77533d505e3119711e90",
+        "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/79d756b57f7133843aea77533d505e3119711e90"
+      }
+    ]
+  },
+  {
+    "sha": "79d756b57f7133843aea77533d505e3119711e90",
+    "node_id": "C_kwDOHYbxMdoAKDc5ZDc1NmI1N2Y3MTMzODQzYWVhNzc1MzNkNTA1ZTMxMTk3MTFlOTA",
+    "commit": {
+      "author": {
+        "name": "Dorian Frances",
+        "email": "dorianfrances@MacBook-Pro-de-Dorian.local",
+        "date": "2022-09-20T11:27:16Z"
+      },
+      "committer": {
+        "name": "Dorian Frances",
+        "email": "dorianfrances@MacBook-Pro-de-Dorian.local",
+        "date": "2022-09-20T11:27:16Z"
+      },
+      "message": "refacto obj name and adding unitTest usecase no organizationSettings found",
+      "tree": {
+        "sha": "ae83934afec569c12d36f8e103abeea503522575",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/trees/ae83934afec569c12d36f8e103abeea503522575"
+      },
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/79d756b57f7133843aea77533d505e3119711e90",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/79d756b57f7133843aea77533d505e3119711e90",
+    "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/79d756b57f7133843aea77533d505e3119711e90",
+    "comments_url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/79d756b57f7133843aea77533d505e3119711e90/comments",
+    "author": null,
+    "committer": null,
+    "parents": [
+      {
+        "sha": "dbe765588865a82aa2cca4a2dffb0aab12af97f6",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/dbe765588865a82aa2cca4a2dffb0aab12af97f6",
+        "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/dbe765588865a82aa2cca4a2dffb0aab12af97f6"
+      }
+    ]
+  },
+  {
+    "sha": "dbe765588865a82aa2cca4a2dffb0aab12af97f6",
+    "node_id": "C_kwDOHYbxMdoAKGRiZTc2NTU4ODg2NWE4MmFhMmNjYTRhMmRmZmIwYWFiMTJhZjk3ZjY",
+    "commit": {
+      "author": {
+        "name": "Dorian Frances",
+        "email": "dorianfrances@MacBook-Pro-de-Dorian.local",
+        "date": "2022-09-20T09:22:22Z"
+      },
+      "committer": {
+        "name": "Dorian Frances",
+        "email": "dorianfrances@MacBook-Pro-de-Dorian.local",
+        "date": "2022-09-20T09:22:22Z"
+      },
+      "message": "Fixing CircleCI unit tests fails from previous commit",
+      "tree": {
+        "sha": "12ffa151e586b58cc94cda8e2c19410cea3428d6",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/trees/12ffa151e586b58cc94cda8e2c19410cea3428d6"
+      },
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/dbe765588865a82aa2cca4a2dffb0aab12af97f6",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null
+      }
+    },
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/dbe765588865a82aa2cca4a2dffb0aab12af97f6",
+    "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/dbe765588865a82aa2cca4a2dffb0aab12af97f6",
+    "comments_url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/dbe765588865a82aa2cca4a2dffb0aab12af97f6/comments",
+    "author": null,
+    "committer": null,
+    "parents": [
+      {
+        "sha": "91411cb811bf04611feb54b002e54605887bf014",
+        "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/commits/91411cb811bf04611feb54b002e54605887bf014",
+        "html_url": "https://github.com/symeo-io/symeo-monolithic-backend/commit/91411cb811bf04611feb54b002e54605887bf014"
+      }
+    ]
+  }
+]

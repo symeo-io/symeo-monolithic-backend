@@ -53,12 +53,13 @@ public class CollectVcsDataForOrganizationJobRunnable extends AbstractTasksRunna
     }
 
     private void collectVcsDataForRepository(Repository repository) throws SymeoException {
-        final List<Job> allJobsByCodeAndOrganizationOrderByUpdateDateDesc =
-                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(this.getCode(), this.organization);
-        Date lastCollectionDate = null;
-        if (allJobsByCodeAndOrganizationOrderByUpdateDateDesc.size() > 0) {
-            lastCollectionDate = allJobsByCodeAndOrganizationOrderByUpdateDateDesc.get(0).getCreationDate();
-        }
+        final Date lastCollectionDate =
+                jobStorage.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(this.getCode(), this.organization)
+                .stream()
+                .filter(job -> job.getStatus().equals(Job.FINISHED))
+                .map(Job::getCreationDate)
+                .findFirst()
+                .orElseGet(() -> null);
         vcsService.collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(organization, repository,
                 lastCollectionDate);
     }

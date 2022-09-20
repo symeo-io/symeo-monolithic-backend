@@ -70,7 +70,7 @@ create table exposition_storage.commit
 (
     sha                         varchar(200)                              not null
         constraint sha_commit_id primary key,
-    pull_request_id             varchar(100)                              not null,
+    pull_request_id             varchar(100),
     author_login                varchar(200)                              not null,
     message                     varchar(10000),
     date                        timestamp(6) with time zone               not null,

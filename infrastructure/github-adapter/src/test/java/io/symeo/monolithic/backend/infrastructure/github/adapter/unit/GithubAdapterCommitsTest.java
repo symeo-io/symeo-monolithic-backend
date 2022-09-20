@@ -14,9 +14,11 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -91,11 +93,141 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
     }
 
     @Test
-    void should_collect_commits_given_a_repository_and_already_collected_commits() {
+    void should_collect_commits_given_a_repository_and_no_already_collected_commits_and_no_collection_date() throws SymeoException,
+            IOException {
         // Given
+        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
+        final GithubProperties properties = new GithubProperties();
+        final int size = 2;
+        properties.setSize(size);
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
+                properties, new ObjectMapper());
+        final String vcsOrganizationName = faker.rickAndMorty().character();
+        final String repositoryName = faker.ancient().god();
+        final String branchName = faker.ancient().hero();
+        final GithubCommitsDTO[] githubCommitsDTOS1 = getStubsFromClassT("get_commits_for_branch",
+                "get_commits_for_branch_size_2_page_1.json",
+                GithubCommitsDTO[].class);
+        final GithubCommitsDTO[] githubCommitsDTOS2 = getStubsFromClassT("get_commits_for_branch",
+                "get_commits_for_branch_size_2_page_2.json",
+                GithubCommitsDTO[].class);
 
         // When
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranch(vcsOrganizationName, repositoryName,
+                branchName, 1, size))
+                .thenReturn(githubCommitsDTOS1);
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranch(vcsOrganizationName, repositoryName,
+                branchName, 2, size))
+                .thenReturn(githubCommitsDTOS2);
+        final byte[] rawCommitsForBranchFromLastCollectionDate =
+                githubAdapter.getRawCommitsForBranchFromLastCollectionDate(vcsOrganizationName,
+                        repositoryName, branchName, null, new byte[0]);
 
         // Then
+        final GithubCommitsDTO[] githubCommitsDTOSResult =
+                githubAdapter.bytesToDto(rawCommitsForBranchFromLastCollectionDate, GithubCommitsDTO[].class);
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsDTOS1) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsDTOS2) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
     }
+
+
+
+    @Test
+    void should_collect_commits_given_a_repository_and_no_already_collected_commits_and_a_collection_date() throws SymeoException,
+            IOException {
+        // Given
+        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
+        final GithubProperties properties = new GithubProperties();
+        final int size = 2;
+        properties.setSize(size);
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
+                properties, new ObjectMapper());
+        final String vcsOrganizationName = faker.rickAndMorty().character();
+        final String repositoryName = faker.ancient().god();
+        final String branchName = faker.ancient().hero();
+        final GithubCommitsDTO[] githubCommitsDTOS1 = getStubsFromClassT("get_commits_for_branch",
+                "get_commits_for_branch_size_2_page_1.json",
+                GithubCommitsDTO[].class);
+        final GithubCommitsDTO[] githubCommitsDTOS2 = getStubsFromClassT("get_commits_for_branch",
+                "get_commits_for_branch_size_2_page_2.json",
+                GithubCommitsDTO[].class);
+        final Date lastCollectionDate = stringToDate("2020-01-01");
+
+        // When
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName, repositoryName,
+                branchName, lastCollectionDate, 1, size))
+                .thenReturn(githubCommitsDTOS1);
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName, repositoryName,
+                branchName, lastCollectionDate, 2, size))
+                .thenReturn(githubCommitsDTOS2);
+        final byte[] rawCommitsForBranchFromLastCollectionDate =
+                githubAdapter.getRawCommitsForBranchFromLastCollectionDate(vcsOrganizationName,
+                        repositoryName, branchName, lastCollectionDate, new byte[0]);
+
+        // Then
+        final GithubCommitsDTO[] githubCommitsDTOSResult =
+                githubAdapter.bytesToDto(rawCommitsForBranchFromLastCollectionDate, GithubCommitsDTO[].class);
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsDTOS1) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsDTOS2) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+    }
+
+    @Test
+    void should_collect_commits_given_a_repository_and_already_collected_commits_and_a_collection_date() throws SymeoException,
+            IOException {
+        // Given
+        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
+        final GithubProperties properties = new GithubProperties();
+        final int size = 2;
+        properties.setSize(size);
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
+                properties, new ObjectMapper());
+        final String vcsOrganizationName = faker.rickAndMorty().character();
+        final String repositoryName = faker.ancient().god();
+        final String branchName = faker.ancient().hero();
+        final GithubCommitsDTO[] githubCommitsDTOS1 = getStubsFromClassT("get_commits_for_branch",
+                "get_commits_for_branch_size_2_page_1.json",
+                GithubCommitsDTO[].class);
+        final GithubCommitsDTO[] githubCommitsDTOS2 = getStubsFromClassT("get_commits_for_branch",
+                "get_commits_for_branch_size_2_page_2.json",
+                GithubCommitsDTO[].class);
+        final GithubCommitsDTO[] alreadyCollectedGithubCommitsDTOS = getStubsFromClassT("get_commits_for_branch",
+                "already_collected_commits.json",
+                GithubCommitsDTO[].class);
+        final Date lastCollectionDate = stringToDate("2020-01-01");
+
+        // When
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName, repositoryName,
+                branchName, lastCollectionDate, 1, size))
+                .thenReturn(githubCommitsDTOS1);
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName, repositoryName,
+                branchName, lastCollectionDate, 2, size))
+                .thenReturn(githubCommitsDTOS2);
+        final byte[] rawCommitsForBranchFromLastCollectionDate =
+                githubAdapter.getRawCommitsForBranchFromLastCollectionDate(vcsOrganizationName,
+                        repositoryName, branchName, lastCollectionDate,
+                        githubAdapter.dtoToBytes(alreadyCollectedGithubCommitsDTOS));
+
+        // Then
+        final GithubCommitsDTO[] githubCommitsDTOSResult =
+                githubAdapter.bytesToDto(rawCommitsForBranchFromLastCollectionDate, GithubCommitsDTO[].class);
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsDTOS1) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsDTOS2) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+        for (GithubCommitsDTO githubCommitsDTO : alreadyCollectedGithubCommitsDTOS) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+    }
+
+
 }
