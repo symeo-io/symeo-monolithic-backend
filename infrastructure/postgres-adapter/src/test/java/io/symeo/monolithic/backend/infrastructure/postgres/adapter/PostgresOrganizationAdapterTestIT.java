@@ -3,6 +3,8 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
@@ -144,15 +146,25 @@ public class PostgresOrganizationAdapterTestIT {
     @Test
     void should_find_organization_settings_for_organization_settings_id_and_organization_id() throws SymeoException {
         final UUID organizationId = UUID.randomUUID();
-        final String defaultBranch = faker.rickAndMorty().location();
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .id(organizationId)
                 .name(faker.rickAndMorty().character())
                 .build();
         organizationRepository.save(organizationEntity);
-        final OrganizationSettings organizationSettings =
-                OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organizationEntity.getId(),
-                        defaultBranch);
+        final OrganizationSettings organizationSettings = OrganizationSettings.builder()
+                .id(UUID.randomUUID())
+                .organizationId(organizationId)
+                .deliverySettings(
+                        DeliverySettings.builder()
+                                .deployDetectionSettings(
+                                        DeployDetectionSettings.builder()
+                                                .tagRegex(faker.gameOfThrones().dragon())
+                                                .pullRequestMergedOnBranchRegex(faker.rickAndMorty().character())
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
         postgresOrganizationAdapter.saveOrganizationSettings(organizationSettings);
 
         // When
@@ -164,7 +176,11 @@ public class PostgresOrganizationAdapterTestIT {
                 postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), UUID.randomUUID());
         // Then
         assertThat(validOrganizationSettings).isPresent();
-        assertThat(validOrganizationSettings.get().getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex()).isEqualTo(String.format("^%s$",defaultBranch));
+        assertThat(validOrganizationSettings.get().getDeliverySettings().getDeployDetectionSettings().getTagRegex()).isEqualTo(
+                organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex()
+        );
+        assertThat(validOrganizationSettings.get().getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex()).isEqualTo(
+                organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex());
         assertThat(badIdOrganizationSettings).isEmpty();
         assertThat(badOrganizationIdOrganizationSettings).isEmpty();
 
