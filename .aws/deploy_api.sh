@@ -115,7 +115,7 @@ datadog_container="
 }
 "
 
-if [ "$ENV" = "prod" ]
+if [ "$ENV" = "production" ]
 then
   container_definition="[${api_container},${datadog_container}]"
 else
