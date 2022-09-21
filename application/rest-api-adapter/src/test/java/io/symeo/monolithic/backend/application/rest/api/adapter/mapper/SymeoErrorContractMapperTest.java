@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
+import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SymeoErrorContractMapperTest {
+    private final Faker faker = Faker.instance();
 
     @Test
     void should_go_through_error_mapping_and_raise_exception() {
@@ -23,7 +25,9 @@ public class SymeoErrorContractMapperTest {
                         .code("T.TECHNICAL_EXCEPTION")
                         .message("Test message for technical Symeo exception")
                         .build();
-        final Supplier<String> supplierForException = () -> new String("Hello World");
+        
+        final String fakeString = faker.gameOfThrones().character();
+        final Supplier<String> supplierForException = () -> new String(fakeString);
 
         // When
         final ResponseEntity<String> functionalExceptionMapped =
@@ -33,9 +37,9 @@ public class SymeoErrorContractMapperTest {
 
         // Then
         assertThat(functionalExceptionMapped.getStatusCodeValue()).isEqualTo(400);
-        assertThat(functionalExceptionMapped.getBody()).isEqualTo(supplierForException.get());
+        assertThat(functionalExceptionMapped.getBody()).isEqualTo(fakeString);
         assertThat(technicalExceptionMapped.getStatusCodeValue()).isEqualTo(500);
-        assertThat(technicalExceptionMapped.getBody()).isEqualTo(supplierForException.get());
+        assertThat(technicalExceptionMapped.getBody()).isEqualTo(fakeString);
 
     }
 }
