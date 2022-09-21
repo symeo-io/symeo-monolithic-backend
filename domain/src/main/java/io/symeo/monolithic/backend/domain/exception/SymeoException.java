@@ -39,7 +39,7 @@ public class SymeoException extends Exception {
     }
 
     public static Boolean isFunctional(SymeoException symeoException) {
-        return symeoException.getCode().startsWith("F");
+        return symeoException.getCode().startsWith("F.");
     }
 
     @Override
