@@ -2,7 +2,6 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
 import io.symeo.monolithic.backend.data.processing.contract.api.DataProcessingJobApi;
 import io.symeo.monolithic.backend.data.processing.contract.api.model.DataProcessingSymeoErrorsContract;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
