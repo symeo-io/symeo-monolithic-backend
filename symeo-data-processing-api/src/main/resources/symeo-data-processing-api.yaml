@@ -8,7 +8,7 @@ servers:
 
 
 paths:
-  /api/v1/job/data-processing:
+  /job/v1/data-processing:
     get:
       tags:
         - DataProcessingJob
@@ -49,7 +49,7 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/job/data-processing/all:
+  /job/v1/data-processing/all:
     get:
       tags:
         - DataProcessingJob
