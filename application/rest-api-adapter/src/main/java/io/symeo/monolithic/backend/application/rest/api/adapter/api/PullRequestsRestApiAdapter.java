@@ -16,8 +16,8 @@ import java.util.UUID;
 
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.PullRequestContractMapper.errorToContract;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.PullRequestContractMapper.toContract;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
-import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -43,7 +43,7 @@ public class PullRequestsRestApiAdapter implements PullRequestsApi {
                             endDate, pageIndex, pageSize, sortBy, sortDir),
                     authenticationService.getAuthenticatedUser().getOrganization().getTimeZone().toZoneId(), endDate));
         } catch (SymeoException e) {
-            return internalServerError().body(errorToContract(e));
+            return mapSymeoExceptionToContract(() -> errorToContract(e), e);
         }
     }
 }

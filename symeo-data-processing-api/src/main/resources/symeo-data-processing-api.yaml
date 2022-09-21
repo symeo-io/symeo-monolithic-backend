@@ -24,12 +24,31 @@ paths:
             type: string
             format: uuid
       responses:
-        200:
-          description: Job started successfully
-        400:
-          description: A functional error has occurred
+        "200":
+          description: 'Job started successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  [ ]
+        404:
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
         500:
           description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
   /job/v1/data-processing/all:
     get:
       tags:
@@ -46,8 +65,55 @@ paths:
           required: true
       responses:
         200:
-          description: All jobs started successfully
-        400:
-          description: A functional error has occurred
+          description: 'All jobs started successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  [ ]
+        404:
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
         500:
           description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
+
+components:
+  schemas:
+    DataProcessingSymeoErrorsContract:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataProcessingSymeoErrorContract'
+    DataProcessingSymeoErrorContract:
+      type: object
+      required:
+        - code
+        - message
+        - metadata
+      properties:
+        code:
+          type: string
+          example: F.NOT_FOUND
+        message:
+          type: string
+          example: Jobs not found
+        metadata:
+          type: object

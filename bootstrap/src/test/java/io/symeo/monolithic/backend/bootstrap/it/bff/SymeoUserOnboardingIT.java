@@ -404,7 +404,7 @@ public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
                 .exchange()
                 // Then
                 .expectStatus()
-                .is5xxServerError()
+                .is4xxClientError()
                 .expectBody()
                 .jsonPath("$.errors[0].code").isEqualTo(ORGANISATION_NOT_FOUND)
                 .jsonPath("$.errors[0].message").isEqualTo("Organization not found for externalId " + externalId)

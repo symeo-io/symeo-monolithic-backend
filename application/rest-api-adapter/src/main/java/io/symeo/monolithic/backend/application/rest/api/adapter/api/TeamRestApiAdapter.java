@@ -1,8 +1,6 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.TeamContractMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Team;
 import io.symeo.monolithic.backend.domain.model.account.User;
@@ -22,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.http.ResponseEntity.internalServerError;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.*;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.TeamContractMapper.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @AllArgsConstructor
@@ -39,17 +39,15 @@ public class TeamRestApiAdapter implements TeamApi {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
 
             final Map<String, List<String>> repositoryIdsMappedToTeamName =
-                    TeamContractMapper.getRepositoryIdsMappedToTeamName(createTeamRequestContract);
+                    getRepositoryIdsMappedToTeamName(createTeamRequestContract);
             final List<Team> teamsForNameAndRepositoriesAndUser =
                     teamFacadeAdapter.createTeamsForNameAndRepositoriesAndUser(repositoryIdsMappedToTeamName,
                             authenticatedUser);
             final TeamsResponseContract postCreateTeamsResponseContract =
-                    TeamContractMapper.getTeamsResponseContract(teamsForNameAndRepositoriesAndUser);
+                    getTeamsResponseContract(teamsForNameAndRepositoriesAndUser);
             return ok(postCreateTeamsResponseContract);
         } catch (SymeoException e) {
-            final TeamsResponseContract postCreateTeamsResponseContract =
-                    TeamContractMapper.getTeamsResponseContractError(e);
-            return internalServerError().body(postCreateTeamsResponseContract);
+            return mapSymeoExceptionToContract(() -> getTeamsResponseContractError(e), e);
         }
     }
 
@@ -58,12 +56,10 @@ public class TeamRestApiAdapter implements TeamApi {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             final TeamsResponseContract postCreateTeamsResponseContract =
-                    TeamContractMapper.getTeamsResponseContract(teamFacadeAdapter.getTeamsForOrganization(authenticatedUser.getOrganization()));
+                    getTeamsResponseContract(teamFacadeAdapter.getTeamsForOrganization(authenticatedUser.getOrganization()));
             return ok(postCreateTeamsResponseContract);
         } catch (SymeoException e) {
-            final TeamsResponseContract postCreateTeamsResponseContract =
-                    TeamContractMapper.getTeamsResponseContractError(e);
-            return internalServerError().body(postCreateTeamsResponseContract);
+            return mapSymeoExceptionToContract(() -> getTeamsResponseContractError(e), e);
         }
     }
 
@@ -73,7 +69,7 @@ public class TeamRestApiAdapter implements TeamApi {
             teamFacadeAdapter.deleteForId(teamId);
             return ok().build();
         } catch (SymeoException e) {
-            return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
+            return mapSymeoExceptionToContract(() -> exceptionToContracts(e), e);
         }
     }
 
@@ -81,14 +77,14 @@ public class TeamRestApiAdapter implements TeamApi {
     public ResponseEntity<SymeoErrorsContract> updateTeam(UpdateTeamRequestContract updateTeamRequestContract) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            final Team team = TeamContractMapper.getTeamToPatch(updateTeamRequestContract)
+            final Team team = getTeamToPatch(updateTeamRequestContract)
                     .toBuilder()
                     .organizationId(authenticatedUser.getId())
                     .build();
             teamFacadeAdapter.update(team);
             return ok().build();
         } catch (SymeoException e) {
-            return internalServerError().body(SymeoErrorContractMapper.exceptionToContracts(e));
+            return mapSymeoExceptionToContract(() -> exceptionToContracts(e), e);
         }
     }
 }
