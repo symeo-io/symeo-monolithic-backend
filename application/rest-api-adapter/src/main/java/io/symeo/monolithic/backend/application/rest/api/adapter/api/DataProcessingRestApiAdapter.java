@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.*;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 
 @AllArgsConstructor
@@ -33,7 +34,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {
             LOGGER.error("Error while starting vcs data collection job for organizationId {}", organizationId, e);
-            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.dataProcessingExceptionToContracts(e), e);
+            return mapSymeoExceptionToContract(() -> dataProcessingExceptionToContracts(e), e);
         }
     }
 
@@ -48,7 +49,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {
             LOGGER.error("Error while starting all data collection jobs", e);
-            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.dataProcessingExceptionToContracts(e), e);
+            return mapSymeoExceptionToContract(() -> dataProcessingExceptionToContracts(e), e);
         }
     }
 }

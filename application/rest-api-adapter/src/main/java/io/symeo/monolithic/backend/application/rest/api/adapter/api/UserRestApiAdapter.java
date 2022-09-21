@@ -1,9 +1,6 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OrganizationSettingsContractMapper;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.UserContractMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Onboarding;
 import io.symeo.monolithic.backend.domain.model.account.User;
@@ -23,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OnboardingContractMapper.*;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
-import static org.springframework.http.ResponseEntity.internalServerError;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.UserContractMapper.currentUsersToError;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.UserContractMapper.currentUserToResponse;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -40,9 +39,9 @@ public class UserRestApiAdapter implements UserApi {
     public ResponseEntity<CurrentUserResponseContract> getCurrentUser() {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(UserContractMapper.currentUserToResponse(authenticatedUser));
+            return ok(currentUserToResponse(authenticatedUser));
         } catch (SymeoException symeoException) {
-            return mapSymeoExceptionToContract(() -> UserContractMapper.currentUsersToError(symeoException), symeoException);
+            return mapSymeoExceptionToContract(() -> currentUsersToError(symeoException), symeoException);
         }
     }
 
@@ -52,9 +51,9 @@ public class UserRestApiAdapter implements UserApi {
             User authenticatedUser = authenticationService.getAuthenticatedUser();
             authenticatedUser = userFacadeAdapter.updateUserWithOrganization(authenticatedUser,
                     linkOrganizationToCurrentUserRequestContract.getExternalId());
-            return ok(UserContractMapper.currentUserToResponse(authenticatedUser));
+            return ok(currentUserToResponse(authenticatedUser));
         } catch (SymeoException symeoException) {
-            return mapSymeoExceptionToContract(() -> UserContractMapper.currentUsersToError(symeoException), symeoException);
+            return mapSymeoExceptionToContract(() -> currentUsersToError(symeoException), symeoException);
         }
     }
 
@@ -62,11 +61,11 @@ public class UserRestApiAdapter implements UserApi {
     public ResponseEntity<PostOnboardingResponseContract> updateOnboarding(UpdateOnboardingRequestContract updateOnboardingRequestContract) {
         try {
             User authenticatedUser = authenticationService.getAuthenticatedUser();
-            Onboarding onboarding = OnboardingContractMapper.getOnboarding(authenticatedUser.getOnboarding(), updateOnboardingRequestContract);
+            Onboarding onboarding = getOnboarding(authenticatedUser.getOnboarding(), updateOnboardingRequestContract);
             onboarding = onboardingFacadeAdapter.updateOnboarding(onboarding);
-            return ok(OnboardingContractMapper.getPostOnboardingResponseContract(onboarding));
+            return ok(getPostOnboardingResponseContract(onboarding));
         } catch (SymeoException symeoException) {
-            return mapSymeoExceptionToContract(() -> OnboardingContractMapper.exceptionToContract(symeoException), symeoException);
+            return mapSymeoExceptionToContract(() -> exceptionToContract(symeoException), symeoException);
         }
     }
 

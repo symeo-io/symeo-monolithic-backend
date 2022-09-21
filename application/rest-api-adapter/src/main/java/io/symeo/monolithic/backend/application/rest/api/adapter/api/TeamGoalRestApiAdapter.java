@@ -3,9 +3,7 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.PullRequestCurveContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.PullRequestHistogramContractMapper;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.TeamGoalContractMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.User;
@@ -19,13 +17,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.MetricsContractMapper.errorsToContract;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.MetricsContractMapper.metricsToContract;
-import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.*;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.exceptionToContracts;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.PullRequestCurveContractMapper.errorToContract;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.PullRequestCurveContractMapper.curveToContract;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
-import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Tags(@Tag(name = "Goals"))
@@ -45,7 +44,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                     postCreateTeamGoalsRequest.getStandardCode(), postCreateTeamGoalsRequest.getValue());
             return ok().build();
         } catch (SymeoException e) {
-            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
+            return mapSymeoExceptionToContract(() -> exceptionToContracts(e), e);
         }
     }
 
@@ -54,10 +53,10 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                                                                         final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(PullRequestCurveContractMapper.curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
+            return ok(curveToContract(curveQuery.computeTimeToMergeCurve(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return mapSymeoExceptionToContract(() -> PullRequestCurveContractMapper.errorToContract(e), e);}
+            return mapSymeoExceptionToContract(() -> errorToContract(e), e);}
     }
 
     @Override
@@ -90,10 +89,10 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                                                                             final String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(PullRequestCurveContractMapper.curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
+            return ok(curveToContract(curveQuery.computePullRequestSizeCurve(authenticatedUser.getOrganization(),
                     teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
-            return mapSymeoExceptionToContract(() -> PullRequestCurveContractMapper.errorToContract(e), e);
+            return mapSymeoExceptionToContract(() -> errorToContract(e), e);
         }
     }
 
@@ -137,7 +136,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
             teamGoalFacadeAdapter.deleteTeamGoalForId(teamGoalId);
             return ok().build();
         } catch (SymeoException e) {
-            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
+            return mapSymeoExceptionToContract(() -> exceptionToContracts(e), e);
         }
     }
 
@@ -148,7 +147,7 @@ public class TeamGoalRestApiAdapter implements GoalsApi {
                     patchTeamGoalsRequest.getValue());
             return ok().build();
         } catch (SymeoException e) {
-            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
+            return mapSymeoExceptionToContract(() -> exceptionToContracts(e), e);
         }
     }
 

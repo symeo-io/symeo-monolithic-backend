@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.JobContractMapper.*;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -31,13 +32,13 @@ public class JobRestApiAdapter implements JobApi {
     public ResponseEntity<LastJobsResponseContract> getLastTwoVcsDataCollectionJobsForTeamId(UUID teamId) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(JobContractMapper.domainToContract(jobFacadeAdapter.findLastJobsForCodeAndOrganizationAndLimitAndTeamId(
+            return ok(domainToContract(jobFacadeAdapter.findLastJobsForCodeAndOrganizationAndLimitAndTeamId(
                     CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE,
                     authenticatedUser.getOrganization().getId(),
                     teamId,
                     2)));
         } catch (SymeoException e) {
-            return mapSymeoExceptionToContract(() -> JobContractMapper.errorToContract(e), e);
+            return mapSymeoExceptionToContract(() -> errorToContract(e), e);
         }
     }
 }
