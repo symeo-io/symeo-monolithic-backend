@@ -8,7 +8,7 @@ servers:
 
 
 paths:
-  /api/v1/job/data-processing:
+  /job/v1/data-processing:
     get:
       tags:
         - DataProcessingJob
@@ -30,7 +30,7 @@ paths:
           description: A functional error has occurred
         500:
           description: An internal error has occurred
-  /api/v1/job/data-processing/all:
+  /job/v1/data-processing/all:
     get:
       tags:
         - DataProcessingJob
