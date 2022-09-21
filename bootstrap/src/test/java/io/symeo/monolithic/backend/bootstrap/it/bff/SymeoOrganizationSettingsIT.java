@@ -162,7 +162,7 @@ public class SymeoOrganizationSettingsIT extends AbstractSymeoBackForFrontendApi
 
                     // Then
                     .expectStatus()
-                    .is5xxServerError();
+                    .is4xxClientError();
             final OrganizationSettingsEntity notUpdatedOrganizationSettings = organizationSettingsRepository.findById(organizationSettingsId).get();
             assertThat(notUpdatedOrganizationSettings.getTagRegex()).isEqualTo(organizationSettingsEntityToUpdate.getTagRegex());
             assertThat(notUpdatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(organizationSettingsEntityToUpdate.getPullRequestMergedOnBranchRegex());
