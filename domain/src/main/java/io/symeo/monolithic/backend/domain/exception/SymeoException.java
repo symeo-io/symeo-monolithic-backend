@@ -38,6 +38,9 @@ public class SymeoException extends Exception {
                 .build();
     }
 
+    public static Boolean isFunctional(SymeoException symeoException) {
+        return symeoException.getCode().startsWith("F");
+    }
 
     @Override
     public String toString() {
