@@ -3,9 +3,11 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.unit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import org.junit.jupiter.api.Test;
@@ -226,6 +228,70 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
         }
         for (GithubCommitsDTO githubCommitsDTO : alreadyCollectedGithubCommitsDTOS) {
             assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+    }
+
+    @Test
+    void should_collect_commits_given_a_pull_request_number() throws SymeoException, IOException {
+        // Given
+        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
+        final GithubProperties properties = new GithubProperties();
+        final int size = 30;
+        properties.setSize(30);
+        final GithubPullRequestDTO githubPullRequestDTO = new GithubPullRequestDTO();
+        final Integer currentPullRequestNumber = faker.number().randomDigit();
+        githubPullRequestDTO.setNumber(currentPullRequestNumber);
+        final Repository repository = Repository.builder()
+                .vcsOrganizationName(faker.rickAndMorty().character())
+                .name(faker.ancient().god())
+                .build();
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient, properties, new ObjectMapper());
+        final GithubCommitsDTO[] githubCommitsStubs1 = getStubsFromClassT("get_commits_for_pr_number",
+                "get_commits_for_pr_number_1.json",
+                GithubCommitsDTO[].class);
+        final GithubCommitsDTO[] githubCommitsStubs2 = getStubsFromClassT("get_commits_for_pr_number",
+                "get_commits_for_pr_number_2.json",
+                GithubCommitsDTO[].class);
+        final GithubCommitsDTO[] githubCommitsStubs3 = getStubsFromClassT("get_commits_for_pr_number",
+                "get_commits_for_pr_number_3.json",
+                GithubCommitsDTO[].class);
+
+        // When
+        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), githubPullRequestDTO.getNumber(), 1, size))
+                .thenReturn(githubCommitsStubs1);
+        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), githubPullRequestDTO.getNumber(), 2, size))
+                .thenReturn(githubCommitsStubs2);
+        final GithubCommitsDTO[] nbrOfCommitMultipleOfPageSizeGithubCommitsDTOSResult = githubAdapter.getCommitsForPullRequestNumber(repository,githubPullRequestDTO);
+
+        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), githubPullRequestDTO.getNumber(), 3, size))
+                .thenReturn(githubCommitsStubs3);
+        final GithubCommitsDTO[] githubCommitsDTOSResult = githubAdapter.getCommitsForPullRequestNumber(repository,githubPullRequestDTO);
+
+        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), githubPullRequestDTO.getNumber(), 1, size))
+                .thenReturn(null);
+        final GithubCommitsDTO[] nullGithubCommitsDTOSResult = githubAdapter.getCommitsForPullRequestNumber(repository,githubPullRequestDTO);
+
+
+        // Then
+        assertThat(githubCommitsDTOSResult.length).isEqualTo(githubCommitsStubs1.length + githubCommitsStubs2.length + githubCommitsStubs3.length);
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsStubs1) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsStubs2) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsStubs3) {
+            assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+
+        assertThat(nullGithubCommitsDTOSResult.length).isEqualTo(0);
+
+        assertThat(nbrOfCommitMultipleOfPageSizeGithubCommitsDTOSResult.length).isEqualTo(githubCommitsStubs1.length + githubCommitsStubs2.length);
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsStubs1) {
+            assertThat(nbrOfCommitMultipleOfPageSizeGithubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
+        }
+        for (GithubCommitsDTO githubCommitsDTO : githubCommitsStubs2) {
+            assertThat(nbrOfCommitMultipleOfPageSizeGithubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
         }
     }
 

@@ -168,18 +168,50 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         return pullRequestDetailsForPullRequestNumber;
     }
 
-    private GithubCommentsDTO[] getCommentsForPullRequestNumber(Repository repository,
-                                                                GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
-        // TODO : @Dorian adds pagination
-        return githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
-                repository.getName(), currentGithubPullRequestDTO.getNumber());
+    public GithubCommentsDTO[] getCommentsForPullRequestNumber(Repository repository,
+                                                               GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
+        int page = 1;
+        GithubCommentsDTO[] githubCommentsDTOS =
+                githubHttpClient.getCommentsForPullRequestNumber(
+                        repository.getVcsOrganizationName(), repository.getName(), currentGithubPullRequestDTO.getNumber(), page, properties.getSize());
+        if (isNull(githubCommentsDTOS) || githubCommentsDTOS.length == 0) {
+            return new GithubCommentsDTO[0];
+        }
+        final List<GithubCommentsDTO> githubCommentsDTOList =
+                new ArrayList<>(List.of(githubCommentsDTOS));
+        while (!isNull(githubCommentsDTOS) && githubCommentsDTOS.length == properties.getSize()) {
+            page += 1;
+            githubCommentsDTOS = githubHttpClient.getCommentsForPullRequestNumber(
+                    repository.getVcsOrganizationName(), repository.getName(), currentGithubPullRequestDTO.getNumber(), page, properties.getSize()
+            );
+            if (!isNull(githubCommentsDTOS)) {
+                githubCommentsDTOList.addAll(Arrays.stream(githubCommentsDTOS).toList());
+            }
+        }
+        return bytesToDto(dtoToBytes(githubCommentsDTOList.toArray()), GithubCommentsDTO[].class);
     }
 
-    private GithubCommitsDTO[] getCommitsForPullRequestNumber(Repository repository,
-                                                              GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
-        // TODO : @Dorian adds pagination
-        return githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
-                repository.getName(), currentGithubPullRequestDTO.getNumber());
+    public GithubCommitsDTO[] getCommitsForPullRequestNumber(Repository repository,
+                                                             GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
+        int page = 1;
+        GithubCommitsDTO[] githubCommitsDTOS =
+                githubHttpClient.getCommitsForPullRequestNumber(
+                        repository.getVcsOrganizationName(), repository.getName(), currentGithubPullRequestDTO.getNumber(), page, properties.getSize());
+        if (isNull(githubCommitsDTOS) || githubCommitsDTOS.length == 0) {
+            return new GithubCommitsDTO[0];
+        }
+        final List<GithubCommitsDTO> githubCommitsDTOList =
+                new ArrayList<>(List.of(githubCommitsDTOS));
+        while (!isNull(githubCommitsDTOS) && githubCommitsDTOS.length == properties.getSize()) {
+            page += 1;
+            githubCommitsDTOS = githubHttpClient.getCommitsForPullRequestNumber(
+                    repository.getVcsOrganizationName(), repository.getName(), currentGithubPullRequestDTO.getNumber(), page, properties.getSize()
+            );
+            if (!isNull(githubCommitsDTOS)) {
+                githubCommitsDTOList.addAll(Arrays.stream(githubCommitsDTOS).toList());
+            }
+        }
+        return bytesToDto(dtoToBytes(githubCommitsDTOList.toArray()), GithubCommitsDTO[].class);
     }
 
 
@@ -230,15 +262,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
 
     @Override
-    public byte[] getRawCommitsForPullRequestNumber(final String vcsOrganizationName,
-                                                    final String repositoryName,
-                                                    final int pullRequestNumber) throws SymeoException {
-        final GithubCommitsDTO[] githubCommitsDTO = githubHttpClient.getCommitsForPullRequestNumber(vcsOrganizationName,
-                repositoryName, pullRequestNumber);
-        return dtoToBytes(githubCommitsDTO);
-    }
-
-    @Override
     public List<Commit> commitsBytesToDomain(final byte[] rawCommits) throws SymeoException {
         if (rawCommits.length == 0) {
             return List.of();
@@ -261,14 +284,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public byte[] getRawComments(final String vcsOrganizationName, final String repositoryName,
-                                 final Integer pullRequestNumber) throws SymeoException {
-        final GithubCommentsDTO[] githubCommentsDTOS =
-                githubHttpClient.getCommentsForPullRequestNumber(vcsOrganizationName,
-                        repositoryName, pullRequestNumber);
-        return dtoToBytes(githubCommentsDTOS);
-    }
 
     @Override
     public byte[] getRawCommitsForRepository(final String vcsOrganizationName, final String repositoryName,
