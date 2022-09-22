@@ -139,107 +139,110 @@ public class AverageLeadTimeTest {
 
     }
 
-    @Test
-    void should_compute_lead_time_value() {
-        // Given
-        final List<PullRequestView> pullRequestViews = List.of(
-                PullRequestView.builder()
-                        .status(PullRequest.MERGE)
-                        .creationDate(stringToDateTime("2022-01-01 13:00:00"))
-                        .mergeDate(stringToDateTime("2022-01-05 16:32:00"))
-                        .commits(
-                                List.of(
-                                        Commit.builder().date(stringToDateTime("2022-01-03 22:00:00")).build(),
-                                        Commit.builder().date(stringToDateTime("2022-01-02 15:30:00")).build())
-                        )
-                        .comments(List.of(
-                                Comment.builder().creationDate(stringToDateTime("2022-01-04 07:58:00")).build(),
-                                Comment.builder().creationDate(stringToDateTime("2022-01-04 08:14:00")).build()
-                        ))
-                        .build()
-        );
+    @Nested
+    public class EdgeCases {
+        @Test
+        void should_compute_lead_time_value() {
+            // Given
+            final List<PullRequestView> pullRequestViews = List.of(
+                    PullRequestView.builder()
+                            .status(PullRequest.MERGE)
+                            .creationDate(stringToDateTime("2022-01-01 13:00:00"))
+                            .mergeDate(stringToDateTime("2022-01-05 16:32:00"))
+                            .commits(
+                                    List.of(
+                                            Commit.builder().date(stringToDateTime("2022-01-03 22:00:00")).build(),
+                                            Commit.builder().date(stringToDateTime("2022-01-02 15:30:00")).build())
+                            )
+                            .comments(List.of(
+                                    Comment.builder().creationDate(stringToDateTime("2022-01-04 07:58:00")).build(),
+                                    Comment.builder().creationDate(stringToDateTime("2022-01-04 08:14:00")).build()
+                            ))
+                            .build()
+            );
 
-        // When
-        final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            // When
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
-        // Then
-        assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(1830.0f);
-        assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(598.0f);
-        assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(1938.0f);
-        assertThat(averageLeadTime.getAverageValue()).isEqualTo(4366.0f);
-    }
+            // Then
+            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(1830.0f);
+            assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(598.0f);
+            assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(1938.0f);
+            assertThat(averageLeadTime.getAverageValue()).isEqualTo(4366.0f);
+        }
 
-    @Test
-    void should_return_null_if_pull_requests_are_empty() {
-        // Given
-        final List<PullRequestView> pullRequestViews = List.of();
+        @Test
+        void should_return_null_if_pull_requests_are_empty() {
+            // Given
+            final List<PullRequestView> pullRequestViews = List.of();
 
-        // When
-        final Optional<AverageLeadTime> leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews);
+            // When
+            final Optional<AverageLeadTime> leadTime = buildFromPullRequestWithCommitsViews(pullRequestViews);
 
-        // Then
-        assertThat(leadTime.isEmpty()).isTrue();
+            // Then
+            assertThat(leadTime.isEmpty()).isTrue();
 
-    }
+        }
 
-    @Test
-    void should_filter_pull_requests_without_commits() {
-        // Given
-        final List<PullRequestView> pullRequestViews = List.of(
-                PullRequestView.builder()
-                        .status(PullRequest.MERGE)
-                        .creationDate(stringToDateTime("2022-01-01 13:00:00"))
-                        .mergeDate(stringToDateTime("2022-01-03 15:55:00"))
-                        .commits(
-                                List.of(Commit.builder().date(stringToDateTime("2022-01-03 15:30:00")).build())
-                        )
-                        .build(),
-                PullRequestView.builder().build()
-        );
+        @Test
+        void should_filter_pull_requests_without_commits() {
+            // Given
+            final List<PullRequestView> pullRequestViews = List.of(
+                    PullRequestView.builder()
+                            .status(PullRequest.MERGE)
+                            .creationDate(stringToDateTime("2022-01-01 13:00:00"))
+                            .mergeDate(stringToDateTime("2022-01-03 15:55:00"))
+                            .commits(
+                                    List.of(Commit.builder().date(stringToDateTime("2022-01-03 15:30:00")).build())
+                            )
+                            .build(),
+                    PullRequestView.builder().build()
+            );
 
-        // When
-        final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            // When
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
-        // Then
-        assertThat(averageLeadTime).isNotNull();
-        assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(0.0f);
-        assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(25.0f);
-    }
+            // Then
+            assertThat(averageLeadTime).isNotNull();
+            assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(0.0f);
+            assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(25.0f);
+        }
 
-    @Test
-    void should_compute_average_lead_time_given_list_of_pull_requests() {
-        // Given
-        final List<PullRequestView> pullRequestViews = List.of(
-                PullRequestView.builder()
-                        .status(PullRequest.MERGE)
-                        .creationDate(stringToDateTime("2022-01-01 13:00:00"))
-                        .mergeDate(stringToDateTime("2022-01-05 16:32:00"))
-                        .commits(
-                                List.of(
-                                        Commit.builder().date(stringToDateTime("2022-01-03 22:00:00")).build(),
-                                        Commit.builder().date(stringToDateTime("2022-01-02 15:30:00")).build())
-                        )
-                        .comments(List.of(
-                                Comment.builder().creationDate(stringToDateTime("2022-01-04 07:58:00")).build(),
-                                Comment.builder().creationDate(stringToDateTime("2022-01-04 08:14:00")).build()
-                        ))
-                        .build(),
-                PullRequestView.builder()
-                        .status(PullRequest.MERGE)
-                        .creationDate(stringToDateTime("2022-01-01 13:00:00"))
-                        .mergeDate(stringToDateTime("2022-01-03 17:30:00"))
-                        .commits(
-                                List.of(Commit.builder().date(stringToDateTime("2022-01-03 15:55:00")).build())
-                        ).build()
-        );
+        @Test
+        void should_compute_average_lead_time_given_list_of_pull_requests() {
+            // Given
+            final List<PullRequestView> pullRequestViews = List.of(
+                    PullRequestView.builder()
+                            .status(PullRequest.MERGE)
+                            .creationDate(stringToDateTime("2022-01-01 13:00:00"))
+                            .mergeDate(stringToDateTime("2022-01-05 16:32:00"))
+                            .commits(
+                                    List.of(
+                                            Commit.builder().date(stringToDateTime("2022-01-03 22:00:00")).build(),
+                                            Commit.builder().date(stringToDateTime("2022-01-02 15:30:00")).build())
+                            )
+                            .comments(List.of(
+                                    Comment.builder().creationDate(stringToDateTime("2022-01-04 07:58:00")).build(),
+                                    Comment.builder().creationDate(stringToDateTime("2022-01-04 08:14:00")).build()
+                            ))
+                            .build(),
+                    PullRequestView.builder()
+                            .status(PullRequest.MERGE)
+                            .creationDate(stringToDateTime("2022-01-01 13:00:00"))
+                            .mergeDate(stringToDateTime("2022-01-03 17:30:00"))
+                            .commits(
+                                    List.of(Commit.builder().date(stringToDateTime("2022-01-03 15:55:00")).build())
+                            ).build()
+            );
 
-        // When
-        final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
+            // When
+            final AverageLeadTime averageLeadTime = buildFromPullRequestWithCommitsViews(pullRequestViews).get();
 
-        // Then
-        assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(915.0f);
-        assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(316.5f);
-        assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(999.0f);
+            // Then
+            assertThat(averageLeadTime.getAverageCodingTime()).isEqualTo(915.0f);
+            assertThat(averageLeadTime.getAverageReviewLag()).isEqualTo(316.5f);
+            assertThat(averageLeadTime.getAverageReviewTime()).isEqualTo(999.0f);
+        }
     }
 
 }

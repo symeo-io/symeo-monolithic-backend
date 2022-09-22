@@ -46,6 +46,7 @@ public class LeadTimeService implements LeadTimeFacadeAdapter {
     }
 
 
+    @Deprecated
     @Override
     public LeadTimePieceCurveWithAverage computeLeadTimeCurvesForTeamIdFromStartDateAndEndDate(final UUID teamId,
                                                                                                final Date startDate,

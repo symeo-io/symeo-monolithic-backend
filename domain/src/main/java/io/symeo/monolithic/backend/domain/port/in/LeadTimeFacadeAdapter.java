@@ -14,6 +14,7 @@ public interface LeadTimeFacadeAdapter {
                                                                                     UUID teamId,
                                                                                     Date startDate, Date endDate) throws SymeoException;
 
+    @Deprecated
     LeadTimePieceCurveWithAverage computeLeadTimeCurvesForTeamIdFromStartDateAndEndDate(UUID teamId, Date startDate,
                                                                                         Date endDate) throws SymeoException;
 }

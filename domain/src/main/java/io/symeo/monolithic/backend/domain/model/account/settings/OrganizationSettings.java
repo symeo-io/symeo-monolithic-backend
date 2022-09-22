@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.domain.model.account.settings;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -22,6 +23,7 @@ public class OrganizationSettings {
                                         DeployDetectionSettings.builder()
                                                 .pullRequestMergedOnBranchRegex(String.format("^%s$",
                                                         defaultMostUsedBranch))
+                                                .excludeBranches(List.of("^staging$"))
                                                 .build()
                                 )
                                 .build()

@@ -15,6 +15,7 @@ public class Commit {
     String message;
     String sha;
     List<String> parentShaList;
+    String head;
 
     public static String getNameFromPullRequest(final PullRequest pullRequest) {
         return ALL + "_for_pr_number_" + pullRequest.getNumber();

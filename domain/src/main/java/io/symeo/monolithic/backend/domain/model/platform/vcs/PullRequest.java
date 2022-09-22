@@ -26,6 +26,7 @@ public class PullRequest {
     Date lastUpdateDate;
     Date mergeDate;
     Date closeDate;
+    String mergeCommitSha;
     @Builder.Default
     Boolean isMerged = false;
     @Builder.Default

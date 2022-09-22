@@ -43,6 +43,7 @@ public class LeadTimeRestApiAdapter implements LeadTimeApi {
         }
     }
 
+    @Deprecated
     @Override
     public ResponseEntity<LeadTimeCurveResponseContract> getLeadTimeCurve(UUID teamId, String startDate,
                                                                           String endDate) {

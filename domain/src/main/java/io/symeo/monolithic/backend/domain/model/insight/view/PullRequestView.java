@@ -38,6 +38,7 @@ public class PullRequestView {
     Integer addedLineNumber;
     Float limit;
     String branchName;
+    String mergeCommitSha;
     String vcsUrl;
     String authorLogin;
     Integer commitNumber;
