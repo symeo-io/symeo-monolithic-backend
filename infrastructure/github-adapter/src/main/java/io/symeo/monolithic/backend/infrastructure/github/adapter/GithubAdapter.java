@@ -161,15 +161,25 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         final GithubPullRequestDTO pullRequestDetailsForPullRequestNumber =
                 githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                         repository.getName(), currentGithubPullRequestDTO.getNumber());
-        final GithubCommentsDTO[] commentsForPullRequestNumber =
-                githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
-                        repository.getName(), currentGithubPullRequestDTO.getNumber());
-        final GithubCommitsDTO[] commitsForPullRequestNumber =
-                githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
-                        repository.getName(), currentGithubPullRequestDTO.getNumber());
-        pullRequestDetailsForPullRequestNumber.setGithubCommentsDTOS(commentsForPullRequestNumber);
-        pullRequestDetailsForPullRequestNumber.setGithubCommitsDTOS(commitsForPullRequestNumber);
+        pullRequestDetailsForPullRequestNumber.setGithubCommentsDTOS(getCommentsForPullRequestNumber(repository,
+                currentGithubPullRequestDTO));
+        pullRequestDetailsForPullRequestNumber.setGithubCommitsDTOS(getCommitsForPullRequestNumber(repository,
+                currentGithubPullRequestDTO));
         return pullRequestDetailsForPullRequestNumber;
+    }
+
+    private GithubCommentsDTO[] getCommentsForPullRequestNumber(Repository repository,
+                                                                GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
+        // TODO : @Dorian adds pagination
+        return githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), currentGithubPullRequestDTO.getNumber());
+    }
+
+    private GithubCommitsDTO[] getCommitsForPullRequestNumber(Repository repository,
+                                                              GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
+        // TODO : @Dorian adds pagination
+        return githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), currentGithubPullRequestDTO.getNumber());
     }
 
 
