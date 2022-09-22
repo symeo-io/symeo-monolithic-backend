@@ -5,16 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.UserContractMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.port.in.UserFacadeAdapter;
 import io.symeo.monolithic.backend.frontend.contract.api.OrganizationApi;
-import io.symeo.monolithic.backend.frontend.contract.api.model.DeleteUserResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.OrganizationSettingsResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.UserRequestContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.UsersResponseContract;
+import io.symeo.monolithic.backend.frontend.contract.api.model.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
-import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OrganizationSettingsContractMapper.domainToContract;
-import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OrganizationSettingsContractMapper.errorToContract;
-import static org.springframework.http.ResponseEntity.internalServerError;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.OrganizationSettingsContractMapper.*;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.UserContractMapper.*;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -40,10 +36,10 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
     public ResponseEntity<UsersResponseContract> createUsersToOrganization(List<UserRequestContract> userRequestContract) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(UserContractMapper.usersToResponse(userFacadeAdapter.inviteUsersForOrganization(authenticatedUser.getOrganization(),
-                    authenticatedUser, UserContractMapper.contractToUsers(userRequestContract))));
+            return ok(usersToResponse(userFacadeAdapter.inviteUsersForOrganization(authenticatedUser.getOrganization(),
+                    authenticatedUser, contractToUsers(userRequestContract))));
         } catch (SymeoException e) {
-            return internalServerError().body(UserContractMapper.usersToError(e));
+            return mapSymeoExceptionToContract(() -> usersToError(e), e);
         }
     }
 
@@ -51,9 +47,9 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
     public ResponseEntity<UsersResponseContract> getUsersFromOrganization() {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(UserContractMapper.usersToResponse(userFacadeAdapter.getAllUsersForOrganization(authenticatedUser.getOrganization())));
+            return ok(usersToResponse(userFacadeAdapter.getAllUsersForOrganization(authenticatedUser.getOrganization())));
         } catch (SymeoException e) {
-            return internalServerError().body(UserContractMapper.usersToError(e));
+            return mapSymeoExceptionToContract(() -> usersToError(e), e);
         }
     }
 
@@ -64,9 +60,7 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
             userFacadeAdapter.removeUserFromOrganization(id, authenticatedUser.getOrganization());
             return ok(new DeleteUserResponseContract());
         } catch (SymeoException e) {
-            final DeleteUserResponseContract deletedUserResponseContract = new DeleteUserResponseContract();
-            deletedUserResponseContract.setErrors(List.of(SymeoErrorContractMapper.exceptionToContract(e)));
-            return internalServerError().body(deletedUserResponseContract);
+            return mapSymeoExceptionToContract(() -> exceptionToContract(e), e);
         }
     }
 
@@ -76,7 +70,19 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return ok(domainToContract(organizationSettingsFacade.getOrganizationSettingsForOrganization(authenticatedUser.getOrganization())));
         } catch (SymeoException e) {
-            return internalServerError().body(errorToContract(e));
+            return mapSymeoExceptionToContract(() -> errorToContract(e), e);
         }
+    }
+
+    @Override
+    public ResponseEntity<SymeoErrorsContract> updateOrganizationSettings(OrganizationSettingsContract organizationSettingsContract) {
+        try {
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            organizationSettingsFacade.updateOrganizationSettings(contractToDomain(organizationSettingsContract, authenticatedUser.getOrganization().getId()));
+            return ok().build();
+        } catch (SymeoException e) {
+            return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
+        }
+
     }
 }

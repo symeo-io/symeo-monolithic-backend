@@ -1345,13 +1345,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationSettingsResponseContract'
+                $ref: '#/components/schemas/SymeoErrorsContract'
               example:
-                settings:
-                  delivery:
-                    deploy_detection:
-                      tag_regex: null
-                      pull_request_merged_on_branch_regex: ^staging$
                 errors:
                   [ ]
         "401":

@@ -10,6 +10,7 @@ import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @AllArgsConstructor
 public class OrganizationSettingsService implements OrganizationSettingsFacade {
@@ -40,5 +41,24 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
                                         organization.getId()))
                                 .build()
                 );
+    }
+
+    @Override
+    public void updateOrganizationSettings(final OrganizationSettings organizationSettings) throws SymeoException {
+        final Optional<OrganizationSettings> organizationSettingsToUpdate = getOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), organizationSettings.getOrganizationId());
+        if (organizationSettingsToUpdate.isPresent()) {
+            accountOrganizationStorageAdapter.saveOrganizationSettings(organizationSettings);
+        } else {
+            throw SymeoException.builder()
+                    .code(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND)
+                    .message(String.format("OrganizationSettings not found for organizationSettingsId %s or user not allowed to modify organizationSettings",
+                            organizationSettings.getId()))
+                    .build();
+        }
+    }
+
+    @Override
+    public Optional<OrganizationSettings> getOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId, UUID organizationId) {
+        return accountOrganizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettingsId, organizationId);
     }
 }

@@ -104,4 +104,9 @@ public class PostgresAccountOrganizationAdapter implements AccountOrganizationSt
                     .build();
         }
     }
+
+    @Override
+    public Optional<OrganizationSettings> findOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId, UUID organizationId) {
+        return organizationSettingsRepository.findByIdAndOrganizationId(organizationSettingsId, organizationId).map(OrganizationMapper::settingsToDomain);
+    }
 }

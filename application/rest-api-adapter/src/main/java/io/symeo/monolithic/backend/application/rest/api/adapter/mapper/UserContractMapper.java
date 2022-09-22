@@ -59,6 +59,18 @@ public interface UserContractMapper {
         return usersResponseContract;
     }
 
+    static CurrentUserResponseContract currentUsersToError(final SymeoException symeoException) {
+        final CurrentUserResponseContract currentUserResponseContract = new CurrentUserResponseContract();
+        currentUserResponseContract.setErrors(List.of(SymeoErrorContractMapper.exceptionToContract(symeoException)));
+        return currentUserResponseContract;
+    }
+
+    static DeleteUserResponseContract exceptionToContract(final SymeoException symeoException) {
+        final DeleteUserResponseContract deletedUserResponseContract = new DeleteUserResponseContract();
+        deletedUserResponseContract.setErrors(List.of(SymeoErrorContractMapper.exceptionToContract(symeoException)));
+        return deletedUserResponseContract;
+    }
+
     private static UserResponseContract userToResponse(final User user) {
         final UserResponseContract userResponseContract = new UserResponseContract();
         userResponseContract.setEmail(user.getEmail());

@@ -20,7 +20,7 @@ public class SymeoHttpClient {
     public void startJobForOrganizationId(UUID organizationId) {
         try {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(
-                            URI.create(symeoJobApiProperties.getUrl() + "api/v1/job/data-processing?organization_id=" + organizationId.toString())
+                            URI.create(symeoJobApiProperties.getUrl() + "job/v1/data-processing?organization_id=" + organizationId.toString())
                     )
                     .GET()
                     .headers(symeoJobApiProperties.getHeaderKey(), symeoJobApiProperties.getApiKey());
