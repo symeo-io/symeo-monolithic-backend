@@ -82,14 +82,15 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         }
         final List<GithubPullRequestDTO> githubPullRequestDTOList =
                 new ArrayList<>(List.of(githubPullRequestDTOS));
-        while (githubPullRequestDTOS.length == properties.getSize()) {
+        while (nonNull(githubPullRequestDTOS) && githubPullRequestDTOS.length == properties.getSize()) {
             page += 1;
             githubPullRequestDTOS =
                     this.githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
                             repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
-            githubPullRequestDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
+            if (nonNull(githubPullRequestDTOS)) {
+                githubPullRequestDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
+            }
         }
-
         try {
             List<GithubPullRequestDTO> githubDetailedPullRequests = null;
             if (alreadyRawCollectedPullRequests == null || alreadyRawCollectedPullRequests.length == 0) {
@@ -168,8 +169,8 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         return pullRequestDetailsForPullRequestNumber;
     }
 
-    public GithubCommentsDTO[] getCommentsForPullRequestNumber(Repository repository,
-                                                               GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
+    private GithubCommentsDTO[] getCommentsForPullRequestNumber(Repository repository,
+                                                                GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
         int page = 1;
         GithubCommentsDTO[] githubCommentsDTOS =
                 githubHttpClient.getCommentsForPullRequestNumber(
@@ -179,20 +180,20 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         }
         final List<GithubCommentsDTO> githubCommentsDTOList =
                 new ArrayList<>(List.of(githubCommentsDTOS));
-        while (!isNull(githubCommentsDTOS) && githubCommentsDTOS.length == properties.getSize()) {
+        while (nonNull(githubCommentsDTOS) && githubCommentsDTOS.length == properties.getSize()) {
             page += 1;
             githubCommentsDTOS = githubHttpClient.getCommentsForPullRequestNumber(
                     repository.getVcsOrganizationName(), repository.getName(), currentGithubPullRequestDTO.getNumber(), page, properties.getSize()
             );
-            if (!isNull(githubCommentsDTOS)) {
+            if (nonNull(githubCommentsDTOS)) {
                 githubCommentsDTOList.addAll(Arrays.stream(githubCommentsDTOS).toList());
             }
         }
         return bytesToDto(dtoToBytes(githubCommentsDTOList.toArray()), GithubCommentsDTO[].class);
     }
 
-    public GithubCommitsDTO[] getCommitsForPullRequestNumber(Repository repository,
-                                                             GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
+    private GithubCommitsDTO[] getCommitsForPullRequestNumber(Repository repository,
+                                                              GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
         int page = 1;
         GithubCommitsDTO[] githubCommitsDTOS =
                 githubHttpClient.getCommitsForPullRequestNumber(
@@ -202,12 +203,12 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         }
         final List<GithubCommitsDTO> githubCommitsDTOList =
                 new ArrayList<>(List.of(githubCommitsDTOS));
-        while (!isNull(githubCommitsDTOS) && githubCommitsDTOS.length == properties.getSize()) {
+        while (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length == properties.getSize()) {
             page += 1;
             githubCommitsDTOS = githubHttpClient.getCommitsForPullRequestNumber(
                     repository.getVcsOrganizationName(), repository.getName(), currentGithubPullRequestDTO.getNumber(), page, properties.getSize()
             );
-            if (!isNull(githubCommitsDTOS)) {
+            if (nonNull(githubCommitsDTOS)) {
                 githubCommitsDTOList.addAll(Arrays.stream(githubCommitsDTOS).toList());
             }
         }
