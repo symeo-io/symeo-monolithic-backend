@@ -8,6 +8,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -30,11 +32,16 @@ public class CommitEntity {
     String message;
     @Column(name = "repository_id")
     String repositoryId;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "commit_to_parent_sha", schema = "exposition_storage",
+            joinColumns = @JoinColumn(name = "sha")
+    )
+    @Column(name = "parent_sha")
+    @Builder.Default
+    List<String> parentShaList = new ArrayList<>();
     @Column(name = "date", nullable = false)
     ZonedDateTime date;
-    @ManyToOne
-    @JoinColumn(name = "pull_request_id", updatable = false)
-    PullRequestEntity pullRequest;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

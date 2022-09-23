@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Branch;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
@@ -283,45 +281,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public byte[] getRawCommitsForRepository(final String vcsOrganizationName, final String repositoryName,
-                                             final byte[] alreadyCollectedCommits) throws SymeoException {
-        int page = 1;
-        GithubCommitsDTO[] githubCommitsDTOS =
-                githubHttpClient.getCommitsForRepositoryAndOrganization(vcsOrganizationName, repositoryName, page,
-                        properties.getSize());
-        if (isNull(githubCommitsDTOS) || githubCommitsDTOS.length == 0) {
-            return new byte[0];
-        }
-        final List<GithubCommitsDTO> githubCommitsDTOList =
-                new ArrayList<>(List.of(githubCommitsDTOS));
-        while (githubCommitsDTOS.length == properties.getSize()) {
-            page += 1;
-            githubCommitsDTOS =
-                    this.githubHttpClient.getCommitsForRepositoryAndOrganization(
-                            vcsOrganizationName, repositoryName, page, properties.getSize());
-            githubCommitsDTOList.addAll(Arrays.stream(githubCommitsDTOS).toList());
-        }
-
-        return dtoToBytes(githubCommitsDTOList.toArray());
-    }
-
-    @Override
-    public byte[] getRawBranches(String vcsOrganizationName, String repositoryName) throws SymeoException {
-        final GithubBranchDTO[] branchesForOrganizationAndRepository =
-                githubHttpClient.getBranchesForOrganizationAndRepository(vcsOrganizationName, repositoryName);
-        return dtoToBytes(branchesForOrganizationAndRepository);
-    }
-
-    @Override
-    public List<Branch> branchesBytesToDomain(byte[] rawBranches) throws SymeoException {
-        if (rawBranches.length == 0) {
-            return List.of();
-        }
-        return Arrays.stream(bytesToDto(rawBranches, GithubBranchDTO[].class))
-                .map(GithubMapper::mapBranchToDomain)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public byte[] getRawCommitsForRepositoryFromLastCollectionDate(final String vcsOrganizationName,
@@ -356,7 +315,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
             );
         }
         return dtoToBytes(githubCommitsDTOList.toArray());
-
     }
 
     private GithubCommitsDTO[] getGithubCommitsDTOSFromLastCollectionDate(Date lastCollectionDate,
@@ -374,21 +332,24 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     private Date getLastCollectionDateFromAlreadyCollectCommits(Date lastCollectionDate,
                                                                 byte[] alreadyCollectedRawGithubCommitsDTOS) throws SymeoException {
-        if (isNull(lastCollectionDate) && (nonNull(alreadyCollectedRawGithubCommitsDTOS)
-                && alreadyCollectedRawGithubCommitsDTOS.length > 0)) {
-            Date lastCollectionDateFromAlreadyCollectedCommits = null;
-            for (GithubCommitsDTO githubCommitsDTO : bytesToDto(alreadyCollectedRawGithubCommitsDTOS,
-                    GithubCommitsDTO[].class)) {
-                final Date commitDate = githubCommitsDTO.getCommit().getCommitter().getDate();
-                if (isNull(lastCollectionDateFromAlreadyCollectedCommits)) {
-                    lastCollectionDateFromAlreadyCollectedCommits = commitDate;
-                } else {
-                    if (commitDate.after(lastCollectionDateFromAlreadyCollectedCommits)) {
+        if (nonNull(alreadyCollectedRawGithubCommitsDTOS) && alreadyCollectedRawGithubCommitsDTOS.length > 0) {
+            if (isNull(lastCollectionDate)) {
+                Date lastCollectionDateFromAlreadyCollectedCommits = null;
+                for (GithubCommitsDTO githubCommitsDTO : bytesToDto(alreadyCollectedRawGithubCommitsDTOS,
+                        GithubCommitsDTO[].class)) {
+                    final Date commitDate = githubCommitsDTO.getCommit().getCommitter().getDate();
+                    if (isNull(lastCollectionDateFromAlreadyCollectedCommits)) {
                         lastCollectionDateFromAlreadyCollectedCommits = commitDate;
+                    } else {
+                        if (commitDate.after(lastCollectionDateFromAlreadyCollectedCommits)) {
+                            lastCollectionDateFromAlreadyCollectedCommits = commitDate;
+                        }
                     }
                 }
+                lastCollectionDate = lastCollectionDateFromAlreadyCollectedCommits;
             }
-            lastCollectionDate = lastCollectionDateFromAlreadyCollectedCommits;
+        } else {
+            lastCollectionDate = null;
         }
         return lastCollectionDate;
     }

@@ -2,7 +2,6 @@ package io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dt
 
 import com.sun.istack.NotNull;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "pull_request", schema = "exposition_storage")
 @Entity
-public class PullRequestWithCommitsAndCommentsDTO {
+public class PullRequestWithCommentsDTO {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -40,8 +39,13 @@ public class PullRequestWithCommitsAndCommentsDTO {
     String mergeCommitSha;
     @OneToMany(mappedBy = "pullRequest", fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    List<CommitEntity> commits;
-    @OneToMany(mappedBy = "pullRequest", fetch = FetchType.EAGER)
-    @Fetch(value = FetchMode.SUBSELECT)
     List<CommentEntity> comments;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @CollectionTable(
+            name = "pull_request_to_commit", schema = "exposition_storage",
+            joinColumns = @JoinColumn(name = "pull_request_id")
+    )
+    @Column(name = "sha")
+    List<String> commitShaList;
 }

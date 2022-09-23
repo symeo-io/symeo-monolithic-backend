@@ -49,4 +49,8 @@ public class CommitHistory {
         }
         return false;
     }
+
+    public List<Commit> getPullRequestCommitsFromMergeSha(String mergeCommitSha) {
+        return null;
+    }
 }

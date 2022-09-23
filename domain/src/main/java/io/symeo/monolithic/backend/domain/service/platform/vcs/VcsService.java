@@ -25,9 +25,10 @@ public class VcsService {
                                                                                  final Date lastCollectionDate) throws SymeoException {
         repository = populateRepositoryWithOrganizationId(repository, organization.getId());
         LOGGER.info("Starting to collect VCS data for organization {} and repository {}", organization, repository);
-        collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(repository);
+        // Collect all commits then pull requests to update previous commit with pull request ids
         collectCommitsForForOrganizationAndRepositoryAndBranchesFromLastCollectionDate(organization, repository,
                 lastCollectionDate);
+        collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(repository);
         LOGGER.info("VCS data collection finished for organization {} and repository {}", organization, repository);
     }
 
@@ -36,12 +37,20 @@ public class VcsService {
                 .map(repository -> repository.toBuilder()
                         .organizationId(organization.getId())
                         .vcsOrganizationName(organization.getVcsOrganization().getName())
+                        .vcsOrganizationId(organization.getVcsOrganization().getVcsId())
                         .build()).toList();
         expositionStorageAdapter.saveRepositories(repositories);
     }
 
     private void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Repository repository) throws SymeoException {
-        expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(collectPullRequestForRepository(repository));
+        expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(
+                collectPullRequestForRepository(repository).stream()
+                        .map(pullRequest -> pullRequest.toBuilder()
+                                .organizationId(repository.getOrganizationId())
+                                .vcsOrganizationId(repository.getVcsOrganizationId())
+                                .build())
+                        .toList()
+        );
     }
 
     private Repository populateRepositoryWithOrganizationId(final Repository repository,
@@ -52,7 +61,13 @@ public class VcsService {
     private void collectCommitsForForOrganizationAndRepositoryAndBranchesFromLastCollectionDate(final Organization organization,
                                                                                                 final Repository repository,
                                                                                                 final Date lastCollectionDate) throws SymeoException {
-        expositionStorageAdapter.saveCommits(deliveryCommand.collectCommitsForForOrganizationAndRepositoryFromLastCollectionDate(organization, repository, lastCollectionDate));
+        expositionStorageAdapter.saveCommits(
+                deliveryCommand.collectCommitsForForOrganizationAndRepositoryFromLastCollectionDate(organization,
+                                repository, lastCollectionDate)
+                        .stream()
+                        .map(commit -> commit.toBuilder().repositoryId(repository.getId()).build())
+                        .toList()
+        );
     }
 
     private List<PullRequest> collectPullRequestForRepository(final Repository repository) throws SymeoException {

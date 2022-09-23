@@ -1,12 +1,12 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestWithCommitsAndCommentsDTO;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestWithCommentsDTO;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -50,18 +50,11 @@ public interface PullRequestMapper {
                 .size(pullRequestView.getSize())
                 .daysOpened(pullRequestView.getDaysOpened(new Date()))
                 .mergeCommitSha(pullRequest.getMergeCommitSha())
+                .commitShaList(pullRequest.getCommits().stream().map(Commit::getSha).toList())
                 .build();
-        pullRequestToCommitEntities(pullRequest)
-                .forEach(pullRequestEntity::addCommit);
         pullRequestToCommentEntities(pullRequest)
                 .forEach(pullRequestEntity::addComment);
         return pullRequestEntity;
-    }
-
-    static List<CommitEntity> pullRequestToCommitEntities(final PullRequest pullRequest) {
-        return pullRequest.getCommits().stream()
-                .map(CommitMapper::domainToEntity)
-                .toList();
     }
 
     static PullRequest entityToDomain(final PullRequestEntity pullRequestEntity) {
@@ -115,19 +108,19 @@ public interface PullRequestMapper {
                 .build();
     }
 
-    static PullRequestView withCommitsAndCommentsToDomain(final PullRequestWithCommitsAndCommentsDTO pullRequestWithCommitsAndCommentsDTO) {
+    static PullRequestView withCommitsAndCommentsToDomain(final PullRequestWithCommentsDTO pullRequestWithCommentsDTO) {
         return PullRequestView.builder()
-                .id(pullRequestWithCommitsAndCommentsDTO.getId())
-                .status(pullRequestWithCommitsAndCommentsDTO.getState())
-                .mergeDate(isNull(pullRequestWithCommitsAndCommentsDTO.getMergeDate()) ? null :
-                        Date.from(pullRequestWithCommitsAndCommentsDTO.getMergeDate().toInstant()))
-                .creationDate(Date.from(pullRequestWithCommitsAndCommentsDTO.getCreationDate().toInstant()))
-                .comments(pullRequestWithCommitsAndCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
-                .commits(pullRequestWithCommitsAndCommentsDTO.getCommits().stream().map(CommitMapper::entityToDomain).toList())
-                .vcsUrl(pullRequestWithCommitsAndCommentsDTO.getVcsUrl())
-                .head(pullRequestWithCommitsAndCommentsDTO.getHead())
-                .base(pullRequestWithCommitsAndCommentsDTO.getBase())
-                .mergeCommitSha(pullRequestWithCommitsAndCommentsDTO.getMergeCommitSha())
+                .id(pullRequestWithCommentsDTO.getId())
+                .status(pullRequestWithCommentsDTO.getState())
+                .mergeDate(isNull(pullRequestWithCommentsDTO.getMergeDate()) ? null :
+                        Date.from(pullRequestWithCommentsDTO.getMergeDate().toInstant()))
+                .creationDate(Date.from(pullRequestWithCommentsDTO.getCreationDate().toInstant()))
+                .comments(pullRequestWithCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
+                .vcsUrl(pullRequestWithCommentsDTO.getVcsUrl())
+                .head(pullRequestWithCommentsDTO.getHead())
+                .base(pullRequestWithCommentsDTO.getBase())
+                .mergeCommitSha(pullRequestWithCommentsDTO.getMergeCommitSha())
+                .commitShaList(pullRequestWithCommentsDTO.getCommitShaList())
                 .build();
     }
 

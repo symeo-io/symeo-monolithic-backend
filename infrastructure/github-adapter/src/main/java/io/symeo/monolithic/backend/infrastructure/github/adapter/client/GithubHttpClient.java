@@ -138,7 +138,7 @@ public class GithubHttpClient {
                         + repositoryName
                         + "/pulls/"
                         + pullRequestNumber
-                        + "/comments&page="
+                        + "/comments?page="
                         + page.toString()
                         + "&per_page="
                         + size.toString();

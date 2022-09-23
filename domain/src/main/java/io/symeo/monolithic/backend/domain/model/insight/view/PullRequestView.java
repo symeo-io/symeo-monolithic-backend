@@ -50,6 +50,8 @@ public class PullRequestView {
     List<Commit> commits = new ArrayList<>();
     @Builder.Default
     List<Comment> comments = new ArrayList<>();
+    @Builder.Default
+    List<String> commitShaList = new ArrayList<>();
 
     public PullRequestView addStartDateRangeFromRangeDates(final List<Date> rangeDates) {
         String startDateRange;
@@ -165,7 +167,11 @@ public class PullRequestView {
 
     public List<Commit> getCommitsOrderByDate() {
         final ArrayList<Commit> commitArrayList = new ArrayList<>(this.commits);
-        commitArrayList.sort(Comparator.comparing(Commit::getDate));
+        try {
+            commitArrayList.sort(Comparator.comparing(Commit::getDate));
+        }catch (Exception e){
+            System.out.println("test");
+        }
         return commitArrayList;
     }
 

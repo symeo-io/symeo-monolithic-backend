@@ -51,51 +51,6 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
     }
 
     @Test
-    void should_collect_commits_given_a_repository() throws SymeoException, IOException {
-        // Given
-        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
-        final GithubProperties properties = new GithubProperties();
-        final int pageSize = 2;
-        properties.setSize(pageSize);
-        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
-                properties, new ObjectMapper());
-        final String vcsOrganizationName = faker.rickAndMorty().character();
-        final String repositoryName = faker.ancient().god();
-        final byte[] alreadyCollectedCommits = faker.animal().name().getBytes();
-
-        // When
-        final GithubCommitsDTO[] githubCommitsDTOS1 = getStubsFromClassT("get_commits_for_repository",
-                "get_commits_for_page_1_size_2.json",
-                GithubCommitsDTO[].class);
-        when(githubHttpClient.getCommitsForRepositoryAndOrganization(vcsOrganizationName, repositoryName, 1, pageSize))
-                .thenReturn(githubCommitsDTOS1);
-        final GithubCommitsDTO[] githubCommitsDTOS2 = getStubsFromClassT("get_commits_for_repository",
-                "get_commits_for_page_2_size_2.json",
-                GithubCommitsDTO[].class);
-        when(githubHttpClient.getCommitsForRepositoryAndOrganization(vcsOrganizationName, repositoryName, 2, pageSize))
-                .thenReturn(githubCommitsDTOS2);
-        final GithubCommitsDTO[] githubCommitsDTOS3 = getStubsFromClassT("get_commits_for_repository",
-                "get_commits_for_page_3_size_2.json",
-                GithubCommitsDTO[].class);
-        when(githubHttpClient.getCommitsForRepositoryAndOrganization(vcsOrganizationName, repositoryName, 3, pageSize))
-                .thenReturn(githubCommitsDTOS3);
-        final byte[] rawCommitsForRepository = githubAdapter.getRawCommitsForRepository(
-                vcsOrganizationName,
-                repositoryName,
-                alreadyCollectedCommits
-        );
-
-        // Then
-        final List<Commit> commits = githubAdapter.commitsBytesToDomain(rawCommitsForRepository);
-        Arrays.stream(githubCommitsDTOS1).map(GithubMapper::mapCommitToDomain)
-                .forEach(commit -> assertThat(commits.contains(commit)).isTrue());
-        Arrays.stream(githubCommitsDTOS2).map(GithubMapper::mapCommitToDomain)
-                .forEach(commit -> assertThat(commits.contains(commit)).isTrue());
-        Arrays.stream(githubCommitsDTOS3).map(GithubMapper::mapCommitToDomain)
-                .forEach(commit -> assertThat(commits.contains(commit)).isTrue());
-    }
-
-    @Test
     void should_collect_commits_given_a_repository_and_no_already_collected_commits_and_no_collection_date() throws SymeoException,
             IOException {
         // Given

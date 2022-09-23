@@ -59,7 +59,7 @@ public class AverageLeadTime {
     }
 
     private static boolean filterPullRequestToComputeLeadTime(final PullRequestView pullRequestView) {
-        return !pullRequestView.getCommits().isEmpty() && pullRequestView.getStatus().equals(PullRequest.MERGE);
+        return !pullRequestView.getCommitShaList().isEmpty() && pullRequestView.getStatus().equals(PullRequest.MERGE);
     }
 
     private static Float averageValueWithOneDecimal(Long cumulatedLeadTimeValue, int size) {

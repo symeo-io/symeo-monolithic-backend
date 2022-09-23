@@ -71,9 +71,14 @@ public class PullRequestEntity {
     float daysOpened;
     @Column(name = "merge_commit_sha")
     String mergeCommitSha;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "pull_request_to_commit", schema = "exposition_storage",
+            joinColumns = @JoinColumn(name = "pull_request_id")
+    )
+    @Column(name = "sha")
     @Builder.Default
-    @OneToMany(mappedBy = "pullRequest", cascade = CascadeType.ALL)
-    List<CommitEntity> commits = new ArrayList<>();
+    List<String> commitShaList = new ArrayList<>();
     @Builder.Default
     @OneToMany(mappedBy = "pullRequest", cascade = CascadeType.ALL)
     List<CommentEntity> comments = new ArrayList<>();
@@ -83,11 +88,6 @@ public class PullRequestEntity {
     @UpdateTimestamp
     @Column(name = "technical_modification_date")
     ZonedDateTime technicalModificationDate;
-
-    public void addCommit(final CommitEntity commitEntity) {
-        commitEntity.setPullRequest(this);
-        this.commits.add(commitEntity);
-    }
 
     public void addComment(final CommentEntity commentEntity) {
         commentEntity.setPullRequest(this);

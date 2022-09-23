@@ -55,5 +55,5 @@ public interface ExpositionStorageAdapter {
 
     List<PullRequestView> readMergedPullRequestsForTeamIdFromStartDate(UUID teamId, Date startDate) throws SymeoException;
 
-    List<Commit> readAllCommitsForTeamIdFromStartDate(UUID teamId, Date startDate);
+    List<Commit> readAllCommitsForTeamIdFromStartDate(UUID teamId, Date startDate) throws SymeoException;
 }

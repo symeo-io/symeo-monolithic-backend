@@ -118,9 +118,13 @@ public class LeadTime {
         return lastCommitBeforeFirstReview;
     }
 
-    public static LeadTime computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(final PullRequestView pullRequestView,
+    public static LeadTime computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(PullRequestView pullRequestView,
                                                                                         final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
                                                                                         final List<Commit> allCommits) {
+        final CommitHistory commitHistory = initializeFromCommits(allCommits);
+        pullRequestView = pullRequestView.toBuilder()
+                .commits(pullRequestView.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
+                .build();
         final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
         final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
         final Date mergeDate = pullRequestView.getMergeDate();
@@ -129,7 +133,7 @@ public class LeadTime {
         final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);
         final Long deployTime =
                 computeDeployTimeWithPullRequestMatchingDeliverySettings(pullRequestView,
-                        pullRequestViewsMatchingDeliverySettings, allCommits);
+                        pullRequestViewsMatchingDeliverySettings, commitHistory);
         return LeadTime.builder()
                 .codingTime(codingTime)
                 .reviewLag(reviewLag)
@@ -142,11 +146,11 @@ public class LeadTime {
 
     private static Long computeDeployTimeWithPullRequestMatchingDeliverySettings(final PullRequestView pullRequestView,
                                                                                  final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
-                                                                                 final List<Commit> allCommits) {
+                                                                                 final CommitHistory commitHistory) {
         if (pullRequestViewsMatchingDeliverySettings.isEmpty()) {
             return null;
         }
-        final CommitHistory commitHistory = initializeFromCommits(allCommits);
+
         final Commit mergeCommit = commitHistory.getCommitFromSha(pullRequestView.getMergeCommitSha());
         Date firstMergeDateForCommitOnBranch = null;
         for (PullRequestView pullRequestViewsMatchingDeliverySetting : pullRequestViewsMatchingDeliverySettings) {

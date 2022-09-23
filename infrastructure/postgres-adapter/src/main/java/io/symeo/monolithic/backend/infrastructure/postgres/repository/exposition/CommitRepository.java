@@ -12,9 +12,8 @@ import java.util.UUID;
 public interface CommitRepository extends JpaRepository<CommitEntity, String> {
 
     @Query(nativeQuery = true, value = "select * from exposition_storage.commit c" +
-            "    where c.date >= :startDate" +
-            "    and c.repository_id in (select ttr.repository_id" +
+            "    where c.repository_id in (select ttr.repository_id" +
             "                                 from exposition_storage.team_to_repository ttr" +
             "                                 where ttr.team_id = :teamId)")
-    List<CommitEntity> findAllByTeamIdFromStartDate(@Param("teamId") UUID teamId, @Param("startDate") Date startDate);
+    List<CommitEntity> findAllByTeamIdFromStartDate(@Param("teamId") UUID teamId);
 }

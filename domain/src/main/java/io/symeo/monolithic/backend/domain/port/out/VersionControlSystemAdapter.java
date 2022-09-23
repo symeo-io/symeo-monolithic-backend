@@ -1,7 +1,6 @@
 package io.symeo.monolithic.backend.domain.port.out;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Branch;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
@@ -20,15 +19,7 @@ public interface VersionControlSystemAdapter {
 
     List<PullRequest> pullRequestsBytesToDomain(byte[] bytes) throws SymeoException;
 
-    byte[] getRawCommitsForRepository(final String vcsOrganizationName,
-                                      final String repositoryName,
-                                      final byte[] alreadyCollectedCommits) throws SymeoException;
-
     List<Commit> commitsBytesToDomain(byte[] rawCommits) throws SymeoException;
-
-    byte[] getRawBranches(String vcsOrganizationName, String repositoryName) throws SymeoException;
-
-    List<Branch> branchesBytesToDomain(byte[] rawBranches) throws SymeoException;
 
     byte[] getRawCommitsForRepositoryFromLastCollectionDate(String vcsOrganizationName, String repositoryName,
                                                             Date lastCollectionDate,
