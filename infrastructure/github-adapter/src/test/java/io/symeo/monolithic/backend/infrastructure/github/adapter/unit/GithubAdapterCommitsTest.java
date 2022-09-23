@@ -107,7 +107,6 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
                 properties, new ObjectMapper());
         final String vcsOrganizationName = faker.rickAndMorty().character();
         final String repositoryName = faker.ancient().god();
-        final String branchName = faker.ancient().hero();
         final GithubCommitsDTO[] githubCommitsDTOS1 = getStubsFromClassT("get_commits_for_branch",
                 "get_commits_for_branch_size_2_page_1.json",
                 GithubCommitsDTO[].class);
@@ -116,15 +115,15 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
                 GithubCommitsDTO[].class);
 
         // When
-        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranch(vcsOrganizationName, repositoryName,
-                branchName, 1, size))
+        when(githubHttpClient.getCommitsForOrganizationAndRepository(vcsOrganizationName, repositoryName,
+                1, size))
                 .thenReturn(githubCommitsDTOS1);
-        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranch(vcsOrganizationName, repositoryName,
-                branchName, 2, size))
+        when(githubHttpClient.getCommitsForOrganizationAndRepository(vcsOrganizationName, repositoryName,
+                2, size))
                 .thenReturn(githubCommitsDTOS2);
         final byte[] rawCommitsForBranchFromLastCollectionDate =
-                githubAdapter.getRawCommitsForBranchFromLastCollectionDate(vcsOrganizationName,
-                        repositoryName, branchName, null, new byte[0]);
+                githubAdapter.getRawCommitsForRepositoryFromLastCollectionDate(vcsOrganizationName,
+                        repositoryName, null, new byte[0]);
 
         // Then
         final GithubCommitsDTO[] githubCommitsDTOSResult =
@@ -136,7 +135,6 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
             assertThat(githubCommitsDTOSResult).anyMatch(githubCommitsDTO::equals);
         }
     }
-
 
 
     @Test
@@ -151,7 +149,6 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
                 properties, new ObjectMapper());
         final String vcsOrganizationName = faker.rickAndMorty().character();
         final String repositoryName = faker.ancient().god();
-        final String branchName = faker.ancient().hero();
         final GithubCommitsDTO[] githubCommitsDTOS1 = getStubsFromClassT("get_commits_for_branch",
                 "get_commits_for_branch_size_2_page_1.json",
                 GithubCommitsDTO[].class);
@@ -161,15 +158,17 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
         final Date lastCollectionDate = stringToDate("2020-01-01");
 
         // When
-        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName, repositoryName,
-                branchName, lastCollectionDate, 1, size))
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryFromLastCollectionDate(vcsOrganizationName,
+                repositoryName,
+                lastCollectionDate, 1, size))
                 .thenReturn(githubCommitsDTOS1);
-        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName, repositoryName,
-                branchName, lastCollectionDate, 2, size))
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryFromLastCollectionDate(vcsOrganizationName,
+                repositoryName,
+                lastCollectionDate, 2, size))
                 .thenReturn(githubCommitsDTOS2);
         final byte[] rawCommitsForBranchFromLastCollectionDate =
-                githubAdapter.getRawCommitsForBranchFromLastCollectionDate(vcsOrganizationName,
-                        repositoryName, branchName, lastCollectionDate, new byte[0]);
+                githubAdapter.getRawCommitsForRepositoryFromLastCollectionDate(vcsOrganizationName,
+                        repositoryName, lastCollectionDate, new byte[0]);
 
         // Then
         final GithubCommitsDTO[] githubCommitsDTOSResult =
@@ -194,7 +193,6 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
                 properties, new ObjectMapper());
         final String vcsOrganizationName = faker.rickAndMorty().character();
         final String repositoryName = faker.ancient().god();
-        final String branchName = faker.ancient().hero();
         final GithubCommitsDTO[] githubCommitsDTOS1 = getStubsFromClassT("get_commits_for_branch",
                 "get_commits_for_branch_size_2_page_1.json",
                 GithubCommitsDTO[].class);
@@ -207,15 +205,17 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
         final Date lastCollectionDate = stringToDate("2020-01-01");
 
         // When
-        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName, repositoryName,
-                branchName, lastCollectionDate, 1, size))
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryFromLastCollectionDate(vcsOrganizationName,
+                repositoryName,
+                lastCollectionDate, 1, size))
                 .thenReturn(githubCommitsDTOS1);
-        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName, repositoryName,
-                branchName, lastCollectionDate, 2, size))
+        when(githubHttpClient.getCommitsForOrganizationAndRepositoryFromLastCollectionDate(vcsOrganizationName,
+                repositoryName,
+                lastCollectionDate, 2, size))
                 .thenReturn(githubCommitsDTOS2);
         final byte[] rawCommitsForBranchFromLastCollectionDate =
-                githubAdapter.getRawCommitsForBranchFromLastCollectionDate(vcsOrganizationName,
-                        repositoryName, branchName, lastCollectionDate,
+                githubAdapter.getRawCommitsForRepositoryFromLastCollectionDate(vcsOrganizationName,
+                        repositoryName, lastCollectionDate,
                         githubAdapter.dtoToBytes(alreadyCollectedGithubCommitsDTOS));
 
         // Then

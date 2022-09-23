@@ -183,12 +183,11 @@ public class GithubHttpClient {
                 GithubBranchDTO[].class);
     }
 
-    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
-                                                                                                    final String repositoryName,
-                                                                                                    final String branchName,
-                                                                                                    final Date lastCollectionDate,
-                                                                                                    final Integer page,
-                                                                                                    final Integer size) throws SymeoException {
+    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryFromLastCollectionDate(final String vcsOrganizationName,
+                                                                                           final String repositoryName,
+                                                                                           final Date lastCollectionDate,
+                                                                                           final Integer page,
+                                                                                           final Integer size) throws SymeoException {
         String uri =
                 api
                         + "repos/"
@@ -196,17 +195,19 @@ public class GithubHttpClient {
                         + "/"
                         + repositoryName
                         + "/commits"
-                        + String.format("?branch=%s", branchName)
-                        + String.format("&since=%s",
-                        new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(lastCollectionDate));
+                        + String.format("?since=%s",
+                        new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(lastCollectionDate))
+                        + "&per_page="
+                        + size.toString()
+                        + "&page="
+                        + page.toString();
         return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
     }
 
-    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
-                                                                              final String repositoryName,
-                                                                              final String branchName,
-                                                                              final Integer page,
-                                                                              final Integer size) throws SymeoException {
+    public GithubCommitsDTO[] getCommitsForOrganizationAndRepository(final String vcsOrganizationName,
+                                                                     final String repositoryName,
+                                                                     final Integer page,
+                                                                     final Integer size) throws SymeoException {
         String uri =
                 api
                         + "repos/"
@@ -214,8 +215,7 @@ public class GithubHttpClient {
                         + "/"
                         + repositoryName
                         + "/commits"
-                        + String.format("?branch=%s", branchName)
-                        + String.format("&page=%s", page.toString())
+                        + String.format("?page=%s", page.toString())
                         + String.format("&per_page=%s", size.toString());
         return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
     }

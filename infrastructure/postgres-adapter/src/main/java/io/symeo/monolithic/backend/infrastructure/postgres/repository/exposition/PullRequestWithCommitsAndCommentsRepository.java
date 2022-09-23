@@ -18,7 +18,9 @@ public interface PullRequestWithCommitsAndCommentsRepository
             "       pr.merge_date," +
             "       pr.state," +
             "       pr.vcs_url," +
-            "       pr.branch_name" +
+            "       pr.merge_commit_sha," +
+            "       pr.head," +
+            "       pr.base" +
             " from exposition_storage.pull_request pr" +
             " where pr.state = 'merge' " +
             " and (" +

@@ -172,6 +172,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) throws SymeoException {
         try {
             return repositoryRepository.findDefaultMostUsedBranchForOrganizationId(organizationId);
@@ -203,6 +204,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Repository> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
         try {
             return repositoryRepository.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId)
@@ -222,6 +224,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException {
         try {
             return repositoryRepository.findAllRepositoriesLinkedToTeamsForOrganizationId(organizationId)
@@ -238,5 +241,33 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
                     .message(message)
                     .build();
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PullRequestView> readMergedPullRequestsForTeamIdFromStartDate(UUID teamId, Date startDate) throws SymeoException {
+        try {
+            return pullRequestFullViewRepository.findAllMergedPullRequestsForTeamIdFromStartDate(teamId,
+                            startDate)
+                    .stream()
+                    .map(PullRequestMapper::fullViewToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read PR for teamId %s from startDate %s", teamId,
+                    startDate);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Commit> readAllCommitsForTeamIdFromStartDate(UUID teamId, Date startDate) {
+        commitRepository.findAllByTeamIdFromStartDate(teamId, startDate);
+        return null;
     }
 }

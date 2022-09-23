@@ -92,7 +92,8 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
 
         // Then
-        verify(githubHttpClient, times(3)).getPullRequestsForRepositoryAndOrganizationOrderByDescDate(any(), any(), any(), any());
+        verify(githubHttpClient, times(3)).getPullRequestsForRepositoryAndOrganizationOrderByDescDate(any(), any(),
+                any(), any());
         verify(githubHttpClient, times(7)).getPullRequestDetailsForPullRequestNumber(any(), any(), any());
         final List<PullRequest> expectedResults = Stream.of(pr74, pr75,
                 pr76, pr77,
@@ -158,7 +159,8 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
                 rawPullRequestsAlreadyCollected);
 
         // Then
-        verify(githubHttpClient, times(1)).getPullRequestsForRepositoryAndOrganizationOrderByDescDate(any(), any(), any(), any());
+        verify(githubHttpClient, times(1)).getPullRequestsForRepositoryAndOrganizationOrderByDescDate(any(), any(),
+                any(), any());
         verify(githubHttpClient, times(4)).getPullRequestDetailsForPullRequestNumber(anyString(), any(), any());
         final List<PullRequest> expectedResults =
                 Stream.of(pr74, pr75, pr76, pr77, pr78, pr79).map(pr -> GithubMapper.mapPullRequestDtoToDomain(pr,
@@ -211,7 +213,8 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         assertThat(pullRequest.getVcsUrl()).isEqualTo(pr80.getHtmlUrl());
         assertThat(pullRequest.getTitle()).isEqualTo(pr80.getTitle());
         assertThat(pullRequest.getAuthorLogin()).isEqualTo(pr80.getUser().getLogin());
-        assertThat(pullRequest.getBranchName()).isEqualTo(pr80.getHead().getRef());
+        assertThat(pullRequest.getHead()).isEqualTo(pr80.getHead().getRef());
+        assertThat(pullRequest.getBase()).isEqualTo(pr80.getBase().getRef());
     }
 
     @Test

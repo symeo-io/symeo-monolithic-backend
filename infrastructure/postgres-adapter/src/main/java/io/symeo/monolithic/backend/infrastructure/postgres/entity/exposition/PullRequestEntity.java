@@ -59,14 +59,18 @@ public class PullRequestEntity {
     String vcsRepositoryId;
     @Column(name = "vcs_organization_id")
     String vcsOrganizationId;
-    @Column(name = "branch_name")
-    String branchName;
+    @Column(name = "head")
+    String head;
+    @Column(name = "base")
+    String base;
     @Column(name = "organization_id")
     UUID organizationId;
     @Column(name = "size")
     float size;
     @Column(name = "days_opened")
     float daysOpened;
+    @Column(name = "merge_commit_sha")
+    String mergeCommitSha;
     @Builder.Default
     @OneToMany(mappedBy = "pullRequest", cascade = CascadeType.ALL)
     List<CommitEntity> commits = new ArrayList<>();

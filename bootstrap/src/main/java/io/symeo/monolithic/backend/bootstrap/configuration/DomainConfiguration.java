@@ -120,8 +120,9 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public LeadTimeFacadeAdapter leadTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new LeadTimeService(expositionStorageAdapter);
+    public LeadTimeFacadeAdapter leadTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter,
+                                                       final OrganizationSettingsFacade organizationSettingsFacade) {
+        return new LeadTimeService(expositionStorageAdapter, organizationSettingsFacade);
     }
 
     @Bean

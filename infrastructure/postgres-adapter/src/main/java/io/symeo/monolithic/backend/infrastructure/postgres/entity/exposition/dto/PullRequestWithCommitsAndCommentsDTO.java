@@ -32,9 +32,14 @@ public class PullRequestWithCommitsAndCommentsDTO {
     String state;
     @Column(name = "vcs_url")
     String vcsUrl;
-    @Column(name = "branch_name")
-    String branchName;
+    @Column(name = "base")
+    String base;
+    @Column(name = "head")
+    String head;
+    @Column(name = "merge_commit_sha")
+    String mergeCommitSha;
     @OneToMany(mappedBy = "pullRequest", fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     List<CommitEntity> commits;
     @OneToMany(mappedBy = "pullRequest", fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)

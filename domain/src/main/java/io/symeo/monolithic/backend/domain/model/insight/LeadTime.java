@@ -1,7 +1,5 @@
 package io.symeo.monolithic.backend.domain.model.insight;
 
-import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
@@ -12,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getNumberOfMinutesBetweenDates;
 import static io.symeo.monolithic.backend.domain.model.platform.vcs.CommitHistory.initializeFromCommits;
@@ -121,9 +118,9 @@ public class LeadTime {
         return lastCommitBeforeFirstReview;
     }
 
-    public static LeadTime computeLeadTimeForDeliverySettingsAndPullRequestViewAndAllCommits(final OrganizationSettings organizationSettings,
-                                                                                             final PullRequestView pullRequestView,
-                                                                                             final List<Commit> allCommits) {
+    public static LeadTime computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(final PullRequestView pullRequestView,
+                                                                                        final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
+                                                                                        final List<Commit> allCommits) {
         final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
         final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
         final Date mergeDate = pullRequestView.getMergeDate();
@@ -131,8 +128,8 @@ public class LeadTime {
         final Long reviewLag = computeReviewLag(commitsOrderByDate, commentsOrderByDate, mergeDate);
         final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);
         final Long deployTime =
-                computeDeployTimeForMergeOnBranchRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings(),
-                        pullRequestView, allCommits);
+                computeDeployTimeWithPullRequestMatchingDeliverySettings(pullRequestView,
+                        pullRequestViewsMatchingDeliverySettings, allCommits);
         return LeadTime.builder()
                 .codingTime(codingTime)
                 .reviewLag(reviewLag)
@@ -143,34 +140,28 @@ public class LeadTime {
                 .build();
     }
 
-    private static Long computeDeployTimeForMergeOnBranchRegex(DeployDetectionSettings deployDetectionSettings,
-                                                               PullRequestView pullRequestView,
-                                                               List<Commit> allCommits) {
-        final String pullRequestMergedOnBranchRegex = deployDetectionSettings.getPullRequestMergedOnBranchRegex();
-        final Pattern branchPattern = Pattern.compile(pullRequestMergedOnBranchRegex);
+    private static Long computeDeployTimeWithPullRequestMatchingDeliverySettings(final PullRequestView pullRequestView,
+                                                                                 final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
+                                                                                 final List<Commit> allCommits) {
+        if (pullRequestViewsMatchingDeliverySettings.isEmpty()) {
+            return null;
+        }
         final CommitHistory commitHistory = initializeFromCommits(allCommits);
         final Commit mergeCommit = commitHistory.getCommitFromSha(pullRequestView.getMergeCommitSha());
-        final List<String> matchedBranches = commitHistory.getAllBranches().stream()
-                .filter(branch -> branchPattern.matcher(branch).find())
-                .toList();
-        if (matchedBranches.isEmpty()) {
-            return null;
-        } else {
-            Date firstMergeDateForCommitOnBranch = null;
-            for (String matchedBranch : matchedBranches) {
-                final Date mergeDateForCommitOnBranch = commitHistory.getMergeDateForCommitOnBranch(mergeCommit,
-                        matchedBranch);
+        Date firstMergeDateForCommitOnBranch = null;
+        for (PullRequestView pullRequestViewsMatchingDeliverySetting : pullRequestViewsMatchingDeliverySettings) {
+            if (commitHistory.isCommitPresentOnMergeCommitHistory(pullRequestView.getMergeCommitSha(),
+                    pullRequestViewsMatchingDeliverySetting.getMergeCommitSha())) {
+                final Date mergeDate = pullRequestViewsMatchingDeliverySetting.getMergeDate();
                 if (isNull(firstMergeDateForCommitOnBranch)) {
-                    firstMergeDateForCommitOnBranch = mergeDateForCommitOnBranch;
-                } else {
-                    if (mergeDateForCommitOnBranch.before(firstMergeDateForCommitOnBranch)) {
-                        LOGGER.warn("Multiple branches {} were found for regex {}", String.join(", ",
-                                matchedBranches), pullRequestMergedOnBranchRegex);
-                        firstMergeDateForCommitOnBranch = mergeDateForCommitOnBranch;
-                    }
+                    firstMergeDateForCommitOnBranch = mergeDate;
+                } else if (mergeDate.before(firstMergeDateForCommitOnBranch)) {
+                    firstMergeDateForCommitOnBranch = mergeDate;
                 }
             }
-            return getNumberOfMinutesBetweenDates(mergeCommit.getDate(), firstMergeDateForCommitOnBranch);
         }
+        return isNull(firstMergeDateForCommitOnBranch) ? null : getNumberOfMinutesBetweenDates(mergeCommit.getDate(),
+                firstMergeDateForCommitOnBranch);
+
     }
 }

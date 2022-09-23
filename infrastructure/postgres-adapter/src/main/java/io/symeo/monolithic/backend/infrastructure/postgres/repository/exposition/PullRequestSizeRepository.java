@@ -16,7 +16,8 @@ public interface PullRequestSizeRepository extends JpaRepository<PullRequestSize
     @Query(nativeQuery = true,
             value = " select pr.id, pr.deleted_line_number, pr.added_line_number," +
                     " pr.creation_date, pr.merge_date, pr.state, pr.close_date," +
-                    " pr.vcs_url, pr.branch_name" +
+                    " pr.vcs_url, " + "pr.head," +
+                    "       pr.base" +
                     " from exposition_storage.pull_request pr" +
                     " where pr.organization_id = :organizationId " +
                     " and (" +

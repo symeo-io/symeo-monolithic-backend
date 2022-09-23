@@ -2,7 +2,6 @@ package io.symeo.monolithic.backend.domain.model.platform.vcs;
 
 import lombok.Builder;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,19 +33,20 @@ public class CommitHistory {
         return commitsMappedToSha.get(mergeCommitSha);
     }
 
-    public Date getMergeDateForCommitOnBranch(final Commit mergeCommit, final String matchedBranch) {
-        Commit currentCommit = commits.stream()
-                .filter(commit -> commit.getHead().equals(matchedBranch))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-        for (String parentSha : currentCommit.getParentShaList()) {
-            Commit parentCommit = getCommitFromSha(parentSha);
-
-        }
-        return null;
+    public boolean isCommitPresentOnMergeCommitHistory(String pastMergeCommitSha, String futureMergeCommitSha) {
+        final Commit pastCommit = getCommitFromSha(pastMergeCommitSha);
+        final Commit futureCommit = getCommitFromSha(futureMergeCommitSha);
+        return isCommitPresentInCommitHistory(pastCommit, futureCommit);
     }
 
-    public List<String> getAllBranches() {
-        return this.allBranches;
+    private boolean isCommitPresentInCommitHistory(Commit pastCommit, Commit futureCommit) {
+        for (Commit commit : futureCommit.getParentShaList().stream().map(this::getCommitFromSha).toList()) {
+            if (commit.getSha().equals(pastCommit.getSha())) {
+                return true;
+            } else if (!commit.getParentShaList().isEmpty()) {
+                return isCommitPresentInCommitHistory(pastCommit, commit);
+            }
+        }
+        return false;
     }
 }

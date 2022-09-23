@@ -2,11 +2,12 @@ package io.symeo.monolithic.backend.domain.command;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.RawStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -52,54 +53,24 @@ public class DeliveryCommand {
         return versionControlSystemAdapter.pullRequestsBytesToDomain(rawPullRequestsForRepository);
     }
 
-    public List<Commit> collectCommitsForRepository(Repository repository) throws SymeoException {
+    public List<Commit> collectCommitsForForOrganizationAndRepositoryFromLastCollectionDate(final Organization organization,
+                                                                                            final Repository repository,
+                                                                                            final Date lastCollectionDate) throws SymeoException {
+
         byte[] alreadyCollectedCommits = null;
-        if (rawStorageAdapter.exists(repository.getOrganizationId(), versionControlSystemAdapter.getName(),
-                Commit.getNameFromRepository(repository))) {
-            alreadyCollectedCommits = rawStorageAdapter.read(repository.getOrganizationId(),
-                    versionControlSystemAdapter.getName(), Commit.getNameFromRepository(repository));
+        final String contentName = Commit.getNameFromRepository(repository);
+        if (rawStorageAdapter.exists(organization.getId(), versionControlSystemAdapter.getName(),
+                contentName)) {
+            alreadyCollectedCommits = rawStorageAdapter.read(organization.getId(),
+                    versionControlSystemAdapter.getName(), contentName);
         }
-        final byte[] rawCommitsForRepository =
-                versionControlSystemAdapter.getRawCommitsForRepository(repository.getVcsOrganizationName(),
-                        repository.getName(), alreadyCollectedCommits);
-        rawStorageAdapter.save(
-                repository.getOrganizationId(),
-                versionControlSystemAdapter.getName(),
-                Commit.getNameFromRepository(repository),
-                rawCommitsForRepository
-        );
-        return versionControlSystemAdapter.commitsBytesToDomain(rawCommitsForRepository);
-    }
-
-    public List<Branch> collectBranchesForOrganizationAndRepository(final Organization organization,
-                                                                    final Repository repository) throws SymeoException {
-        final byte[] rawBranches =
-                versionControlSystemAdapter.getRawBranches(organization.getVcsOrganization().getName(),
-                        repository.getName());
-        rawStorageAdapter.save(organization.getId(), versionControlSystemAdapter.getName(), Branch.ALL, rawBranches);
-        return versionControlSystemAdapter.branchesBytesToDomain(rawBranches);
-    }
-
-    public List<Commit> collectCommitsForForOrganizationAndRepositoryAndBranchesFromLastCollectionDate(final Organization organization,
-                                                                                                       final Repository repository,
-                                                                                                       final List<String> branches,
-                                                                                                       final Date lastCollectionDate) throws SymeoException {
-        final List<Commit> commitsCollected = new ArrayList<>();
-        for (String branchName : branches) {
-            byte[] alreadyCollectedCommits = null;
-            final String contentName = Commit.getNameFromBranch(branchName);
-            if (rawStorageAdapter.exists(organization.getId(), versionControlSystemAdapter.getName(),
-                    contentName)) {
-                alreadyCollectedCommits = rawStorageAdapter.read(organization.getId(),
-                        versionControlSystemAdapter.getName(), contentName);
-            }
-            alreadyCollectedCommits =
-                    versionControlSystemAdapter.getRawCommitsForBranchFromLastCollectionDate(repository.getVcsOrganizationName(),
-                            repository.getName(), branchName, lastCollectionDate, alreadyCollectedCommits);
-            rawStorageAdapter.save(organization.getId(), versionControlSystemAdapter.getName(), contentName,
-                    alreadyCollectedCommits);
-            commitsCollected.addAll(versionControlSystemAdapter.commitsBytesToDomain(alreadyCollectedCommits));
-        }
-        return commitsCollected;
+        alreadyCollectedCommits =
+                versionControlSystemAdapter.getRawCommitsForRepositoryFromLastCollectionDate(repository.getVcsOrganizationName(),
+                        repository.getName(), lastCollectionDate, alreadyCollectedCommits);
+        rawStorageAdapter.save(organization.getId(), versionControlSystemAdapter.getName(), contentName,
+                alreadyCollectedCommits);
+        return versionControlSystemAdapter.commitsBytesToDomain(alreadyCollectedCommits).stream()
+                .map(commit -> commit.toBuilder().repositoryId(repository.getId()).build())
+                .toList();
     }
 }

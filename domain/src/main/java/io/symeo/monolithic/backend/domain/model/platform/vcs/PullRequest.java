@@ -40,7 +40,8 @@ public class PullRequest {
     String repositoryId;
     String vcsOrganizationId;
     UUID organizationId;
-    String branchName;
+    String head;
+    String base;
     @Builder.Default
     List<Commit> commits = List.of();
     @Builder.Default

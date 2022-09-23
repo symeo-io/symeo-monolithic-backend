@@ -45,9 +45,11 @@ public interface PullRequestMapper {
                 .vcsRepository(pullRequest.getRepository())
                 .vcsOrganizationId(pullRequest.getVcsOrganizationId())
                 .organizationId(pullRequest.getOrganizationId())
-                .branchName(pullRequest.getBranchName())
+                .head(pullRequest.getHead())
+                .base(pullRequest.getBase())
                 .size(pullRequestView.getSize())
                 .daysOpened(pullRequestView.getDaysOpened(new Date()))
+                .mergeCommitSha(pullRequest.getMergeCommitSha())
                 .build();
         pullRequestToCommitEntities(pullRequest)
                 .forEach(pullRequestEntity::addCommit);
@@ -83,8 +85,10 @@ public interface PullRequestMapper {
                 .vcsOrganizationId(pullRequestEntity.getVcsOrganizationId())
                 .organizationId(pullRequestEntity.getOrganizationId())
                 .repository(pullRequestEntity.getVcsRepository())
-                .branchName(pullRequestEntity.getBranchName())
+                .head(pullRequestEntity.getHead())
+                .base(pullRequestEntity.getBase())
                 .number(Integer.valueOf(pullRequestEntity.getCode()))
+                .mergeCommitSha(pullRequestEntity.getMergeCommitSha())
                 .build();
     }
 
@@ -94,7 +98,6 @@ public interface PullRequestMapper {
                 .mergeDate(isNull(pullRequestFullViewDTO.getMergeDate()) ? null :
                         Date.from(pullRequestFullViewDTO.getMergeDate().toInstant()))
                 .creationDate(Date.from(pullRequestFullViewDTO.getCreationDate().toInstant()))
-                .branchName(pullRequestFullViewDTO.getBranchName())
                 .vcsUrl(pullRequestFullViewDTO.getVcsUrl())
                 .addedLineNumber(pullRequestFullViewDTO.getAddedLineNumber())
                 .deletedLineNumber(pullRequestFullViewDTO.getDeletedLineNumber())
@@ -106,6 +109,9 @@ public interface PullRequestMapper {
                 .authorLogin(pullRequestFullViewDTO.getAuthorLogin())
                 .commitNumber(pullRequestFullViewDTO.getCommitNumber())
                 .status(pullRequestFullViewDTO.getState())
+                .mergeCommitSha(pullRequestFullViewDTO.getMergeCommitSha())
+                .head(pullRequestFullViewDTO.getHead())
+                .base(pullRequestFullViewDTO.getBase())
                 .build();
     }
 
@@ -119,7 +125,9 @@ public interface PullRequestMapper {
                 .comments(pullRequestWithCommitsAndCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
                 .commits(pullRequestWithCommitsAndCommentsDTO.getCommits().stream().map(CommitMapper::entityToDomain).toList())
                 .vcsUrl(pullRequestWithCommitsAndCommentsDTO.getVcsUrl())
-                .branchName(pullRequestWithCommitsAndCommentsDTO.getBranchName())
+                .head(pullRequestWithCommitsAndCommentsDTO.getHead())
+                .base(pullRequestWithCommitsAndCommentsDTO.getBase())
+                .mergeCommitSha(pullRequestWithCommitsAndCommentsDTO.getMergeCommitSha())
                 .build();
     }
 

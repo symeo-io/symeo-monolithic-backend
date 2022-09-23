@@ -28,6 +28,8 @@ public class CommitEntity {
     String authorLogin;
     @Column(name = "message")
     String message;
+    @Column(name = "repository_id")
+    String repositoryId;
     @Column(name = "date", nullable = false)
     ZonedDateTime date;
     @ManyToOne

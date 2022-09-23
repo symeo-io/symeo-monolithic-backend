@@ -37,7 +37,6 @@ public class PullRequestView {
     Integer deletedLineNumber;
     Integer addedLineNumber;
     Float limit;
-    String branchName;
     String mergeCommitSha;
     String vcsUrl;
     String authorLogin;
@@ -45,6 +44,8 @@ public class PullRequestView {
     String id;
     String title;
     String repository;
+    String base;
+    String head;
     @Builder.Default
     List<Commit> commits = new ArrayList<>();
     @Builder.Default

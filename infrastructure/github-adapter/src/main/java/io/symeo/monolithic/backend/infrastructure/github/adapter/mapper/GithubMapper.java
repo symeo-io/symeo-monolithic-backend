@@ -7,7 +7,9 @@ import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCo
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -43,7 +45,13 @@ public interface GithubMapper {
                 .lastUpdateDate(githubPullRequestDTO.getUpdatedAt())
                 .vcsUrl(githubPullRequestDTO.getHtmlUrl())
                 .authorLogin(githubPullRequestDTO.getUser().getLogin())
-                .branchName(githubPullRequestDTO.getHead().getRef())
+                .head(githubPullRequestDTO.getHead().getRef())
+                .base(githubPullRequestDTO.getBase().getRef())
+                .mergeCommitSha(githubPullRequestDTO.getMergeCommitSha())
+                .commits(Arrays.stream(githubPullRequestDTO.getGithubCommitsDTOS())
+                        .map(GithubMapper::mapCommitToDomain).collect(Collectors.toList()))
+                .comments(Arrays.stream(githubPullRequestDTO.getGithubCommentsDTOS())
+                        .map(githubCommentsDTO -> mapCommentToDomain(githubCommentsDTO, githubPlatformName)).collect(Collectors.toList()))
                 .build();
     }
 
