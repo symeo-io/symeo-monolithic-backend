@@ -103,16 +103,21 @@ public class GithubHttpClient {
 
     public GithubCommitsDTO[] getCommitsForPullRequestNumber(final String organizationName,
                                                              final String repositoryName,
-                                                             final int pullRequestNumber) throws SymeoException {
+                                                             final int pullRequestNumber,
+                                                             final Integer page,
+                                                             final Integer size) throws SymeoException {
         final String uri =
                 api
                         + "repos/"
                         + organizationName
-                        + "/" +
-                        repositoryName
+                        + "/"
+                        + repositoryName
                         + "/pulls/"
-                        + pullRequestNumber +
-                        "/commits";
+                        + pullRequestNumber
+                        + "/commits?page="
+                        + page.toString()
+                        + "&per_page="
+                        + size.toString();
         return get(
                 uri,
                 organizationName,
@@ -122,16 +127,21 @@ public class GithubHttpClient {
 
     public GithubCommentsDTO[] getCommentsForPullRequestNumber(final String organizationName,
                                                                final String repositoryName,
-                                                               final Integer pullRequestNumber) throws SymeoException {
+                                                               final Integer pullRequestNumber,
+                                                               final Integer page,
+                                                               final Integer size) throws SymeoException {
         final String uri =
-                api
+        api
                         + "repos/"
                         + organizationName
-                        + "/" +
-                        repositoryName
+                        + "/"
+                        + repositoryName
                         + "/pulls/"
-                        + pullRequestNumber +
-                        "/comments";
+                        + pullRequestNumber
+                        + "/comments&page="
+                        + page.toString()
+                        + "&per_page="
+                        + size.toString();
         return get(
                 uri,
                 organizationName,

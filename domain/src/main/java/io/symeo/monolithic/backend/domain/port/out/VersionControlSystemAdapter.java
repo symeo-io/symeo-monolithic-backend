@@ -17,9 +17,6 @@ public interface VersionControlSystemAdapter {
 
     List<PullRequest> pullRequestsBytesToDomain(byte[] bytes) throws SymeoException;
 
-    byte[] getRawCommitsForPullRequestNumber(final String vcsOrganizationName,
-                                             final String repositoryName,
-                                             final int pullRequestNumber) throws SymeoException;
 
     byte[] getRawCommitsForRepository(final String vcsOrganizationName,
                                       final String repositoryName,
@@ -28,8 +25,6 @@ public interface VersionControlSystemAdapter {
     List<Commit> commitsBytesToDomain(byte[] rawCommits) throws SymeoException;
 
     List<Comment> commentsBytesToDomain(byte[] rawComments) throws SymeoException;
-
-    byte[] getRawComments(String vcsOrganizationName, String name, Integer number) throws SymeoException;
 
     byte[] getRawBranches(String vcsOrganizationName, String repositoryName) throws SymeoException;
 

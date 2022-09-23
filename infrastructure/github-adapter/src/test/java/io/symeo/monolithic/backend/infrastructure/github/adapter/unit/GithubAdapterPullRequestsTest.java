@@ -1,10 +1,13 @@
 package io.symeo.monolithic.backend.infrastructure.github.adapter.unit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
@@ -209,5 +212,45 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         assertThat(pullRequest.getTitle()).isEqualTo(pr80.getTitle());
         assertThat(pullRequest.getAuthorLogin()).isEqualTo(pr80.getUser().getLogin());
         assertThat(pullRequest.getBranchName()).isEqualTo(pr80.getHead().getRef());
+    }
+
+    @Test
+    void should_get_pull_request_with_size_exactly_the_same_than_pagination_size() throws SymeoException, IOException{
+        // Given
+        final String token = faker.pokemon().name();
+        final GithubProperties properties = new GithubProperties();
+        properties.setSize(1);
+        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
+                properties, objectMapper);
+        final Repository repository =
+                Repository.builder().vcsOrganizationName(faker.name().lastName()).name(faker.name().firstName()).build();
+        final GithubPullRequestDTO[] githubPullRequestStubs1 = getStubsFromClassT("get_pull_requests_for_repo",
+                "get_pr_for_repo_page_1_size_1.json", GithubPullRequestDTO[].class);
+        final GithubPullRequestDTO githubPullRequestDetails = getStubsFromClassT("get_pull_request_details_for_pr_id",
+                "get_pr_76.json", GithubPullRequestDTO.class);
+        final GithubCommitsDTO[] githubCommitsStubs1 = getStubsFromClassT("get_commits_for_pr_number",
+                "get_commits_for_pr_number_2_page_1_size_30.json",
+                GithubCommitsDTO[].class);
+        final GithubCommentsDTO[] githubCommentsStubs1 = getStubsFromClassT("get_comments_for_pr_number",
+                "get_comments_for_pr_number_2_page_1_size_3.json",
+                GithubCommentsDTO[].class);
+
+        // When
+        when(githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(), repository.getName(), 1, properties.getSize()))
+                .thenReturn(githubPullRequestStubs1);
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80))
+                .thenReturn(githubPullRequestDetails);
+        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 1, properties.getSize()))
+                .thenReturn(githubCommitsStubs1);
+        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 1, properties.getSize()))
+                .thenReturn(githubCommentsStubs1);
+
+        final byte[] exactSizeRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
+        final GithubPullRequestDTO[] exactSizeGithubPullRequestDTOSResult = githubAdapter.bytesToDto(exactSizeRawPullRequestsForRepository, GithubPullRequestDTO[].class);
+
+        // Then
+        assertThat(exactSizeGithubPullRequestDTOSResult.length).isEqualTo(githubPullRequestStubs1.length);
+        assertThat(exactSizeGithubPullRequestDTOSResult[0].getId()).isEqualTo(76);
     }
 }
