@@ -39,7 +39,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final TagRepository tagRepository;
 
     @Override
-    public void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests) {
+    public void savePullRequestDetailsWithLinkedComments(List<PullRequest> pullRequests) {
         pullRequestRepository.saveAll(pullRequests.stream().map(PullRequestMapper::domainToEntity)
                 .toList());
     }

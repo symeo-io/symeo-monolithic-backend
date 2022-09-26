@@ -55,7 +55,7 @@ public class VcsService {
     }
 
     private void collectPullRequestsWithCommentsAndCommitsForOrganizationAndRepository(Repository repository) throws SymeoException {
-        expositionStorageAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(
+        expositionStorageAdapter.savePullRequestDetailsWithLinkedComments(
                 collectPullRequestForRepository(repository).stream()
                         .map(pullRequest -> pullRequest.toBuilder()
                                 .organizationId(repository.getOrganizationId())

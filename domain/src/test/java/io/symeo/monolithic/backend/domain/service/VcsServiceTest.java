@@ -112,7 +112,7 @@ public class VcsServiceTest {
 
         // Then
         final ArgumentCaptor<List<PullRequest>> prArgumentCaptor = ArgumentCaptor.forClass(List.class);
-        verify(expositionStorageAdapter, times(2)).savePullRequestDetailsWithLinkedCommitsAndComments(prArgumentCaptor.capture());
+        verify(expositionStorageAdapter, times(2)).savePullRequestDetailsWithLinkedComments(prArgumentCaptor.capture());
         final List<List<PullRequest>> prArgumentCaptorAllValues = prArgumentCaptor.getAllValues();
         assertThat(prArgumentCaptorAllValues).hasSize(2);
         prArgumentCaptorAllValues.stream().flatMap(Collection::stream)
@@ -173,7 +173,7 @@ public class VcsServiceTest {
 
         // Then
         final ArgumentCaptor<List<PullRequest>> prArgumentCaptor = ArgumentCaptor.forClass(List.class);
-        verify(expositionStorageAdapter, times(2)).savePullRequestDetailsWithLinkedCommitsAndComments(prArgumentCaptor.capture());
+        verify(expositionStorageAdapter, times(2)).savePullRequestDetailsWithLinkedComments(prArgumentCaptor.capture());
         final List<List<PullRequest>> prArgumentCaptorAllValues = prArgumentCaptor.getAllValues();
         assertThat(prArgumentCaptorAllValues).hasSize(2);
         prArgumentCaptorAllValues.stream().flatMap(Collection::stream)

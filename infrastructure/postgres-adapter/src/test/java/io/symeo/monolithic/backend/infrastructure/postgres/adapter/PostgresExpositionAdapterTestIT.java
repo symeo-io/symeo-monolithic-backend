@@ -99,7 +99,7 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedComments(pullRequestsToSave);
 
         // Then
         final List<PullRequestEntity> all = pullRequestRepository.findAll();
@@ -136,7 +136,7 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedComments(pullRequestsToSave);
 
         // Then
         final List<PullRequestEntity> pullRequestRepositoryAll = pullRequestRepository.findAll();
@@ -169,7 +169,7 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedComments(pullRequestsToSave);
 
         // Then
         final List<CommentEntity> commentEntities = commentRepository.findAll();
