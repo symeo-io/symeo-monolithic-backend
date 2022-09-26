@@ -4,7 +4,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.JobRunnable;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import lombok.Builder;
@@ -21,7 +21,7 @@ public class InitializeOrganizationSettingsJobRunnable extends AbstractTasksRunn
     @NonNull
     private final OrganizationSettingsService organizationSettingsService;
     @NonNull
-    private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
+    private final OrganizationStorageAdapter organizationStorageAdapter;
     @NonNull
     private final UUID organizationId;
     @NonNull
@@ -30,7 +30,7 @@ public class InitializeOrganizationSettingsJobRunnable extends AbstractTasksRunn
     @Override
     public void initializeTasks() throws SymeoException {
         final Organization organization =
-                accountOrganizationStorageAdapter.findOrganizationById(organizationId);
+                organizationStorageAdapter.findOrganizationById(organizationId);
         this.tasks = new ArrayList<>(List.of(
                 Task.newTaskForInput(organization)
         ));

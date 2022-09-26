@@ -78,3 +78,10 @@ create table account_storage.organization_settings
     technical_modification_date timestamp(6) with time zone default now() not null,
     constraint fk_organization_settings_organization_id foreign key (organization_id) references account_storage.organization (id)
 );
+
+
+create table account_storage.organization_settings_exclude_branch_regex
+(
+    organization_settings_id uuid         not null,
+    exclude_branch_regex           varchar(300) not null
+);

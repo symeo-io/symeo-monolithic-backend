@@ -41,8 +41,8 @@ public interface ExpositionStorageAdapter {
     int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 
-    List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
-                                                                                           Date startDate, Date endDate)
+    List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(UUID teamId,
+                                                                                 Date endDate)
             throws SymeoException;
 
     String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) throws SymeoException;
@@ -53,7 +53,8 @@ public interface ExpositionStorageAdapter {
 
     List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException;
 
-    List<PullRequestView> readMergedPullRequestsForTeamIdFromStartDate(UUID teamId, Date startDate) throws SymeoException;
+    List<PullRequestView> readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate,
+                                                                                    Date endDate) throws SymeoException;
 
     List<Commit> readAllCommitsForTeamIdFromStartDate(UUID teamId, Date startDate) throws SymeoException;
 }

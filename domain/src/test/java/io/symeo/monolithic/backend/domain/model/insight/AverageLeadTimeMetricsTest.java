@@ -21,6 +21,7 @@ public class AverageLeadTimeMetricsTest {
                         .averageCodingTime(98.5f)
                         .averageReviewLag(14.3f)
                         .averageReviewTime(10.2f)
+                        .averageDeployTime(11.3f)
                         .build()
         );
         final Optional<AverageLeadTime> previousLeadTime = Optional.of(
@@ -29,6 +30,7 @@ public class AverageLeadTimeMetricsTest {
                         .averageCodingTime(55.5f)
                         .averageReviewLag(23.3f)
                         .averageReviewTime(66.2f)
+                        .averageDeployTime(2.4f)
                         .build()
         );
         final Date previousStartDate = stringToDate("2020-01-01");
@@ -56,6 +58,8 @@ public class AverageLeadTimeMetricsTest {
         assertThat(leadTimeMetrics.getAverageReviewLagPercentageTendency()).isEqualTo(-38.6f);
         assertThat(leadTimeMetrics.getAverageReviewTime()).isEqualTo(10.2f);
         assertThat(leadTimeMetrics.getAverageReviewTimePercentageTendency()).isEqualTo(-84.6f);
+        assertThat(leadTimeMetrics.getAverageDeployTime()).isEqualTo(11.3f);
+        assertThat(leadTimeMetrics.getAverageDeployTimePercentageTendency()).isEqualTo(370.8f);
     }
 
     @Test

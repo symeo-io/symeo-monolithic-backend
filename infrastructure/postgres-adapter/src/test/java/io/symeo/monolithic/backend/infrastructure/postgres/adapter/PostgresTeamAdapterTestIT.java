@@ -7,7 +7,7 @@ import io.symeo.monolithic.backend.domain.model.account.Team;
 import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresAccountTeamAdapter;
+import io.symeo.monolithic.backend.infrastructure.postgres.PostgresTeamAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresAccountTeamAdapterTestIT {
+public class PostgresTeamAdapterTestIT {
 
     private final Faker faker = new Faker();
     @Autowired
@@ -64,8 +64,8 @@ public class PostgresAccountTeamAdapterTestIT {
     @Test
     void should_create_team_given_existing_repositories_and_organization() throws SymeoException {
         // Given
-        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
+        final PostgresTeamAdapter postgresAccountTeamAdapter =
+                new PostgresTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())
@@ -114,8 +114,8 @@ public class PostgresAccountTeamAdapterTestIT {
     @Test
     void should_find_all_teams_by_organization_id() throws SymeoException {
         // Given
-        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
+        final PostgresTeamAdapter postgresAccountTeamAdapter =
+                new PostgresTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())
@@ -162,8 +162,8 @@ public class PostgresAccountTeamAdapterTestIT {
     @Test
     void should_raise_an_exception_for_duplicated_team_name_and_organization() {
         // Given
-        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
+        final PostgresTeamAdapter postgresAccountTeamAdapter =
+                new PostgresTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())
@@ -199,8 +199,8 @@ public class PostgresAccountTeamAdapterTestIT {
     @Test
     void should_delete_team_and_linked_team_goals_given_a_team_id() throws SymeoException {
         // Given
-        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
+        final PostgresTeamAdapter postgresAccountTeamAdapter =
+                new PostgresTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())
@@ -235,8 +235,8 @@ public class PostgresAccountTeamAdapterTestIT {
     @Test
     void should_update_team_given_update_team() throws SymeoException {
         // Given
-        final PostgresAccountTeamAdapter postgresAccountTeamAdapter =
-                new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
+        final PostgresTeamAdapter postgresAccountTeamAdapter =
+                new PostgresTeamAdapter(teamRepository, userRepository, teamGoalRepository);
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .name(faker.pokemon().name())
                 .id(UUID.randomUUID())

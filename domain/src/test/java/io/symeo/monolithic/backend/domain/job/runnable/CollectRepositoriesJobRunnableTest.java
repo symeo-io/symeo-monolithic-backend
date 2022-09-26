@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import org.junit.jupiter.api.Test;
@@ -24,14 +24,14 @@ public class CollectRepositoriesJobRunnableTest {
         final VcsService vcsService = mock(VcsService.class);
         final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(faker.name().firstName())
                 .vcsOrganization(VcsOrganization.builder().build()).build();
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
                 new CollectRepositoriesJobRunnable(vcsService,
-                        accountOrganizationStorageAdapter, organisation.getId(), mock(JobStorage.class));
+                        organizationStorageAdapter, organisation.getId(), mock(JobStorage.class));
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationById(organisation.getId()))
+        when(organizationStorageAdapter.findOrganizationById(organisation.getId()))
                 .thenReturn(organisation);
         collectRepositoriesJobRunnable.initializeTasks();
         collectRepositoriesJobRunnable.run(3L);
@@ -47,14 +47,14 @@ public class CollectRepositoriesJobRunnableTest {
         final String organisationName = faker.name().username();
         final Organization organisation = Organization.builder().id(UUID.randomUUID()).name(organisationName)
                 .vcsOrganization(VcsOrganization.builder().build()).build();
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable =
                 new CollectRepositoriesJobRunnable(vcsService,
-                        accountOrganizationStorageAdapter, organisation.getId(), mock(JobStorage.class));
+                        organizationStorageAdapter, organisation.getId(), mock(JobStorage.class));
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationById(organisation.getId()))
+        when(organizationStorageAdapter.findOrganizationById(organisation.getId()))
                 .thenReturn(organisation);
         doThrow(SymeoException.class)
                 .when(vcsService)

@@ -3,13 +3,16 @@ package io.symeo.monolithic.backend.domain.command;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Branch;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.port.out.RawStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -107,4 +110,49 @@ public class DeliveryCommandTest {
 
     }
 
+
+    @Test
+    void should_collect_branches_given_an_organization_and_a_repository() throws SymeoException {
+        // Given
+        final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
+        final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
+        final DeliveryCommand deliveryCommand = new DeliveryCommand(
+                rawStorageAdapter, versionControlSystemAdapter
+        );
+        final String vcsOrganizationName = faker.name().firstName();
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
+                .name(vcsOrganizationName)
+                .build();
+        final Repository repository = Repository.builder().organizationId(organization.getId())
+                .vcsOrganizationName(vcsOrganizationName)
+                .id(faker.rickAndMorty().character())
+                .build();
+        final List<Branch> branches = List.of(
+                Branch.builder().name(faker.pokemon().name()).build(),
+                Branch.builder().name(faker.pokemon().location()).build()
+        );
+        final byte[] bytes = faker.ancient().hero().getBytes();
+
+        // When
+        when(versionControlSystemAdapter.getRawBranches(organization.getVcsOrganization().getName(),
+                repository.getName()))
+                .thenReturn(
+                        bytes
+                );
+        when(versionControlSystemAdapter.branchesBytesToDomain(bytes)).thenReturn(branches);
+        final List<Branch> branchListResult = deliveryCommand.collectBranchesForOrganizationAndRepository(organization,
+                repository);
+
+        // Then
+        verify(rawStorageAdapter, times(1))
+                .save(
+                        organization.getId(),
+                        versionControlSystemAdapter.getName(),
+                        Branch.ALL,
+                        bytes
+                );
+        Assertions.assertThat(branchListResult).isEqualTo(branches);
+    }
 }

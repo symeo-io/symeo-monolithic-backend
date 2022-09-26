@@ -4,7 +4,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.Team;
 import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.port.out.AccountTeamStorage;
+import io.symeo.monolithic.backend.domain.port.out.TeamStorage;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
@@ -21,7 +21,7 @@ import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.PO
 
 @AllArgsConstructor
 @Slf4j
-public class PostgresAccountTeamAdapter implements AccountTeamStorage {
+public class PostgresTeamAdapter implements TeamStorage {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;

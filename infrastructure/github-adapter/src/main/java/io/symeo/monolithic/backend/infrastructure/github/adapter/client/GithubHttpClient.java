@@ -131,7 +131,7 @@ public class GithubHttpClient {
                                                                final Integer page,
                                                                final Integer size) throws SymeoException {
         final String uri =
-        api
+                api
                         + "repos/"
                         + organizationName
                         + "/"
@@ -170,24 +170,31 @@ public class GithubHttpClient {
     }
 
     public GithubBranchDTO[] getBranchesForOrganizationAndRepository(final String vcsOrganizationName,
-                                                                     final String repositoryName) throws SymeoException {
+                                                                     final String repositoryName,
+                                                                     final Integer page,
+                                                                     final Integer size) throws SymeoException {
         final String uri =
                 api
                         + "repos/"
                         + vcsOrganizationName
                         + "/" +
                         repositoryName
-                        + "/branches";
+                        + "/branches"
+                        + "?per_page="
+                        + size.toString()
+                        + "&page="
+                        + page.toString();
         return get(uri,
                 vcsOrganizationName,
                 GithubBranchDTO[].class);
     }
 
-    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryFromLastCollectionDate(final String vcsOrganizationName,
-                                                                                           final String repositoryName,
-                                                                                           final Date lastCollectionDate,
-                                                                                           final Integer page,
-                                                                                           final Integer size) throws SymeoException {
+    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
+                                                                                                    final String repositoryName,
+                                                                                                    final String branchName,
+                                                                                                    final Date lastCollectionDate,
+                                                                                                    final Integer page,
+                                                                                                    final Integer size) throws SymeoException {
         String uri =
                 api
                         + "repos/"
@@ -200,14 +207,16 @@ public class GithubHttpClient {
                         + "&per_page="
                         + size.toString()
                         + "&page="
-                        + page.toString();
+                        + page.toString()
+                        + String.format("&sha=%s", branchName);
         return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
     }
 
-    public GithubCommitsDTO[] getCommitsForOrganizationAndRepository(final String vcsOrganizationName,
-                                                                     final String repositoryName,
-                                                                     final Integer page,
-                                                                     final Integer size) throws SymeoException {
+    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
+                                                                              final String repositoryName,
+                                                                              final String branchName,
+                                                                              final Integer page,
+                                                                              final Integer size) throws SymeoException {
         String uri =
                 api
                         + "repos/"
@@ -216,7 +225,8 @@ public class GithubHttpClient {
                         + repositoryName
                         + "/commits"
                         + String.format("?page=%s", page.toString())
-                        + String.format("&per_page=%s", size.toString());
+                        + String.format("&per_page=%s", size.toString())
+                        + String.format("&sha=%s", branchName);
         return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
     }
 

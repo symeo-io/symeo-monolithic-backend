@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.service.account.OrganizationService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -24,10 +24,10 @@ public class OrganizationServiceTest {
         // Given
         final DataProcessingJobAdapter dataProcessingJobAdapter = mock(DataProcessingJobAdapter.class);
 
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final OrganizationService organizationService =
-                new OrganizationService(accountOrganizationStorageAdapter, dataProcessingJobAdapter);
+                new OrganizationService(organizationStorageAdapter, dataProcessingJobAdapter);
         final String externalId = faker.name().name();
         final String vcsOrganizationName = faker.gameOfThrones().character();
         final UUID organizationId = UUID.randomUUID();
@@ -54,7 +54,7 @@ public class OrganizationServiceTest {
                                 .build()
                 )
                 .build();
-        when(accountOrganizationStorageAdapter.createOrganization(organization)).thenReturn(
+        when(organizationStorageAdapter.createOrganization(organization)).thenReturn(
                 expectedOrganization
         );
         final Organization result = organizationService.createOrganization(organization);

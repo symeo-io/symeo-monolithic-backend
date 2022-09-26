@@ -26,4 +26,7 @@ public class Commit {
         return ALL + "_for_repository_" + repository.getId();
     }
 
+    public static String getNameFromBranch(String branchName) {
+        return ALL + "_for_branch_" + branchName.replace("/", "-");
+    }
 }

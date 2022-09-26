@@ -6,7 +6,7 @@ import io.symeo.monolithic.backend.domain.job.JobRunnable;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -30,7 +30,7 @@ public class CollectVcsDataForOrganizationAndTeamJobRunnable extends AbstractTas
     @NonNull
     final ExpositionStorageAdapter expositionStorageAdapter;
     @NonNull
-    final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
+    final OrganizationStorageAdapter organizationStorageAdapter;
     @NonNull
     final UUID organizationId;
     @NonNull
@@ -40,7 +40,7 @@ public class CollectVcsDataForOrganizationAndTeamJobRunnable extends AbstractTas
 
     @Override
     public void initializeTasks() throws SymeoException {
-        this.organization = accountOrganizationStorageAdapter.findOrganizationById(organizationId);
+        this.organization = organizationStorageAdapter.findOrganizationById(organizationId);
         final List<Repository> repositories =
                 expositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId);
         this.tasks = new ArrayList<>(repositories.stream()

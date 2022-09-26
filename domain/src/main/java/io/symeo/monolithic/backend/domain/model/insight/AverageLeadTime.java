@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.Math.round;
@@ -22,40 +23,10 @@ public class AverageLeadTime {
     Float averageReviewTime;
     Float averageDeployTime;
 
-    public static Optional<AverageLeadTime> buildFromPullRequestWithCommitsViews(final List<PullRequestView> pullRequestWithCommitsViews) {
-        final List<PullRequestView> pullRequestViewsToComputeLeadTime =
-                filterPullRequestForLeadTimeComputation(pullRequestWithCommitsViews);
-        final int pullRequestSize = pullRequestViewsToComputeLeadTime.size();
-        if (pullRequestSize == 0) {
-            return empty();
-        }
-        return of(computeLeadTime(pullRequestViewsToComputeLeadTime, pullRequestSize));
-    }
 
     private static List<PullRequestView> filterPullRequestForLeadTimeComputation(List<PullRequestView> pullRequestWithCommitsViews) {
         return pullRequestWithCommitsViews.stream()
                 .filter(AverageLeadTime::filterPullRequestToComputeLeadTime).toList();
-    }
-
-    private static AverageLeadTime computeLeadTime(List<PullRequestView> pullRequestViewsToComputeLeadTime,
-                                                   int pullRequestSize) {
-        Long cumulatedLeadTimeValue = 0L;
-        Long cumulatedCodingTime = 0L;
-        Long cumulatedReviewLag = 0L;
-        Long cumulatedReviewTime = 0L;
-        for (PullRequestView pullRequestWithCommitsView : pullRequestViewsToComputeLeadTime) {
-            final LeadTime leadTime = LeadTime.computeLeadTimeForPullRequestView(pullRequestWithCommitsView);
-            cumulatedCodingTime += leadTime.getCodingTime();
-            cumulatedReviewLag += leadTime.getReviewLag();
-            cumulatedReviewTime += leadTime.getReviewTime();
-            cumulatedLeadTimeValue += leadTime.getValue();
-        }
-        return AverageLeadTime.builder()
-                .averageValue(averageValueWithOneDecimal(cumulatedLeadTimeValue, pullRequestSize))
-                .averageCodingTime(averageValueWithOneDecimal(cumulatedCodingTime, pullRequestSize))
-                .averageReviewLag(averageValueWithOneDecimal(cumulatedReviewLag, pullRequestSize))
-                .averageReviewTime(averageValueWithOneDecimal(cumulatedReviewTime, pullRequestSize))
-                .build();
     }
 
     private static boolean filterPullRequestToComputeLeadTime(final PullRequestView pullRequestView) {
@@ -88,6 +59,7 @@ public class AverageLeadTime {
         Long cumulatedCodingTime = 0L;
         Long cumulatedReviewLag = 0L;
         Long cumulatedReviewTime = 0L;
+        Long cumulatedDeployTime = 0L;
         for (PullRequestView pullRequestWithCommitsView : pullRequestViewsToComputeLeadTime) {
             final LeadTime leadTime =
                     LeadTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestWithCommitsView,
@@ -96,12 +68,14 @@ public class AverageLeadTime {
             cumulatedReviewLag += leadTime.getReviewLag();
             cumulatedReviewTime += leadTime.getReviewTime();
             cumulatedLeadTimeValue += leadTime.getValue();
+            cumulatedDeployTime += Objects.isNull(leadTime.getDeployTime()) ? 0L : leadTime.getDeployTime();
         }
         return AverageLeadTime.builder()
                 .averageValue(averageValueWithOneDecimal(cumulatedLeadTimeValue, pullRequestSize))
                 .averageCodingTime(averageValueWithOneDecimal(cumulatedCodingTime, pullRequestSize))
                 .averageReviewLag(averageValueWithOneDecimal(cumulatedReviewLag, pullRequestSize))
                 .averageReviewTime(averageValueWithOneDecimal(cumulatedReviewTime, pullRequestSize))
+                .averageDeployTime(averageValueWithOneDecimal(cumulatedDeployTime, pullRequestSize))
                 .build();
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -28,6 +30,14 @@ public class OrganizationSettingsEntity {
     private String tagRegex;
     @Column(name = "pr_merged_on_branch_regex")
     private String pullRequestMergedOnBranchRegex;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "organization_settings_exclude_branch_regex", schema = "account_storage",
+            joinColumns = @JoinColumn(name = "organization_settings_id")
+    )
+    @Column(name = "exclude_branch_regex")
+    @Builder.Default
+    List<String> excludeBranchRegexes = new ArrayList<>();
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

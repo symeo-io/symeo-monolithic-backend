@@ -11,7 +11,6 @@ import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
@@ -137,8 +136,9 @@ public class PostgresExpositionAdapterTestIT {
         postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
 
         // Then
-        final List<CommitEntity> commitEntities = commitRepository.findAll();
-        assertThat(commitEntities).hasSize(3);
+        final List<PullRequestEntity> pullRequestRepositoryAll = pullRequestRepository.findAll();
+        assertThat(pullRequestRepositoryAll.get(0).getCommitShaList()).hasSize(2);
+        assertThat(pullRequestRepositoryAll.get(1).getCommitShaList()).hasSize(1);
     }
 
     @Test
@@ -467,52 +467,15 @@ public class PostgresExpositionAdapterTestIT {
                                 .build()
                 )
         );
-        commitRepository.saveAll(
-                List.of(
-                        CommitEntity.builder()
-                                .sha(faker.dragonBall().character())
-                                .pullRequest(pr1)
-                                .date(ZonedDateTime.now())
-                                .message(faker.gameOfThrones().character())
-                                .authorLogin(faker.gameOfThrones().dragon())
-                                .build(),
-                        CommitEntity.builder()
-                                .sha(faker.rickAndMorty().character())
-                                .pullRequest(pr1)
-                                .date(ZonedDateTime.now())
-                                .message(faker.gameOfThrones().character())
-                                .authorLogin(faker.gameOfThrones().dragon())
-                                .build(),
-                        CommitEntity.builder()
-                                .sha(faker.rickAndMorty().location())
-                                .pullRequest(pr2)
-                                .date(ZonedDateTime.now())
-                                .message(faker.gameOfThrones().character())
-                                .authorLogin(faker.gameOfThrones().dragon())
-                                .build(),
-                        CommitEntity.builder()
-                                .sha(faker.demographic().race())
-                                .pullRequest(pr2)
-                                .date(ZonedDateTime.now())
-                                .message(faker.gameOfThrones().character())
-                                .authorLogin(faker.gameOfThrones().dragon())
-                                .build()
-                )
-        );
-        final Date startDate = Date.from(now.minusDays(40).toInstant());
         final Date endDate = new Date();
 
 
         // When
         final List<PullRequestView> pullRequestViews =
-                postgresExpositionAdapter.readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
-                        startDate,
-                        endDate);
+                postgresExpositionAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate);
 
         // Then
-        assertThat(pullRequestViews).hasSize(2);
-        assertThat(pullRequestViews.get(0).getCommits()).hasSize(2);
-        assertThat(pullRequestViews.get(1).getCommits()).hasSize(2);
+        assertThat(pullRequestViews).hasSize(4);
         assertThat(pullRequestViews.get(0).getComments()).hasSize(2);
         assertThat(pullRequestViews.get(1).getComments()).hasSize(1);
     }

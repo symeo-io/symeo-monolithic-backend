@@ -47,9 +47,11 @@ public interface GithubMapper {
                 .head(githubPullRequestDTO.getHead().getRef())
                 .base(githubPullRequestDTO.getBase().getRef())
                 .mergeCommitSha(githubPullRequestDTO.getMergeCommitSha())
-                .commits(Arrays.stream(githubPullRequestDTO.getGithubCommitsDTOS())
+                .commits(isNull(githubPullRequestDTO.getGithubCommitsDTOS()) ? List.of() :
+                        Arrays.stream(githubPullRequestDTO.getGithubCommitsDTOS())
                         .map(GithubMapper::mapCommitToDomain).collect(Collectors.toList()))
-                .comments(Arrays.stream(githubPullRequestDTO.getGithubCommentsDTOS())
+                .comments(isNull(githubPullRequestDTO.getGithubCommentsDTOS()) ? List.of() :
+                        Arrays.stream(githubPullRequestDTO.getGithubCommentsDTOS())
                         .map(githubCommentsDTO -> mapCommentToDomain(githubCommentsDTO, githubPlatformName)).collect(Collectors.toList()))
                 .build();
     }

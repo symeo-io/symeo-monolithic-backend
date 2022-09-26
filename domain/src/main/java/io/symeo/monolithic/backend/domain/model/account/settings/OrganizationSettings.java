@@ -23,7 +23,7 @@ public class OrganizationSettings {
                                         DeployDetectionSettings.builder()
                                                 .pullRequestMergedOnBranchRegex(String.format("^%s$",
                                                         defaultMostUsedBranch))
-                                                .excludeBranches(List.of("^staging$"))
+                                                .excludeBranchRegexes(List.of("^staging$", "^main$"))
                                                 .build()
                                 )
                                 .build()

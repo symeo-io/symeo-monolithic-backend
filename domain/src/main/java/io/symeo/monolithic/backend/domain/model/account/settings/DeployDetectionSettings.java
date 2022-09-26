@@ -11,5 +11,6 @@ public class DeployDetectionSettings {
 
     String pullRequestMergedOnBranchRegex;
     String tagRegex;
-    List<String> excludeBranches;
+    @Builder.Default
+    List<String> excludeBranchRegexes = List.of();
 }

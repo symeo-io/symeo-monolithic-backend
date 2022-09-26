@@ -42,13 +42,13 @@ public interface PullRequestFullViewRepository extends JpaRepository<PullRequest
             "       pr.author_login," +
             "       pr.merge_commit_sha" +
             " from exposition_storage.pull_request pr" +
-            " where " +
-            " pr.is_draft is false " +
-            " and (pr.merge_date is not  null and pr.merge_date >= :startDate)" +
+            " where pr.state = 'merge' " +
+            " and pr.merge_date <= :endDate and pr.merge_date > :startDate" +
             " and pr.vcs_repository_id in (select ttr.repository_id" +
             "                                 from exposition_storage.team_to_repository ttr" +
             "                                 where ttr.team_id = :teamId)", nativeQuery = true
     )
-    List<PullRequestFullViewDTO> findAllMergedPullRequestsForTeamIdFromStartDate(@Param("teamId") UUID teamId,
-                                                                                 @Param("startDate") Date startDate);
+    List<PullRequestFullViewDTO> findAllMergedPullRequestsForTeamIdBetweenStartDateAndDate(@Param("teamId") UUID teamId,
+                                                                                           @Param("startDate") Date startDate,
+                                                                                           @Param("endDate") Date endDate);
 }

@@ -22,20 +22,13 @@ public interface PullRequestWithCommitsAndCommentsRepository
             "       pr.head," +
             "       pr.base" +
             " from exposition_storage.pull_request pr" +
-            " where pr.state = 'merge' " +
-            " and (" +
-            "           pr.creation_date < :endDate " +
-            "               and (" +
-            "                   pr.merge_date >= :startDate or pr.close_date >= :startDate" +
-            "                   or (pr.merge_date is null and pr.close_date is null)" +
-            "                   )" +
-            ")" +
+            " where pr.state in ('merge','open') " +
+            " and pr.creation_date < :endDate " +
             " and pr.vcs_repository_id in (select ttr.repository_id" +
             "                                 from exposition_storage.team_to_repository ttr" +
             "                                 where ttr.team_id = :teamId)")
-    List<PullRequestWithCommentsDTO> findAllMergedByTeamIdForStartDateAndEndDate(
+    List<PullRequestWithCommentsDTO> findAllByTeamIdUntilEndDate(
             @Param("teamId") UUID teamId,
-            @Param("startDate") Date startDate,
             @Param("endDate") Date endDate
     );
 

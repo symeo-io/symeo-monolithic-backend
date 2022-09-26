@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getPreviousStartDateFromStartDateAndEndDate;
 import static io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics.buildFromCurrentAndPreviousLeadTimes;
@@ -35,35 +36,50 @@ public class LeadTimeService implements LeadTimeFacadeAdapter {
                                                                                            final Date endDate) throws SymeoException {
         final OrganizationSettings organizationSettings =
                 organizationSettingsFacade.getOrganizationSettingsForOrganization(organization);
+        final List<String> excludeBranchRegexes =
+                organizationSettings.getDeliverySettings().getDeployDetectionSettings().getExcludeBranchRegexes();
         final List<PullRequestView> currentPullRequestViews =
-                expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
-                        startDate
-                        , endDate);
-        final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate,
-                endDate, organization.getTimeZone());
+                expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
+                                endDate)
+                        .stream()
+                        .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
+                        .collect(Collectors.toList());
+        final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
+                organization.getTimeZone());
         final List<PullRequestView> previousPullRequestViews =
-                expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
-                        previousStartDate
-                        , startDate);
+                expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, startDate)
+                        .stream()
+                        .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
+                        .toList();
         final List<Commit> allCommitsFromPreviousStartDate =
                 expositionStorageAdapter.readAllCommitsForTeamIdFromStartDate(teamId, previousStartDate);
         final String pullRequestMergedOnBranchRegex =
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex();
         if (nonNull(pullRequestMergedOnBranchRegex)) {
             final Pattern branchPattern = Pattern.compile(pullRequestMergedOnBranchRegex);
-            final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesFromPreviousStartDate =
-                    expositionStorageAdapter.readMergedPullRequestsForTeamIdFromStartDate(teamId, previousStartDate)
+
+            final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate =
+                    expositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId,
+                                    startDate, endDate)
                             .stream().filter(pullRequestView -> branchPattern.matcher(pullRequestView.getBase()).find()).toList();
+
             final Optional<AverageLeadTime> currentLeadTime =
                     AverageLeadTime.buildForPullRequestMergedOnBranchRegexSettings(
                             currentPullRequestViews,
-                            pullRequestViewsMergedOnMatchedBranchesFromPreviousStartDate,
+                            pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
                             allCommitsFromPreviousStartDate
                     );
+
+
+            final List<PullRequestView> previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate =
+                    expositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId,
+                                    previousStartDate, startDate)
+                            .stream().filter(pullRequestView -> branchPattern.matcher(pullRequestView.getBase()).find()).toList();
+
             final Optional<AverageLeadTime> previousLeadTime =
                     AverageLeadTime.buildForPullRequestMergedOnBranchRegexSettings(
                             previousPullRequestViews,
-                            pullRequestViewsMergedOnMatchedBranchesFromPreviousStartDate,
+                            previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
                             allCommitsFromPreviousStartDate
                     );
 
@@ -74,4 +90,9 @@ public class LeadTimeService implements LeadTimeFacadeAdapter {
     }
 
 
+    private Boolean excludePullRequest(final PullRequestView pullRequestView, final List<String> excludeBranchRegexes) {
+        return excludeBranchRegexes.stream().anyMatch(
+                regex -> !Pattern.compile(regex).matcher(pullRequestView.getHead()).find()
+        );
+    }
 }

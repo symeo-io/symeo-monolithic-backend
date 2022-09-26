@@ -151,12 +151,11 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
-                                                                                                  Date startDate,
-                                                                                                  Date endDate) throws SymeoException {
+    public List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(UUID teamId,
+                                                                                        Date endDate) throws SymeoException {
         try {
-            return pullRequestWithCommitsAndCommentsRepository.findAllMergedByTeamIdForStartDateAndEndDate(teamId,
-                            startDate, endDate)
+            return pullRequestWithCommitsAndCommentsRepository.findAllByTeamIdUntilEndDate(teamId,
+                            endDate)
                     .stream()
                     .map(PullRequestMapper::withCommitsAndCommentsToDomain)
                     .toList();
@@ -191,6 +190,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     @Override
     public void saveCommits(List<Commit> commits) throws SymeoException {
         try {
+            LOGGER.info("Saving {} commit(s) to database", commits.size());
             commitRepository.saveAll(commits.stream().map(CommitMapper::domainToEntity).toList());
         } catch (Exception e) {
             final String message = "Failed to save commits";
@@ -245,10 +245,12 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PullRequestView> readMergedPullRequestsForTeamIdFromStartDate(UUID teamId, Date startDate) throws SymeoException {
+    public List<PullRequestView> readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(final UUID teamId,
+                                                                                           final Date startDate,
+                                                                                           final Date endDate) throws SymeoException {
         try {
-            return pullRequestFullViewRepository.findAllMergedPullRequestsForTeamIdFromStartDate(teamId,
-                            startDate)
+            return pullRequestFullViewRepository.findAllMergedPullRequestsForTeamIdBetweenStartDateAndDate(teamId,
+                            startDate, endDate)
                     .stream()
                     .map(PullRequestMapper::fullViewToDomain)
                     .toList();

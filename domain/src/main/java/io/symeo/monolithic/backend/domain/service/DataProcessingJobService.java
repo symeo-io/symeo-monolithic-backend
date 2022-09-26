@@ -9,7 +9,7 @@ import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganiza
 import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
@@ -26,7 +26,7 @@ import java.util.UUID;
 public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     private final VcsService vcsService;
-    private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
+    private final OrganizationStorageAdapter organizationStorageAdapter;
     private final RepositoryService repositoryService;
     private final JobManager jobManager;
     private final SymeoJobApiAdapter symeoJobApiAdapter;
@@ -43,7 +43,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 CollectRepositoriesJobRunnable.builder()
                                         .vcsService(vcsService)
                                         .organizationId(organizationId)
-                                        .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                        .organizationStorageAdapter(organizationStorageAdapter)
                                         .jobStorage(jobStorage)
                                         .build()
                         )
@@ -59,7 +59,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .organizationId(organizationId)
                                 .teamId(teamId)
                                 .expositionStorageAdapter(expositionStorageAdapter)
-                                .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                .organizationStorageAdapter(organizationStorageAdapter)
                                 .vcsService(vcsService)
                                 .jobStorage(jobStorage)
                                 .build())
@@ -78,7 +78,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 CollectRepositoriesJobRunnable.builder()
                                         .vcsService(vcsService)
                                         .organizationId(organizationId)
-                                        .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                        .organizationStorageAdapter(organizationStorageAdapter)
                                         .jobStorage(jobStorage)
                                         .build()
                         )
@@ -87,7 +87,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                         .jobRunnable(CollectVcsDataForOrganizationJobRunnable.builder()
                                                 .organizationId(organizationId)
                                                 .expositionStorageAdapter(expositionStorageAdapter)
-                                                .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                                .organizationStorageAdapter(organizationStorageAdapter)
                                                 .vcsService(vcsService)
                                                 .jobStorage(jobStorage)
                                                 .build())
@@ -99,7 +99,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     @Override
     public void startAll() throws SymeoException {
-        final List<Organization> organizations = accountOrganizationStorageAdapter.findAllOrganization();
+        final List<Organization> organizations = organizationStorageAdapter.findAllOrganization();
         organizations.forEach(organization -> symeoJobApiAdapter.startJobForOrganizationId(organization.getId()));
     }
 
@@ -109,7 +109,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                 .jobRunnable(
                         InitializeOrganizationSettingsJobRunnable.builder()
                                 .organizationSettingsService(organizationSettingsService)
-                                .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                                .organizationStorageAdapter(organizationStorageAdapter)
                                 .organizationId(organizationId)
                                 .jobStorage(jobStorage)
                                 .build()

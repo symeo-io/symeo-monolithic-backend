@@ -40,14 +40,14 @@ public class DomainConfiguration {
 
     @Bean
     public DataProcessingJobService dataProcessingJobService(final VcsService vcsService,
-                                                             final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
+                                                             final OrganizationStorageAdapter organizationStorageAdapter,
                                                              final RepositoryService repositoryService,
                                                              final JobManager jobManager,
                                                              final SymeoJobApiAdapter symeoJobApiAdapter,
                                                              final OrganizationSettingsService organizationSettingsService,
                                                              final ExpositionStorageAdapter expositionStorageAdapter,
                                                              final JobStorage jobStorage) {
-        return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter,
+        return new DataProcessingJobService(vcsService, organizationStorageAdapter,
                 repositoryService, jobManager, symeoJobApiAdapter, organizationSettingsService,
                 expositionStorageAdapter, jobStorage);
     }
@@ -71,20 +71,20 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public OrganizationFacadeAdapter organizationFacadeAdapter(final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
+    public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter,
                                                                final DataProcessingJobAdapter dataProcessingJobAdapter) {
-        return new OrganizationService(accountOrganizationStorageAdapter, dataProcessingJobAdapter);
+        return new OrganizationService(organizationStorageAdapter, dataProcessingJobAdapter);
     }
 
     @Bean
-    public TeamFacadeAdapter teamFacadeAdapter(final AccountTeamStorage accountTeamStorage,
+    public TeamFacadeAdapter teamFacadeAdapter(final TeamStorage teamStorage,
                                                final DataProcessingJobAdapter dataProcessingJobAdapter) {
-        return new TeamService(accountTeamStorage, dataProcessingJobAdapter);
+        return new TeamService(teamStorage, dataProcessingJobAdapter);
     }
 
     @Bean
-    public OnboardingFacadeAdapter onboardingFacadeAdapter(final AccountOnboardingStorage accountOnboardingStorage) {
-        return new OnboardingService(accountOnboardingStorage);
+    public OnboardingFacadeAdapter onboardingFacadeAdapter(final OnboardingStorage onboardingStorage) {
+        return new OnboardingService(onboardingStorage);
     }
 
     @Bean
@@ -127,8 +127,8 @@ public class DomainConfiguration {
 
     @Bean
     public OrganizationSettingsService organizationSettingsService(final ExpositionStorageAdapter expositionStorageAdapter,
-                                                                   final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
-        return new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+                                                                   final OrganizationStorageAdapter organizationStorageAdapter) {
+        return new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
     }
 
     @Bean

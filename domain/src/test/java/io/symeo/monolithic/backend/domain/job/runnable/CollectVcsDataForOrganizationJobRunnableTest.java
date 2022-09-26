@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -23,8 +23,8 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
 
     @Test
     void should_collect_vcs_data_for_organization_with_a_last_collection_date() throws SymeoException {
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final VcsService vcsService = mock(VcsService.class);
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
@@ -37,7 +37,7 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
                         .organization(
                                 organization
                         )
-                        .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                        .organizationStorageAdapter(organizationStorageAdapter)
                         .expositionStorageAdapter(expositionStorageAdapter)
                         .jobStorage(jobStorage)
                         .vcsService(vcsService)
@@ -45,7 +45,7 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
                         .build();
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationById(organization.getId()))
+        when(organizationStorageAdapter.findOrganizationById(organization.getId()))
                 .thenReturn(organization);
         when(expositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(organization.getId()))
                 .thenReturn(List.of(
@@ -71,8 +71,8 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
 
     @Test
     void should_collect_vcs_data_for_organization_without_a_last_collection_date() throws SymeoException {
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final VcsService vcsService = mock(VcsService.class);
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
@@ -83,7 +83,7 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
                         .organization(
                                 organization
                         )
-                        .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                        .organizationStorageAdapter(organizationStorageAdapter)
                         .expositionStorageAdapter(expositionStorageAdapter)
                         .jobStorage(jobStorage)
                         .vcsService(vcsService)
@@ -91,7 +91,7 @@ public class CollectVcsDataForOrganizationJobRunnableTest {
                         .build();
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationById(organization.getId()))
+        when(organizationStorageAdapter.findOrganizationById(organization.getId()))
                 .thenReturn(organization);
         when(expositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(organization.getId()))
                 .thenReturn(List.of(

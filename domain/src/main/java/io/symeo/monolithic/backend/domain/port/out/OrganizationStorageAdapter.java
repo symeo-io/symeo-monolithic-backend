@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface AccountOrganizationStorageAdapter {
+public interface OrganizationStorageAdapter {
     Organization findOrganizationById(UUID organizationId) throws SymeoException;
 
     Organization createOrganization(Organization organization) throws SymeoException;

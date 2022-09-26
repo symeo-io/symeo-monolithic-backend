@@ -60,11 +60,14 @@ public interface OrganizationMapper {
     }
 
     static OrganizationSettingsEntity settingsToEntity(final OrganizationSettings organizationSettings) {
+        final DeployDetectionSettings deployDetectionSettings =
+                organizationSettings.getDeliverySettings().getDeployDetectionSettings();
         return OrganizationSettingsEntity.builder()
                 .id(isNull(organizationSettings.getId()) ? UUID.randomUUID() : organizationSettings.getId())
                 .organizationId(organizationSettings.getOrganizationId())
-                .tagRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex())
-                .pullRequestMergedOnBranchRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex())
+                .tagRegex(deployDetectionSettings.getTagRegex())
+                .pullRequestMergedOnBranchRegex(deployDetectionSettings.getPullRequestMergedOnBranchRegex())
+                .excludeBranchRegexes(deployDetectionSettings.getExcludeBranchRegexes())
                 .build();
     }
 
@@ -78,6 +81,7 @@ public interface OrganizationMapper {
                                         DeployDetectionSettings.builder()
                                                 .tagRegex(organizationSettingsEntity.getTagRegex())
                                                 .pullRequestMergedOnBranchRegex(organizationSettingsEntity.getPullRequestMergedOnBranchRegex())
+                                                .excludeBranchRegexes(organizationSettingsEntity.getExcludeBranchRegexes())
                                                 .build()
                                 )
                                 .build()

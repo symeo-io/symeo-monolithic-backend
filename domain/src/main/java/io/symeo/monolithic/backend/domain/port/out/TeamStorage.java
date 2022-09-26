@@ -8,7 +8,7 @@ import io.symeo.monolithic.backend.domain.model.account.User;
 import java.util.List;
 import java.util.UUID;
 
-public interface AccountTeamStorage {
+public interface TeamStorage {
 
     List<Team> createTeamsForUser(List<Team> teams, User user) throws SymeoException;
 

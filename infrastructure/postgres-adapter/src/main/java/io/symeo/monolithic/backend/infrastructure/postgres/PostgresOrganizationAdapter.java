@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
@@ -24,7 +24,7 @@ import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.account
 
 @AllArgsConstructor
 @Slf4j
-public class PostgresAccountOrganizationAdapter implements AccountOrganizationStorageAdapter {
+public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
 
     private final VcsOrganizationRepository vcsOrganizationRepository;
     private final OrganizationRepository organizationRepository;

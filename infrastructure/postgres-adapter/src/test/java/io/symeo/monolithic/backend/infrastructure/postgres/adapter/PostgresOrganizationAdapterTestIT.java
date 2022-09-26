@@ -7,7 +7,7 @@ import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySetting
 import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
+import io.symeo.monolithic.backend.infrastructure.postgres.PostgresOrganizationAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
@@ -38,7 +38,7 @@ public class PostgresOrganizationAdapterTestIT {
     private VcsOrganizationRepository vcsOrganizationRepository;
     @Autowired
     private OrganizationSettingsRepository organizationSettingsRepository;
-    private PostgresAccountOrganizationAdapter postgresOrganizationAdapter;
+    private PostgresOrganizationAdapter postgresOrganizationAdapter;
 
     @AfterEach
     void tearDown() {
@@ -49,7 +49,7 @@ public class PostgresOrganizationAdapterTestIT {
 
     @BeforeEach
     void setUp() {
-        postgresOrganizationAdapter = new PostgresAccountOrganizationAdapter(vcsOrganizationRepository,
+        postgresOrganizationAdapter = new PostgresOrganizationAdapter(vcsOrganizationRepository,
                 organizationRepository, organizationSettingsRepository);
     }
 
