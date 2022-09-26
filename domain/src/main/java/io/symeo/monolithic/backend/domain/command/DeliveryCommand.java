@@ -2,14 +2,14 @@ package io.symeo.monolithic.backend.domain.command;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Branch;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.RawStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DeliveryCommand {
 
@@ -83,5 +83,17 @@ public class DeliveryCommand {
             commitsCollected.addAll(versionControlSystemAdapter.commitsBytesToDomain(alreadyCollectedCommits));
         }
         return commitsCollected.stream().toList();
+    }
+
+    public List<Tag> collectTagsForOrganizationAndRepository(Organization organization, Repository repository) throws SymeoException {
+        final byte[] rawTags =
+                versionControlSystemAdapter.getRawTags(organization.getVcsOrganization().getName(),
+                        repository.getName());
+        rawStorageAdapter.save(
+                organization.getId(),
+                versionControlSystemAdapter.getName(),
+                Tag.getNameFromRepository(repository),
+                rawTags);
+        return versionControlSystemAdapter.tagsBytesToDomain(rawTags);
     }
 }

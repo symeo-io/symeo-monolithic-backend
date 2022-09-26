@@ -1966,3 +1966,7 @@ components:
           type: string
         pull_request_merged_on_branch_regex:
           type: string
+        branch_regexes_to_exclude:
+          type: array
+          items:
+            type: string

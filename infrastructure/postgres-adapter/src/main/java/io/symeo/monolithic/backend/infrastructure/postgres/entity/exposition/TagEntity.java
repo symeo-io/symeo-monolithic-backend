@@ -1,32 +1,34 @@
-package io.symeo.monolithic.backend.infrastructure.postgres.entity.account;
+package io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition;
 
-import lombok.*;
+import com.sun.istack.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "organization", schema = "organization_storage")
+@Table(name = "tag", schema = "exposition_storage")
 @EntityListeners(AuditingEntityListener.class)
-public class OrganizationEntity {
+public class TagEntity {
 
     @Id
-    @Column(name = "id", nullable = false)
-    private UUID id;
+    @Column(name = "sha", nullable = false)
+    @NotNull
+    String sha;
     @Column(name = "name", nullable = false)
-    private String name;
-    @ManyToMany(mappedBy = "organizationEntities")
-    List<UserEntity> userEntities;
+    String name;
+    @Column(name = "repository_id", nullable = false)
+    String repositoryId;
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

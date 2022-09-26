@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.domain.model.insight;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 import lombok.Builder;
 import lombok.Value;
 
@@ -38,17 +39,23 @@ public class AverageLeadTime {
     }
 
 
-    public static Optional<AverageLeadTime> buildForPullRequestMergedOnBranchRegexSettings(final List<PullRequestView> pullRequestWithCommitsViews,
+    public static Optional<AverageLeadTime> buildForPullRequestMergedOnBranchRegexSettings(final List<PullRequestView> pullRequestViews,
                                                                                            final List<PullRequestView> pullRequestViewsMergedOnMatchedBranches,
                                                                                            final List<Commit> allCommitsFromStartDate) {
         final List<PullRequestView> pullRequestViewsToComputeLeadTime =
-                filterPullRequestForLeadTimeComputation(pullRequestWithCommitsViews);
+                filterPullRequestForLeadTimeComputation(pullRequestViews);
         final int pullRequestSize = pullRequestViewsToComputeLeadTime.size();
         if (pullRequestSize == 0) {
             return empty();
         }
         return of(computeLeadTimeForPullRequestMergedOnBranchRegexSettings(pullRequestViewsToComputeLeadTime,
                 pullRequestViewsMergedOnMatchedBranches, allCommitsFromStartDate, pullRequestSize));
+    }
+
+    public static Optional<AverageLeadTime> buildForTagRegexSettings(final List<PullRequestView> pullRequestViews,
+                                                                     final List<Tag> tagsMatchedToDeploy,
+                                                                     List<Commit> allCommitsUntilEndDate) {
+        return empty();
     }
 
     private static AverageLeadTime computeLeadTimeForPullRequestMergedOnBranchRegexSettings(final List<PullRequestView> pullRequestViewsToComputeLeadTime,
@@ -78,4 +85,34 @@ public class AverageLeadTime {
                 .averageDeployTime(averageValueWithOneDecimal(cumulatedDeployTime, pullRequestSize))
                 .build();
     }
+
+    private static AverageLeadTime computeLeadTimeForTagRegexToDeploySettings(final List<PullRequestView> pullRequestViewsToComputeLeadTime,
+                                                                              final List<Tag> tagsMatchedToDeploy,
+                                                                              final List<Commit> allCommitsFromStartDate,
+                                                                              int pullRequestSize) {
+        Long cumulatedLeadTimeValue = 0L;
+        Long cumulatedCodingTime = 0L;
+        Long cumulatedReviewLag = 0L;
+        Long cumulatedReviewTime = 0L;
+        Long cumulatedDeployTime = 0L;
+        for (PullRequestView pullRequestWithCommitsView : pullRequestViewsToComputeLeadTime) {
+            final LeadTime leadTime =
+                    LeadTime.computeLeadTimeForTagRegexToDeploySettings(pullRequestWithCommitsView,
+                            tagsMatchedToDeploy, allCommitsFromStartDate);
+            cumulatedCodingTime += leadTime.getCodingTime();
+            cumulatedReviewLag += leadTime.getReviewLag();
+            cumulatedReviewTime += leadTime.getReviewTime();
+            cumulatedLeadTimeValue += leadTime.getValue();
+            cumulatedDeployTime += Objects.isNull(leadTime.getDeployTime()) ? 0L : leadTime.getDeployTime();
+        }
+        return AverageLeadTime.builder()
+                .averageValue(averageValueWithOneDecimal(cumulatedLeadTimeValue, pullRequestSize))
+                .averageCodingTime(averageValueWithOneDecimal(cumulatedCodingTime, pullRequestSize))
+                .averageReviewLag(averageValueWithOneDecimal(cumulatedReviewLag, pullRequestSize))
+                .averageReviewTime(averageValueWithOneDecimal(cumulatedReviewTime, pullRequestSize))
+                .averageDeployTime(averageValueWithOneDecimal(cumulatedDeployTime, pullRequestSize))
+                .build();
+    }
+
+
 }

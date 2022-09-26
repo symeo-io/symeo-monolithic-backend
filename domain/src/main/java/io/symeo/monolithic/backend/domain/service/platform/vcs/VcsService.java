@@ -32,7 +32,16 @@ public class VcsService {
                 .map(Branch::getName).toList();
         collectCommitsForForOrganizationAndRepositoryAndBranchesFromLastCollectionDate(organization, repository,
                 allBranches, lastCollectionDate);
+        collectTagsForOrganizationAndRepository(organization, repository);
         LOGGER.info("VCS data collection finished for organization {} and repository {}", organization, repository);
+    }
+
+    private void collectTagsForOrganizationAndRepository(Organization organization, Repository repository) throws SymeoException {
+        expositionStorageAdapter.saveTags(
+                deliveryCommand.collectTagsForOrganizationAndRepository(organization, repository).stream()
+                        .map(tag -> tag.toBuilder().repository(repository).build())
+                        .toList()
+        );
     }
 
     public void collectRepositoriesForOrganization(Organization organization) throws SymeoException {

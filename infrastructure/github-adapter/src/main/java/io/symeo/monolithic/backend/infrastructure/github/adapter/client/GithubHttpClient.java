@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubTagDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
@@ -228,6 +229,17 @@ public class GithubHttpClient {
                         + String.format("&per_page=%s", size.toString())
                         + String.format("&sha=%s", branchName);
         return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
+    }
+
+    public GithubTagDTO[] getTagsForOrganizationAndRepository(String vcsOrganizationName, String repositoryName) throws SymeoException {
+        String uri =
+                api
+                        + "repos/"
+                        + vcsOrganizationName
+                        + "/"
+                        + repositoryName
+                        + "/git/matching-refs/tags";
+        return get(uri, vcsOrganizationName, GithubTagDTO[].class);
     }
 
     private <ResponseBody> ResponseBody get(String uri, String organizationName,
