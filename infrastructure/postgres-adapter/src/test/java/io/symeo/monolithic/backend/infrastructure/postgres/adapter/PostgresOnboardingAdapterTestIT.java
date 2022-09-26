@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Onboarding;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresAccountOnboardingAdapter;
+import io.symeo.monolithic.backend.infrastructure.postgres.PostgresOnboardingAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresAccountOnboardingAdapterTestIT {
+public class PostgresOnboardingAdapterTestIT {
 
     private final Faker faker = new Faker();
     @Autowired
@@ -34,8 +34,8 @@ public class PostgresAccountOnboardingAdapterTestIT {
     @Test
     void should_update_onboarding() throws SymeoException {
         // Given
-        final PostgresAccountOnboardingAdapter postgresAccountOnboardingAdapter =
-                new PostgresAccountOnboardingAdapter(onboardingRepository);
+        final PostgresOnboardingAdapter postgresAccountOnboardingAdapter =
+                new PostgresOnboardingAdapter(onboardingRepository);
         Onboarding onboarding = Onboarding.builder().build();
         onboardingRepository.save(OnboardingMapper.domainToEntity(onboarding));
         onboarding =

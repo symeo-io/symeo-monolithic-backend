@@ -6,8 +6,8 @@ import io.symeo.monolithic.backend.domain.model.account.Onboarding;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresAccountOrganizationAdapter;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresAccountUserAdapter;
+import io.symeo.monolithic.backend.infrastructure.postgres.PostgresOrganizationAdapter;
+import io.symeo.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OnboardingEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresAccountUserAdapterTestIT {
+public class PostgresUserAdapterTestIT {
 
     private final Faker faker = new Faker();
     @Autowired
@@ -62,12 +62,12 @@ public class PostgresAccountUserAdapterTestIT {
     @Test
     void should_create_user() throws SymeoException {
         // Given
-        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final String mail = faker.name().title();
 
         // When
-        final User user = postgresAccountUserAdapter.createUserWithEmail(mail);
+        final User user = postgresUserAdapter.createUserWithEmail(mail);
 
         // Then
         assertThat(user).isNotNull();
@@ -83,15 +83,15 @@ public class PostgresAccountUserAdapterTestIT {
     @Test
     void should_read_user() throws SymeoException {
         // Given
-        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final String mail = faker.name().title();
-        postgresAccountUserAdapter.createUserWithEmail(mail);
+        postgresUserAdapter.createUserWithEmail(mail);
 
         // When
-        final Optional<User> existingUser = postgresAccountUserAdapter.getUserFromEmail(mail);
+        final Optional<User> existingUser = postgresUserAdapter.getUserFromEmail(mail);
         final Optional<User> notExistingUser =
-                postgresAccountUserAdapter.getUserFromEmail(faker.dragonBall().character());
+                postgresUserAdapter.getUserFromEmail(faker.dragonBall().character());
 
         // Then
         assertThat(existingUser).isPresent();
@@ -105,10 +105,10 @@ public class PostgresAccountUserAdapterTestIT {
     @Test
     void should_update_user_with_organization() throws SymeoException {
         // Given
-        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
                 vcsOrganizationRepository);
-        final PostgresAccountOrganizationAdapter postgresOrganizationAdapter =
-                new PostgresAccountOrganizationAdapter(vcsOrganizationRepository, organizationRepository,
+        final PostgresOrganizationAdapter postgresOrganizationAdapter =
+                new PostgresOrganizationAdapter(vcsOrganizationRepository, organizationRepository,
                         organizationSettingsRepository);
         final String externalId = faker.name().firstName();
         final String name = faker.pokemon().name();
@@ -121,9 +121,9 @@ public class PostgresAccountUserAdapterTestIT {
                 .build();
 
         // When
-        final User user = postgresAccountUserAdapter.createUserWithEmail(faker.dragonBall().character());
+        final User user = postgresUserAdapter.createUserWithEmail(faker.dragonBall().character());
         final Organization expectedOrganization = postgresOrganizationAdapter.createOrganization(organization);
-        final User updateUserWithOrganization = postgresAccountUserAdapter.updateUserWithOrganization(user.toBuilder()
+        final User updateUserWithOrganization = postgresUserAdapter.updateUserWithOrganization(user.toBuilder()
                         .onboarding(user.getOnboarding().toBuilder().hasConnectedToVcs(true).build()).build(),
                 externalId);
 
@@ -135,7 +135,7 @@ public class PostgresAccountUserAdapterTestIT {
 
     @Test
     void should_fin_all_users_by_organization() throws SymeoException {
-        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final Organization organization1 = Organization.builder()
                 .name(faker.name().firstName())
@@ -165,8 +165,8 @@ public class PostgresAccountUserAdapterTestIT {
         userRepository.save(UserEntity.builder().status("PENDING").onboardingEntity(onboarding5).id(UUID.randomUUID()).organizationEntities(List.of(org2)).email(faker.rickAndMorty().character()).build());
 
         // When
-        final List<User> allByOrganization1 = postgresAccountUserAdapter.findAllByOrganization(organization1);
-        final List<User> allByOrganization2 = postgresAccountUserAdapter.findAllByOrganization(organization2);
+        final List<User> allByOrganization1 = postgresUserAdapter.findAllByOrganization(organization1);
+        final List<User> allByOrganization2 = postgresUserAdapter.findAllByOrganization(organization2);
 
         // Then
         assertThat(allByOrganization1).hasSize(2);
@@ -182,7 +182,7 @@ public class PostgresAccountUserAdapterTestIT {
                 .build();
         final OrganizationEntity organizationEntity =
                 organizationRepository.save(OrganizationMapper.domainToEntity(organization));
-        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final List<User> users = List.of(
                 User.builder().id(UUID.randomUUID()).organizations(List.of(organization)).email(faker.rickAndMorty().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build(),
@@ -191,7 +191,7 @@ public class PostgresAccountUserAdapterTestIT {
         );
 
         // When
-        final List<User> usersSaved = postgresAccountUserAdapter.saveUsers(users);
+        final List<User> usersSaved = postgresUserAdapter.saveUsers(users);
 
         // Then
         assertThat(usersSaved).hasSize(users.size());
@@ -203,11 +203,11 @@ public class PostgresAccountUserAdapterTestIT {
     @Test
     void should_save_a_user() throws SymeoException {
         // Given
-        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
                 vcsOrganizationRepository);
 
         // When
-        postgresAccountUserAdapter.saveUser(User.builder().id(UUID.randomUUID()).email(faker.rickAndMorty().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build());
+        postgresUserAdapter.saveUser(User.builder().id(UUID.randomUUID()).email(faker.rickAndMorty().character()).onboarding(Onboarding.builder().id(UUID.randomUUID()).build()).build());
 
         // Then
         assertThat(userRepository.findAll()).hasSize(1);
@@ -216,15 +216,15 @@ public class PostgresAccountUserAdapterTestIT {
     @Test
     void should_raise_an_exception_for_duplicate_email() throws SymeoException {
         // Given
-        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final String duplicatedMailStub = "duplicated@mail.fr";
-        postgresAccountUserAdapter.createUserWithEmail(duplicatedMailStub);
+        postgresUserAdapter.createUserWithEmail(duplicatedMailStub);
 
         // When
         SymeoException symeoException = null;
         try {
-            postgresAccountUserAdapter.createUserWithEmail(duplicatedMailStub);
+            postgresUserAdapter.createUserWithEmail(duplicatedMailStub);
         } catch (SymeoException e) {
             symeoException = e;
         }
@@ -239,7 +239,7 @@ public class PostgresAccountUserAdapterTestIT {
 
     @Test
     void should_remove_user_from_organization_given_an_user_id() throws SymeoException {
-        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final Organization organization1 = Organization.builder()
                 .name(faker.name().firstName())
@@ -254,7 +254,7 @@ public class PostgresAccountUserAdapterTestIT {
         userRepository.save(userEntity);
 
         // When
-        postgresAccountUserAdapter.removeOrganizationForUserId(userEntity.getId());
+        postgresUserAdapter.removeOrganizationForUserId(userEntity.getId());
 
         // Then
         final List<UserEntity> allUsers = userRepository.findAll();
@@ -266,7 +266,7 @@ public class PostgresAccountUserAdapterTestIT {
     @Test
     void should_find_all_users_by_emails() throws SymeoException {
         // Given
-        final PostgresAccountUserAdapter postgresAccountUserAdapter = new PostgresAccountUserAdapter(userRepository,
+        final PostgresUserAdapter postgresUserAdapter = new PostgresUserAdapter(userRepository,
                 vcsOrganizationRepository);
         final List<UserEntity> userEntities = userRepository.saveAll(List.of(
                 UserEntity.builder().id(UUID.randomUUID()).email(faker.name().name()).status(User.PENDING)
@@ -285,7 +285,7 @@ public class PostgresAccountUserAdapterTestIT {
         final List<String> emails = List.of(userEntities.get(1).getEmail(), userEntities.get(3).getEmail());
 
         // When
-        final List<User> usersFromEmails = postgresAccountUserAdapter.getUsersFromEmails(emails);
+        final List<User> usersFromEmails = postgresUserAdapter.getUsersFromEmails(emails);
 
         // Then
         assertThat(usersFromEmails).hasSize(emails.size());

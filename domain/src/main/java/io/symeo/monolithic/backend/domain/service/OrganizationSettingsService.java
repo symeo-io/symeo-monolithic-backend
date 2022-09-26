@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.port.in.OrganizationSettingsFacade;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 
@@ -16,24 +16,24 @@ import java.util.UUID;
 public class OrganizationSettingsService implements OrganizationSettingsFacade {
 
     private final ExpositionStorageAdapter expositionStorageAdapter;
-    private final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
+    private final OrganizationStorageAdapter organizationStorageAdapter;
 
     public void initializeOrganizationSettingsForOrganization(final Organization organization) throws SymeoException {
         final Optional<OrganizationSettings> optionalOrganizationSettings =
-                accountOrganizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId());
+                organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId());
         if (optionalOrganizationSettings.isEmpty()) {
             final String defaultMostUsedBranch =
                     expositionStorageAdapter.findDefaultMostUsedBranchForOrganizationId(organization.getId());
             final OrganizationSettings organizationSettings =
                     OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
                             defaultMostUsedBranch);
-            accountOrganizationStorageAdapter.saveOrganizationSettings(organizationSettings);
+            organizationStorageAdapter.saveOrganizationSettings(organizationSettings);
         }
     }
 
     @Override
     public OrganizationSettings getOrganizationSettingsForOrganization(final Organization organization) throws SymeoException {
-        return accountOrganizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId())
+        return organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId())
                 .orElseThrow(() ->
                         SymeoException.builder()
                                 .code(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND)
@@ -47,7 +47,7 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
     public void updateOrganizationSettings(final OrganizationSettings organizationSettings) throws SymeoException {
         final Optional<OrganizationSettings> organizationSettingsToUpdate = getOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), organizationSettings.getOrganizationId());
         if (organizationSettingsToUpdate.isPresent()) {
-            accountOrganizationStorageAdapter.saveOrganizationSettings(organizationSettings);
+            organizationStorageAdapter.saveOrganizationSettings(organizationSettings);
         } else {
             throw SymeoException.builder()
                     .code(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND)
@@ -59,6 +59,6 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
 
     @Override
     public Optional<OrganizationSettings> getOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId, UUID organizationId) {
-        return accountOrganizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettingsId, organizationId);
+        return organizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettingsId, organizationId);
     }
 }

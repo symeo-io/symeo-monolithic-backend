@@ -1,12 +1,12 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestWithCommitsAndCommentsDTO;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestWithCommentsDTO;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -45,21 +45,16 @@ public interface PullRequestMapper {
                 .vcsRepository(pullRequest.getRepository())
                 .vcsOrganizationId(pullRequest.getVcsOrganizationId())
                 .organizationId(pullRequest.getOrganizationId())
-                .branchName(pullRequest.getBranchName())
+                .head(pullRequest.getHead())
+                .base(pullRequest.getBase())
                 .size(pullRequestView.getSize())
                 .daysOpened(pullRequestView.getDaysOpened(new Date()))
+                .mergeCommitSha(pullRequest.getMergeCommitSha())
+                .commitShaList(pullRequest.getCommits().stream().map(Commit::getSha).toList())
                 .build();
-        pullRequestToCommitEntities(pullRequest)
-                .forEach(pullRequestEntity::addCommit);
         pullRequestToCommentEntities(pullRequest)
                 .forEach(pullRequestEntity::addComment);
         return pullRequestEntity;
-    }
-
-    static List<CommitEntity> pullRequestToCommitEntities(final PullRequest pullRequest) {
-        return pullRequest.getCommits().stream()
-                .map(CommitMapper::domainToEntity)
-                .toList();
     }
 
     static PullRequest entityToDomain(final PullRequestEntity pullRequestEntity) {
@@ -83,8 +78,10 @@ public interface PullRequestMapper {
                 .vcsOrganizationId(pullRequestEntity.getVcsOrganizationId())
                 .organizationId(pullRequestEntity.getOrganizationId())
                 .repository(pullRequestEntity.getVcsRepository())
-                .branchName(pullRequestEntity.getBranchName())
+                .head(pullRequestEntity.getHead())
+                .base(pullRequestEntity.getBase())
                 .number(Integer.valueOf(pullRequestEntity.getCode()))
+                .mergeCommitSha(pullRequestEntity.getMergeCommitSha())
                 .build();
     }
 
@@ -94,7 +91,6 @@ public interface PullRequestMapper {
                 .mergeDate(isNull(pullRequestFullViewDTO.getMergeDate()) ? null :
                         Date.from(pullRequestFullViewDTO.getMergeDate().toInstant()))
                 .creationDate(Date.from(pullRequestFullViewDTO.getCreationDate().toInstant()))
-                .branchName(pullRequestFullViewDTO.getBranchName())
                 .vcsUrl(pullRequestFullViewDTO.getVcsUrl())
                 .addedLineNumber(pullRequestFullViewDTO.getAddedLineNumber())
                 .deletedLineNumber(pullRequestFullViewDTO.getDeletedLineNumber())
@@ -106,20 +102,25 @@ public interface PullRequestMapper {
                 .authorLogin(pullRequestFullViewDTO.getAuthorLogin())
                 .commitNumber(pullRequestFullViewDTO.getCommitNumber())
                 .status(pullRequestFullViewDTO.getState())
+                .mergeCommitSha(pullRequestFullViewDTO.getMergeCommitSha())
+                .head(pullRequestFullViewDTO.getHead())
+                .base(pullRequestFullViewDTO.getBase())
                 .build();
     }
 
-    static PullRequestView withCommitsAndCommentsToDomain(final PullRequestWithCommitsAndCommentsDTO pullRequestWithCommitsAndCommentsDTO) {
+    static PullRequestView withCommitsAndCommentsToDomain(final PullRequestWithCommentsDTO pullRequestWithCommentsDTO) {
         return PullRequestView.builder()
-                .id(pullRequestWithCommitsAndCommentsDTO.getId())
-                .status(pullRequestWithCommitsAndCommentsDTO.getState())
-                .mergeDate(isNull(pullRequestWithCommitsAndCommentsDTO.getMergeDate()) ? null :
-                        Date.from(pullRequestWithCommitsAndCommentsDTO.getMergeDate().toInstant()))
-                .creationDate(Date.from(pullRequestWithCommitsAndCommentsDTO.getCreationDate().toInstant()))
-                .comments(pullRequestWithCommitsAndCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
-                .commits(pullRequestWithCommitsAndCommentsDTO.getCommits().stream().map(CommitMapper::entityToDomain).toList())
-                .vcsUrl(pullRequestWithCommitsAndCommentsDTO.getVcsUrl())
-                .branchName(pullRequestWithCommitsAndCommentsDTO.getBranchName())
+                .id(pullRequestWithCommentsDTO.getId())
+                .status(pullRequestWithCommentsDTO.getState())
+                .mergeDate(isNull(pullRequestWithCommentsDTO.getMergeDate()) ? null :
+                        Date.from(pullRequestWithCommentsDTO.getMergeDate().toInstant()))
+                .creationDate(Date.from(pullRequestWithCommentsDTO.getCreationDate().toInstant()))
+                .comments(pullRequestWithCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
+                .vcsUrl(pullRequestWithCommentsDTO.getVcsUrl())
+                .head(pullRequestWithCommentsDTO.getHead())
+                .base(pullRequestWithCommentsDTO.getBase())
+                .mergeCommitSha(pullRequestWithCommentsDTO.getMergeCommitSha())
+                .commitShaList(pullRequestWithCommentsDTO.getCommitShaList())
                 .build();
     }
 

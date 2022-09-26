@@ -19,8 +19,8 @@ public interface ExpositionStorageAdapter {
     List<Repository> readRepositoriesForOrganization(Organization organization);
 
     List<PullRequestView> readPullRequestsTimeToMergeViewForOrganizationAndTeamBetweenStartDateAndEndDate(Organization organization,
-                                                                                                          UUID teamId
-            , Date startDate,
+                                                                                                          UUID teamId,
+                                                                                                          Date startDate,
                                                                                                           Date endDate) throws SymeoException;
 
     List<PullRequestView> readPullRequestsSizeViewForOrganizationAndTeamBetweenStartDateToEndDate(Organization organization, UUID teamId,
@@ -41,16 +41,20 @@ public interface ExpositionStorageAdapter {
     int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 
-    List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
-                                                                                           Date startDate, Date endDate)
+    List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(UUID teamId,
+                                                                                 Date endDate)
             throws SymeoException;
 
     String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) throws SymeoException;
 
-    void saveCommits(List<Commit> commits);
+    void saveCommits(List<Commit> commits) throws SymeoException;
 
     List<Repository> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException;
 
     List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException;
 
+    List<PullRequestView> readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate,
+                                                                                    Date endDate) throws SymeoException;
+
+    List<Commit> readAllCommitsForTeamIdFromStartDate(UUID teamId, Date startDate) throws SymeoException;
 }

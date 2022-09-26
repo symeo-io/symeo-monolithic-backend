@@ -2,7 +2,7 @@ package io.symeo.monolithic.backend.domain.service;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Onboarding;
-import io.symeo.monolithic.backend.domain.port.out.AccountOnboardingStorage;
+import io.symeo.monolithic.backend.domain.port.out.OnboardingStorage;
 import io.symeo.monolithic.backend.domain.service.account.OnboardingService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -18,13 +18,13 @@ public class OnboardingServiceTest {
     @Test
     void should_update_onboarding() throws SymeoException {
         // Given
-        final AccountOnboardingStorage accountOnboardingStorage = mock(AccountOnboardingStorage.class);
-        final OnboardingService onboardingService = new OnboardingService(accountOnboardingStorage);
+        final OnboardingStorage onboardingStorage = mock(OnboardingStorage.class);
+        final OnboardingService onboardingService = new OnboardingService(onboardingStorage);
         final Onboarding onboarding = Onboarding.builder().id(UUID.randomUUID()).hasConnectedToVcs(true).build();
 
         // When
         final ArgumentCaptor<Onboarding> onboardingArgumentCaptor = ArgumentCaptor.forClass(Onboarding.class);
-        when(accountOnboardingStorage.updateOnboarding(onboardingArgumentCaptor.capture())).thenReturn(onboarding);
+        when(onboardingStorage.updateOnboarding(onboardingArgumentCaptor.capture())).thenReturn(onboarding);
         onboardingService.updateOnboarding(onboarding);
 
         // Then

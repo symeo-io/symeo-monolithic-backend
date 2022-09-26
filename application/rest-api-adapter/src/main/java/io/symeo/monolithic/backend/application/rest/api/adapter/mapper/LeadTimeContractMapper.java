@@ -47,8 +47,8 @@ public interface LeadTimeContractMapper {
 
     static void mapDeployTime(LeadTimeMetrics leadTimeMetrics, LeadTimeResponseContractLeadTime leadTime) {
         final MetricsContract deployTime = new MetricsContract();
-        deployTime.setValue(BigDecimal.ZERO);
-        deployTime.setTendencyPercentage(BigDecimal.ZERO);
+        deployTime.setValue(floatToBigDecimal(leadTimeMetrics.getAverageDeployTime()));
+        deployTime.setTendencyPercentage(floatToBigDecimal(leadTimeMetrics.getAverageDeployTimePercentageTendency()));
         leadTime.setTimeToDeploy(deployTime);
     }
 

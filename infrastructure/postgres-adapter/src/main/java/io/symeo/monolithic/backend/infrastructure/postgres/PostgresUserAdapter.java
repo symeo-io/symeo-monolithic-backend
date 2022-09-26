@@ -23,7 +23,7 @@ import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.PO
 
 @AllArgsConstructor
 @Slf4j
-public class PostgresAccountUserAdapter implements UserStorageAdapter {
+public class PostgresUserAdapter implements UserStorageAdapter {
 
     private final UserRepository userRepository;
     private final VcsOrganizationRepository vcsOrganizationRepository;

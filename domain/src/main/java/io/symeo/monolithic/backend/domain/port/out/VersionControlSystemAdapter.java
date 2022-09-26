@@ -1,11 +1,12 @@
 package io.symeo.monolithic.backend.domain.port.out;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Branch;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 public interface VersionControlSystemAdapter {
@@ -13,23 +14,19 @@ public interface VersionControlSystemAdapter {
 
     String getName();
 
-    List<Repository> repositoriesBytesToDomain(byte[] repositoriesBytes);
+    List<Repository> repositoriesBytesToDomain(byte[] repositoriesBytes) throws SymeoException;
 
     byte[] getRawPullRequestsForRepository(Repository repository, byte[] alreadyCollectedPullRequests) throws SymeoException;
 
-    List<PullRequest> pullRequestsBytesToDomain(byte[] bytes);
+    List<PullRequest> pullRequestsBytesToDomain(byte[] bytes) throws SymeoException;
 
-    byte[] getRawCommitsForPullRequestNumber(final String vcsOrganizationName,
-                                             final String repositoryName,
-                                             final int pullRequestNumber) throws SymeoException;
+    List<Commit> commitsBytesToDomain(byte[] rawCommits) throws SymeoException;
 
-    byte[] getRawCommitsForRepository(final String vcsOrganizationName,
-                                      final String repositoryName,
-                                      final byte[] alreadyCollectedCommits) throws SymeoException;
+    byte[] getRawBranches(String vcsOrganizationName, String repositoryName) throws SymeoException;
 
-    List<Commit> commitsBytesToDomain(byte[] rawCommits);
+    List<Branch> branchesBytesToDomain(byte[] rawBranches) throws SymeoException;
 
-    List<Comment> commentsBytesToDomain(byte[] rawComments);
-
-    byte[] getRawComments(String vcsOrganizationName, String name, Integer number) throws SymeoException;
+    byte[] getRawCommitsForBranchFromLastCollectionDate(String vcsOrganizationName, String repositoryName,
+                                                        String branchName, Date lastCollectionDate,
+                                                        byte[] alreadyCollectedCommits) throws SymeoException;
 }

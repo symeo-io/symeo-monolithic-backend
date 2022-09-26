@@ -33,11 +33,13 @@ public class CustomPullRequestViewRepository {
             "       pr.close_date," +
             "       pr.state," +
             "       pr.vcs_url," +
-            "       pr.branch_name," +
+            "       pr.head," +
+            "       pr.base," +
             "       pr.title," +
             "       pr.commit_number," +
             "       pr.vcs_repository," +
-            "       pr.author_login" +
+            "       pr.author_login," +
+            "       pr.merge_commit_sha" +
             " from exposition_storage.pull_request pr" +
             " where (" +
             ACTIVE_PULL_REQUEST_SQL_FILTERS_STRING +

@@ -19,7 +19,7 @@ public class LeadTimePieceCurveWithAverage {
     private void addPoint(final LeadTime leadTime) {
         this.leadTimePieceCurve.addPoint(leadTime.getPullRequestView().getStartDateRange(),
                 leadTime.getValue(), leadTime.getCodingTime(), leadTime.getReviewLag(), leadTime.getReviewTime(),
-                leadTime.getPullRequestView().getVcsUrl(), leadTime.getPullRequestView().getBranchName());
+                leadTime.getPullRequestView().getVcsUrl(), leadTime.getPullRequestView().getHead());
         this.averageCurve.addPoint(leadTime.getPullRequestView().getStartDateRange(), leadTime.getValue().floatValue());
     }
 

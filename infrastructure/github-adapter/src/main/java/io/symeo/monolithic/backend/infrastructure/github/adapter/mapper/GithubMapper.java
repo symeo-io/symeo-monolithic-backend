@@ -1,13 +1,17 @@
 package io.symeo.monolithic.backend.infrastructure.github.adapter.mapper;
 
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 public interface GithubMapper {
 
@@ -15,7 +19,6 @@ public interface GithubMapper {
                                                final String githubPlatformName) {
         return Repository.builder()
                 .name(githubRepositoryDTO.getName())
-                .vcsOrganizationId(githubRepositoryDTO.getOwner().getId().toString())
                 .vcsOrganizationName(githubRepositoryDTO.getOwner().getLogin())
                 .id(githubPlatformName + "-" + githubRepositoryDTO.getId().toString())
                 .defaultBranch((String) githubRepositoryDTO.getAdditionalProperties().get("default_branch"))
@@ -41,7 +44,15 @@ public interface GithubMapper {
                 .lastUpdateDate(githubPullRequestDTO.getUpdatedAt())
                 .vcsUrl(githubPullRequestDTO.getHtmlUrl())
                 .authorLogin(githubPullRequestDTO.getUser().getLogin())
-                .branchName(githubPullRequestDTO.getHead().getRef())
+                .head(githubPullRequestDTO.getHead().getRef())
+                .base(githubPullRequestDTO.getBase().getRef())
+                .mergeCommitSha(githubPullRequestDTO.getMergeCommitSha())
+                .commits(isNull(githubPullRequestDTO.getGithubCommitsDTOS()) ? List.of() :
+                        Arrays.stream(githubPullRequestDTO.getGithubCommitsDTOS())
+                        .map(GithubMapper::mapCommitToDomain).collect(Collectors.toList()))
+                .comments(isNull(githubPullRequestDTO.getGithubCommentsDTOS()) ? List.of() :
+                        Arrays.stream(githubPullRequestDTO.getGithubCommentsDTOS())
+                        .map(githubCommentsDTO -> mapCommentToDomain(githubCommentsDTO, githubPlatformName)).collect(Collectors.toList()))
                 .build();
     }
 
@@ -52,6 +63,8 @@ public interface GithubMapper {
                 .sha(githubCommitsDTO.getSha())
                 .date(committer.getDate())
                 .message(githubCommitsDTO.getCommit().getMessage())
+                .parentShaList(isNull(githubCommitsDTO.getParents()) ? List.of() :
+                        githubCommitsDTO.getParents().stream().map(GithubCommitsDTO.GithubCommitParentDTO::getSha).toList())
                 .build();
 
     }
@@ -63,4 +76,7 @@ public interface GithubMapper {
                 .build();
     }
 
+    static Branch mapBranchToDomain(GithubBranchDTO githubBranchDTO) {
+        return Branch.builder().name(githubBranchDTO.getName()).build();
+    }
 }

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.Date;
+import java.util.List;
 
 @Value
 @Builder(toBuilder = true)
@@ -13,6 +14,9 @@ public class Commit {
     Date date;
     String message;
     String sha;
+    List<String> parentShaList;
+    String head;
+    String repositoryId;
 
     public static String getNameFromPullRequest(final PullRequest pullRequest) {
         return ALL + "_for_pr_number_" + pullRequest.getNumber();
@@ -20,5 +24,9 @@ public class Commit {
 
     public static String getNameFromRepository(final Repository repository) {
         return ALL + "_for_repository_" + repository.getId();
+    }
+
+    public static String getNameFromBranch(String branchName) {
+        return ALL + "_for_branch_" + branchName.replace("/", "-");
     }
 }

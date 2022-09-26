@@ -2,7 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Onboarding;
-import io.symeo.monolithic.backend.domain.port.out.AccountOnboardingStorage;
+import io.symeo.monolithic.backend.domain.port.out.OnboardingStorage;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.PO
 
 @AllArgsConstructor
 @Slf4j
-public class PostgresAccountOnboardingAdapter implements AccountOnboardingStorage {
+public class PostgresOnboardingAdapter implements OnboardingStorage {
 
     private final OnboardingRepository onboardingRepository;
 

@@ -22,6 +22,8 @@ public class LeadTimeMetrics {
     Float averageReviewLagPercentageTendency;
     Float averageReviewTime;
     Float averageReviewTimePercentageTendency;
+    Float averageDeployTime;
+    Float averageDeployTimePercentageTendency;
     Date currentStartDate;
     Date currentEndDate;
     Date previousStartDate;
@@ -62,6 +64,8 @@ public class LeadTimeMetrics {
                 .averageReviewLagPercentageTendency(EMPTY_PERCENTAGE)
                 .averageReviewTime(currentAverageLeadTime.getAverageReviewTime())
                 .averageReviewTimePercentageTendency(EMPTY_PERCENTAGE)
+                .averageDeployTime(currentAverageLeadTime.getAverageDeployTime())
+                .averageDeployTimePercentageTendency(EMPTY_PERCENTAGE)
                 .previousStartDate(previousStartDate)
                 .previousEndDate(currentStartDate)
                 .currentStartDate(currentStartDate)
@@ -94,6 +98,11 @@ public class LeadTimeMetrics {
                 .averageReviewTimePercentageTendency(
                         getTendencyPercentage(currentAverageLeadTime.getAverageReviewTime(),
                                 previousAverageLeadTime.getAverageReviewTime())
+                )
+                .averageDeployTime(currentAverageLeadTime.getAverageDeployTime())
+                .averageDeployTimePercentageTendency(
+                        getTendencyPercentage(currentAverageLeadTime.getAverageDeployTime(),
+                                previousAverageLeadTime.getAverageDeployTime())
                 )
                 .previousStartDate(previousStartDate)
                 .previousEndDate(currentStartDate)

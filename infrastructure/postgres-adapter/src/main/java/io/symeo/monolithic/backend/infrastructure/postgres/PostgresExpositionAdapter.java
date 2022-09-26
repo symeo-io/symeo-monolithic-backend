@@ -8,6 +8,7 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
+import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.CommitMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestCurveMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
@@ -36,6 +37,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestFullViewRepository pullRequestFullViewRepository;
     private final CustomPullRequestViewRepository customPullRequestViewRepository;
     private final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
+    private final CommitRepository commitRepository;
 
     @Override
     public void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests) {
@@ -149,12 +151,11 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(UUID teamId,
-                                                                                                  Date startDate,
-                                                                                                  Date endDate) throws SymeoException {
+    public List<PullRequestView> readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(UUID teamId,
+                                                                                        Date endDate) throws SymeoException {
         try {
-            return pullRequestWithCommitsAndCommentsRepository.findAllMergedByTeamIdForStartDateAndEndDate(teamId,
-                            startDate, endDate)
+            return pullRequestWithCommitsAndCommentsRepository.findAllByTeamIdUntilEndDate(teamId,
+                            endDate)
                     .stream()
                     .map(PullRequestMapper::withCommitsAndCommentsToDomain)
                     .toList();
@@ -170,6 +171,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) throws SymeoException {
         try {
             return repositoryRepository.findDefaultMostUsedBranchForOrganizationId(organizationId);
@@ -186,12 +188,23 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
-    public void saveCommits(List<Commit> commits) {
-        // TODO : to implement
-        throw new RuntimeException();
+    public void saveCommits(List<Commit> commits) throws SymeoException {
+        try {
+            LOGGER.info("Saving {} commit(s) to database", commits.size());
+            commitRepository.saveAll(commits.stream().map(CommitMapper::domainToEntity).toList());
+        } catch (Exception e) {
+            final String message = "Failed to save commits";
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .rootException(e)
+                    .message(message)
+                    .build();
+        }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Repository> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
         try {
             return repositoryRepository.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId)
@@ -211,6 +224,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException {
         try {
             return repositoryRepository.findAllRepositoriesLinkedToTeamsForOrganizationId(organizationId)
@@ -220,6 +234,49 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
         } catch (Exception e) {
             final String message = String.format("Failed to find repositories for organizationId %s",
                     organizationId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PullRequestView> readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(final UUID teamId,
+                                                                                           final Date startDate,
+                                                                                           final Date endDate) throws SymeoException {
+        try {
+            return pullRequestFullViewRepository.findAllMergedPullRequestsForTeamIdBetweenStartDateAndDate(teamId,
+                            startDate, endDate)
+                    .stream()
+                    .map(PullRequestMapper::fullViewToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read PR for teamId %s from startDate %s", teamId,
+                    startDate);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Commit> readAllCommitsForTeamIdFromStartDate(UUID teamId, Date startDate) throws SymeoException {
+        try {
+            return commitRepository.findAllByTeamIdFromStartDate(teamId)
+                    .stream()
+                    .map(CommitMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read commits for teamId %s from startDate %s", teamId,
+                    startDate);
             LOGGER.error(message, e);
             throw SymeoException.builder()
                     .rootException(e)

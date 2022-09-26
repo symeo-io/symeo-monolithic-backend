@@ -2,7 +2,7 @@ package io.symeo.monolithic.backend.domain.job.runnable;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import org.junit.jupiter.api.Test;
@@ -19,18 +19,18 @@ public class InitializeOrganizationSettingsJobRunnableTest {
         // Given
         final Organization organization1 = Organization.builder().id(UUID.randomUUID()).build();
         final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final InitializeOrganizationSettingsJobRunnable initializeOrganizationSettingsJobRunnable =
                 InitializeOrganizationSettingsJobRunnable.builder()
                         .organizationSettingsService(organizationSettingsService)
-                        .accountOrganizationStorageAdapter(accountOrganizationStorageAdapter)
+                        .organizationStorageAdapter(organizationStorageAdapter)
                         .organizationId(organization1.getId())
                         .jobStorage(mock(JobStorage.class))
                         .build();
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationById(organization1.getId()))
+        when(organizationStorageAdapter.findOrganizationById(organization1.getId()))
                 .thenReturn(organization1);
         initializeOrganizationSettingsJobRunnable.initializeTasks();
         initializeOrganizationSettingsJobRunnable.run(6L);

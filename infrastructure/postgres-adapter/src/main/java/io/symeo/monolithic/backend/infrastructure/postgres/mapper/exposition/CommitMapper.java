@@ -16,6 +16,8 @@ public interface CommitMapper {
                 .date(ZonedDateTime.ofInstant(commit.getDate().toInstant(), ZoneId.systemDefault()))
                 .authorLogin(commit.getAuthor())
                 .message(commit.getMessage())
+                .repositoryId(commit.getRepositoryId())
+                .parentShaList(commit.getParentShaList())
                 .build();
     }
 
@@ -25,6 +27,8 @@ public interface CommitMapper {
                 .message(commitEntity.getMessage())
                 .author(commitEntity.getAuthorLogin())
                 .date(Date.from(commitEntity.getDate().toInstant()))
+                .repositoryId(commitEntity.getRepositoryId())
+                .parentShaList(commitEntity.getParentShaList())
                 .build();
     }
 }

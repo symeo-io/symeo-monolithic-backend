@@ -32,6 +32,6 @@ public class PullRequestTimeToMergeDTO {
     String state;
     @Column(name = "vcs_url")
     String vcsUrl;
-    @Column(name = "branch_name")
-    String branchName;
+    @Column(name = "head")
+    String head;
 }

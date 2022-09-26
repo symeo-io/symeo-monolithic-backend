@@ -19,20 +19,9 @@ import java.util.stream.Collectors;
 public class SymeoMonolithicBackendConfiguration {
 
     @Around(
-            "execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getRepositoriesForOrganizationName(..)) || execution(* io.symeo.monolithic.backend" +
-                    ".infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getPullRequestsForRepositoryAndOrganizationOrderByDescDate(..)) " +
-                    "|| execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
-                    ".GithubHttpClient.getPullRequestDetailsForPullRequestNumber" +
-                    "(..))"
-                    + "|| execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
-                    ".GithubHttpClient.getCommitsForPullRequestNumber" +
-                    "(..))"
-                    + "|| execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
-                    ".GithubHttpClient.getCommentsForPullRequestNumber" +
-                    "(..))"
-                    + "|| execution(* io.symeo.monolithic.backend.application.rest.api.adapter.api.*.*(..))"
+            "(execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
+                    ".GithubHttpClient.*(..)) || execution(* io.symeo.monolithic.backend.application.rest.api.adapter" +
+                    ".api.*.*(..)))"
     )
     public Object around(ProceedingJoinPoint point) throws Throwable {
         final StopWatch stopWatch = new StopWatch("aop-stopwatch");

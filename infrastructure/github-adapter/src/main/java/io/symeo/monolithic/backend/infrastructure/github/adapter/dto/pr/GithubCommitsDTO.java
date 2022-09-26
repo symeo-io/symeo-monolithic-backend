@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
@@ -15,6 +16,7 @@ import java.util.Date;
 public class GithubCommitsDTO {
     public String sha;
     public GithubCommitDTO commit;
+    public List<GithubCommitParentDTO> parents;
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @AllArgsConstructor
@@ -33,4 +35,13 @@ public class GithubCommitsDTO {
         public String name;
         public Date date;
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class GithubCommitParentDTO {
+        public String sha;
+    }
+
 }
