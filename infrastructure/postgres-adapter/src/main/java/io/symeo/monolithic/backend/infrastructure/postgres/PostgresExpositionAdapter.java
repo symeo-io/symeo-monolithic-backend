@@ -7,11 +7,9 @@ import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
-import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.CommitMapper;
-import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestCurveMapper;
-import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper;
-import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
+import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +36,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final CustomPullRequestViewRepository customPullRequestViewRepository;
     private final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
     private final CommitRepository commitRepository;
+    private final TagRepository tagRepository;
 
     @Override
     public void savePullRequestDetailsWithLinkedCommitsAndComments(List<PullRequest> pullRequests) {
@@ -277,6 +276,40 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
         } catch (Exception e) {
             final String message = String.format("Failed to read commits for teamId %s from startDate %s", teamId,
                     startDate);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public void saveTags(List<Tag> tags) throws SymeoException {
+        try {
+            tagRepository.saveAll(tags.stream()
+                    .map(TagMapper::domainToEntity)
+                    .toList());
+        } catch (Exception e) {
+            final String message = String.format("Failed to save %s tag(s)", tags.size());
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public List<Tag> findTagsForTeamId(UUID teamId) throws SymeoException {
+        try {
+            return tagRepository.findAllForTeamId(teamId).stream()
+                    .map(TagMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read tags for teamId %s", teamId);
             LOGGER.error(message, e);
             throw SymeoException.builder()
                     .rootException(e)

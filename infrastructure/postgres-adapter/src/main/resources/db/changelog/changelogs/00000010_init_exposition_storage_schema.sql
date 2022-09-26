@@ -101,4 +101,20 @@ create table exposition_storage.pull_request_to_commit
     sha             varchar(300) not null
 );
 
+create table exposition_storage.pull_request_to_tag
+(
+    pull_request_id varchar(300) not null,
+    sha             varchar(300) not null
+);
+
+create table exposition_storage.tag
+(
+    sha                         varchar(300)                              not null
+        constraint sha_tag_id primary key,
+    name                        varchar(1000)                             not null,
+    repository_id               varchar(100),
+    technical_creation_date     timestamp(6) with time zone default now() not null,
+    technical_modification_date timestamp(6) with time zone default now() not null
+);
+
 

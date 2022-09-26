@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubTagDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
@@ -49,10 +50,10 @@ public interface GithubMapper {
                 .mergeCommitSha(githubPullRequestDTO.getMergeCommitSha())
                 .commits(isNull(githubPullRequestDTO.getGithubCommitsDTOS()) ? List.of() :
                         Arrays.stream(githubPullRequestDTO.getGithubCommitsDTOS())
-                        .map(GithubMapper::mapCommitToDomain).collect(Collectors.toList()))
+                                .map(GithubMapper::mapCommitToDomain).collect(Collectors.toList()))
                 .comments(isNull(githubPullRequestDTO.getGithubCommentsDTOS()) ? List.of() :
                         Arrays.stream(githubPullRequestDTO.getGithubCommentsDTOS())
-                        .map(githubCommentsDTO -> mapCommentToDomain(githubCommentsDTO, githubPlatformName)).collect(Collectors.toList()))
+                                .map(githubCommentsDTO -> mapCommentToDomain(githubCommentsDTO, githubPlatformName)).collect(Collectors.toList()))
                 .build();
     }
 
@@ -78,5 +79,12 @@ public interface GithubMapper {
 
     static Branch mapBranchToDomain(GithubBranchDTO githubBranchDTO) {
         return Branch.builder().name(githubBranchDTO.getName()).build();
+    }
+
+    static Tag mapTagToDomain(GithubTagDTO githubTagDTO) {
+        return Tag.builder()
+                .name(githubTagDTO.getRef().replace("refs/tags/", ""))
+                .commitSha(githubTagDTO.getObject().getSha())
+                .build();
     }
 }

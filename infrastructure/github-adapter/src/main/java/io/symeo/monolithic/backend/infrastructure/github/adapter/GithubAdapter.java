@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Branch;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubTagDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
@@ -352,6 +350,19 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         return dtoToBytes(githubCommitsDTOList.toArray());
     }
 
+    @Override
+    public byte[] getRawTags(String vcsOrganizationName, String repositoryName) throws SymeoException {
+        return dtoToBytes(githubHttpClient.getTagsForOrganizationAndRepository(vcsOrganizationName,
+                repositoryName));
+    }
+
+    @Override
+    public List<Tag> tagsBytesToDomain(byte[] rawTags) throws SymeoException {
+        return Arrays.stream(bytesToDto(rawTags, GithubTagDTO[].class))
+                .map(GithubMapper::mapTagToDomain)
+                .toList();
+    }
+
     private GithubCommitsDTO[] getGithubCommitsDTOSFromLastCollectionDate(Date lastCollectionDate,
                                                                           GithubHttpClient githubHttpClient,
                                                                           String vcsOrganizationName,
@@ -398,5 +409,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                 )
                 .collect(Collectors.toList());
     }
+
 
 }

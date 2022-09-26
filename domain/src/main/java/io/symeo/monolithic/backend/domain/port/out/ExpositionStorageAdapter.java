@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 
 import java.util.Date;
 import java.util.List;
@@ -57,4 +58,8 @@ public interface ExpositionStorageAdapter {
                                                                                     Date endDate) throws SymeoException;
 
     List<Commit> readAllCommitsForTeamIdFromStartDate(UUID teamId, Date startDate) throws SymeoException;
+
+    void saveTags(List<Tag> tags) throws SymeoException;
+
+    List<Tag> findTagsForTeamId(UUID teamId) throws SymeoException;
 }
