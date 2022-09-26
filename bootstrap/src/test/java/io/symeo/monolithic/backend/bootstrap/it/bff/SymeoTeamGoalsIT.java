@@ -102,7 +102,7 @@ public class SymeoTeamGoalsIT extends AbstractSymeoBackForFrontendApiIT {
                 .exchange()
                 // Then
                 .expectStatus()
-                .is5xxServerError()
+                .is4xxClientError()
                 .expectBody()
                 .jsonPath("$.errors[0].code").isEqualTo(SymeoExceptionCode.INVALID_TEAM_STANDARD_CODE)
                 .jsonPath("$.errors[0].message").isNotEmpty();

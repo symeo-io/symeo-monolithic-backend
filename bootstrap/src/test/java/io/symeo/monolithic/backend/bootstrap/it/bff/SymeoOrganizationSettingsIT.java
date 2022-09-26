@@ -71,6 +71,7 @@ public class SymeoOrganizationSettingsIT extends AbstractSymeoBackForFrontendApi
                 .is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.settings.id").isEqualTo(organizationSettingsEntity.getId().toString())
                 .jsonPath("$.settings.delivery.deploy_detection.tag_regex").isEqualTo(organizationSettingsEntity.getTagRegex())
                 .jsonPath("$.settings.delivery.deploy_detection.pull_request_merged_on_branch_regex").isEqualTo(organizationSettingsEntity.getPullRequestMergedOnBranchRegex());
     }
@@ -162,7 +163,7 @@ public class SymeoOrganizationSettingsIT extends AbstractSymeoBackForFrontendApi
 
                     // Then
                     .expectStatus()
-                    .is5xxServerError();
+                    .is4xxClientError();
             final OrganizationSettingsEntity notUpdatedOrganizationSettings = organizationSettingsRepository.findById(organizationSettingsId).get();
             assertThat(notUpdatedOrganizationSettings.getTagRegex()).isEqualTo(organizationSettingsEntityToUpdate.getTagRegex());
             assertThat(notUpdatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(organizationSettingsEntityToUpdate.getPullRequestMergedOnBranchRegex());

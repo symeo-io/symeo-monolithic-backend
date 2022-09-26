@@ -31,6 +31,7 @@ public interface OrganizationSettingsContractMapper {
         deployDetectionSettingsContract.setPullRequestMergedOnBranchRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex());
         deliverySettingsContract.setDeployDetection(deployDetectionSettingsContract);
         organizationSettingsContract.setDelivery(deliverySettingsContract);
+        organizationSettingsContract.setId(organizationSettings.getId());
         organizationSettingsResponseContract.setSettings(organizationSettingsContract);
         return organizationSettingsResponseContract;
     }

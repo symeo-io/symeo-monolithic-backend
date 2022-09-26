@@ -86,7 +86,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .exchange()
                 // Then
                 .expectStatus()
-                .is5xxServerError()
+                .is4xxClientError()
                 .expectBody()
                 .jsonPath("$.errors[0].code").isEqualTo(SymeoExceptionCode.TEAM_NOT_FOUND)
                 .jsonPath("$.errors[0].message").isEqualTo(String.format("Team not found for id %s",
@@ -258,7 +258,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .exchange()
                 // Then
                 .expectStatus()
-                .is5xxServerError()
+                .is4xxClientError()
                 .expectBody()
                 .jsonPath("$.errors[0].code").isEqualTo(SymeoExceptionCode.TEAM_NOT_FOUND)
                 .jsonPath("$.errors[0].message").isEqualTo(String.format("Team not found for id %s",
@@ -432,7 +432,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .exchange()
                 // Then
                 .expectStatus()
-                .is5xxServerError()
+                .is4xxClientError()
                 .expectBody()
                 .jsonPath("$.pull_requests_page").isEmpty()
                 .jsonPath("$.errors[0].code").isEqualTo(SymeoExceptionCode.PAGINATION_MAXIMUM_SIZE_EXCEEDED);
