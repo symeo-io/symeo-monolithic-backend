@@ -4,6 +4,7 @@ import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.CommitHistory;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -144,6 +145,33 @@ public class LeadTime {
                 .build();
     }
 
+    public static LeadTime computeLeadTimeForTagRegexToDeploySettings(PullRequestView pullRequestView,
+                                                                      final List<Tag> tagsMatchedToDeploy,
+                                                                      final List<Commit> allCommits) {
+        final CommitHistory commitHistory = initializeFromCommits(allCommits);
+        pullRequestView = pullRequestView.toBuilder()
+                .commits(pullRequestView.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
+                .build();
+        final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
+        final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
+        final Date mergeDate = pullRequestView.getMergeDate();
+        final Long codingTime = computeCodingTime(commitsOrderByDate);
+        final Long reviewLag = computeReviewLag(commitsOrderByDate, commentsOrderByDate, mergeDate);
+        final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);
+        final Long deployTime =
+                computeDeployTimeForTagRegexToDeploySettings(pullRequestView,
+                        tagsMatchedToDeploy, commitHistory);
+        return LeadTime.builder()
+                .codingTime(codingTime)
+                .reviewLag(reviewLag)
+                .reviewTime(reviewTime)
+                .deployTime(deployTime)
+                .value(codingTime + reviewLag + reviewTime + (isNull(deployTime) ? 0L : deployTime))
+                .pullRequestView(pullRequestView)
+                .build();
+    }
+
+
     private static Long computeDeployTimeWithPullRequestMatchingDeliverySettings(final PullRequestView pullRequestView,
                                                                                  final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
                                                                                  final CommitHistory commitHistory) {
@@ -166,6 +194,31 @@ public class LeadTime {
         }
         return isNull(firstMergeDateForCommitOnBranch) ? null : getNumberOfMinutesBetweenDates(mergeCommit.getDate(),
                 firstMergeDateForCommitOnBranch);
-
     }
+
+    private static Long computeDeployTimeForTagRegexToDeploySettings(final PullRequestView pullRequestView,
+                                                                     final List<Tag> tagsMatchedToDeploy,
+                                                                     final CommitHistory commitHistory) {
+        if (tagsMatchedToDeploy.isEmpty()) {
+            return null;
+        }
+
+        final Commit mergeCommit = commitHistory.getCommitFromSha(pullRequestView.getMergeCommitSha());
+        Date firstMergeDateForCommitOnBranch = null;
+        for (Tag tagMatchedToDeploy : tagsMatchedToDeploy) {
+            if (commitHistory.isCommitPresentOnMergeCommitHistory(pullRequestView.getMergeCommitSha(),
+                    tagMatchedToDeploy.getCommitSha())) {
+                final Date mergeDate = commitHistory.getCommitFromSha(tagMatchedToDeploy.getCommitSha()).getDate();
+                if (isNull(firstMergeDateForCommitOnBranch)) {
+                    firstMergeDateForCommitOnBranch = mergeDate;
+                } else if (mergeDate.before(firstMergeDateForCommitOnBranch)) {
+                    firstMergeDateForCommitOnBranch = mergeDate;
+                }
+            }
+        }
+        return isNull(firstMergeDateForCommitOnBranch) ? null : getNumberOfMinutesBetweenDates(mergeCommit.getDate(),
+                firstMergeDateForCommitOnBranch);
+    }
+
+
 }

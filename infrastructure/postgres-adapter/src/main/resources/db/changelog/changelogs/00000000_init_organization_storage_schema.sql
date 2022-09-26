@@ -1,6 +1,6 @@
-create schema if not exists account_storage;
+create schema if not exists organization_storage;
 
-create table account_storage.onboarding
+create table organization_storage.onboarding
 (
     id                          uuid                                      not null
         constraint onboarding_id primary key,
@@ -11,7 +11,7 @@ create table account_storage.onboarding
 );
 
 
-create table account_storage.user
+create table organization_storage.user
 (
     id                          uuid                                      not null
         constraint user_id primary key,
@@ -21,10 +21,10 @@ create table account_storage.user
     status                      varchar(40)                               not null,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null,
-    constraint fk_user_onboarding_id foreign key (onboarding_id) references account_storage.onboarding (id)
+    constraint fk_user_onboarding_id foreign key (onboarding_id) references organization_storage.onboarding (id)
 );
 
-create table account_storage.organization
+create table organization_storage.organization
 (
     id                          uuid                                      not null
         constraint organization_id primary key,
@@ -33,7 +33,7 @@ create table account_storage.organization
     technical_modification_date timestamp(6) with time zone default now() not null
 );
 
-create table account_storage.team
+create table organization_storage.team
 (
     id                          uuid                                      not null
         constraint team_id primary key,
@@ -42,19 +42,19 @@ create table account_storage.team
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null,
     constraint team_name_organization_id_unique unique (name, organization_id),
-    constraint fk_team_organization_id foreign key (organization_id) references account_storage.organization (id)
+    constraint fk_team_organization_id foreign key (organization_id) references organization_storage.organization (id)
 );
 
 
-create table account_storage.user_to_organization
+create table organization_storage.user_to_organization
 (
     user_id         uuid not null,
     organization_id uuid not null,
-    constraint fk_user_to_organization_user_id foreign key (user_id) references account_storage.user (id),
-    constraint fk_user_to_organization_organization_id foreign key (organization_id) references account_storage.organization (id)
+    constraint fk_user_to_organization_user_id foreign key (user_id) references organization_storage.user (id),
+    constraint fk_user_to_organization_organization_id foreign key (organization_id) references organization_storage.organization (id)
 );
 
-create table account_storage.team_goal
+create table organization_storage.team_goal
 (
     id                          uuid                                      not null
         constraint team_goal_id primary key,
@@ -63,11 +63,11 @@ create table account_storage.team_goal
     team_id                     uuid                                      not null,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null,
-    constraint fk_team_goal_team_id foreign key (team_id) references account_storage.team (id),
+    constraint fk_team_goal_team_id foreign key (team_id) references organization_storage.team (id),
     constraint team_goal_standard_code_team_id_unique unique (standard_code, team_id)
 );
 
-create table account_storage.organization_settings
+create table organization_storage.organization_settings
 (
     id                          uuid                                      not null
         constraint organization_settings_id primary key,
@@ -76,11 +76,11 @@ create table account_storage.organization_settings
     pr_merged_on_branch_regex   varchar(1000),
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null,
-    constraint fk_organization_settings_organization_id foreign key (organization_id) references account_storage.organization (id)
+    constraint fk_organization_settings_organization_id foreign key (organization_id) references organization_storage.organization (id)
 );
 
 
-create table account_storage.organization_settings_exclude_branch_regex
+create table organization_storage.organization_settings_exclude_branch_regex
 (
     organization_settings_id uuid         not null,
     exclude_branch_regex           varchar(300) not null

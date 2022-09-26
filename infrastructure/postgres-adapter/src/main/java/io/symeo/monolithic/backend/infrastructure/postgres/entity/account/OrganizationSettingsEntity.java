@@ -17,7 +17,7 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "organization_settings", schema = "account_storage")
+@Table(name = "organization_settings", schema = "organization_storage")
 @EntityListeners(AuditingEntityListener.class)
 public class OrganizationSettingsEntity {
 
@@ -32,7 +32,7 @@ public class OrganizationSettingsEntity {
     private String pullRequestMergedOnBranchRegex;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "organization_settings_exclude_branch_regex", schema = "account_storage",
+            name = "organization_settings_exclude_branch_regex", schema = "organization_storage",
             joinColumns = @JoinColumn(name = "organization_settings_id")
     )
     @Column(name = "exclude_branch_regex")

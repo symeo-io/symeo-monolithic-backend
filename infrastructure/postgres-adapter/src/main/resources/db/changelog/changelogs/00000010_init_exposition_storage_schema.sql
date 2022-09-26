@@ -48,7 +48,7 @@ create table exposition_storage.team_to_repository
 (
     team_id       uuid         not null,
     repository_id varchar(100) not null,
-    constraint fk_team foreign key (team_id) references account_storage.team (id),
+    constraint fk_team foreign key (team_id) references organization_storage.team (id),
     constraint fk_repository foreign key (repository_id) references exposition_storage.repository (id)
 );
 
