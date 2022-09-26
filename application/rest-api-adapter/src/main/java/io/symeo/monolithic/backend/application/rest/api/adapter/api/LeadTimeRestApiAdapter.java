@@ -6,7 +6,7 @@ import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.A
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.LeadTimeContractMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.port.in.LeadTimeFacadeAdapter;
+import io.symeo.monolithic.backend.domain.port.in.LeadTimeMetricsFacadeAdapter;
 import io.symeo.monolithic.backend.frontend.contract.api.LeadTimeApi;
 import io.symeo.monolithic.backend.frontend.contract.api.model.LeadTimeResponseContract;
 import lombok.AllArgsConstructor;
@@ -26,13 +26,13 @@ import static org.springframework.http.ResponseEntity.ok;
 public class LeadTimeRestApiAdapter implements LeadTimeApi {
 
     private final AuthenticationService authenticationService;
-    private final LeadTimeFacadeAdapter leadTimeFacadeAdapter;
+    private final LeadTimeMetricsFacadeAdapter leadTimeMetricsFacadeAdapter;
 
     @Override
     public ResponseEntity<LeadTimeResponseContract> getLeadTimeMetrics(UUID teamId, String startDate, String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(LeadTimeContractMapper.toContract(leadTimeFacadeAdapter
+            return ok(LeadTimeContractMapper.toContract(leadTimeMetricsFacadeAdapter
                     .computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(authenticatedUser.getOrganization(),
                             teamId, stringToDate(startDate),
                             stringToDate(endDate))));

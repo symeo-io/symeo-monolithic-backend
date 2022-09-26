@@ -2,18 +2,14 @@ package io.symeo.monolithic.backend.domain.model.insight;
 
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static java.lang.Math.round;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 
 @Value
 @Builder
@@ -25,43 +21,14 @@ public class AverageLeadTime {
     Float averageDeployTime;
 
 
-    private static List<PullRequestView> filterPullRequestForLeadTimeComputation(List<PullRequestView> pullRequestWithCommitsViews) {
-        return pullRequestWithCommitsViews.stream()
-                .filter(AverageLeadTime::filterPullRequestToComputeLeadTime).toList();
-    }
-
-    private static boolean filterPullRequestToComputeLeadTime(final PullRequestView pullRequestView) {
-        return !pullRequestView.getCommitShaList().isEmpty() && pullRequestView.getStatus().equals(PullRequest.MERGE);
-    }
-
     private static Float averageValueWithOneDecimal(Long cumulatedLeadTimeValue, int size) {
-        return round(10 * cumulatedLeadTimeValue / size) / 10f;
+        return round(10f * cumulatedLeadTimeValue / size) / 10f;
     }
 
-
-    public static Optional<AverageLeadTime> buildForPullRequestMergedOnBranchRegexSettings(final List<PullRequestView> pullRequestViews,
+    public static AverageLeadTime computeLeadTimeForPullRequestMergedOnBranchRegexSettings(final List<PullRequestView> pullRequestViewsToComputeLeadTime,
                                                                                            final List<PullRequestView> pullRequestViewsMergedOnMatchedBranches,
-                                                                                           final List<Commit> allCommitsFromStartDate) {
-        final List<PullRequestView> pullRequestViewsToComputeLeadTime =
-                filterPullRequestForLeadTimeComputation(pullRequestViews);
-        final int pullRequestSize = pullRequestViewsToComputeLeadTime.size();
-        if (pullRequestSize == 0) {
-            return empty();
-        }
-        return of(computeLeadTimeForPullRequestMergedOnBranchRegexSettings(pullRequestViewsToComputeLeadTime,
-                pullRequestViewsMergedOnMatchedBranches, allCommitsFromStartDate, pullRequestSize));
-    }
-
-    public static Optional<AverageLeadTime> buildForTagRegexSettings(final List<PullRequestView> pullRequestViews,
-                                                                     final List<Tag> tagsMatchedToDeploy,
-                                                                     List<Commit> allCommitsUntilEndDate) {
-        return empty();
-    }
-
-    private static AverageLeadTime computeLeadTimeForPullRequestMergedOnBranchRegexSettings(final List<PullRequestView> pullRequestViewsToComputeLeadTime,
-                                                                                            final List<PullRequestView> pullRequestViewsMergedOnMatchedBranches,
-                                                                                            final List<Commit> allCommitsFromStartDate,
-                                                                                            int pullRequestSize) {
+                                                                                           final List<Commit> allCommitsFromStartDate,
+                                                                                           int pullRequestSize) {
         Long cumulatedLeadTimeValue = 0L;
         Long cumulatedCodingTime = 0L;
         Long cumulatedReviewLag = 0L;
@@ -86,10 +53,10 @@ public class AverageLeadTime {
                 .build();
     }
 
-    private static AverageLeadTime computeLeadTimeForTagRegexToDeploySettings(final List<PullRequestView> pullRequestViewsToComputeLeadTime,
-                                                                              final List<Tag> tagsMatchedToDeploy,
-                                                                              final List<Commit> allCommitsFromStartDate,
-                                                                              int pullRequestSize) {
+    public static AverageLeadTime computeLeadTimeForTagRegexToDeploySettings(final List<PullRequestView> pullRequestViewsToComputeLeadTime,
+                                                                             final List<Tag> tagsMatchedToDeploy,
+                                                                             final List<Commit> allCommitsFromStartDate,
+                                                                             int pullRequestSize) {
         Long cumulatedLeadTimeValue = 0L;
         Long cumulatedCodingTime = 0L;
         Long cumulatedReviewLag = 0L;

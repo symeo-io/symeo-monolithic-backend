@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface LeadTimeFacadeAdapter {
+public interface LeadTimeMetricsFacadeAdapter {
     Optional<LeadTimeMetrics> computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(Organization organization,
                                                                                     UUID teamId,
                                                                                     Date startDate, Date endDate) throws SymeoException;
