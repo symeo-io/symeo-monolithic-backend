@@ -29,25 +29,6 @@ public class LeadTime {
     // To display PR data on graphs
     PullRequestView pullRequestView;
 
-
-    public static LeadTime computeLeadTimeForPullRequestView(final PullRequestView pullRequestView) {
-        final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
-        final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
-        final Date mergeDate = pullRequestView.getMergeDate();
-        final Long codingTime = computeCodingTime(commitsOrderByDate);
-        final Long reviewLag = computeReviewLag(commitsOrderByDate, commentsOrderByDate, mergeDate);
-        final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);
-//        final Long deployTime = computeDeployTime();
-        return LeadTime.builder()
-                .codingTime(codingTime)
-                .reviewLag(reviewLag)
-                .reviewTime(reviewTime)
-//                .deployTime(deployTime)
-                .value(codingTime + reviewLag + reviewTime)
-                .pullRequestView(pullRequestView)
-                .build();
-    }
-
     private static Long computeReviewTime(final List<Commit> commitsOrderByDate,
                                           final List<Comment> commentsOrderByDate,
                                           final Date mergeDate) {

@@ -80,7 +80,7 @@ public class LeadTimeMetricsMetricsService implements LeadTimeMetricsFacadeAdapt
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
                         .toList();
         final List<Commit> allCommitsUntilEndDate =
-                expositionStorageAdapter.readAllCommitsForTeamIdUntilEndDate(teamId, previousStartDate);
+                expositionStorageAdapter.readAllCommitsForTeamId(teamId);
         final Pattern branchPattern = Pattern.compile(pullRequestMergedOnBranchRegex);
 
         final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate =
@@ -130,7 +130,7 @@ public class LeadTimeMetricsMetricsService implements LeadTimeMetricsFacadeAdapt
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
                         .toList();
         final List<Commit> allCommitsUntilEndDate =
-                expositionStorageAdapter.readAllCommitsForTeamIdUntilEndDate(teamId, previousStartDate);
+                expositionStorageAdapter.readAllCommitsForTeamId(teamId);
         final Pattern tagPattern = Pattern.compile(deployOnTagRegex);
 
         final List<Tag> tagsMatchingDeployTagRegex =

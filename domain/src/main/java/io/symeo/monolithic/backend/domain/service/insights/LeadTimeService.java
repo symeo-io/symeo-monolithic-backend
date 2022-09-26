@@ -3,7 +3,6 @@ package io.symeo.monolithic.backend.domain.service.insights;
 import io.symeo.monolithic.backend.domain.model.insight.AverageLeadTime;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 
 import java.util.List;
@@ -11,6 +10,7 @@ import java.util.Optional;
 
 import static io.symeo.monolithic.backend.domain.model.insight.AverageLeadTime.computeLeadTimeForPullRequestMergedOnBranchRegexSettings;
 import static io.symeo.monolithic.backend.domain.model.insight.AverageLeadTime.computeLeadTimeForTagRegexToDeploySettings;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
@@ -49,6 +49,6 @@ public class LeadTimeService {
     }
 
     public static boolean filterPullRequestToComputeLeadTime(final PullRequestView pullRequestView) {
-        return !pullRequestView.getCommitShaList().isEmpty() && pullRequestView.getStatus().equals(PullRequest.MERGE);
+        return nonNull(pullRequestView.getCommitShaList()) && !pullRequestView.getCommitShaList().isEmpty();
     }
 }

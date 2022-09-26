@@ -137,7 +137,7 @@ public class LeadTimeMetricsServiceTest {
                 .thenReturn(
                         previousPullRequestViews
                 );
-        when(expositionStorageAdapter.readAllCommitsForTeamIdUntilEndDate(teamId, previousStartDate))
+        when(expositionStorageAdapter.readAllCommitsForTeamId(teamId))
                 .thenReturn(allCommits);
         when(expositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId,
                 startDate, endDate))
@@ -268,7 +268,7 @@ public class LeadTimeMetricsServiceTest {
                 .thenReturn(
                         previousPullRequestViews
                 );
-        when(expositionStorageAdapter.readAllCommitsForTeamIdUntilEndDate(teamId, previousStartDate))
+        when(expositionStorageAdapter.readAllCommitsForTeamId(teamId))
                 .thenReturn(allCommits);
         when(expositionStorageAdapter.findTagsForTeamId(teamId)).thenReturn(
                 tags
