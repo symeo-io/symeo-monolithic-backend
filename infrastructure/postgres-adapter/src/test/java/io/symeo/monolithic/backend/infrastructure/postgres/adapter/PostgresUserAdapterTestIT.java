@@ -6,8 +6,6 @@ import io.symeo.monolithic.backend.domain.model.account.Onboarding;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresOrganizationAdapter;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresUserAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OnboardingEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;

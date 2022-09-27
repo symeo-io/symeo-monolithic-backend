@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Builder
 public class CommitHistory {
 
@@ -40,6 +42,9 @@ public class CommitHistory {
     }
 
     private boolean isCommitPresentInCommitHistory(Commit pastCommit, Commit futureCommit) {
+        if (isNull(pastCommit) || isNull(futureCommit)) {
+            return false;
+        }
         for (Commit commit : futureCommit.getParentShaList().stream().map(this::getCommitFromSha).toList()) {
             if (commit.getSha().equals(pastCommit.getSha())) {
                 return true;
@@ -50,7 +55,4 @@ public class CommitHistory {
         return false;
     }
 
-    public List<Commit> getPullRequestCommitsFromMergeSha(String mergeCommitSha) {
-        return null;
-    }
 }

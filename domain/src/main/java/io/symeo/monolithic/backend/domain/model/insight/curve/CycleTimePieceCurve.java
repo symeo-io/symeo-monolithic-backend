@@ -8,18 +8,17 @@ import java.util.List;
 
 @Data
 @Builder
-public class LeadTimePieceCurve {
+public class CycleTimePieceCurve {
     @Builder.Default
-    List<LeadTimePieceCurvePoint> data = new ArrayList<>();
+    List<CyclePieceCurvePoint> data = new ArrayList<>();
 
     public void addPoint(final String startDateRange, final Long value, final Long codingTime,
-                         final Long reviewLag, final Long reviewTime, final String link, final String label) {
+                         final Long reviewTime, final String link, final String label) {
         this.data.add(
-                LeadTimePieceCurvePoint.builder()
+                CyclePieceCurvePoint.builder()
                         .date(startDateRange)
                         .value(value)
                         .codingTime(codingTime)
-                        .reviewLag(reviewLag)
                         .reviewTime(reviewTime)
                         .link(link)
                         .label(label)
@@ -29,11 +28,10 @@ public class LeadTimePieceCurve {
 
     @Data
     @Builder
-    public static class LeadTimePieceCurvePoint {
+    public static class CyclePieceCurvePoint {
         String date;
         Long value;
         Long codingTime;
-        Long reviewLag;
         Long reviewTime;
         String label;
         String link;

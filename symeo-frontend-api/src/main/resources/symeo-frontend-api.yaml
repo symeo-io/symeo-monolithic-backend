@@ -1152,16 +1152,16 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/teams/lead-time:
+  /api/v1/teams/cycle-time:
     get:
       security:
         - bearerAuth: [ ]
       tags:
-        - LeadTime
-      summary: Get LeadTime Metrics
-      operationId: getLeadTimeMetrics
+        - CycleTime
+      summary: Get CycleTime Metrics
+      operationId: getCycleTimeMetrics
       description: |
-        Get LeadTime Metrics
+        Get CycleTime Metrics
       parameters:
         - in: query
           name: team_id
@@ -1183,13 +1183,13 @@ paths:
             pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
       responses:
         "200":
-          description: 'Successfully retrieved lead time metrics'
+          description: 'Successfully retrieved cycle time metrics'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LeadTimeResponseContract'
+                $ref: '#/components/schemas/CycleTimeResponseContract'
               example:
-                lead_time:
+                cycle_time:
                   average:
                     value: 11.4
                     tendency_percentage: -12.3
@@ -1214,16 +1214,16 @@ paths:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
 
-  /api/v1/teams/lead-time/curve:
+  /api/v1/teams/cycle-time/curve:
     get:
       security:
         - bearerAuth: [ ]
       tags:
-        - LeadTime
-      summary: Get LeadTime Curve
-      operationId: getLeadTime Curve
+        - CycleTime
+      summary: Get CycleTime Curve
+      operationId: getCycleTime Curve
       description: |
-        Get LeadTime Curve
+        Get CycleTime Curve
       parameters:
         - in: query
           name: team_id
@@ -1245,11 +1245,11 @@ paths:
             pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
       responses:
         "200":
-          description: 'Successfully retrieved lead time curve'
+          description: 'Successfully retrieved cycle time curve'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LeadTimeCurveResponseContract'
+                $ref: '#/components/schemas/CycleTimeCurveResponseContract'
               example:
                 curves:
                   average_curve:
@@ -1259,7 +1259,6 @@ paths:
                     - value: 13.3
                       date: 2022-01-01
                       coding_time: 5.4
-                      review_lag: 3.2
                       review_time: 2.2
                       deploy_time: 2.5
                 errors:
@@ -1858,10 +1857,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SymeoErrorContract'
-    LeadTimeResponseContract:
+    CycleTimeResponseContract:
       type: object
       properties:
-        lead_time:
+        cycle_time:
           type: object
           properties:
             current_start_date:
@@ -1880,8 +1879,6 @@ components:
               $ref: '#/components/schemas/MetricsContract'
             coding_time:
               $ref: '#/components/schemas/MetricsContract'
-            review_lag:
-              $ref: '#/components/schemas/MetricsContract'
             review_time:
               $ref: '#/components/schemas/MetricsContract'
             time_to_deploy:
@@ -1890,16 +1887,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SymeoErrorContract'
-    LeadTimeCurveResponseContract:
+    CycleTimeCurveResponseContract:
       type: object
       properties:
         curves:
-          $ref: '#/components/schemas/LeadTimeCurveContract'
+          $ref: '#/components/schemas/CycleTimeCurveContract'
         errors:
           type: array
           items:
             $ref: '#/components/schemas/SymeoErrorContract'
-    LeadTimeCurveContract:
+    CycleTimeCurveContract:
       type: object
       required:
         - average_curve
@@ -1912,8 +1909,8 @@ components:
         piece_curve:
           type: array
           items:
-            $ref: '#/components/schemas/LeadTimePieceCurveDataResponseContract'
-    LeadTimePieceCurveDataResponseContract:
+            $ref: '#/components/schemas/CycleTimePieceCurveDataResponseContract'
+    CycleTimePieceCurveDataResponseContract:
       type: object
       properties:
         value:
@@ -1922,9 +1919,6 @@ components:
         date:
           type: string
         coding_time:
-          type: number
-          format: int64
-        review_lag:
           type: number
           format: int64
         review_time:

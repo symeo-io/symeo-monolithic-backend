@@ -3,7 +3,6 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Onboarding;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresOnboardingAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;

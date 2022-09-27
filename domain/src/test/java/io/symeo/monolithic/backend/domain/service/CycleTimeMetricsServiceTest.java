@@ -7,15 +7,15 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.model.insight.AverageLeadTime;
-import io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics;
+import io.symeo.monolithic.backend.domain.model.insight.AverageCycleTime;
+import io.symeo.monolithic.backend.domain.model.insight.CycleTimeMetrics;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 import io.symeo.monolithic.backend.domain.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
-import io.symeo.monolithic.backend.domain.service.insights.LeadTimeMetricsMetricsService;
-import io.symeo.monolithic.backend.domain.service.insights.LeadTimeService;
+import io.symeo.monolithic.backend.domain.service.insights.CycleTimeMetricsMetricsService;
+import io.symeo.monolithic.backend.domain.service.insights.CycleTimeService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -27,21 +27,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LeadTimeMetricsServiceTest {
+public class CycleTimeMetricsServiceTest {
 
 
     private static final Faker faker = new Faker();
 
     @Test
-    void should_get_empty_lead_time_metrics_for_wrong_delivery_settings() throws SymeoException {
+    void should_get_empty_cycle_time_metrics_for_wrong_delivery_settings() throws SymeoException {
         // Given
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
-        final LeadTimeService leadTimeService = mock(LeadTimeService.class);
-        final LeadTimeMetricsMetricsService leadTimeMetricsService = new LeadTimeMetricsMetricsService(
+        final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
                 expositionStorageAdapter,
                 organizationSettingsFacade,
-                leadTimeService
+                cycleTimeService
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -60,8 +60,8 @@ public class LeadTimeMetricsServiceTest {
                                 )
                                 .build()
                 );
-        final Optional<LeadTimeMetrics> optionalLeadTimeMetrics =
-                leadTimeMetricsService.computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(
+        final Optional<CycleTimeMetrics> optionalCycleTimeMetrics =
+                cycleTimeMetricsService.computeCycleTimeMetricsForTeamIdFromStartDateToEndDate(
                         organization,
                         teamId,
                         startDate,
@@ -69,19 +69,19 @@ public class LeadTimeMetricsServiceTest {
                 );
 
         // Then
-        assertThat(optionalLeadTimeMetrics).isEmpty();
+        assertThat(optionalCycleTimeMetrics).isEmpty();
     }
 
     @Test
-    void should_get_lead_time_metrics_given_merged_on_branch_delivery_settings() throws SymeoException {
+    void should_get_cycle_time_metrics_given_merged_on_branch_delivery_settings() throws SymeoException {
         // Given
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
-        final LeadTimeService leadTimeService = mock(LeadTimeService.class);
-        final LeadTimeMetricsMetricsService leadTimeMetricsService = new LeadTimeMetricsMetricsService(
+        final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
                 expositionStorageAdapter,
                 organizationSettingsFacade,
-                leadTimeService
+                cycleTimeService
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -108,18 +108,16 @@ public class LeadTimeMetricsServiceTest {
                 PullRequestView.builder().id(faker.animal().name()).base("staging").build(),
                 PullRequestView.builder().id(faker.animal().name()).base(faker.pokemon().name()).build()
         );
-        final AverageLeadTime averageLeadTime1 = AverageLeadTime.builder()
+        final AverageCycleTime averageCycleTime1 = AverageCycleTime.builder()
                 .averageDeployTime(1.0F)
                 .averageCodingTime(2.0F)
                 .averageReviewTime(3.0F)
-                .averageReviewLag(4.0F)
                 .averageValue(5.0F)
                 .build();
-        final AverageLeadTime averageLeadTime2 = AverageLeadTime.builder()
+        final AverageCycleTime averageCycleTime2 = AverageCycleTime.builder()
                 .averageDeployTime(2.0F)
                 .averageCodingTime(3.0F)
                 .averageReviewTime(4.0F)
-                .averageReviewLag(5.0F)
                 .averageValue(6.0F)
                 .build();
 
@@ -150,19 +148,19 @@ public class LeadTimeMetricsServiceTest {
                         previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate
                 );
         when(
-                leadTimeService.buildForPullRequestMergedOnBranchRegexSettings(
+                cycleTimeService.buildForPullRequestMergedOnBranchRegexSettings(
                         currentPullRequestViews,
                         List.of(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)),
                         allCommits
                 )
-        ).thenReturn(Optional.of(averageLeadTime1));
-        when(leadTimeService.buildForPullRequestMergedOnBranchRegexSettings(
+        ).thenReturn(Optional.of(averageCycleTime1));
+        when(cycleTimeService.buildForPullRequestMergedOnBranchRegexSettings(
                 previousPullRequestViews,
                 List.of(previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)),
                 allCommits
-        )).thenReturn(Optional.of(averageLeadTime2));
-        final Optional<LeadTimeMetrics> optionalLeadTimeMetrics =
-                leadTimeMetricsService.computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(
+        )).thenReturn(Optional.of(averageCycleTime2));
+        final Optional<CycleTimeMetrics> optionalCycleTimeMetrics =
+                cycleTimeMetricsService.computeCycleTimeMetricsForTeamIdFromStartDateToEndDate(
                         organization,
                         teamId,
                         startDate,
@@ -170,17 +168,15 @@ public class LeadTimeMetricsServiceTest {
                 );
 
         // Then
-        assertThat(optionalLeadTimeMetrics).isNotNull();
-        assertThat(optionalLeadTimeMetrics).isPresent();
-        assertThat(optionalLeadTimeMetrics.get()).isEqualTo(
-                LeadTimeMetrics.builder()
+        assertThat(optionalCycleTimeMetrics).isNotNull();
+        assertThat(optionalCycleTimeMetrics).isPresent();
+        assertThat(optionalCycleTimeMetrics.get()).isEqualTo(
+                CycleTimeMetrics.builder()
                         .averageDeployTime(1.0F)
                         .averageCodingTime(2.0F)
                         .averageReviewTime(3.0F)
-                        .averageReviewLag(4.0F)
                         .average(5.0F)
                         .averageCodingTimePercentageTendency(-33.3F)
-                        .averageReviewLagPercentageTendency(-20.0F)
                         .averageTendencyPercentage(-16.7F)
                         .averageReviewTimePercentageTendency(-25.0F)
                         .averageDeployTimePercentageTendency(-50F)
@@ -194,15 +190,15 @@ public class LeadTimeMetricsServiceTest {
 
 
     @Test
-    void should_get_lead_time_metrics_given_tag_to_deploy_regex_delivery_settings() throws SymeoException {
+    void should_get_cycle_time_metrics_given_tag_to_deploy_regex_delivery_settings() throws SymeoException {
         // Given
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
-        final LeadTimeService leadTimeService = mock(LeadTimeService.class);
-        final LeadTimeMetricsMetricsService leadTimeMetricsService = new LeadTimeMetricsMetricsService(
+        final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
                 expositionStorageAdapter,
                 organizationSettingsFacade,
-                leadTimeService
+                cycleTimeService
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -233,18 +229,16 @@ public class LeadTimeMetricsServiceTest {
                 Tag.builder().name("deploy").build(),
                 Tag.builder().name(faker.funnyName().name()).build()
         );
-        final AverageLeadTime averageLeadTime2 = AverageLeadTime.builder()
+        final AverageCycleTime averageCycleTime2 = AverageCycleTime.builder()
                 .averageDeployTime(1.0F)
                 .averageCodingTime(2.0F)
                 .averageReviewTime(3.0F)
-                .averageReviewLag(4.0F)
                 .averageValue(5.0F)
                 .build();
-        final AverageLeadTime averageLeadTime1 = AverageLeadTime.builder()
+        final AverageCycleTime averageCycleTime1 = AverageCycleTime.builder()
                 .averageDeployTime(2.0F)
                 .averageCodingTime(3.0F)
                 .averageReviewTime(4.0F)
-                .averageReviewLag(5.0F)
                 .averageValue(6.0F)
                 .build();
 
@@ -274,21 +268,21 @@ public class LeadTimeMetricsServiceTest {
                 tags
         );
         when(
-                leadTimeService.buildForTagRegexSettings(
+                cycleTimeService.buildForTagRegexSettings(
                         List.of(currentPullRequestViews.get(0)),
                         List.of(tags.get(0)),
                         allCommits
                 )
         )
-                .thenReturn(Optional.of(averageLeadTime1));
-        when(leadTimeService.buildForTagRegexSettings(
+                .thenReturn(Optional.of(averageCycleTime1));
+        when(cycleTimeService.buildForTagRegexSettings(
                 previousPullRequestViews,
                 List.of(tags.get(0)),
                 allCommits
         ))
-                .thenReturn(Optional.of(averageLeadTime2));
-        final Optional<LeadTimeMetrics> optionalLeadTimeMetrics =
-                leadTimeMetricsService.computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(
+                .thenReturn(Optional.of(averageCycleTime2));
+        final Optional<CycleTimeMetrics> optionalCycleTimeMetrics =
+                cycleTimeMetricsService.computeCycleTimeMetricsForTeamIdFromStartDateToEndDate(
                         organization,
                         teamId,
                         startDate,
@@ -296,17 +290,15 @@ public class LeadTimeMetricsServiceTest {
                 );
 
         // Then
-        assertThat(optionalLeadTimeMetrics).isNotNull();
-        assertThat(optionalLeadTimeMetrics).isPresent();
-        assertThat(optionalLeadTimeMetrics.get()).isEqualTo(
-                LeadTimeMetrics.builder()
+        assertThat(optionalCycleTimeMetrics).isNotNull();
+        assertThat(optionalCycleTimeMetrics).isPresent();
+        assertThat(optionalCycleTimeMetrics.get()).isEqualTo(
+                CycleTimeMetrics.builder()
                         .averageDeployTime(2.0F)
                         .averageCodingTime(3.0F)
                         .averageReviewTime(4.0F)
-                        .averageReviewLag(5.0F)
                         .average(6.0F)
                         .averageCodingTimePercentageTendency(50.0F)
-                        .averageReviewLagPercentageTendency(25.0F)
                         .averageTendencyPercentage(20.0F)
                         .averageReviewTimePercentageTendency(33.3F)
                         .averageDeployTimePercentageTendency(100.0F)

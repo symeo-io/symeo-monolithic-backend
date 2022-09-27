@@ -9,8 +9,8 @@ import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.service.DataProcessingJobService;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.service.account.*;
-import io.symeo.monolithic.backend.domain.service.insights.LeadTimeMetricsMetricsService;
-import io.symeo.monolithic.backend.domain.service.insights.LeadTimeService;
+import io.symeo.monolithic.backend.domain.service.insights.CycleTimeMetricsMetricsService;
+import io.symeo.monolithic.backend.domain.service.insights.CycleTimeService;
 import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import io.symeo.monolithic.backend.domain.service.job.JobService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.PullRequestService;
@@ -121,10 +121,10 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public LeadTimeMetricsFacadeAdapter leadTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter,
-                                                              final OrganizationSettingsFacade organizationSettingsFacade,
-                                                              final LeadTimeService leadTimeService) {
-        return new LeadTimeMetricsMetricsService(expositionStorageAdapter, organizationSettingsFacade, leadTimeService);
+    public CycleTimeMetricsFacadeAdapter cycleTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter,
+                                                               final OrganizationSettingsFacade organizationSettingsFacade,
+                                                               final CycleTimeService cycleTimeService) {
+        return new CycleTimeMetricsMetricsService(expositionStorageAdapter, organizationSettingsFacade, cycleTimeService);
     }
 
     @Bean
@@ -139,7 +139,7 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public LeadTimeService leadTimeService() {
-        return new LeadTimeService();
+    public CycleTimeService cycleTimeService() {
+        return new CycleTimeService();
     }
 }

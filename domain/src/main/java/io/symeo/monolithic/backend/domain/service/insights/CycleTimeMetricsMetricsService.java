@@ -3,12 +3,12 @@ package io.symeo.monolithic.backend.domain.service.insights;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.model.insight.AverageLeadTime;
-import io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics;
+import io.symeo.monolithic.backend.domain.model.insight.AverageCycleTime;
+import io.symeo.monolithic.backend.domain.model.insight.CycleTimeMetrics;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
-import io.symeo.monolithic.backend.domain.port.in.LeadTimeMetricsFacadeAdapter;
+import io.symeo.monolithic.backend.domain.port.in.CycleTimeMetricsFacadeAdapter;
 import io.symeo.monolithic.backend.domain.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
@@ -22,22 +22,22 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getPreviousStartDateFromStartDateAndEndDate;
-import static io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics.buildFromCurrentAndPreviousLeadTimes;
+import static io.symeo.monolithic.backend.domain.model.insight.CycleTimeMetrics.buildFromCurrentAndPreviousCycleTimes;
 import static java.util.Objects.nonNull;
 
 @Slf4j
 @AllArgsConstructor
-public class LeadTimeMetricsMetricsService implements LeadTimeMetricsFacadeAdapter {
+public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAdapter {
 
     private final ExpositionStorageAdapter expositionStorageAdapter;
     private final OrganizationSettingsFacade organizationSettingsFacade;
-    private final LeadTimeService leadTimeService;
+    private final CycleTimeService cycleTimeService;
 
     @Override
-    public Optional<LeadTimeMetrics> computeLeadTimeMetricsForTeamIdFromStartDateToEndDate(final Organization organization,
-                                                                                           final UUID teamId,
-                                                                                           final Date startDate,
-                                                                                           final Date endDate) throws SymeoException {
+    public Optional<CycleTimeMetrics> computeCycleTimeMetricsForTeamIdFromStartDateToEndDate(final Organization organization,
+                                                                                             final UUID teamId,
+                                                                                             final Date startDate,
+                                                                                             final Date endDate) throws SymeoException {
         final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
                 organization.getTimeZone());
 
@@ -50,24 +50,24 @@ public class LeadTimeMetricsMetricsService implements LeadTimeMetricsFacadeAdapt
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
 
         if (nonNull(pullRequestMergedOnBranchRegex)) {
-            return getLeadTimeMetricsForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, previousStartDate,
+            return getCycleTimeMetricsForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, previousStartDate,
                     pullRequestMergedOnBranchRegex, excludeBranchRegexes);
         } else if (nonNull(tagRegex)) {
-            return getLeadTimeMetricsForDeployOnTagRegex(teamId, startDate, endDate, previousStartDate, tagRegex,
+            return getCycleTimeMetricsForDeployOnTagRegex(teamId, startDate, endDate, previousStartDate, tagRegex,
                     excludeBranchRegexes);
         }
-        LOGGER.warn("LeadTimeMetrics not computed due to missing delivery settings for organization {} and teamId {} " +
+        LOGGER.warn("CycleTimeMetrics not computed due to missing delivery settings for organization {} and teamId {} " +
                         "and organizationSettings {}",
                 organization, teamId, organizationSettings);
         return Optional.empty();
     }
 
-    private Optional<LeadTimeMetrics> getLeadTimeMetricsForPullRequestMergedOnBranchRegex(final UUID teamId,
-                                                                                          final Date startDate,
-                                                                                          final Date endDate,
-                                                                                          final Date previousStartDate,
-                                                                                          final String pullRequestMergedOnBranchRegex,
-                                                                                          final List<String> excludeBranchRegexes) throws SymeoException {
+    private Optional<CycleTimeMetrics> getCycleTimeMetricsForPullRequestMergedOnBranchRegex(final UUID teamId,
+                                                                                           final Date startDate,
+                                                                                           final Date endDate,
+                                                                                           final Date previousStartDate,
+                                                                                           final String pullRequestMergedOnBranchRegex,
+                                                                                           final List<String> excludeBranchRegexes) throws SymeoException {
         final List<PullRequestView> currentPullRequestViews =
                 expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                                 endDate)
@@ -88,8 +88,8 @@ public class LeadTimeMetricsMetricsService implements LeadTimeMetricsFacadeAdapt
                                 startDate, endDate)
                         .stream().filter(pullRequestView -> branchPattern.matcher(pullRequestView.getBase()).find()).toList();
 
-        final Optional<AverageLeadTime> currentLeadTime =
-                leadTimeService.buildForPullRequestMergedOnBranchRegexSettings(
+        final Optional<AverageCycleTime> currentCycleTime =
+                cycleTimeService.buildForPullRequestMergedOnBranchRegexSettings(
                         currentPullRequestViews,
                         pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
                         allCommitsUntilEndDate
@@ -101,23 +101,23 @@ public class LeadTimeMetricsMetricsService implements LeadTimeMetricsFacadeAdapt
                                 previousStartDate, startDate)
                         .stream().filter(pullRequestView -> branchPattern.matcher(pullRequestView.getBase()).find()).toList();
 
-        final Optional<AverageLeadTime> previousLeadTime =
-                leadTimeService.buildForPullRequestMergedOnBranchRegexSettings(
+        final Optional<AverageCycleTime> previousCycleTime =
+                cycleTimeService.buildForPullRequestMergedOnBranchRegexSettings(
                         previousPullRequestViews,
                         previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
                         allCommitsUntilEndDate
                 );
 
-        return buildFromCurrentAndPreviousLeadTimes(currentLeadTime, previousLeadTime, previousStartDate, startDate,
+        return buildFromCurrentAndPreviousCycleTimes(currentCycleTime, previousCycleTime, previousStartDate, startDate,
                 endDate);
     }
 
-    private Optional<LeadTimeMetrics> getLeadTimeMetricsForDeployOnTagRegex(final UUID teamId,
-                                                                            final Date startDate,
-                                                                            final Date endDate,
-                                                                            final Date previousStartDate,
-                                                                            final String deployOnTagRegex,
-                                                                            final List<String> excludeBranchRegexes) throws SymeoException {
+    private Optional<CycleTimeMetrics> getCycleTimeMetricsForDeployOnTagRegex(final UUID teamId,
+                                                                             final Date startDate,
+                                                                             final Date endDate,
+                                                                             final Date previousStartDate,
+                                                                             final String deployOnTagRegex,
+                                                                             final List<String> excludeBranchRegexes) throws SymeoException {
         final List<PullRequestView> currentPullRequestViews =
                 expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                                 endDate)
@@ -139,26 +139,26 @@ public class LeadTimeMetricsMetricsService implements LeadTimeMetricsFacadeAdapt
                         .filter(tag -> tagPattern.matcher(tag.getName()).find())
                         .toList();
 
-        final Optional<AverageLeadTime> currentLeadTime =
-                leadTimeService.buildForTagRegexSettings(
+        final Optional<AverageCycleTime> currentCycleTime =
+                cycleTimeService.buildForTagRegexSettings(
                         currentPullRequestViews,
                         tagsMatchingDeployTagRegex,
                         allCommitsUntilEndDate
                 );
 
-        final Optional<AverageLeadTime> previousLeadTime =
-                leadTimeService.buildForTagRegexSettings(
+        final Optional<AverageCycleTime> previousCycleTime =
+                cycleTimeService.buildForTagRegexSettings(
                         previousPullRequestViews,
                         tagsMatchingDeployTagRegex,
                         allCommitsUntilEndDate
                 );
-        return buildFromCurrentAndPreviousLeadTimes(currentLeadTime, previousLeadTime, previousStartDate, startDate,
+        return buildFromCurrentAndPreviousCycleTimes(currentCycleTime, previousCycleTime, previousStartDate, startDate,
                 endDate);
     }
 
 
     private Boolean excludePullRequest(final PullRequestView pullRequestView, final List<String> excludeBranchRegexes) {
-        return excludeBranchRegexes.stream().anyMatch(
+        return excludeBranchRegexes.isEmpty() || excludeBranchRegexes.stream().anyMatch(
                 regex -> !Pattern.compile(regex).matcher(pullRequestView.getHead()).find()
         );
     }

@@ -1,4 +1,4 @@
-package io.symeo.monolithic.backend.infrastructure.postgres;
+package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Onboarding;

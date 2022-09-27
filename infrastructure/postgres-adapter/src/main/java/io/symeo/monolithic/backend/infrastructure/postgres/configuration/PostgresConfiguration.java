@@ -1,6 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.configuration;
 
-import io.symeo.monolithic.backend.infrastructure.postgres.*;
+import io.symeo.monolithic.backend.infrastructure.postgres.adapter.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
