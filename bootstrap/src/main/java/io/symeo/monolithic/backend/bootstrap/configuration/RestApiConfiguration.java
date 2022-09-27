@@ -84,8 +84,8 @@ public class RestApiConfiguration {
     }
 
     @Bean
-    public LeadTimeRestApiAdapter leadTimeRestApiAdapter(final AuthenticationService authenticationService,
-                                                         final LeadTimeMetricsFacadeAdapter leadTimeMetricsFacadeAdapter) {
-        return new LeadTimeRestApiAdapter(authenticationService, leadTimeMetricsFacadeAdapter);
+    public CycleTimeRestApiAdapter CycleTimeRestApiAdapter(final AuthenticationService authenticationService,
+                                                          final CycleTimeMetricsFacadeAdapter cycleTimeMetricsFacadeAdapter) {
+        return new CycleTimeRestApiAdapter(authenticationService, cycleTimeMetricsFacadeAdapter);
     }
 }

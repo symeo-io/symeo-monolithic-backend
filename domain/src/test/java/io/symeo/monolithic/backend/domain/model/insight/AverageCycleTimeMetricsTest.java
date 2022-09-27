@@ -7,28 +7,26 @@ import java.util.Date;
 import java.util.Optional;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
-import static io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics.buildFromCurrentAndPreviousLeadTimes;
+import static io.symeo.monolithic.backend.domain.model.insight.CycleTimeMetrics.buildFromCurrentAndPreviousCycleTimes;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AverageCycleTimeMetricsTest {
 
     @Test
-    void should_compute_lead_time_metrics_given_current_and_previous_average_lead_time() throws SymeoException {
+    void should_compute_cycle_time_metrics_given_current_and_previous_average_cycle_time() throws SymeoException {
         // Given
-        final Optional<AverageLeadTime> currentLeadTime = Optional.of(
-                AverageLeadTime.builder()
+        final Optional<AverageCycleTime> currentCycleTime = Optional.of(
+                AverageCycleTime.builder()
                         .averageValue(123.0f)
                         .averageCodingTime(98.5f)
-                        .averageReviewLag(14.3f)
                         .averageReviewTime(10.2f)
                         .averageDeployTime(11.3f)
                         .build()
         );
-        final Optional<AverageLeadTime> previousLeadTime = Optional.of(
-                AverageLeadTime.builder()
+        final Optional<AverageCycleTime> previousCycleTime = Optional.of(
+                AverageCycleTime.builder()
                         .averageValue(145.0f)
                         .averageCodingTime(55.5f)
-                        .averageReviewLag(23.3f)
                         .averageReviewTime(66.2f)
                         .averageDeployTime(2.4f)
                         .build()
@@ -39,75 +37,69 @@ public class AverageCycleTimeMetricsTest {
 
 
         // When
-        final Optional<LeadTimeMetrics> optionalLeadTimeMetrics = buildFromCurrentAndPreviousLeadTimes(
-                currentLeadTime,
-                previousLeadTime,
+        final Optional<CycleTimeMetrics> optionalCycleTimeMetrics = buildFromCurrentAndPreviousCycleTimes(
+                currentCycleTime,
+                previousCycleTime,
                 previousStartDate,
                 currentStartDate,
                 currentEndDate
         );
 
         // Then
-        assertThat(optionalLeadTimeMetrics).isPresent();
-        final LeadTimeMetrics leadTimeMetrics = optionalLeadTimeMetrics.get();
-        assertThat(leadTimeMetrics.getAverage()).isEqualTo(123.0f);
-        assertThat(leadTimeMetrics.getAverageTendencyPercentage()).isEqualTo(-15.2f);
-        assertThat(leadTimeMetrics.getAverageCodingTime()).isEqualTo(98.5f);
-        assertThat(leadTimeMetrics.getAverageCodingTimePercentageTendency()).isEqualTo(77.5f);
-        assertThat(leadTimeMetrics.getAverageReviewLag()).isEqualTo(14.3f);
-        assertThat(leadTimeMetrics.getAverageReviewLagPercentageTendency()).isEqualTo(-38.6f);
-        assertThat(leadTimeMetrics.getAverageReviewTime()).isEqualTo(10.2f);
-        assertThat(leadTimeMetrics.getAverageReviewTimePercentageTendency()).isEqualTo(-84.6f);
-        assertThat(leadTimeMetrics.getAverageDeployTime()).isEqualTo(11.3f);
-        assertThat(leadTimeMetrics.getAverageDeployTimePercentageTendency()).isEqualTo(370.8f);
+        assertThat(optionalCycleTimeMetrics).isPresent();
+        final CycleTimeMetrics cycleTimeMetrics = optionalCycleTimeMetrics.get();
+        assertThat(cycleTimeMetrics.getAverage()).isEqualTo(123.0f);
+        assertThat(cycleTimeMetrics.getAverageTendencyPercentage()).isEqualTo(-15.2f);
+        assertThat(cycleTimeMetrics.getAverageCodingTime()).isEqualTo(98.5f);
+        assertThat(cycleTimeMetrics.getAverageCodingTimePercentageTendency()).isEqualTo(77.5f);
+        assertThat(cycleTimeMetrics.getAverageReviewTime()).isEqualTo(10.2f);
+        assertThat(cycleTimeMetrics.getAverageReviewTimePercentageTendency()).isEqualTo(-84.6f);
+        assertThat(cycleTimeMetrics.getAverageDeployTime()).isEqualTo(11.3f);
+        assertThat(cycleTimeMetrics.getAverageDeployTimePercentageTendency()).isEqualTo(370.8f);
     }
 
     @Test
-    void should_compute_lead_time_given_no_previous_lead_time() throws SymeoException {
+    void should_compute_cycle_time_given_no_previous_cycle_time() throws SymeoException {
         // Given
-        final Optional<AverageLeadTime> currentLeadTime = Optional.of(
-                AverageLeadTime.builder()
+        final Optional<AverageCycleTime> currentCycleTime = Optional.of(
+                AverageCycleTime.builder()
                         .averageValue(123.0f)
                         .averageCodingTime(98.5f)
-                        .averageReviewLag(14.3f)
                         .averageReviewTime(10.2f)
                         .build()
         );
-        final Optional<AverageLeadTime> previousLeadTime = Optional.empty();
+        final Optional<AverageCycleTime> previousCycleTime = Optional.empty();
         final Date previousStartDate = stringToDate("2020-01-01");
         final Date currentStartDate = stringToDate("2020-01-02");
         final Date currentEndDate = stringToDate("2020-01-03");
 
         // When
-        final Optional<LeadTimeMetrics> optionalLeadTimeMetrics = buildFromCurrentAndPreviousLeadTimes(
-                currentLeadTime,
-                previousLeadTime,
+        final Optional<CycleTimeMetrics> optionalCycleTimeMetrics = buildFromCurrentAndPreviousCycleTimes(
+                currentCycleTime,
+                previousCycleTime,
                 previousStartDate,
                 currentStartDate,
                 currentEndDate
         );
 
         // Then
-        assertThat(optionalLeadTimeMetrics).isPresent();
-        final LeadTimeMetrics leadTimeMetrics = optionalLeadTimeMetrics.get();
-        assertThat(leadTimeMetrics.getAverage()).isEqualTo(123.0f);
-        assertThat(leadTimeMetrics.getAverageTendencyPercentage()).isEqualTo(0.0f);
-        assertThat(leadTimeMetrics.getAverageCodingTime()).isEqualTo(98.5f);
-        assertThat(leadTimeMetrics.getAverageCodingTimePercentageTendency()).isEqualTo(0.0f);
-        assertThat(leadTimeMetrics.getAverageReviewLag()).isEqualTo(14.3f);
-        assertThat(leadTimeMetrics.getAverageReviewLagPercentageTendency()).isEqualTo(0.0f);
-        assertThat(leadTimeMetrics.getAverageReviewTime()).isEqualTo(10.2f);
-        assertThat(leadTimeMetrics.getAverageReviewTimePercentageTendency()).isEqualTo(0.0f);
+        assertThat(optionalCycleTimeMetrics).isPresent();
+        final CycleTimeMetrics cycleTimeMetrics = optionalCycleTimeMetrics.get();
+        assertThat(cycleTimeMetrics.getAverage()).isEqualTo(123.0f);
+        assertThat(cycleTimeMetrics.getAverageTendencyPercentage()).isEqualTo(0.0f);
+        assertThat(cycleTimeMetrics.getAverageCodingTime()).isEqualTo(98.5f);
+        assertThat(cycleTimeMetrics.getAverageCodingTimePercentageTendency()).isEqualTo(0.0f);
+        assertThat(cycleTimeMetrics.getAverageReviewTime()).isEqualTo(10.2f);
+        assertThat(cycleTimeMetrics.getAverageReviewTimePercentageTendency()).isEqualTo(0.0f);
     }
 
     @Test
-    void should_no_compute_lead_time_for_empty_lead_times() throws SymeoException {
+    void should_no_compute_cycle_time_for_empty_cycle_times() throws SymeoException {
         // Given
-        final Optional<AverageLeadTime> previousLeadTime = Optional.of(
-                AverageLeadTime.builder()
+        final Optional<AverageCycleTime> previousCycleTime = Optional.of(
+                AverageCycleTime.builder()
                         .averageValue(123.0f)
                         .averageCodingTime(98.5f)
-                        .averageReviewLag(14.3f)
                         .averageReviewTime(10.2f)
                         .build()
         );
@@ -116,17 +108,17 @@ public class AverageCycleTimeMetricsTest {
         final Date currentEndDate = stringToDate("2020-01-03");
 
         // When
-        final Optional<LeadTimeMetrics> optionalLeadTimeMetrics1 =
-                buildFromCurrentAndPreviousLeadTimes(Optional.empty(), previousLeadTime, previousStartDate,
+        final Optional<CycleTimeMetrics> optionalCycleTimeMetrics1 =
+                buildFromCurrentAndPreviousCycleTimes(Optional.empty(), previousCycleTime, previousStartDate,
                         currentStartDate,
                         currentEndDate);
-        final Optional<LeadTimeMetrics> optionalLeadTimeMetrics2 =
-                buildFromCurrentAndPreviousLeadTimes(Optional.empty(), Optional.empty(), previousStartDate,
+        final Optional<CycleTimeMetrics> optionalCycleTimeMetrics2 =
+                buildFromCurrentAndPreviousCycleTimes(Optional.empty(), Optional.empty(), previousStartDate,
                         currentStartDate,
                         currentEndDate);
 
         // Then
-        assertThat(optionalLeadTimeMetrics1).isEmpty();
-        assertThat(optionalLeadTimeMetrics2).isEmpty();
+        assertThat(optionalCycleTimeMetrics1).isEmpty();
+        assertThat(optionalCycleTimeMetrics2).isEmpty();
     }
 }

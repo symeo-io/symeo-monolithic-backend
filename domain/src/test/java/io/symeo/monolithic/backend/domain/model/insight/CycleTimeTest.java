@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.domain.model.insight;
 
 import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.List;
 
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.getNumberOfMinutesBetweenDates;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,13 +25,14 @@ public class CycleTimeTest {
     public class MergeOnPullRequestRegexSettings {
 
         @Test
-        void should_not_compute_coding_time_given_on_commit() {
+        void should_compute_cycle_time_given_one_commit() {
             // Given
+            final Date commitDate = stringToDateTime("2022-01-01 13:00:00");
             final Commit onlyCommit = Commit.builder()
                     .sha(faker.pokemon().name())
-                    .date(new Date())
+                    .date(commitDate)
                     .build();
-            final PullRequestView pullRequestViewLeadTimeToCompute =
+            final PullRequestView pullRequestViewCycleTimeToCompute =
                     PullRequestView.builder()
                             .commitShaList(List.of(onlyCommit.getSha())).build();
             final List<PullRequestView> pullRequestViewsMatchingDeliverySettings = List.of();
@@ -39,18 +42,19 @@ public class CycleTimeTest {
 
 
             // When
-            final CycleTime cycleTime = CycleTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(
-                    pullRequestViewLeadTimeToCompute,
+            final CycleTime cycleTime = CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
+                    pullRequestViewCycleTimeToCompute,
                     pullRequestViewsMatchingDeliverySettings,
                     allCommits
             );
 
             // Then
             assertThat(cycleTime.getCodingTime()).isNull();
-            assertThat(cycleTime.getValue()).isNull();
             assertThat(cycleTime.getDeployTime()).isNull();
-            assertThat(cycleTime.getReviewTime()).isNull();
-            assertThat(cycleTime.getReviewLag()).isNull();
+            assertThat(cycleTime.getReviewTime()).isEqualTo(
+                    DateHelper.getNumberOfMinutesBetweenDates(commitDate, new Date())
+            );
+            assertThat(cycleTime.getValue()).isEqualTo(cycleTime.getReviewTime());
         }
 
         @Test
@@ -64,7 +68,7 @@ public class CycleTimeTest {
                     .sha(faker.pokemon().location())
                     .date(stringToDateTime("2022-01-03 22:05:00"))
                     .build();
-            final PullRequestView pullRequestViewLeadTimeToCompute =
+            final PullRequestView pullRequestViewCycleTimeToCompute =
                     PullRequestView.builder()
                             .commitShaList(List.of(commit1.getSha(), commit2.getSha())).build();
             final List<PullRequestView> pullRequestViewsMatchingDeliverySettings = List.of();
@@ -75,32 +79,35 @@ public class CycleTimeTest {
 
 
             // When
-            final CycleTime cycleTime = CycleTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(
-                    pullRequestViewLeadTimeToCompute,
+            final CycleTime cycleTime = CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
+                    pullRequestViewCycleTimeToCompute,
                     pullRequestViewsMatchingDeliverySettings,
                     allCommits
             );
 
             // Then
             assertThat(cycleTime.getCodingTime()).isEqualTo(2170L);
-            assertThat(cycleTime.getValue()).isEqualTo(2170L);
+            assertThat(cycleTime.getReviewTime()).isEqualTo(DateHelper.getNumberOfMinutesBetweenDates(
+                    commit1.getDate(),
+                    new Date()
+            ));
             assertThat(cycleTime.getDeployTime()).isNull();
-            assertThat(cycleTime.getReviewTime()).isNull();
-            assertThat(cycleTime.getReviewLag()).isNull();
+            assertThat(cycleTime.getValue()).isEqualTo(cycleTime.getCodingTime() + cycleTime.getReviewTime());
         }
 
 
         @Test
-        void should_compute_review_lag_and_time_given_commits_and_comments_for_merged_pr() {
+        void should_compute_review_time_given_commits_and_comments_for_merged_pr() {
             // Given
-            final Commit commit1 = Commit.builder().sha(faker.pokemon().name()).date(stringToDateTime("2022-01-03 " +
-                    "22:00:00")).build();
-            final Commit commit2 = Commit.builder().sha(faker.pokemon().location()).date(stringToDateTime("2022-01-02" +
-                    " 15:30:00")).build();
+            final Commit commit1 = Commit.builder().sha(faker.pokemon().name())
+                    .date(stringToDateTime("2022-01-03 22:00:00")).build();
+            final Commit commit2 = Commit.builder().sha(faker.pokemon().location())
+                    .date(stringToDateTime("2022-01-02 15:30:00")).build();
+            final Date mergeDate = stringToDateTime("2022-01-05 16:32:00");
             final PullRequestView pullRequestView = PullRequestView.builder()
                     .status(PullRequest.MERGE)
                     .creationDate(stringToDateTime("2022-01-01 13:00:00"))
-                    .mergeDate(stringToDateTime("2022-01-05 16:32:00"))
+                    .mergeDate(mergeDate)
                     .commitShaList(List.of(commit1.getSha(), commit2.getSha()))
                     .comments(List.of(
                             Comment.builder().creationDate(stringToDateTime("2022-01-04 07:58:00")).build(),
@@ -111,21 +118,22 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
+                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
                             allCommits);
 
             // Then
-            assertThat(cycleTime.getReviewLag()).isEqualTo(598L);
-            assertThat(cycleTime.getReviewTime()).isEqualTo(1938L);
+            assertThat(cycleTime.getCodingTime()).isEqualTo(1830L);
+            assertThat(cycleTime.getReviewTime()).isEqualTo(2552L);
+            assertThat(cycleTime.getValue()).isEqualTo(4382L);
         }
 
         @Test
-        void should_compute_review_lag_and_time_given_commits_and_comments_for_open_pr() {
+        void should_compute_review_time_given_commits_and_comments_for_open_pr() {
             // Given
-            final Commit commit1 = Commit.builder().sha(faker.pokemon().name()).date(stringToDateTime("2022-01-03 " +
-                    "22:00:00")).build();
-            final Commit commit2 = Commit.builder().sha(faker.pokemon().location()).date(stringToDateTime("2022-01-02" +
-                    " 15:30:00")).build();
+            final Commit commit1 = Commit.builder().sha(faker.pokemon().name())
+                    .date(stringToDateTime("2022-01-03 22:00:00")).build();
+            final Commit commit2 = Commit.builder().sha(faker.pokemon().location())
+                    .date(stringToDateTime("2022-01-02 15:30:00")).build();
             final PullRequestView pullRequestView = PullRequestView.builder()
                     .status(PullRequest.OPEN)
                     .creationDate(stringToDateTime("2022-01-01 13:00:00"))
@@ -133,19 +141,23 @@ public class CycleTimeTest {
                     .commitShaList(List.of(commit1.getSha(), commit2.getSha()))
                     .comments(List.of(
                             Comment.builder().creationDate(stringToDateTime("2022-01-04 07:58:00")).build(),
-                            Comment.builder().creationDate(stringToDateTime("2022-01-04 08:14:00")).build()
+                            Comment.builder().creationDate(stringToDateTime("2022-01-05 08:14:00")).build()
                     ))
                     .build();
             final List<Commit> allCommits = List.of(commit2, commit1);
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
+                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
                             allCommits);
 
             // Then
-            assertThat(cycleTime.getReviewLag()).isEqualTo(598L);
-            assertThat(cycleTime.getReviewTime()).isEqualTo(1938L);
+            assertThat(cycleTime.getCodingTime()).isEqualTo(1830L);
+            assertThat(cycleTime.getReviewTime())
+                    .isEqualTo(
+                            getNumberOfMinutesBetweenDates(commit1.getDate(),
+                                    new Date()));
+            assertThat(cycleTime.getDeployTime()).isNull();
         }
 
 
@@ -163,19 +175,18 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
+                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
                             List.of(commit));
 
             // Then
-            assertThat(cycleTime.getReviewLag()).isEqualTo(0L);
             assertThat(cycleTime.getReviewTime()).isEqualTo(25L);
         }
 
         @Test
-        void should_compute_review_lag_and_time_with_default_value_given_commits_and_empty_commits() {
+        void should_compute_review_time_given_a_single_commit() {
             // Given
-            final Commit commit = Commit.builder().sha(faker.pokemon().name()).date(stringToDateTime("2022-01-03 " +
-                    "15:55:00")).build();
+            final Commit commit = Commit.builder().sha(faker.pokemon().name())
+                    .date(stringToDateTime("2022-01-03 15:55:00")).build();
             final PullRequestView pullRequestView = PullRequestView.builder()
                     .status(PullRequest.MERGE)
                     .creationDate(stringToDateTime("2022-01-01 13:00:00"))
@@ -185,12 +196,14 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
+                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
                             List.of(commit));
 
             // Then
-            assertThat(cycleTime.getReviewLag()).isEqualTo(35L);
-            assertThat(cycleTime.getReviewTime()).isEqualTo(60L);
+            assertThat(cycleTime.getCodingTime()).isNull();
+            assertThat(cycleTime.getReviewTime()).isEqualTo(95L);
+            assertThat(cycleTime.getDeployTime()).isNull();
+            assertThat(cycleTime.getValue()).isEqualTo(95L);
         }
 
 
@@ -263,7 +276,7 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView,
+                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView,
                             pullRequestViewsMatchingDeliverySettings,
                             List.of(commit0, commit1, mergeCommit, commit20, commit21, mergeCommit2, commit30,
                                     commit31, commit3Merge));
@@ -271,7 +284,10 @@ public class CycleTimeTest {
             // Then
 //            "2022-01-04 16:00:00"
 //            "2022-01-05 14:00:00"
+            assertThat(cycleTime.getCodingTime()).isNull();
+            assertThat(cycleTime.getReviewTime()).isEqualTo(0L);
             assertThat(cycleTime.getDeployTime()).isEqualTo(1320L);
+            assertThat(cycleTime.getValue()).isEqualTo(1320L);
         }
     }
 
