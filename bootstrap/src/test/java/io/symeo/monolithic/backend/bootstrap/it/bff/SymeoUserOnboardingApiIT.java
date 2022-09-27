@@ -30,7 +30,7 @@ import java.util.UUID;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.ORGANISATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SymeoUserOnboardingIT extends AbstractSymeoBackForFrontendApiIT {
+public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT {
 
     @Autowired
     public VcsOrganizationRepository vcsOrganizationRepository;

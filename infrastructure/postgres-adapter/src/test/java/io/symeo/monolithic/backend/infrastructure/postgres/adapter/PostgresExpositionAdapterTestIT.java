@@ -473,7 +473,7 @@ public class PostgresExpositionAdapterTestIT {
 
         // When
         final List<PullRequestView> pullRequestViews =
-                postgresExpositionAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate);
+                postgresExpositionAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate);
 
         // Then
         assertThat(pullRequestViews).hasSize(4);

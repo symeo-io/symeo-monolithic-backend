@@ -126,12 +126,12 @@ public class CycleTimeMetricsServiceTest {
         when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
                 .thenReturn(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
                         "^staging$"));
-        when(expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
+        when(expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                 endDate))
                 .thenReturn(
                         currentPullRequestViews
                 );
-        when(expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, startDate))
+        when(expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, startDate))
                 .thenReturn(
                         previousPullRequestViews
                 );
@@ -253,12 +253,12 @@ public class CycleTimeMetricsServiceTest {
                                                 .build())
                                 .build()
                         ).build());
-        when(expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
+        when(expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                 endDate))
                 .thenReturn(
                         currentPullRequestViews
                 );
-        when(expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, startDate))
+        when(expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, startDate))
                 .thenReturn(
                         previousPullRequestViews
                 );
