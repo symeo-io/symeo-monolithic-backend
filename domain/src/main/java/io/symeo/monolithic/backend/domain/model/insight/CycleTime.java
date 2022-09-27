@@ -132,7 +132,7 @@ public class CycleTime {
                 .codingTime(codingTime)
                 .reviewTime(reviewTime)
                 .deployTime(deployTime)
-                .value(codingTime + reviewTime + (isNull(deployTime) ? 0L : deployTime))
+                .value(getCycleTimeValue(codingTime, reviewTime, deployTime))
                 .pullRequestView(pullRequestView)
                 .build();
     }

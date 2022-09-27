@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -278,6 +279,80 @@ public class CycleTimeTest {
             final CycleTime cycleTime =
                     CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView,
                             pullRequestViewsMatchingDeliverySettings,
+                            List.of(commit0, commit1, mergeCommit, commit20, commit21, mergeCommit2, commit30,
+                                    commit31, commit3Merge));
+
+            // Then
+//            "2022-01-04 16:00:00"
+//            "2022-01-05 14:00:00"
+            assertThat(cycleTime.getCodingTime()).isNull();
+            assertThat(cycleTime.getReviewTime()).isEqualTo(0L);
+            assertThat(cycleTime.getDeployTime()).isEqualTo(1320L);
+            assertThat(cycleTime.getValue()).isEqualTo(1320L);
+        }
+    }
+
+    @Nested
+    public class TagToDeployMatchingRegexSettings {
+
+        @Test
+        void should_compute_deploy_time_for_simple_use_case() {
+            // Given
+            final Commit commit1 = Commit.builder().sha(faker.pokemon().name() + "-1").date(stringToDateTime("2022-01" +
+                    "-03 15:55:00")).build();
+            final Commit commit0 = Commit.builder().sha(faker.pokemon().name() + "-0").date(stringToDateTime("2022-01" +
+                    "-02 15:55:00")).build();
+            final Commit mergeCommit = Commit.builder()
+                    .sha(faker.pokemon().name() + "-2")
+                    .date(stringToDateTime("2022-01-04 16:00:00"))
+                    .parentShaList(List.of(commit1.getSha(), commit0.getSha()))
+                    .build();
+            final Commit commit21 = Commit.builder()
+                    .sha(faker.pokemon().name() + "-21")
+                    .date(stringToDateTime("2022-01-05 14:00:00"))
+                    .parentShaList(List.of(mergeCommit.getSha()))
+                    .build();
+            final Commit commit20 = Commit.builder()
+                    .sha(faker.pokemon().name() + "-20")
+                    .date(stringToDateTime("2022-01-05 14:00:00"))
+                    .build();
+            final Commit mergeCommit2 = Commit.builder()
+                    .sha(faker.pokemon().name() + "-2-merge")
+                    .date(stringToDateTime("2022-01-05 14:00:00"))
+                    .parentShaList(List.of(commit21.getSha(), commit20.getSha()))
+                    .build();
+            final Commit commit30 = Commit.builder()
+                    .sha(faker.pokemon().name() + "-30")
+                    .date(stringToDateTime("2022-01-05 14:00:00"))
+                    .build();
+            final Commit commit31 = Commit.builder()
+                    .sha(faker.pokemon().name() + "-31")
+                    .date(stringToDateTime("2022-01-05 14:00:00"))
+                    .parentShaList(List.of(commit30.getSha(), mergeCommit2.getSha()))
+                    .build();
+            final Commit commit3Merge = Commit.builder()
+                    .sha(faker.pokemon().name() + "-3-merge")
+                    .date(stringToDateTime("2022-01-10 10:00:00"))
+                    .parentShaList(List.of(commit31.getSha()))
+                    .build();
+
+            final PullRequestView pullRequestView = PullRequestView.builder()
+                    .status(PullRequest.MERGE)
+                    .creationDate(stringToDateTime("2022-01-01 13:00:00"))
+                    .mergeDate(mergeCommit.getDate())
+                    .mergeCommitSha(mergeCommit.getSha())
+                    .commitShaList(List.of(mergeCommit.getSha()))
+                    .build();
+
+            final List<Tag> tags = List.of(
+                    Tag.builder().name(faker.name().firstName()).commitSha(mergeCommit2.getSha()).build(),
+                    Tag.builder().name(faker.name().lastName()).commitSha(commit3Merge.getSha()).build()
+            );
+
+            // When
+            final CycleTime cycleTime =
+                    CycleTime.computeCycleTimeForTagRegexToDeploySettings(pullRequestView,
+                            tags,
                             List.of(commit0, commit1, mergeCommit, commit20, commit21, mergeCommit2, commit30,
                                     commit31, commit3Merge));
 
