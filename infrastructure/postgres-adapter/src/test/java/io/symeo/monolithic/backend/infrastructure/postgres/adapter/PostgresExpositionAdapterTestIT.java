@@ -150,7 +150,7 @@ public class PostgresExpositionAdapterTestIT {
                         .comments(List.of(
                                 Comment.builder()
                                         .creationDate(new Date())
-                                        .id(faker.rickAndMorty().character())
+                                        .id(faker.rickAndMorty().location())
                                         .build(),
                                 Comment.builder()
                                         .creationDate(new Date())
@@ -162,7 +162,7 @@ public class PostgresExpositionAdapterTestIT {
                         .comments(List.of(
                                 Comment.builder()
                                         .creationDate(new Date())
-                                        .id(faker.rickAndMorty().character())
+                                        .id(faker.harryPotter().character())
                                         .build()
                         )).build()
         );
