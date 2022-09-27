@@ -156,7 +156,6 @@ public class PostgresExpositionAdapterTestIT {
                                         .creationDate(new Date())
                                         .id(faker.rickAndMorty().character())
                                         .build()
-
                         )).build(),
                 buildPullRequest(2).toBuilder()
                         .comments(List.of(

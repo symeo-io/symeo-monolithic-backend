@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static java.lang.Math.round;
+import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
@@ -103,6 +104,9 @@ public class CycleTimeMetrics {
     }
 
     private static Float getTendencyPercentage(final Float currentValue, final Float previousValue) {
+        if (isNull(currentValue) || isNull(previousValue)) {
+            return null;
+        }
         return round(previousValue == 0 ? 0 : 1000 * (currentValue - previousValue) / previousValue) / 10f;
     }
 

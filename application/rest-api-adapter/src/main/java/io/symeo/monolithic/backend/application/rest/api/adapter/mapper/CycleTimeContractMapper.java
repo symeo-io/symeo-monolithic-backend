@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
+import static java.util.Objects.isNull;
 
 public interface CycleTimeContractMapper {
 
@@ -74,6 +75,6 @@ public interface CycleTimeContractMapper {
     }
 
     static BigDecimal floatToBigDecimal(final Float floatToConvert) {
-        return new BigDecimal(Float.toString(floatToConvert));
+        return isNull(floatToConvert) ? null : new BigDecimal(Float.toString(floatToConvert));
     }
 }
