@@ -59,7 +59,7 @@ public class CollectVcsDataForOrganizationJobRunnable extends AbstractTasksRunna
                 .filter(job -> job.getStatus().equals(Job.FINISHED))
                 .map(Job::getCreationDate)
                 .findFirst()
-                .orElseGet(() -> null);
+                .orElse(null);
         vcsService.collectVcsDataForOrganizationAndRepositoryFromLastCollectionDate(organization, repository,
                 lastCollectionDate);
     }

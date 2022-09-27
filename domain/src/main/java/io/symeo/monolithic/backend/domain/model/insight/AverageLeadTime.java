@@ -35,14 +35,14 @@ public class AverageLeadTime {
         Long cumulatedReviewTime = 0L;
         Long cumulatedDeployTime = 0L;
         for (PullRequestView pullRequestWithCommitsView : pullRequestViewsToComputeLeadTime) {
-            final LeadTime leadTime =
-                    LeadTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestWithCommitsView,
+            final CycleTime cycleTime =
+                    CycleTime.computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestWithCommitsView,
                             pullRequestViewsMergedOnMatchedBranches, allCommitsFromStartDate);
-            cumulatedCodingTime += leadTime.getCodingTime();
-            cumulatedReviewLag += leadTime.getReviewLag();
-            cumulatedReviewTime += leadTime.getReviewTime();
-            cumulatedLeadTimeValue += leadTime.getValue();
-            cumulatedDeployTime += Objects.isNull(leadTime.getDeployTime()) ? 0L : leadTime.getDeployTime();
+            cumulatedCodingTime += cycleTime.getCodingTime();
+            cumulatedReviewLag += cycleTime.getReviewLag();
+            cumulatedReviewTime += cycleTime.getReviewTime();
+            cumulatedLeadTimeValue += cycleTime.getValue();
+            cumulatedDeployTime += Objects.isNull(cycleTime.getDeployTime()) ? 0L : cycleTime.getDeployTime();
         }
         return AverageLeadTime.builder()
                 .averageValue(averageValueWithOneDecimal(cumulatedLeadTimeValue, pullRequestSize))
@@ -63,14 +63,14 @@ public class AverageLeadTime {
         Long cumulatedReviewTime = 0L;
         Long cumulatedDeployTime = 0L;
         for (PullRequestView pullRequestWithCommitsView : pullRequestViewsToComputeLeadTime) {
-            final LeadTime leadTime =
-                    LeadTime.computeLeadTimeForTagRegexToDeploySettings(pullRequestWithCommitsView,
+            final CycleTime cycleTime =
+                    CycleTime.computeLeadTimeForTagRegexToDeploySettings(pullRequestWithCommitsView,
                             tagsMatchedToDeploy, allCommitsFromStartDate);
-            cumulatedCodingTime += leadTime.getCodingTime();
-            cumulatedReviewLag += leadTime.getReviewLag();
-            cumulatedReviewTime += leadTime.getReviewTime();
-            cumulatedLeadTimeValue += leadTime.getValue();
-            cumulatedDeployTime += Objects.isNull(leadTime.getDeployTime()) ? 0L : leadTime.getDeployTime();
+            cumulatedCodingTime += cycleTime.getCodingTime();
+            cumulatedReviewLag += cycleTime.getReviewLag();
+            cumulatedReviewTime += cycleTime.getReviewTime();
+            cumulatedLeadTimeValue += cycleTime.getValue();
+            cumulatedDeployTime += Objects.isNull(cycleTime.getDeployTime()) ? 0L : cycleTime.getDeployTime();
         }
         return AverageLeadTime.builder()
                 .averageValue(averageValueWithOneDecimal(cumulatedLeadTimeValue, pullRequestSize))

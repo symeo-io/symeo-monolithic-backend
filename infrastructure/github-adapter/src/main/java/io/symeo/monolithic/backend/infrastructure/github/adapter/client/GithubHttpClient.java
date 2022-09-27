@@ -150,26 +150,6 @@ public class GithubHttpClient {
         );
     }
 
-    public GithubCommitsDTO[] getCommitsForRepositoryAndOrganization(final String vcsOrganizationName,
-                                                                     final String repositoryName,
-                                                                     final Integer page,
-                                                                     final Integer size) throws SymeoException {
-        final String uri =
-                api
-                        + "repos/"
-                        + vcsOrganizationName
-                        + "/" +
-                        repositoryName
-                        + "/commits?per_page="
-                        + size.toString()
-                        + "&page="
-                        + page.toString();
-        return get(
-                uri,
-                vcsOrganizationName,
-                GithubCommitsDTO[].class);
-    }
-
     public GithubBranchDTO[] getBranchesForOrganizationAndRepository(final String vcsOrganizationName,
                                                                      final String repositoryName,
                                                                      final Integer page,

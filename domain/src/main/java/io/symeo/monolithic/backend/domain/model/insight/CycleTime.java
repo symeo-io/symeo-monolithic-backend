@@ -19,7 +19,7 @@ import static java.util.Objects.isNull;
 @Builder(toBuilder = true)
 @Value
 @Slf4j
-public class LeadTime {
+public class CycleTime {
 
     Long value;
     Long codingTime;
@@ -32,10 +32,14 @@ public class LeadTime {
     private static Long computeReviewTime(final List<Commit> commitsOrderByDate,
                                           final List<Comment> commentsOrderByDate,
                                           final Date mergeDate) {
+
         if (!commentsOrderByDate.isEmpty()) {
             final Comment lastComment = commentsOrderByDate.get(commentsOrderByDate.size() - 1);
             return getNumberOfMinutesBetweenDates(lastComment.getCreationDate(), mergeDate);
         } else {
+            if (isNull(mergeDate)) {
+                return null;
+            }
             final Long minutesBetweenLastCommitAndMerge =
                     getNumberOfMinutesBetweenDates(commitsOrderByDate.get(commitsOrderByDate.size() - 1).getDate(),
                             mergeDate);
@@ -56,13 +60,11 @@ public class LeadTime {
             return getNumberOfMinutesBetweenDates(lastCommitBeforeFirstReview.getDate(),
                     firstComment.getCreationDate());
         } else {
-            final Long minutesBetweenLastCommitAndMerge =
-                    getNumberOfMinutesBetweenDates(commitsOrderByDate.get(commitsOrderByDate.size() - 1).getDate(),
-                            mergeDate);
-            if (minutesBetweenLastCommitAndMerge <= getDefaultReviewTimeMinutes()) {
-                return 0L;
+            if (isNull(mergeDate)) {
+                return getNumberOfMinutesBetweenDates(commitsOrderByDate.get(commitsOrderByDate.size() - 1).getDate(),
+                        new Date());
             } else {
-                return minutesBetweenLastCommitAndMerge - getDefaultReviewTimeMinutes();
+                return null;
             }
         }
     }
@@ -73,7 +75,7 @@ public class LeadTime {
 
     private static Long computeCodingTime(final List<Commit> commitsOrderByDate) {
         if (commitsOrderByDate.size() == 1) {
-            return 0L;
+            return null;
         }
         return getNumberOfMinutesBetweenDates(commitsOrderByDate.get(0).getDate(),
                 commitsOrderByDate.get(commitsOrderByDate.size() - 1).getDate());
@@ -100,9 +102,9 @@ public class LeadTime {
         return lastCommitBeforeFirstReview;
     }
 
-    public static LeadTime computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(PullRequestView pullRequestView,
-                                                                                        final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
-                                                                                        final List<Commit> allCommits) {
+    public static CycleTime computeLeadTimeForMergeOnPullRequestMatchingDeliverySettings(PullRequestView pullRequestView,
+                                                                                         final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
+                                                                                         final List<Commit> allCommits) {
         final CommitHistory commitHistory = initializeFromCommits(allCommits);
         pullRequestView = pullRequestView.toBuilder()
                 .commits(pullRequestView.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
@@ -116,19 +118,23 @@ public class LeadTime {
         final Long deployTime =
                 computeDeployTimeWithPullRequestMatchingDeliverySettings(pullRequestView,
                         pullRequestViewsMatchingDeliverySettings, commitHistory);
-        return LeadTime.builder()
+        return CycleTime.builder()
                 .codingTime(codingTime)
                 .reviewLag(reviewLag)
                 .reviewTime(reviewTime)
                 .deployTime(deployTime)
-                .value(codingTime + reviewLag + reviewTime + (isNull(deployTime) ? 0L : deployTime))
+                .value(zeroIfNull(codingTime) + zeroIfNull(reviewLag) + zeroIfNull(reviewTime) + zeroIfNull(deployTime))
                 .pullRequestView(pullRequestView)
                 .build();
     }
 
-    public static LeadTime computeLeadTimeForTagRegexToDeploySettings(PullRequestView pullRequestView,
-                                                                      final List<Tag> tagsMatchedToDeploy,
-                                                                      final List<Commit> allCommits) {
+    private static Long zeroIfNull(final Long value) {
+        return isNull(value) ? 0L : value;
+    }
+
+    public static CycleTime computeLeadTimeForTagRegexToDeploySettings(PullRequestView pullRequestView,
+                                                                       final List<Tag> tagsMatchedToDeploy,
+                                                                       final List<Commit> allCommits) {
         final CommitHistory commitHistory = initializeFromCommits(allCommits);
         pullRequestView = pullRequestView.toBuilder()
                 .commits(pullRequestView.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
@@ -142,7 +148,7 @@ public class LeadTime {
         final Long deployTime =
                 computeDeployTimeForTagRegexToDeploySettings(pullRequestView,
                         tagsMatchedToDeploy, commitHistory);
-        return LeadTime.builder()
+        return CycleTime.builder()
                 .codingTime(codingTime)
                 .reviewLag(reviewLag)
                 .reviewTime(reviewTime)

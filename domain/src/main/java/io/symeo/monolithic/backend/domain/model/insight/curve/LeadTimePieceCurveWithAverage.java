@@ -1,7 +1,7 @@
 package io.symeo.monolithic.backend.domain.model.insight.curve;
 
 
-import io.symeo.monolithic.backend.domain.model.insight.LeadTime;
+import io.symeo.monolithic.backend.domain.model.insight.CycleTime;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,17 +16,17 @@ public class LeadTimePieceCurveWithAverage {
     Curve averageCurve = Curve.builder().build();
 
 
-    private void addPoint(final LeadTime leadTime) {
-        this.leadTimePieceCurve.addPoint(leadTime.getPullRequestView().getStartDateRange(),
-                leadTime.getValue(), leadTime.getCodingTime(), leadTime.getReviewLag(), leadTime.getReviewTime(),
-                leadTime.getPullRequestView().getVcsUrl(), leadTime.getPullRequestView().getHead());
-        this.averageCurve.addPoint(leadTime.getPullRequestView().getStartDateRange(), leadTime.getValue().floatValue());
+    private void addPoint(final CycleTime cycleTime) {
+        this.leadTimePieceCurve.addPoint(cycleTime.getPullRequestView().getStartDateRange(),
+                cycleTime.getValue(), cycleTime.getCodingTime(), cycleTime.getReviewLag(), cycleTime.getReviewTime(),
+                cycleTime.getPullRequestView().getVcsUrl(), cycleTime.getPullRequestView().getHead());
+        this.averageCurve.addPoint(cycleTime.getPullRequestView().getStartDateRange(), cycleTime.getValue().floatValue());
     }
 
-    public static LeadTimePieceCurveWithAverage buildPullRequestCurve(final List<LeadTime> LeadTimes) {
+    public static LeadTimePieceCurveWithAverage buildPullRequestCurve(final List<CycleTime> cycleTimes) {
         final LeadTimePieceCurveWithAverage leadTimePieceCurveWithAverage =
                 LeadTimePieceCurveWithAverage.builder().build();
-        LeadTimes.forEach(leadTimePieceCurveWithAverage::addPoint);
+        cycleTimes.forEach(leadTimePieceCurveWithAverage::addPoint);
         return leadTimePieceCurveWithAverage;
     }
 }

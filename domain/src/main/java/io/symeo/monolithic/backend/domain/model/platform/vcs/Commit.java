@@ -14,17 +14,10 @@ public class Commit {
     Date date;
     String message;
     String sha;
-    List<String> parentShaList;
+    @Builder.Default
+    List<String> parentShaList = List.of();
     String head;
     String repositoryId;
-
-    public static String getNameFromPullRequest(final PullRequest pullRequest) {
-        return ALL + "_for_pr_number_" + pullRequest.getNumber();
-    }
-
-    public static String getNameFromRepository(final Repository repository) {
-        return ALL + "_for_repository_" + repository.getId();
-    }
 
     public static String getNameFromBranch(String branchName) {
         return ALL + "_for_branch_" + branchName.replace("/", "-");

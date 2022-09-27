@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LeadTimeMetricsServiceTest {
+public class CycleTimeMetricsServiceTest {
 
 
     private static final Faker faker = new Faker();

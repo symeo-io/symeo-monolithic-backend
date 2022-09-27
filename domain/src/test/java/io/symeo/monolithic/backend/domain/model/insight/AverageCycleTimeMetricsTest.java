@@ -10,7 +10,7 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static io.symeo.monolithic.backend.domain.model.insight.LeadTimeMetrics.buildFromCurrentAndPreviousLeadTimes;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AverageLeadTimeMetricsTest {
+public class AverageCycleTimeMetricsTest {
 
     @Test
     void should_compute_lead_time_metrics_given_current_and_previous_average_lead_time() throws SymeoException {

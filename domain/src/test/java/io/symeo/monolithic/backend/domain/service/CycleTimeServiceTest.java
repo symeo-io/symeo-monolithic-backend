@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LeadTimeServiceTest {
+public class CycleTimeServiceTest {
 
     @Test
     void should_filter_pull_requests_without_commits() {
@@ -23,8 +23,12 @@ public class LeadTimeServiceTest {
                 PullRequestView.builder().build()
         ), List.of(), List.of());
 
-
         // Then
         assertThat(emptyAverageLeadTime).isEmpty();
     }
+
+
+
+
+
 }
