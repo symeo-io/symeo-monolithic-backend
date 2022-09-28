@@ -7,7 +7,7 @@ import io.symeo.monolithic.backend.domain.model.account.Team;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.domain.port.out.AccountTeamStorage;
+import io.symeo.monolithic.backend.domain.port.out.TeamStorage;
 import io.symeo.monolithic.backend.domain.service.account.TeamService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,9 +26,9 @@ public class TeamServiceTest {
     @Test
     void should_create_and_start_vcs_data_collection_then_return_teams() throws SymeoException {
         // Given
-        final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
+        final TeamStorage teamStorage = mock(TeamStorage.class);
         final DataProcessingJobService dataProcessingJobAdapter = mock(DataProcessingJobService.class);
-        final TeamService teamService = new TeamService(accountTeamStorage, dataProcessingJobAdapter);
+        final TeamService teamService = new TeamService(teamStorage, dataProcessingJobAdapter);
         final Organization organization =
                 Organization.builder().id(UUID.randomUUID()).vcsOrganization(VcsOrganization.builder().build()).build();
         final String teamName1 = faker.name().firstName();
@@ -58,7 +58,7 @@ public class TeamServiceTest {
                 .repositories(repositoryIds2.stream().map(id -> Repository.builder().id(id).build()).toList())
                 .build();
 
-        when(accountTeamStorage.createTeamsForUser(teamsArgumentCaptor.capture(), userArgumentCaptor.capture()))
+        when(teamStorage.createTeamsForUser(teamsArgumentCaptor.capture(), userArgumentCaptor.capture()))
                 .thenReturn(List.of(expectedTeam1, expectedTeam2));
         teamService.createTeamsForNameAndRepositoriesAndUser(repositoryIdsMappedToTeamName,
                 User.builder()
@@ -82,14 +82,14 @@ public class TeamServiceTest {
     @Test
     void should_return_teams_for_organization() throws SymeoException {
         // Given
-        final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
-        final TeamService teamService = new TeamService(accountTeamStorage, mock(DataProcessingJobService.class));
+        final TeamStorage teamStorage = mock(TeamStorage.class);
+        final TeamService teamService = new TeamService(teamStorage, mock(DataProcessingJobService.class));
         final Organization organization =
                 Organization.builder().id(UUID.randomUUID()).vcsOrganization(VcsOrganization.builder().build()).build();
 
         // When
         final List<Team> teamList = List.of(Team.builder().build(), Team.builder().build());
-        when(accountTeamStorage.findByOrganization(organization)).thenReturn(teamList);
+        when(teamStorage.findByOrganization(organization)).thenReturn(teamList);
         final List<Team> teams = teamService.getTeamsForOrganization(organization);
 
         // Then
@@ -99,28 +99,28 @@ public class TeamServiceTest {
     @Test
     void should_delete_team_given_a_team_id() throws SymeoException {
         // Given
-        final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
-        final TeamService teamService = new TeamService(accountTeamStorage, mock(DataProcessingJobService.class));
+        final TeamStorage teamStorage = mock(TeamStorage.class);
+        final TeamService teamService = new TeamService(teamStorage, mock(DataProcessingJobService.class));
         final UUID teamId = UUID.randomUUID();
 
         // When
         teamService.deleteForId(teamId);
 
         // Then
-        verify(accountTeamStorage, times(1)).deleteById(teamId);
+        verify(teamStorage, times(1)).deleteById(teamId);
     }
 
     @Test
     void should_update_team_given_a_team() throws SymeoException {
         // Given
-        final AccountTeamStorage accountTeamStorage = mock(AccountTeamStorage.class);
-        final TeamService teamService = new TeamService(accountTeamStorage, mock(DataProcessingJobService.class));
+        final TeamStorage teamStorage = mock(TeamStorage.class);
+        final TeamService teamService = new TeamService(teamStorage, mock(DataProcessingJobService.class));
         final Team team = Team.builder().id(UUID.randomUUID()).build();
 
         // When
         teamService.update(team);
 
         // Then
-        verify(accountTeamStorage, times(1)).update(team);
+        verify(teamStorage, times(1)).update(team);
     }
 }

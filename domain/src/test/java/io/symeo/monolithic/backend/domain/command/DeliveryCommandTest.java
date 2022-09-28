@@ -8,6 +8,8 @@ import io.symeo.monolithic.backend.domain.port.out.RawStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -109,133 +111,150 @@ public class DeliveryCommandTest {
 
 
     @Test
-    void should_collect_commits_given_a_pull_request() throws SymeoException {
+    void should_collect_branches_given_an_organization_and_a_repository() throws SymeoException {
         // Given
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
-        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
-        final PullRequest pullRequest = PullRequest.builder().number(faker.number().randomDigit()).build();
-        final Repository repository =
-                Repository.builder().vcsOrganizationName(faker.ancient().hero()).name(faker.pokemon().name()).build();
-        final byte[] bytes = faker.ancient().god().getBytes();
-        final List<Commit> commits = List.of(Commit.builder().build());
-
-        // When
-        when(versionControlSystemAdapter.getRawCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
-                repository.getName(),
-                pullRequest.getNumber())).thenReturn(
-                bytes
+        final DeliveryCommand deliveryCommand = new DeliveryCommand(
+                rawStorageAdapter, versionControlSystemAdapter
         );
-        when(versionControlSystemAdapter.commitsBytesToDomain(bytes))
-                .thenReturn(commits);
-        final List<Commit> commitsResult = deliveryCommand.collectCommitsForPullRequest(repository, pullRequest);
-
-        // Then
-        assertThat(commitsResult).isEqualTo(commits);
-    }
-
-    @Test
-    void should_collect_comments_given_a_pull_request() throws SymeoException {
-        // Given
-        final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
-        final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
-        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
-        final PullRequest pullRequest = PullRequest.builder().number(faker.number().randomDigit()).build();
-        final Repository repository =
-                Repository.builder().vcsOrganizationName(faker.ancient().hero()).name(faker.pokemon().name()).build();
-        final byte[] bytes = faker.ancient().god().getBytes();
-        final List<Comment> comments = List.of(Comment.builder().build());
-
-        // When
-        when(versionControlSystemAdapter.getRawComments(repository.getVcsOrganizationName(), repository.getName(),
-                pullRequest.getNumber())).thenReturn(
-                bytes
-        );
-        when(versionControlSystemAdapter.commentsBytesToDomain(bytes))
-                .thenReturn(comments);
-        final List<Comment> commentsResult = deliveryCommand.collectCommentsForRepositoryAndPullRequest(repository,
-                pullRequest);
-
-        // Then
-        assertThat(commentsResult).isEqualTo(comments);
-    }
-
-
-    @Test
-    void should_collect_all_commits_given_a_repository_and_not_already_collected_commits() throws SymeoException {
-        // Given
-        final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
-        final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
-        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
-        final String vcsOrganizationName = faker.rickAndMorty().character();
-        final String vcsAdapterName = faker.pokemon().name();
-        final Repository repository = Repository.builder()
-                .name(faker.rickAndMorty().location())
-                .id(faker.pokemon().name())
-                .vcsOrganizationName(vcsOrganizationName)
-                .organizationId(UUID.randomUUID())
+        final String vcsOrganizationName = faker.name().firstName();
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
+                .name(vcsOrganizationName)
                 .build();
-        final byte[] rawCommits = faker.ancient().god().getBytes();
-        final List<Commit> expectedCommits = List.of(
-                Commit.builder().sha(faker.gameOfThrones().character()).build(),
-                Commit.builder().sha(faker.rickAndMorty().character()).build()
+        final Repository repository = Repository.builder().organizationId(organization.getId())
+                .vcsOrganizationName(vcsOrganizationName)
+                .id(faker.rickAndMorty().character())
+                .build();
+        final List<Branch> branches = List.of(
+                Branch.builder().name(faker.pokemon().name()).build(),
+                Branch.builder().name(faker.pokemon().location()).build()
         );
+        final byte[] bytes = faker.ancient().hero().getBytes();
 
         // When
-        when(versionControlSystemAdapter.getName()).thenReturn(vcsAdapterName);
-        when(versionControlSystemAdapter.getRawCommitsForRepository(vcsOrganizationName,
-                repository.getName(), null))
-                .thenReturn(rawCommits);
-        when(versionControlSystemAdapter.commitsBytesToDomain(rawCommits))
-                .thenReturn(expectedCommits);
-        final List<Commit> commits = deliveryCommand.collectCommitsForRepository(repository);
+        when(versionControlSystemAdapter.getRawBranches(organization.getVcsOrganization().getName(),
+                repository.getName()))
+                .thenReturn(
+                        bytes
+                );
+        when(versionControlSystemAdapter.branchesBytesToDomain(bytes)).thenReturn(branches);
+        final List<Branch> branchListResult = deliveryCommand.collectBranchesForOrganizationAndRepository(organization,
+                repository);
 
         // Then
-        assertThat(commits).isEqualTo(expectedCommits);
         verify(rawStorageAdapter, times(1))
-                .save(repository.getOrganizationId(), vcsAdapterName,
-                        Commit.getNameFromRepository(repository), rawCommits);
+                .save(
+                        organization.getId(),
+                        versionControlSystemAdapter.getName(),
+                        Branch.ALL,
+                        bytes
+                );
+        assertThat(branchListResult).isEqualTo(branches);
     }
 
     @Test
-    void should_collect_all_commits_given_a_repository_and_already_collected_commits() throws SymeoException {
+    void should_collect_commits_given_branches_and_last_collection_date() throws SymeoException {
         // Given
         final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
         final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
-        final DeliveryCommand deliveryCommand = new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
-        final String vcsOrganizationName = faker.rickAndMorty().character();
-        final String vcsAdapterName = faker.pokemon().name();
-        final UUID organizationId = UUID.randomUUID();
-        final Repository repository = Repository.builder()
-                .name(faker.rickAndMorty().location())
-                .id(faker.pokemon().name())
-                .vcsOrganizationName(vcsOrganizationName)
-                .organizationId(organizationId)
+        final DeliveryCommand deliveryCommand = new DeliveryCommand(
+                rawStorageAdapter, versionControlSystemAdapter
+        );
+        final String vcsOrganizationName = faker.name().firstName();
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
+                .name(vcsOrganizationName)
                 .build();
-        final byte[] rawCommits = faker.ancient().god().getBytes();
-        final List<Commit> expectedCommits = List.of(
-                Commit.builder().sha(faker.gameOfThrones().character()).build(),
+        final Repository repository = Repository.builder().organizationId(organization.getId())
+                .vcsOrganizationName(vcsOrganizationName)
+                .id(faker.rickAndMorty().character())
+                .build();
+        final List<String> branches = List.of(
+                Branch.builder().name(faker.pokemon().name()).build(),
+                Branch.builder().name(faker.pokemon().location()).build()
+        ).stream().map(Branch::getName).toList();
+        final Date lastCollectionDate = new Date();
+        final byte[] alreadyCollectedCommits = faker.ancient().god().getBytes();
+        final byte[] branch1CommitsBytes = faker.pokemon().name().getBytes();
+        final List<Commit> commits1 = List.of(
                 Commit.builder().sha(faker.rickAndMorty().character()).build()
         );
-        final byte[] existingRawCommits = faker.ancient().hero().getBytes();
+        final List<Commit> commits2 = List.of(
+                Commit.builder().sha(faker.pokemon().name()).build(),
+                Commit.builder().sha(faker.rickAndMorty().location()).build()
+        );
+        final byte[] branch2CommitsBytes = faker.rickAndMorty().character().getBytes();
 
         // When
-        when(rawStorageAdapter.exists(organizationId, vcsAdapterName, Commit.getNameFromRepository(repository)))
+        when(versionControlSystemAdapter.getName()).thenReturn(faker.ancient().god());
+        when(rawStorageAdapter.exists(organization.getId(), versionControlSystemAdapter.getName(),
+                Commit.getNameFromBranch(branches.get(0))))
+                .thenReturn(false);
+        when(rawStorageAdapter.exists(organization.getId(), versionControlSystemAdapter.getName(),
+                Commit.getNameFromBranch(branches.get(1))))
                 .thenReturn(true);
-        when(rawStorageAdapter.read(organizationId, vcsAdapterName, Commit.getNameFromRepository(repository)))
-                .thenReturn(existingRawCommits);
-        when(versionControlSystemAdapter.getName()).thenReturn(vcsAdapterName);
-        when(versionControlSystemAdapter.getRawCommitsForRepository(vcsOrganizationName,
-                repository.getName(), existingRawCommits))
-                .thenReturn(rawCommits);
-        when(versionControlSystemAdapter.commitsBytesToDomain(rawCommits))
-                .thenReturn(expectedCommits);
-        final List<Commit> commits = deliveryCommand.collectCommitsForRepository(repository);
+        when(rawStorageAdapter.read(organization.getId(), versionControlSystemAdapter.getName(),
+                Commit.getNameFromBranch(branches.get(1))))
+                .thenReturn(alreadyCollectedCommits);
+        when(versionControlSystemAdapter.getRawCommitsForBranchFromLastCollectionDate(
+                vcsOrganizationName, repository.getName(), branches.get(0), lastCollectionDate, null)
+        ).thenReturn(branch1CommitsBytes);
+        when(versionControlSystemAdapter.commitsBytesToDomain(branch1CommitsBytes))
+                .thenReturn(commits1);
+        when(versionControlSystemAdapter.getRawCommitsForBranchFromLastCollectionDate(
+                vcsOrganizationName, repository.getName(), branches.get(0), lastCollectionDate, alreadyCollectedCommits
+        ))
+                .thenReturn(branch2CommitsBytes);
+        when(versionControlSystemAdapter.commitsBytesToDomain(branch2CommitsBytes))
+                .thenReturn(commits2);
+        final List<Commit> commits =
+                deliveryCommand.collectCommitsForForOrganizationAndRepositoryAndBranchesFromLastCollectionDate(
+                        organization, repository, branches, lastCollectionDate
+                );
 
         // Then
-        assertThat(commits).isEqualTo(expectedCommits);
-        verify(rawStorageAdapter, times(1))
-                .save(repository.getOrganizationId(), vcsAdapterName,
-                        Commit.getNameFromRepository(repository), rawCommits);
+        final ArrayList<Commit> allCommits = new ArrayList<>(commits1);
+        allCommits.addAll(commits2);
+        commits.forEach(commit -> assertThat(allCommits.contains(commit)).isTrue());
+    }
+
+    @Test
+    void should_collect_tags_given_an_organization_and_a_repository() throws SymeoException {
+        // Given
+        final VersionControlSystemAdapter versionControlSystemAdapter = mock(VersionControlSystemAdapter.class);
+        final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
+        final DeliveryCommand deliveryCommand = new DeliveryCommand(
+                rawStorageAdapter, versionControlSystemAdapter
+        );
+        final String vcsOrganizationName = faker.name().firstName();
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
+                .name(vcsOrganizationName)
+                .build();
+        final Repository repository = Repository.builder().organizationId(organization.getId())
+                .vcsOrganizationName(vcsOrganizationName)
+                .id(faker.rickAndMorty().character())
+                .build();
+        final byte[] bytes = faker.rickAndMorty().character().getBytes();
+        final List<Tag> expectedTags = List.of(
+                Tag.builder().commitSha(faker.ancient().god()).build(),
+                Tag.builder().commitSha(faker.ancient().hero()).build()
+        );
+
+        // When
+        when(versionControlSystemAdapter.getRawTags(
+                vcsOrganizationName, repository.getName()
+        )).thenReturn(bytes);
+        when(versionControlSystemAdapter.tagsBytesToDomain(bytes))
+                .thenReturn(expectedTags);
+        final List<Tag> tags = deliveryCommand.collectTagsForOrganizationAndRepository(organization, repository);
+
+        // Then
+        assertThat(tags).isEqualTo(expectedTags);
     }
 }

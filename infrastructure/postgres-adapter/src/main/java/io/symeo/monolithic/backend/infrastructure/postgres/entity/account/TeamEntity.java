@@ -17,7 +17,7 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "team", schema = "account_storage")
+@Table(name = "team", schema = "organization_storage")
 @EntityListeners(AuditingEntityListener.class)
 public class TeamEntity {
 

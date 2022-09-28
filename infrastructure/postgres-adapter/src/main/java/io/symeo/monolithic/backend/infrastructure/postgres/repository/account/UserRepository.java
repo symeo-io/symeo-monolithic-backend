@@ -14,8 +14,8 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID>, JpaSpec
 
     Optional<UserEntity> findByEmail(String email);
 
-    @Query(value = "select * from account_storage.user where id in " +
-            "( select user_id from account_storage.user_to_organization where organization_id = :organizationId )",
+    @Query(value = "select * from organization_storage.user where id in " +
+            "( select user_id from organization_storage.user_to_organization where organization_id = :organizationId )",
             nativeQuery = true)
     List<UserEntity> findAllForOrganizationId(@Param("organizationId") UUID organizationId);
 

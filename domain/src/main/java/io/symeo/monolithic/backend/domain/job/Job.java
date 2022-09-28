@@ -40,8 +40,9 @@ public class Job {
         return isNull(code) ? this.jobRunnable.getCode() : this.code;
     }
 
-    public Job started() {
-        return this.toBuilder().status(STARTED).build();
+    public Job started() throws SymeoException {
+        this.getJobRunnable().initializeTasks();
+        return this.toBuilder().status(STARTED).tasks(this.getJobRunnable().getTasks()).build();
     }
 
     public Job restarted() {
@@ -68,5 +69,9 @@ public class Job {
         final List<Task> tasks = this.getTasks();
         long tasksDoneCount = tasks.stream().filter(task -> task.getStatus().equals(Task.DONE)).count();
         return Math.round(100 * tasksDoneCount / (tasks.size() * 1.0)) / 100D;
+    }
+
+    public void run() throws SymeoException {
+        this.jobRunnable.run(this.id);
     }
 }

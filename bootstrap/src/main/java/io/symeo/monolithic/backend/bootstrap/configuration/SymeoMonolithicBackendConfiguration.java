@@ -10,6 +10,7 @@ import org.springframework.util.StopWatch;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -19,20 +20,9 @@ import java.util.stream.Collectors;
 public class SymeoMonolithicBackendConfiguration {
 
     @Around(
-            "execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getRepositoriesForOrganizationName(..)) || execution(* io.symeo.monolithic.backend" +
-                    ".infrastructure.github.adapter.client.GithubHttpClient" +
-                    ".getPullRequestsForRepositoryAndOrganizationOrderByDescDate(..)) " +
-                    "|| execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
-                    ".GithubHttpClient.getPullRequestDetailsForPullRequestNumber" +
-                    "(..))"
-                    + "|| execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
-                    ".GithubHttpClient.getCommitsForPullRequestNumber" +
-                    "(..))"
-                    + "|| execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
-                    ".GithubHttpClient.getCommentsForPullRequestNumber" +
-                    "(..))"
-                    + "|| execution(* io.symeo.monolithic.backend.application.rest.api.adapter.api.*.*(..))"
+            "(execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
+                    ".GithubHttpClient.*(..)) || execution(* io.symeo.monolithic.backend.application.rest.api.adapter" +
+                    ".api.*.*(..)))"
     )
     public Object around(ProceedingJoinPoint point) throws Throwable {
         final StopWatch stopWatch = new StopWatch("aop-stopwatch");
@@ -53,6 +43,7 @@ public class SymeoMonolithicBackendConfiguration {
     static {
         final String timezoneId = "Europe/Paris";
         LOGGER.info("Setting default system timezone to {}", timezoneId);
-        System.setProperty("user.timezone", timezoneId);
+        System.setProperty("user.timezone", "Asia/Kolkata");
+        TimeZone.setDefault(TimeZone.getTimeZone(timezoneId));
     }
 }

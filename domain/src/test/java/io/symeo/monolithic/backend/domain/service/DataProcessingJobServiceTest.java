@@ -9,7 +9,7 @@ import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganiza
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
 import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
@@ -30,19 +30,19 @@ public class DataProcessingJobServiceTest {
 
     // TODO : add unit test raising SymeoException
     @Test
-    void should_start_to_collect_repositories_job_given_an_organization_id() throws SymeoException {
+    void should_collect_repositories_job_given_an_organization_id() throws SymeoException {
         // Given
         final JobManager jobManager = mock(JobManager.class);
         final VcsService vcsService = mock(VcsService.class);
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
         final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
         final JobStorage jobStorage = mock(JobStorage.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
+                        organizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
                         organizationSettingsService, mock(ExpositionStorageAdapter.class), jobStorage);
         final String organisationName = faker.name().username();
         final String vcsOrganizationId = faker.rickAndMorty().character();
@@ -57,11 +57,8 @@ public class DataProcessingJobServiceTest {
 
         // When
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
-        when(accountOrganizationStorageAdapter.findOrganizationById(organizationId)).thenReturn(
+        when(organizationStorageAdapter.findOrganizationById(organizationId)).thenReturn(
                 organisation
-        );
-        when(vcsService.collectRepositoriesForOrganization(organisation)).thenReturn(
-                repositories
         );
         dataProcessingJobService.startToCollectRepositoriesForOrganizationId(organizationId);
 
@@ -78,8 +75,8 @@ public class DataProcessingJobServiceTest {
         // Given
         final JobManager jobManager = mock(JobManager.class);
         final VcsService vcsService = mock(VcsService.class);
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
         final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
@@ -87,7 +84,7 @@ public class DataProcessingJobServiceTest {
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
+                        organizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
                         organizationSettingsService, expositionStorageAdapter, jobStorage);
         final UUID teamId = UUID.randomUUID();
         final UUID organizationId = UUID.randomUUID();
@@ -97,7 +94,7 @@ public class DataProcessingJobServiceTest {
         );
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationById(organizationId))
+        when(organizationStorageAdapter.findOrganizationById(organizationId))
                 .thenReturn(Organization.builder().id(organizationId).build());
         when(expositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId))
                 .thenReturn(
@@ -119,8 +116,8 @@ public class DataProcessingJobServiceTest {
         // Given
         final JobManager jobManager = mock(JobManager.class);
         final VcsService vcsService = mock(VcsService.class);
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
         final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
@@ -128,7 +125,7 @@ public class DataProcessingJobServiceTest {
         final JobStorage jobStorage = mock(JobStorage.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
+                        organizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
                         organizationSettingsService, expositionStorageAdapter, jobStorage);
         final UUID organizationId = UUID.randomUUID();
         final List<Repository> repositories = List.of(
@@ -137,7 +134,7 @@ public class DataProcessingJobServiceTest {
         );
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationById(organizationId))
+        when(organizationStorageAdapter.findOrganizationById(organizationId))
                 .thenReturn(Organization.builder().id(organizationId).build());
         when(expositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(organizationId))
                 .thenReturn(
@@ -161,15 +158,15 @@ public class DataProcessingJobServiceTest {
         // Given
         final JobManager jobManager = mock(JobManager.class);
         final VcsService vcsService = mock(VcsService.class);
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final RepositoryService repositoryService = mock(RepositoryService.class);
         final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
         final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
         final JobStorage jobStorage = mock(JobStorage.class);
         final DataProcessingJobService dataProcessingJobService =
                 new DataProcessingJobService(vcsService,
-                        accountOrganizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
+                        organizationStorageAdapter, repositoryService, jobManager, symeoJobApiAdapter,
                         organizationSettingsService, mock(ExpositionStorageAdapter.class), jobStorage);
         final List<Organization> organizations = List.of(
                 Organization.builder().id(UUID.randomUUID()).build(),
@@ -177,7 +174,7 @@ public class DataProcessingJobServiceTest {
         );
 
         // When
-        when(accountOrganizationStorageAdapter.findAllOrganization())
+        when(organizationStorageAdapter.findAllOrganization())
                 .thenReturn(organizations);
         dataProcessingJobService.startAll();
 

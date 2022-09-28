@@ -7,7 +7,7 @@ import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.domain.port.in.TeamFacadeAdapter;
-import io.symeo.monolithic.backend.domain.port.out.AccountTeamStorage;
+import io.symeo.monolithic.backend.domain.port.out.TeamStorage;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class TeamService implements TeamFacadeAdapter {
 
-    private final AccountTeamStorage accountTeamStorage;
+    private final TeamStorage teamStorage;
     private final DataProcessingJobAdapter dataProcessingJobAdapter;
 
     @Override
@@ -33,7 +33,7 @@ public class TeamService implements TeamFacadeAdapter {
                         .organizationId(user.getOrganization().getId())
                         .build()
         ));
-        final List<Team> createdTeams = accountTeamStorage.createTeamsForUser(teams, user);
+        final List<Team> createdTeams = teamStorage.createTeamsForUser(teams, user);
         for (Team createdTeam : createdTeams) {
             dataProcessingJobAdapter.startToCollectVcsDataForOrganizationIdAndTeamId(user.getOrganization().getId(),
                     createdTeam.getId());
@@ -43,16 +43,16 @@ public class TeamService implements TeamFacadeAdapter {
 
     @Override
     public List<Team> getTeamsForOrganization(Organization organization) throws SymeoException {
-        return accountTeamStorage.findByOrganization(organization);
+        return teamStorage.findByOrganization(organization);
     }
 
     @Override
     public void deleteForId(UUID teamId) throws SymeoException {
-        accountTeamStorage.deleteById(teamId);
+        teamStorage.deleteById(teamId);
     }
 
     @Override
     public void update(Team team) throws SymeoException {
-        accountTeamStorage.update(team);
+        teamStorage.update(team);
     }
 }

@@ -19,7 +19,7 @@ public interface PullRequestCurveMapper {
                         Date.from(pullRequestTimeToMergeDTO.getMergeDate().toInstant()))
                 .status(pullRequestTimeToMergeDTO.getState())
                 .vcsUrl(pullRequestTimeToMergeDTO.getVcsUrl())
-                .branchName(pullRequestTimeToMergeDTO.getBranchName())
+                .head(pullRequestTimeToMergeDTO.getHead())
                 .build();
     }
 
@@ -34,7 +34,7 @@ public interface PullRequestCurveMapper {
                 .deletedLineNumber(pullRequestSizeDTO.getDeletedLineNumber())
                 .addedLineNumber(pullRequestSizeDTO.getAddedLineNumber())
                 .vcsUrl(pullRequestSizeDTO.getVcsUrl())
-                .branchName(pullRequestSizeDTO.getBranchName())
+                .head(pullRequestSizeDTO.getHead())
                 .build();
     }
 }

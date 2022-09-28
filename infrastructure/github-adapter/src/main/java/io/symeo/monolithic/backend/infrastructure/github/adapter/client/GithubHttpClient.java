@@ -2,6 +2,8 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubTagDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
@@ -17,6 +19,8 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +29,7 @@ import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.*;
 @Slf4j
 public class GithubHttpClient {
 
+    private static final String GITHUB_QUERY_DATE_FORMAT = "YYYY-MM-dd'T'HH:mm:ssZ";
     private static final String AUTHORIZATION_HEADER_KEY = "Authorization";
     private static final String AUTHORIZATION_HEADER_TOKEN_VALUE = "Bearer ";
     private static final Map<String, String> INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION = new HashMap<>();
@@ -99,16 +104,21 @@ public class GithubHttpClient {
 
     public GithubCommitsDTO[] getCommitsForPullRequestNumber(final String organizationName,
                                                              final String repositoryName,
-                                                             final int pullRequestNumber) throws SymeoException {
+                                                             final int pullRequestNumber,
+                                                             final Integer page,
+                                                             final Integer size) throws SymeoException {
         final String uri =
                 api
                         + "repos/"
                         + organizationName
-                        + "/" +
-                        repositoryName
+                        + "/"
+                        + repositoryName
                         + "/pulls/"
-                        + pullRequestNumber +
-                        "/commits";
+                        + pullRequestNumber
+                        + "/commits?page="
+                        + page.toString()
+                        + "&per_page="
+                        + size.toString();
         return get(
                 uri,
                 organizationName,
@@ -118,16 +128,21 @@ public class GithubHttpClient {
 
     public GithubCommentsDTO[] getCommentsForPullRequestNumber(final String organizationName,
                                                                final String repositoryName,
-                                                               final Integer pullRequestNumber) throws SymeoException {
+                                                               final Integer pullRequestNumber,
+                                                               final Integer page,
+                                                               final Integer size) throws SymeoException {
         final String uri =
                 api
                         + "repos/"
                         + organizationName
-                        + "/" +
-                        repositoryName
+                        + "/"
+                        + repositoryName
                         + "/pulls/"
-                        + pullRequestNumber +
-                        "/comments";
+                        + pullRequestNumber
+                        + "/comments?page="
+                        + page.toString()
+                        + "&per_page="
+                        + size.toString();
         return get(
                 uri,
                 organizationName,
@@ -135,7 +150,7 @@ public class GithubHttpClient {
         );
     }
 
-    public GithubCommitsDTO[] getCommitsForRepositoryAndOrganization(final String vcsOrganizationName,
+    public GithubBranchDTO[] getBranchesForOrganizationAndRepository(final String vcsOrganizationName,
                                                                      final String repositoryName,
                                                                      final Integer page,
                                                                      final Integer size) throws SymeoException {
@@ -145,14 +160,66 @@ public class GithubHttpClient {
                         + vcsOrganizationName
                         + "/" +
                         repositoryName
-                        + "/commits?per_page="
+                        + "/branches"
+                        + "?per_page="
                         + size.toString()
                         + "&page="
                         + page.toString();
-        return get(
-                uri,
+        return get(uri,
                 vcsOrganizationName,
-                GithubCommitsDTO[].class);
+                GithubBranchDTO[].class);
+    }
+
+    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
+                                                                                                    final String repositoryName,
+                                                                                                    final String branchName,
+                                                                                                    final Date lastCollectionDate,
+                                                                                                    final Integer page,
+                                                                                                    final Integer size) throws SymeoException {
+        String uri =
+                api
+                        + "repos/"
+                        + vcsOrganizationName
+                        + "/"
+                        + repositoryName
+                        + "/commits"
+                        + String.format("?since=%s",
+                        new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(lastCollectionDate))
+                        + "&per_page="
+                        + size.toString()
+                        + "&page="
+                        + page.toString()
+                        + String.format("&sha=%s", branchName);
+        return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
+    }
+
+    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
+                                                                              final String repositoryName,
+                                                                              final String branchName,
+                                                                              final Integer page,
+                                                                              final Integer size) throws SymeoException {
+        String uri =
+                api
+                        + "repos/"
+                        + vcsOrganizationName
+                        + "/"
+                        + repositoryName
+                        + "/commits"
+                        + String.format("?page=%s", page.toString())
+                        + String.format("&per_page=%s", size.toString())
+                        + String.format("&sha=%s", branchName);
+        return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
+    }
+
+    public GithubTagDTO[] getTagsForOrganizationAndRepository(String vcsOrganizationName, String repositoryName) throws SymeoException {
+        String uri =
+                api
+                        + "repos/"
+                        + vcsOrganizationName
+                        + "/"
+                        + repositoryName
+                        + "/git/matching-refs/tags";
+        return get(uri, vcsOrganizationName, GithubTagDTO[].class);
     }
 
     private <ResponseBody> ResponseBody get(String uri, String organizationName,

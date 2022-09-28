@@ -26,6 +26,7 @@ public class PullRequest {
     Date lastUpdateDate;
     Date mergeDate;
     Date closeDate;
+    String mergeCommitSha;
     @Builder.Default
     Boolean isMerged = false;
     @Builder.Default
@@ -39,7 +40,8 @@ public class PullRequest {
     String repositoryId;
     String vcsOrganizationId;
     UUID organizationId;
-    String branchName;
+    String head;
+    String base;
     @Builder.Default
     List<Commit> commits = List.of();
     @Builder.Default
