@@ -23,14 +23,11 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -102,8 +99,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
         teamRepository.save(
                 TeamEntity.builder().id(currentTeamId).name(faker.dragonBall().character())
                         .organizationId(organizationId).repositoryIds(List.of(repositoryEntities.get(0).getId())).build());
-        final String startDate = "2022-01-01";
-        final String endDate = "2022-03-01";
+        final String startDate = "2022-01-15";
         pullRequestRepository.saveAll(
                 generatePullRequestsStubsForOrganization(OrganizationMapper.entityToDomain(organizationRepository
                         .findById(organizationId).get()), startDate));
@@ -124,10 +120,10 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.metrics.current_end_date").isEqualTo(requestSizeMetricsEndDate)
                 .jsonPath("$.metrics.previous_end_date").isEqualTo(requestSizeMetricsStartDate)
                 .jsonPath("$.metrics.previous_start_date").isEqualTo("2021-12-29")
-                .jsonPath("$.metrics.average.value").isEqualTo(1175.0)
-                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(17.5)
-                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
-                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
+                .jsonPath("$.metrics.average.value").isEqualTo(283.3)
+                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(4.2)
+                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(100)
+                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(0);
     }
     @Order(3)
     @Test
@@ -150,10 +146,10 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.metrics.current_end_date").isEqualTo(requestTimeToMergeMetricsEndDate)
                 .jsonPath("$.metrics.previous_end_date").isEqualTo(requestTimeToMergeMetricsStartDate)
                 .jsonPath("$.metrics.previous_start_date").isEqualTo("2021-12-29")
-                .jsonPath("$.metrics.average.value").isEqualTo(10.2)
-                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(183.3)
-                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
-                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
+                .jsonPath("$.metrics.average.value").isEqualTo(19.1)
+                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(4.4)
+                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(8.3)
+                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-58.5);
     }
 
     @Order(4)
@@ -175,25 +171,29 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.histogram.limit").isEqualTo(5)
-                .jsonPath("$.histogram.data[0].data_above_limit").isEqualTo(1)
-                .jsonPath("$.histogram.data[0].data_below_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[0].start_date_range").isEqualTo("2022-01-01")
-                .jsonPath("$.histogram.data[1].data_above_limit").isEqualTo(1)
-                .jsonPath("$.histogram.data[1].data_below_limit").isEqualTo(2)
+                .jsonPath("$.histogram.data[0].data_above_limit").isEqualTo(3)
+                .jsonPath("$.histogram.data[0].data_below_limit").isEqualTo(0)
                 .jsonPath("$.histogram.data[1].start_date_range").isEqualTo("2022-01-08")
-                .jsonPath("$.histogram.data[2].data_above_limit").isEqualTo(2)
-                .jsonPath("$.histogram.data[2].data_below_limit").isEqualTo(2)
+                .jsonPath("$.histogram.data[1].data_above_limit").isEqualTo(7)
+                .jsonPath("$.histogram.data[1].data_below_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[2].start_date_range").isEqualTo("2022-01-15")
-                .jsonPath("$.histogram.data[3].data_above_limit").isEqualTo(3)
-                .jsonPath("$.histogram.data[3].data_below_limit").isEqualTo(2)
-                .jsonPath("$.histogram.data[3].start_date_range").isEqualTo("2022-01-22");
+                .jsonPath("$.histogram.data[2].data_above_limit").isEqualTo(7)
+                .jsonPath("$.histogram.data[2].data_below_limit").isEqualTo(1)
+                .jsonPath("$.histogram.data[3].start_date_range").isEqualTo("2022-01-22")
+                .jsonPath("$.histogram.data[3].data_above_limit").isEqualTo(7)
+                .jsonPath("$.histogram.data[3].data_below_limit").isEqualTo(0)
+                .jsonPath("$.histogram.data[4].start_date_range").isEqualTo("2022-01-29")
+                .jsonPath("$.histogram.data[4].data_above_limit").isEqualTo(5)
+                .jsonPath("$.histogram.data[4].data_below_limit").isEqualTo(0);
+
     }
 
     @Order(5)
     @Test
     void should_get_time_to_merge_curves_given_a_team_id() {
         // Given
-        final String startDate = "2022-01-01";
+        final String startDate = "2022-01-15";
         final String endDate = "2022-02-01";
 
         // When
@@ -206,24 +206,39 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.curves.limit").isEqualTo(5)
-                .jsonPath("$.curves.average_curve[0].value").isEqualTo(2)
-                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-01-19")
-                .jsonPath("$.curves.average_curve[1].value").isEqualTo(0)
-                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-01-09")
-                .jsonPath("$.curves.average_curve[2].value").isEqualTo(0)
-                .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-25")
-                .jsonPath("$.curves.average_curve[3].value").isEqualTo(0)
-                .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-01-17")
+                .jsonPath("$.curves.piece_curve[0].label").isEqualTo("branch-1")
                 .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.piece_curve[0].link").isEqualTo(vcsUrl)
-                .jsonPath("$.curves.piece_curve[0].label").isEqualTo(branchName)
-                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-01-01")
+                .jsonPath("$.curves.piece_curve[0].value").isEqualTo(
+                        ChronoUnit.DAYS.between(LocalDate.of(2022,1,7), LocalDate.now(ZoneId.of("Greenwich")))
+                )
+                .jsonPath("$.curves.piece_curve[1].label").isEqualTo("branch-2")
+                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.piece_curve[1].link").isEqualTo(vcsUrl)
-                .jsonPath("$.curves.piece_curve[1].label").isEqualTo(branchName)
-                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(0)
-                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-01")
+                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(
+                        ChronoUnit.DAYS.between(LocalDate.of(2022, 1, 20), LocalDate.now(ZoneId.of("Greenwich")))
+                )
+                .jsonPath("$.curves.piece_curve[2].label").isEqualTo("branch-5")
+                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-20")
                 .jsonPath("$.curves.piece_curve[2].link").isEqualTo(vcsUrl)
-                .jsonPath("$.curves.piece_curve[2].label").isEqualTo(branchName);
+                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(13)
+                .jsonPath("$.curves.piece_curve[3].label").isEqualTo("branch-6")
+                .jsonPath("$.curves.piece_curve[3].date").isEqualTo("2022-02-01")
+                .jsonPath("$.curves.piece_curve[3].link").isEqualTo(vcsUrl)
+                .jsonPath("$.curves.piece_curve[3].value").isEqualTo(34)
+                .jsonPath("$.curves.piece_curve[6].label").isEqualTo("branch-10")
+                .jsonPath("$.curves.piece_curve[6].date").isEqualTo("2022-01-26")
+                .jsonPath("$.curves.piece_curve[6].link").isEqualTo(vcsUrl)
+                .jsonPath("$.curves.piece_curve[6].value").isEqualTo(37)
+                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-01-26")
+                .jsonPath("$.curves.average_curve[0].value").isEqualTo(23)
+                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-02-01")
+                .jsonPath("$.curves.average_curve[1].value").isEqualTo(Math.round((
+                        ChronoUnit.DAYS.between(LocalDate.of(2022,1,7), LocalDate.now(ZoneId.of("Greenwich")))
+                                + ChronoUnit.DAYS.between(LocalDate.of(2022, 1, 20), LocalDate.now(ZoneId.of("Greenwich")))
+                                + 34 + 21 + 6) / 5f))
+                .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-20")
+                .jsonPath("$.curves.average_curve[2].value").isEqualTo(15.5);
     }
 
 
@@ -270,9 +285,9 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
     @Test
     void should_get_pull_request_size_curves_given_a_team_id() {
         // Given
-        teamGoalRepository.save(TeamGoalEntity.builder().teamId(currentTeamId).id(UUID.randomUUID()).standardCode(TeamStandard.PULL_REQUEST_SIZE).value("1000").build());
+        teamGoalRepository.save(TeamGoalEntity.builder().teamId(currentTeamId).id(UUID.randomUUID()).standardCode(TeamStandard.PULL_REQUEST_SIZE).value("300").build());
         final String startDate = "2022-01-01";
-        final String endDate = "2022-03-01";
+        final String endDate = "2022-02-01";
 
         // When
         client.get()
@@ -284,30 +299,35 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.curves.limit").isEqualTo(1000)
-                .jsonPath("$.curves.average_curve[0].value").isEqualTo(1000)
-                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-01-19")
-                .jsonPath("$.curves.average_curve[1].value").isEqualTo(300)
-                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-01-09")
-                .jsonPath("$.curves.average_curve[2].value").isEqualTo(300)
-                .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-25")
-                .jsonPath("$.curves.average_curve[3].value").isEqualTo(1000)
-                .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-02-15")
-                .jsonPath("$.curves.average_curve[4].value").isEqualTo(300)
-                .jsonPath("$.curves.piece_curve[0].value").isEqualTo(1700)
-                .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-03-01")
-                .jsonPath("$.curves.piece_curve[0].link").isEqualTo(vcsUrl)
-                .jsonPath("$.curves.piece_curve[0].label").isEqualTo(branchName)
-                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(300)
-                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-01-01")
-                .jsonPath("$.curves.piece_curve[1].link").isEqualTo(vcsUrl)
-                .jsonPath("$.curves.piece_curve[1].label").isEqualTo(branchName)
-                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(1000)
-                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-01")
-                .jsonPath("$.curves.piece_curve[2].link").isEqualTo(vcsUrl)
-                .jsonPath("$.curves.piece_curve[2].label").isEqualTo(branchName);
-
-
+                .jsonPath("$.curves.limit").isEqualTo(300)
+                .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-01-20")
+                .jsonPath("$.curves.piece_curve[0].label").isEqualTo("branch-15")
+                .jsonPath("$.curves.piece_curve[0].value").isEqualTo(500)
+                .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-01-05")
+                .jsonPath("$.curves.piece_curve[1].label").isEqualTo("branch-14")
+                .jsonPath("$.curves.piece_curve[1].value").isEqualTo(200)
+                .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-26")
+                .jsonPath("$.curves.piece_curve[2].label").isEqualTo("branch-10")
+                .jsonPath("$.curves.piece_curve[2].value").isEqualTo(300)
+                .jsonPath("$.curves.piece_curve[3].date").isEqualTo("2022-01-26")
+                .jsonPath("$.curves.piece_curve[3].label").isEqualTo("branch-11")
+                .jsonPath("$.curves.piece_curve[3].value").isEqualTo(400)
+                .jsonPath("$.curves.piece_curve[4].date").isEqualTo("2022-01-12")
+                .jsonPath("$.curves.piece_curve[4].label").isEqualTo("branch-18")
+                .jsonPath("$.curves.piece_curve[4].value").isEqualTo(20)
+                .jsonPath("$.curves.piece_curve[5].date").isEqualTo("2022-01-12")
+                .jsonPath("$.curves.piece_curve[5].label").isEqualTo("branch-4")
+                .jsonPath("$.curves.piece_curve[5].value").isEqualTo(100)
+                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-01-26")
+                .jsonPath("$.curves.average_curve[0].value").isEqualTo(250)
+                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-01-05")
+                .jsonPath("$.curves.average_curve[1].value").isEqualTo(200)
+                .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-02-01")
+                .jsonPath("$.curves.average_curve[2].value").isEqualTo(260)
+                .jsonPath("$.curves.average_curve[3].date").isEqualTo("2022-01-12")
+                .jsonPath("$.curves.average_curve[3].value").isEqualTo(60)
+                .jsonPath("$.curves.average_curve[4].date").isEqualTo("2022-01-20")
+                .jsonPath("$.curves.average_curve[4].value").isEqualTo(337.5);
     }
 
     @Order(8)
@@ -327,37 +347,25 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.histogram.limit").isEqualTo(1000)
+                .jsonPath("$.histogram.limit").isEqualTo(300)
+                .jsonPath("$.histogram.data[0].start_date_range").isEqualTo("2022-01-01")
                 .jsonPath("$.histogram.data[0].data_above_limit").isEqualTo(2)
                 .jsonPath("$.histogram.data[0].data_below_limit").isEqualTo(1)
-                .jsonPath("$.histogram.data[0].start_date_range").isEqualTo("2022-01-01")
-                .jsonPath("$.histogram.data[1].data_above_limit").isEqualTo(2)
-                .jsonPath("$.histogram.data[1].data_below_limit").isEqualTo(1)
                 .jsonPath("$.histogram.data[1].start_date_range").isEqualTo("2022-01-08")
-                .jsonPath("$.histogram.data[2].data_above_limit").isEqualTo(3)
-                .jsonPath("$.histogram.data[2].data_below_limit").isEqualTo(1)
+                .jsonPath("$.histogram.data[1].data_above_limit").isEqualTo(5)
+                .jsonPath("$.histogram.data[1].data_below_limit").isEqualTo(4)
                 .jsonPath("$.histogram.data[2].start_date_range").isEqualTo("2022-01-15")
-                .jsonPath("$.histogram.data[3].data_above_limit").isEqualTo(4)
-                .jsonPath("$.histogram.data[3].data_below_limit").isEqualTo(1)
+                .jsonPath("$.histogram.data[2].data_above_limit").isEqualTo(5)
+                .jsonPath("$.histogram.data[2].data_below_limit").isEqualTo(3)
                 .jsonPath("$.histogram.data[3].start_date_range").isEqualTo("2022-01-22")
-                .jsonPath("$.histogram.data[4].data_above_limit").isEqualTo(4)
-                .jsonPath("$.histogram.data[4].data_below_limit").isEqualTo(1)
+                .jsonPath("$.histogram.data[3].data_above_limit").isEqualTo(4)
+                .jsonPath("$.histogram.data[3].data_below_limit").isEqualTo(3)
                 .jsonPath("$.histogram.data[4].start_date_range").isEqualTo("2022-01-29")
-                .jsonPath("$.histogram.data[5].data_above_limit").isEqualTo(6)
-                .jsonPath("$.histogram.data[5].data_below_limit").isEqualTo(1)
+                .jsonPath("$.histogram.data[4].data_above_limit").isEqualTo(2)
+                .jsonPath("$.histogram.data[4].data_below_limit").isEqualTo(3)
                 .jsonPath("$.histogram.data[5].start_date_range").isEqualTo("2022-02-05")
-                .jsonPath("$.histogram.data[6].data_above_limit").isEqualTo(7)
-                .jsonPath("$.histogram.data[6].data_below_limit").isEqualTo(1)
-                .jsonPath("$.histogram.data[6].start_date_range").isEqualTo("2022-02-12")
-                .jsonPath("$.histogram.data[7].data_above_limit").isEqualTo(8)
-                .jsonPath("$.histogram.data[7].data_below_limit").isEqualTo(0)
-                .jsonPath("$.histogram.data[7].start_date_range").isEqualTo("2022-02-19")
-                .jsonPath("$.histogram.data[8].data_above_limit").isEqualTo(7)
-                .jsonPath("$.histogram.data[8].data_below_limit").isEqualTo(0)
-                .jsonPath("$.histogram.data[8].start_date_range").isEqualTo("2022-02-26")
-                .jsonPath("$.histogram.data[9].data_above_limit").isEqualTo(7)
-                .jsonPath("$.histogram.data[9].data_below_limit").isEqualTo(0)
-                .jsonPath("$.histogram.data[9].start_date_range").isEqualTo("2022-03-01");
+                .jsonPath("$.histogram.data[5].data_above_limit").isEqualTo(2)
+                .jsonPath("$.histogram.data[5].data_below_limit").isEqualTo(4);
     }
 
     @Order(9)
@@ -381,10 +389,10 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.metrics.current_end_date").isEqualTo(endDate)
                 .jsonPath("$.metrics.previous_end_date").isEqualTo(startDate)
                 .jsonPath("$.metrics.previous_start_date").isEqualTo("2021-12-29")
-                .jsonPath("$.metrics.average.value").isEqualTo(1175.0)
-                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(17.5)
-                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
-                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
+                .jsonPath("$.metrics.average.value").isEqualTo(283.3)
+                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(4.2)
+                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(58.3)
+                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-2.8);
     }
 
     @Order(10)
@@ -408,10 +416,10 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.metrics.current_end_date").isEqualTo(endDate)
                 .jsonPath("$.metrics.previous_end_date").isEqualTo(startDate)
                 .jsonPath("$.metrics.previous_start_date").isEqualTo("2021-12-29")
-                .jsonPath("$.metrics.average.value").isEqualTo(10.2)
-                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(183.3)
-                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(50.0)
-                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-25.0);
+                .jsonPath("$.metrics.average.value").isEqualTo(19.1)
+                .jsonPath("$.metrics.average.tendency_percentage").isEqualTo(4.4)
+                .jsonPath("$.metrics.meeting_goal.value").isEqualTo(8.3)
+                .jsonPath("$.metrics.meeting_goal.tendency_percentage").isEqualTo(-58.5);
     }
 
     @Order(11)
@@ -459,8 +467,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(2)
-                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(8)
+                .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(3)
+                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(12)
                 .jsonPath("$.pull_requests_page.pull_requests").isNotEmpty()
                 .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(5))
                 .jsonPath("$.pull_requests_page.pull_requests[0].id").isNotEmpty()
@@ -474,7 +482,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.pull_requests_page.pull_requests[0].author").isNotEmpty()
                 .jsonPath("$.pull_requests_page.pull_requests[0].vcs_repository").isNotEmpty();
 
-        pageIndex = "1";
+        pageIndex = "2";
         client.get()
                 .uri(getApiURI(TEAMS_REST_API_PULL_REQUESTS, getParams(currentTeamId, startDate,
                         endDate, pageIndex, pageSize, sortingParameter, sortingDirection)))
@@ -484,10 +492,10 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(2)
-                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(8)
+                .jsonPath("$.pull_requests_page.total_page_number").isEqualTo(3)
+                .jsonPath("$.pull_requests_page.total_item_number").isEqualTo(12)
                 .jsonPath("$.pull_requests_page.pull_requests").isNotEmpty()
-                .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(3));
+                .jsonPath("$.pull_requests_page.pull_requests").value((List<Object> o) -> assertThat(o).hasSize(2));
     }
 
     private static List<RepositoryEntity> generateRepositoriesStubsForOrganization() {
@@ -521,116 +529,648 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
 
     private static List<PullRequestEntity> generatePullRequestsStubsForOrganization(final Organization organization,
                                                                                     final String startDate) throws SymeoException {
-        final java.util.Date weekStartDate = stringToDate(startDate);
-        final ArrayList<PullRequestEntity> pullRequests = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-
-            pullRequests.add(PullRequestEntity.builder()
-                    .id("pr-1-" + i)
-                    .creationDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .plus(i * 8, ChronoUnit.DAYS))
-                    .addedLineNumber(800)
-                    .code(faker.dragonBall().character())
-                    .deletedLineNumber(900)
-                    .commitNumber(0)
-                    .state(PullRequest.OPEN)
-                    .isMerged(false)
-                    .title(faker.name().title())
-                    .vcsOrganizationId(organization.getName())
-                    .vcsRepository(faker.ancient().primordial())
-                    .isDraft(false)
-                    .vcsUrl(vcsUrl)
-                    .organizationId(organization.getId())
-                    .authorLogin(faker.dragonBall().character())
-                    .vcsRepositoryId("repository-1")
-                    .lastUpdateDate(ZonedDateTime.now())
-                    .branchName(branchName)
-                    .build());
-            pullRequests.add(PullRequestEntity.builder()
-                    .id("pr-2-" + i)
-                    .creationDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .plus(i * 8, ChronoUnit.DAYS))
-                    .mergeDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .plus(i * 8, ChronoUnit.DAYS))
-                    .addedLineNumber(0)
-                    .deletedLineNumber(300)
-                    .commitNumber(0)
-                    .code(faker.dragonBall().character())
-                    .vcsRepositoryId("repository-1")
-                    .state(PullRequest.MERGE)
-                    .isMerged(true)
-                    .title(faker.name().title())
-                    .vcsRepository(faker.ancient().primordial())
-                    .vcsOrganizationId(organization.getName())
-                    .isDraft(false)
-                    .vcsUrl(vcsUrl)
-                    .organizationId(organization.getId())
-                    .authorLogin(faker.dragonBall().character())
-                    .lastUpdateDate(ZonedDateTime.now())
-                    .branchName(branchName)
-                    .build());
-            pullRequests.add(PullRequestEntity.builder()
-                    .id("pr-3-" + i)
-                    .creationDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .plus(i * 8, ChronoUnit.DAYS))
-                    .mergeDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .plus(i * 9, ChronoUnit.DAYS))
-                    .addedLineNumber(500)
-                    .code(faker.dragonBall().character())
-                    .deletedLineNumber(500)
-                    .commitNumber(0)
-                    .state(PullRequest.MERGE)
-                    .isMerged(true)
-                    .title(faker.name().title())
-                    .vcsRepository(faker.ancient().primordial())
-                    .vcsOrganizationId(organization.getName())
-                    .branchName(branchName)
-                    .isDraft(false)
-                    .vcsRepositoryId("repository-1")
-                    .vcsUrl(vcsUrl)
-                    .organizationId(organization.getId())
-                    .authorLogin(faker.dragonBall().character())
-                    .lastUpdateDate(ZonedDateTime.now())
-                    .build());
-            pullRequests.add(PullRequestEntity.builder()
-                    .id("pr-4-" + i)
-                    .creationDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .plus(i * 8, ChronoUnit.DAYS))
-                    .mergeDate(
-                            weekStartDate.toInstant()
-                                    .atZone(organization.getTimeZone().toZoneId())
-                                    .plus(i * 9, ChronoUnit.DAYS))
-                    .addedLineNumber(500)
-                    .vcsRepository(faker.ancient().primordial())
-                    .deletedLineNumber(500)
-                    .commitNumber(0)
-                    .state(PullRequest.MERGE)
-                    .isMerged(true)
-                    .code(faker.dragonBall().character())
-                    .branchName(branchName)
-                    .title(faker.name().title())
-                    .vcsOrganizationId(organization.getName())
-                    .isDraft(false)
-                    .vcsRepositoryId("repository-2")
-                    .vcsUrl(vcsUrl)
-                    .organizationId(organization.getId())
-                    .authorLogin(faker.dragonBall().character())
-                    .lastUpdateDate(ZonedDateTime.now())
-                    .build());
-        }
-        return pullRequests;
+        final Date weekStartDate = stringToDate(startDate);
+        final ArrayList<PullRequestEntity> pullRequestEntities = new ArrayList<>();
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-1")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        7,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(400)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.OPEN)
+                .isMerged(false)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-1")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-2")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(100)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.OPEN)
+                .isMerged(false)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-2")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-3")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        2,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(50)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.OPEN)
+                .isMerged(false)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-3")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-4")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        7,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        12,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(100)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-4")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-5")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        7,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(500)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-5")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-6")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        7,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        2,
+                        10,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(200)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-6")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-7")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        2,
+                        10,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(400)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-7")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-8")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        2,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        2,
+                        10,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(20)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-8")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-9")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        26,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        2,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(200)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-9")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-10")
+                .creationDate(ZonedDateTime.of(
+                        2021,
+                        12,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        26,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(300)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-10")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-11")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        5,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        26,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(400)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-11")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-12")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        15,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        26,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(50)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-12")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-13")
+                .creationDate(ZonedDateTime.of(
+                        2021,
+                        12,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2021,
+                        12,
+                        28,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(30)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-13")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-14")
+                .creationDate(ZonedDateTime.of(
+                        2021,
+                        12,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        5,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(200)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-14")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-15")
+                .creationDate(ZonedDateTime.of(
+                        2021,
+                        12,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(500)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-15")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-16")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        7,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(100)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-16")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-17")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        15,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        20,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(250)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-17")
+                .build());
+        pullRequestEntities.add(PullRequestEntity.builder()
+                .id("pr-1-18")
+                .creationDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        7,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .mergeDate(ZonedDateTime.of(
+                        2022,
+                        1,
+                        12,
+                        0,
+                        0,
+                        0,
+                        0,
+                        ZoneId.of("Greenwich")))
+                .addedLineNumber(20)
+                .code(faker.dragonBall().character())
+                .deletedLineNumber(0)
+                .commitNumber(0)
+                .state(PullRequest.MERGE)
+                .isMerged(true)
+                .title(faker.name().title())
+                .vcsOrganizationId(organization.getName())
+                .vcsRepository(faker.ancient().primordial())
+                .isDraft(false)
+                .vcsUrl(vcsUrl)
+                .organizationId(organization.getId())
+                .authorLogin(faker.dragonBall().character())
+                .vcsRepositoryId("repository-1")
+                .lastUpdateDate(ZonedDateTime.now())
+                .branchName("branch-18")
+                .build());
+        return pullRequestEntities;
 
     }
 }
