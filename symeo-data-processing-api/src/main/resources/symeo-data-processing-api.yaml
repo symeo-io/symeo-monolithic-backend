@@ -8,17 +8,64 @@ servers:
 
 
 paths:
-  /job/v1/data-processing:
+  /job/v1/data-processing/organization:
     get:
       tags:
         - DataProcessingJob
       summary: Start to collect and process data for an organization
-      operationId: startDataProcessingJob
+      operationId: startDataProcessingJobForOrganizationId
       description: |
         Start to collect and process data given an organization id
       parameters:
         - in: query
           name: organization_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: 'Job started successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  [ ]
+        404:
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+        500:
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+  /job/v1/data-processing/team:
+    get:
+      tags:
+        - DataProcessingJob
+      summary: Start to collect and process data for a team
+      operationId: startDataProcessingJobForOrganizationIdAndTeamId
+      description: |
+        Start to collect and process data given an organization id and a team id
+      parameters:
+        - in: query
+          name: organization_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: team_id
           required: true
           schema:
             type: string

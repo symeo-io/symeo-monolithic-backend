@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.buildPagination;
@@ -272,6 +273,8 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
             return commitRepository.findAllByTeamId(teamId)
                     .stream()
                     .map(CommitMapper::entityToDomain)
+                    .collect(Collectors.toSet())
+                    .stream()
                     .toList();
         } catch (Exception e) {
             final String message = String.format("Failed to read commits for teamId %s", teamId);

@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface CommitRepository extends JpaRepository<CommitEntity, String> {
 
     @Query(nativeQuery = true, value = "select * from exposition_storage.commit c" +
+            "    left join exposition_storage.commit_to_parent_sha ctps on ctps.sha = c.sha " +
             "    where c.repository_id in (select ttr.repository_id" +
             "                                 from exposition_storage.team_to_repository ttr" +
             "                                 where ttr.team_id = :teamId)")
