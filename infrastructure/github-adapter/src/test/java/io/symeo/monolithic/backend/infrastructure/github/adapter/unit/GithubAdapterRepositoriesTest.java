@@ -56,7 +56,7 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
     }
 
     @Test
-    void should_map_repositories_bytes_to_domain_repositories() throws IOException {
+    void should_map_repositories_bytes_to_domain_repositories() throws IOException, SymeoException {
         // Given
         final GithubProperties githubProperties = new GithubProperties();
         githubProperties.setSize(3);

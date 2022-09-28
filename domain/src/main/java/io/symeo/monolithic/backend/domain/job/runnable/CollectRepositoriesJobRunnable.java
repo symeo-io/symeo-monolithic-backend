@@ -4,15 +4,12 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.job.JobRunnable;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
-import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -20,23 +17,25 @@ import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
-@Value
 @Builder
 @Slf4j
 public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<Organization> implements JobRunnable {
 
-    @NonNull VcsService vcsService;
-    @NonNull RepositoryService repositoryService;
-    @NonNull AccountOrganizationStorageAdapter accountOrganizationStorageAdapter;
-    @NonNull UUID organizationId;
-    @NonNull JobStorage jobStorage;
+    @NonNull
+    private final VcsService vcsService;
+    @NonNull
+    private final OrganizationStorageAdapter organizationStorageAdapter;
+    @NonNull
+    private final UUID organizationId;
+    @NonNull
+    private final JobStorage jobStorage;
 
     public static final String JOB_CODE = "COLLECT_REPOSITORIES_FOR_ORGANIZATION_JOB";
 
     @Override
     public void initializeTasks() throws SymeoException {
         final Organization organization =
-                accountOrganizationStorageAdapter.findOrganizationById(organizationId);
+                organizationStorageAdapter.findOrganizationById(organizationId);
         this.tasks = new ArrayList<>(List.of(
                 Task.newTaskForInput(organization)
         ));
@@ -49,14 +48,7 @@ public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<Organi
 
     private void collectRepositoriesForOrganization(Organization organization) throws SymeoException {
         LOGGER.info("Starting to collect repositories for organization {}", organization);
-        List<Repository> repositories = vcsService.collectRepositoriesForOrganization(organization);
-        repositories =
-                repositories.stream()
-                        .map(repository -> repository.toBuilder()
-                                .organizationId(organization.getId())
-                                .vcsOrganizationName(organization.getVcsOrganization().getName())
-                                .build()).toList();
-        repositoryService.saveRepositories(repositories);
+        vcsService.collectRepositoriesForOrganization(organization);
         LOGGER.info("Repositories Collection finished for organization {}", organization);
     }
 

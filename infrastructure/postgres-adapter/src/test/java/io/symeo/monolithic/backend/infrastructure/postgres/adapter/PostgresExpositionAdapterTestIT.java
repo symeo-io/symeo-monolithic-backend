@@ -6,14 +6,13 @@ import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresExpositionAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.TagEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
@@ -65,6 +64,8 @@ public class PostgresExpositionAdapterTestIT {
     private CommentRepository commentRepository;
     @Autowired
     private PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
+    @Autowired
+    private TagRepository tagRepository;
     private PostgresExpositionAdapter postgresExpositionAdapter;
 
 
@@ -76,6 +77,7 @@ public class PostgresExpositionAdapterTestIT {
         pullRequestRepository.deleteAll();
         repositoryRepository.deleteAll();
         organizationRepository.deleteAll();
+        tagRepository.deleteAll();
     }
 
     @BeforeEach
@@ -83,7 +85,7 @@ public class PostgresExpositionAdapterTestIT {
         postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
                 pullRequestFullViewRepository, customPullRequestViewRepository,
-                pullRequestWithCommitsAndCommentsRepository);
+                pullRequestWithCommitsAndCommentsRepository, commitRepository, tagRepository);
     }
 
     @Test
@@ -96,7 +98,7 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedComments(pullRequestsToSave);
 
         // Then
         final List<PullRequestEntity> all = pullRequestRepository.findAll();
@@ -133,11 +135,12 @@ public class PostgresExpositionAdapterTestIT {
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedComments(pullRequestsToSave);
 
         // Then
-        final List<CommitEntity> commitEntities = commitRepository.findAll();
-        assertThat(commitEntities).hasSize(3);
+        final List<PullRequestEntity> pullRequestRepositoryAll = pullRequestRepository.findAll();
+        assertThat(pullRequestRepositoryAll.get(0).getCommitShaList()).hasSize(2);
+        assertThat(pullRequestRepositoryAll.get(1).getCommitShaList()).hasSize(1);
     }
 
     @Test
@@ -147,25 +150,24 @@ public class PostgresExpositionAdapterTestIT {
                         .comments(List.of(
                                 Comment.builder()
                                         .creationDate(new Date())
-                                        .id(faker.rickAndMorty().character())
+                                        .id(faker.rickAndMorty().location())
                                         .build(),
                                 Comment.builder()
                                         .creationDate(new Date())
                                         .id(faker.rickAndMorty().character())
                                         .build()
-
                         )).build(),
                 buildPullRequest(2).toBuilder()
                         .comments(List.of(
                                 Comment.builder()
                                         .creationDate(new Date())
-                                        .id(faker.rickAndMorty().character())
+                                        .id(faker.harryPotter().character())
                                         .build()
                         )).build()
         );
 
         // When
-        postgresExpositionAdapter.savePullRequestDetailsWithLinkedCommitsAndComments(pullRequestsToSave);
+        postgresExpositionAdapter.savePullRequestDetailsWithLinkedComments(pullRequestsToSave);
 
         // Then
         final List<CommentEntity> commentEntities = commentRepository.findAll();
@@ -466,52 +468,15 @@ public class PostgresExpositionAdapterTestIT {
                                 .build()
                 )
         );
-        commitRepository.saveAll(
-                List.of(
-                        CommitEntity.builder()
-                                .sha(faker.dragonBall().character())
-                                .pullRequest(pr1)
-                                .date(ZonedDateTime.now())
-                                .message(faker.gameOfThrones().character())
-                                .authorLogin(faker.gameOfThrones().dragon())
-                                .build(),
-                        CommitEntity.builder()
-                                .sha(faker.rickAndMorty().character())
-                                .pullRequest(pr1)
-                                .date(ZonedDateTime.now())
-                                .message(faker.gameOfThrones().character())
-                                .authorLogin(faker.gameOfThrones().dragon())
-                                .build(),
-                        CommitEntity.builder()
-                                .sha(faker.rickAndMorty().location())
-                                .pullRequest(pr2)
-                                .date(ZonedDateTime.now())
-                                .message(faker.gameOfThrones().character())
-                                .authorLogin(faker.gameOfThrones().dragon())
-                                .build(),
-                        CommitEntity.builder()
-                                .sha(faker.demographic().race())
-                                .pullRequest(pr2)
-                                .date(ZonedDateTime.now())
-                                .message(faker.gameOfThrones().character())
-                                .authorLogin(faker.gameOfThrones().dragon())
-                                .build()
-                )
-        );
-        final Date startDate = Date.from(now.minusDays(40).toInstant());
         final Date endDate = new Date();
 
 
         // When
         final List<PullRequestView> pullRequestViews =
-                postgresExpositionAdapter.readMergedPullRequestsWithCommitsForTeamIdFromStartDateToEndDate(teamId,
-                        startDate,
-                        endDate);
+                postgresExpositionAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate);
 
         // Then
-        assertThat(pullRequestViews).hasSize(2);
-        assertThat(pullRequestViews.get(0).getCommits()).hasSize(2);
-        assertThat(pullRequestViews.get(1).getCommits()).hasSize(2);
+        assertThat(pullRequestViews).hasSize(4);
         assertThat(pullRequestViews.get(0).getComments()).hasSize(2);
         assertThat(pullRequestViews.get(1).getComments()).hasSize(1);
     }
@@ -940,5 +905,76 @@ public class PostgresExpositionAdapterTestIT {
                 .build();
         return List.of(pr1, pr2, pr3, pr4, pr5, pr6, pr7, pr8, pr9, pr10, pr11, pr12, pr13, pr14, pr15, pr16, pr17,
                 pr18, pr19);
+    }
+
+
+    @Test
+    void should_save_tags() throws SymeoException {
+        // Given
+        final String repositoryId = faker.rickAndMorty().character();
+        final List<Tag> tags = List.of(
+                Tag.builder().commitSha(faker.name().firstName())
+                        .repository(Repository.builder().id(repositoryId).build())
+                        .name(faker.name().firstName())
+                        .build(),
+                Tag.builder().commitSha(faker.name().lastName())
+                        .repository(Repository.builder().id(repositoryId).build())
+                        .name(faker.name().firstName())
+                        .build());
+
+        // When
+        postgresExpositionAdapter.saveTags(tags);
+
+        // Then
+        assertThat(tagRepository.findAll()).hasSize(tags.size());
+    }
+
+    @Test
+    void should_find_tags_given_a_team_id() throws SymeoException {
+        // Given
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .name(faker.name().firstName())
+                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .build();
+        organizationRepository.save(OrganizationMapper.domainToEntity(organization));
+        final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(
+                List.of(
+                        RepositoryEntity.builder().id("1").name(faker.dragonBall().character()).organizationId(organization.getId()).build(),
+                        RepositoryEntity.builder().id("2").name(faker.dragonBall().character()).organizationId(organization.getId()).build()
+                )
+        );
+        final String repositoryId = repositoryEntities.get(0).getId();
+        final TeamEntity teamEntity =
+                teamRepository.save(TeamEntity.builder().name(faker.rickAndMorty().character()).organizationId(organization.getId()).id(UUID.randomUUID())
+                        .repositoryIds(
+                                List.of(repositoryId
+                                )).build());
+        teamRepository.save(teamEntity);
+        tagRepository.saveAll(
+                List.of(
+                        TagEntity.builder()
+                                .sha(faker.rickAndMorty().location())
+                                .repositoryId(repositoryId)
+                                .name(faker.funnyName().name())
+                                .build(),
+                        TagEntity.builder()
+                                .sha(faker.rickAndMorty().character())
+                                .repositoryId(repositoryId)
+                                .name(faker.funnyName().name())
+                                .build(),
+                        TagEntity.builder()
+                                .sha(faker.rickAndMorty().character())
+                                .repositoryId("2")
+                                .name(faker.funnyName().name())
+                                .build()
+                )
+        );
+
+        // When
+        final List<Tag> tagsForTeamId = postgresExpositionAdapter.findTagsForTeamId(teamEntity.getId());
+
+        // Then
+        assertThat(tagsForTeamId).hasSize(2);
     }
 }

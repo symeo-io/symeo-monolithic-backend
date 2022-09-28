@@ -29,6 +29,7 @@ public interface OrganizationSettingsContractMapper {
         final DeployDetectionSettingsContract deployDetectionSettingsContract = new DeployDetectionSettingsContract();
         deployDetectionSettingsContract.setTagRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex());
         deployDetectionSettingsContract.setPullRequestMergedOnBranchRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex());
+        deployDetectionSettingsContract.setBranchRegexesToExclude(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getExcludeBranchRegexes());
         deliverySettingsContract.setDeployDetection(deployDetectionSettingsContract);
         organizationSettingsContract.setDelivery(deliverySettingsContract);
         organizationSettingsContract.setId(organizationSettings.getId());
@@ -36,8 +37,9 @@ public interface OrganizationSettingsContractMapper {
         return organizationSettingsResponseContract;
     }
 
-    static OrganizationSettings contractToDomain(final OrganizationSettingsContract organizationSettingsContract, UUID organizationId) {
-        return  OrganizationSettings.builder()
+    static OrganizationSettings contractToDomain(final OrganizationSettingsContract organizationSettingsContract,
+                                                 UUID organizationId) {
+        return OrganizationSettings.builder()
                 .id(organizationSettingsContract.getId())
                 .organizationId(organizationId)
                 .deliverySettings(
@@ -46,6 +48,7 @@ public interface OrganizationSettingsContractMapper {
                                         DeployDetectionSettings.builder()
                                                 .tagRegex(organizationSettingsContract.getDelivery().getDeployDetection().getTagRegex())
                                                 .pullRequestMergedOnBranchRegex(organizationSettingsContract.getDelivery().getDeployDetection().getPullRequestMergedOnBranchRegex())
+                                                .excludeBranchRegexes(organizationSettingsContract.getDelivery().getDeployDetection().getBranchRegexesToExclude())
                                                 .build()
                                 )
                                 .build()

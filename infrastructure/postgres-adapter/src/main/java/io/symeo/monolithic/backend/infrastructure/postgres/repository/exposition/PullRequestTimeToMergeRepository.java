@@ -15,7 +15,8 @@ public interface PullRequestTimeToMergeRepository extends JpaRepository<PullRequ
 
     @Query(nativeQuery = true,
             value = " select pr.id, pr.state, pr.creation_date, pr.merge_date, pr.close_date," +
-                    " pr.vcs_url, pr.branch_name" +
+                    " pr.vcs_url, " + "       pr.head," +
+                    "       pr.base" +
                     " from exposition_storage.pull_request pr" +
                     " where pr.organization_id = :organizationId " +
                     " and (" +

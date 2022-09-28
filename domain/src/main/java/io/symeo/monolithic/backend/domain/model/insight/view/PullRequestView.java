@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.hoursToDays;
@@ -23,6 +25,7 @@ import static java.util.Objects.nonNull;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @Data
+@Slf4j
 public class PullRequestView {
     public static final List<String> AVAILABLE_SORTING_PARAMETERS = List.of(
             "status", "creation_date", "merge_date", "size", "days_opened", "id", "commit_number", "vcs_url", "title"
@@ -37,17 +40,21 @@ public class PullRequestView {
     Integer deletedLineNumber;
     Integer addedLineNumber;
     Float limit;
-    String branchName;
+    String mergeCommitSha;
     String vcsUrl;
     String authorLogin;
     Integer commitNumber;
     String id;
     String title;
     String repository;
+    String base;
+    String head;
     @Builder.Default
     List<Commit> commits = new ArrayList<>();
     @Builder.Default
     List<Comment> comments = new ArrayList<>();
+    @Builder.Default
+    List<String> commitShaList = new ArrayList<>();
 
     public PullRequestView addStartDateRangeFromRangeDates(final List<Date> rangeDates) {
         String startDateRange;
@@ -162,7 +169,17 @@ public class PullRequestView {
     }
 
     public List<Commit> getCommitsOrderByDate() {
-        final ArrayList<Commit> commitArrayList = new ArrayList<>(this.commits);
+        List<Commit> commitArrayList = new ArrayList<>(this.commits);
+        commitArrayList = commitArrayList.stream()
+                .filter(commit -> {
+                    if (isNull(commit)) {
+                        LOGGER.warn("Missing commit pour PR {}", this.id);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                })
+                .collect(Collectors.toList());
         commitArrayList.sort(Comparator.comparing(Commit::getDate));
         return commitArrayList;
     }

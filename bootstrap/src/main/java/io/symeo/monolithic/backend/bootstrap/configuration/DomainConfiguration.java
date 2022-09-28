@@ -5,12 +5,12 @@ import io.symeo.monolithic.backend.domain.job.JobManager;
 import io.symeo.monolithic.backend.domain.port.in.*;
 import io.symeo.monolithic.backend.domain.port.out.*;
 import io.symeo.monolithic.backend.domain.query.CurveQuery;
-import io.symeo.monolithic.backend.domain.query.DeliveryQuery;
 import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.service.DataProcessingJobService;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.service.account.*;
-import io.symeo.monolithic.backend.domain.service.insights.LeadTimeService;
+import io.symeo.monolithic.backend.domain.service.insights.CycleTimeMetricsMetricsService;
+import io.symeo.monolithic.backend.domain.service.insights.CycleTimeService;
 import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import io.symeo.monolithic.backend.domain.service.job.JobService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.PullRequestService;
@@ -33,29 +33,22 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public DeliveryQuery deliveryQuery(final RawStorageAdapter rawStorageAdapter,
-                                       final VersionControlSystemAdapter versionControlSystemAdapter) {
-        return new DeliveryQuery(rawStorageAdapter, versionControlSystemAdapter);
-    }
-
-    @Bean
     public VcsService deliveryProcessorService(final DeliveryCommand deliveryCommand,
-                                               final DeliveryQuery deliveryQuery,
                                                final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new VcsService(deliveryCommand, deliveryQuery, expositionStorageAdapter);
+        return new VcsService(deliveryCommand, expositionStorageAdapter);
     }
 
 
     @Bean
     public DataProcessingJobService dataProcessingJobService(final VcsService vcsService,
-                                                             final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
+                                                             final OrganizationStorageAdapter organizationStorageAdapter,
                                                              final RepositoryService repositoryService,
                                                              final JobManager jobManager,
                                                              final SymeoJobApiAdapter symeoJobApiAdapter,
                                                              final OrganizationSettingsService organizationSettingsService,
                                                              final ExpositionStorageAdapter expositionStorageAdapter,
                                                              final JobStorage jobStorage) {
-        return new DataProcessingJobService(vcsService, accountOrganizationStorageAdapter,
+        return new DataProcessingJobService(vcsService, organizationStorageAdapter,
                 repositoryService, jobManager, symeoJobApiAdapter, organizationSettingsService,
                 expositionStorageAdapter, jobStorage);
     }
@@ -79,20 +72,20 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public OrganizationFacadeAdapter organizationFacadeAdapter(final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter,
+    public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter,
                                                                final DataProcessingJobAdapter dataProcessingJobAdapter) {
-        return new OrganizationService(accountOrganizationStorageAdapter, dataProcessingJobAdapter);
+        return new OrganizationService(organizationStorageAdapter, dataProcessingJobAdapter);
     }
 
     @Bean
-    public TeamFacadeAdapter teamFacadeAdapter(final AccountTeamStorage accountTeamStorage,
+    public TeamFacadeAdapter teamFacadeAdapter(final TeamStorage teamStorage,
                                                final DataProcessingJobAdapter dataProcessingJobAdapter) {
-        return new TeamService(accountTeamStorage, dataProcessingJobAdapter);
+        return new TeamService(teamStorage, dataProcessingJobAdapter);
     }
 
     @Bean
-    public OnboardingFacadeAdapter onboardingFacadeAdapter(final AccountOnboardingStorage accountOnboardingStorage) {
-        return new OnboardingService(accountOnboardingStorage);
+    public OnboardingFacadeAdapter onboardingFacadeAdapter(final OnboardingStorage onboardingStorage) {
+        return new OnboardingService(onboardingStorage);
     }
 
     @Bean
@@ -128,18 +121,25 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public LeadTimeFacadeAdapter leadTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new LeadTimeService(expositionStorageAdapter);
+    public CycleTimeMetricsFacadeAdapter cycleTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter,
+                                                               final OrganizationSettingsFacade organizationSettingsFacade,
+                                                               final CycleTimeService cycleTimeService) {
+        return new CycleTimeMetricsMetricsService(expositionStorageAdapter, organizationSettingsFacade, cycleTimeService);
     }
 
     @Bean
     public OrganizationSettingsService organizationSettingsService(final ExpositionStorageAdapter expositionStorageAdapter,
-                                                                   final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter) {
-        return new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+                                                                   final OrganizationStorageAdapter organizationStorageAdapter) {
+        return new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
     }
 
     @Bean
     public JobFacadeAdapter jobFacadeAdapter(final JobStorage jobStorage) {
         return new JobService(jobStorage);
+    }
+
+    @Bean
+    public CycleTimeService cycleTimeService() {
+        return new CycleTimeService();
     }
 }

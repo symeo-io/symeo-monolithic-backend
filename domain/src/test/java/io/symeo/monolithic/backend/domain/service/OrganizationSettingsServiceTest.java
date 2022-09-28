@@ -7,8 +7,7 @@ import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.port.in.OrganizationSettingsFacade;
-import io.symeo.monolithic.backend.domain.port.out.AccountOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import org.junit.jupiter.api.Test;
 
@@ -24,18 +23,18 @@ public class OrganizationSettingsServiceTest {
     @Test
     void should_initialize_organization_settings_with_deploy_detection_default_most_used_branch_given_no_existing_settings() throws SymeoException {
         //
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsService organizationSettingsService =
-                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+                new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .build();
         final String defaultMostUsedBranch = faker.rickAndMorty().character();
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
+        when(organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
                 .thenReturn(Optional.empty());
         when(expositionStorageAdapter
                 .findDefaultMostUsedBranchForOrganizationId(organization.getId()))
@@ -43,7 +42,7 @@ public class OrganizationSettingsServiceTest {
         organizationSettingsService.initializeOrganizationSettingsForOrganization(organization);
 
         // Then
-        verify(accountOrganizationStorageAdapter, times(1))
+        verify(organizationStorageAdapter, times(1))
                 .saveOrganizationSettings(
                         OrganizationSettings.
                                 initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
@@ -54,34 +53,34 @@ public class OrganizationSettingsServiceTest {
     @Test
     void should_not_initialize_organization_settings_for_existing_settings() throws SymeoException {
         // Given
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsService organizationSettingsService =
-                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+                new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .build();
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
+        when(organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
                 .thenReturn(Optional.ofNullable(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
                         faker.rickAndMorty().character())));
         organizationSettingsService.initializeOrganizationSettingsForOrganization(organization);
 
         // Then
         verifyNoInteractions(expositionStorageAdapter);
-        verify(accountOrganizationStorageAdapter, times(0)).saveOrganizationSettings(any());
+        verify(organizationStorageAdapter, times(0)).saveOrganizationSettings(any());
     }
 
     @Test
     void should_find_organization_settings_given_an_organization_id() throws SymeoException {
         // Given
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsService organizationSettingsService =
-                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+                new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .build();
@@ -90,7 +89,7 @@ public class OrganizationSettingsServiceTest {
                         faker.rickAndMorty().character()));
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
+        when(organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
                 .thenReturn(optionalOrganizationSettings);
         final OrganizationSettings organizationSettings =
                 organizationSettingsService.getOrganizationSettingsForOrganization(organization);
@@ -102,18 +101,18 @@ public class OrganizationSettingsServiceTest {
     @Test
     void should_raise_functional_not_found_exception() throws SymeoException {
         // Given
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsService organizationSettingsService =
-                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+                new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .build();
 
         // When
         SymeoException expectedSymeoException = null;
-        when(accountOrganizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
+        when(organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
                 .thenReturn(Optional.empty());
         try {
             organizationSettingsService.getOrganizationSettingsForOrganization(organization);
@@ -133,11 +132,11 @@ public class OrganizationSettingsServiceTest {
         // Given
         final UUID organizationSettingsId = UUID.randomUUID();
         final UUID organizationId = UUID.randomUUID();
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsService organizationSettingsService =
-                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+                new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
         final Optional<OrganizationSettings> optionalOrganizationSettings = Optional.of(OrganizationSettings.builder()
                 .id(organizationSettingsId)
                 .organizationId(UUID.randomUUID())
@@ -154,7 +153,7 @@ public class OrganizationSettingsServiceTest {
                 .build());
 
         // When
-        when(accountOrganizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettingsId, organizationId))
+        when(organizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettingsId, organizationId))
                 .thenReturn(optionalOrganizationSettings);
         final Optional<OrganizationSettings> organizationSettings =
                 organizationSettingsService.getOrganizationSettingsForIdAndOrganizationId(organizationSettingsId, organizationId);
@@ -167,11 +166,11 @@ public class OrganizationSettingsServiceTest {
     void should_update_organization_settings_given_organization_settings() throws SymeoException {
         // Given
         final UUID organizationSettingsId = UUID.randomUUID();
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsService organizationSettingsService =
-                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+                new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
         final OrganizationSettings organizationSettings = OrganizationSettings.builder()
                 .id(organizationSettingsId)
                 .organizationId(UUID.randomUUID())
@@ -188,20 +187,20 @@ public class OrganizationSettingsServiceTest {
                 .build();
 
         // When
-        accountOrganizationStorageAdapter.saveOrganizationSettings(organizationSettings);
+        organizationStorageAdapter.saveOrganizationSettings(organizationSettings);
 
         // Then
-        verify(accountOrganizationStorageAdapter, times(1)).saveOrganizationSettings(organizationSettings);
+        verify(organizationStorageAdapter, times(1)).saveOrganizationSettings(organizationSettings);
     }
 
     @Test
     void should_raise_organization_settings_not_found_exception() {
         // Given
-        final AccountOrganizationStorageAdapter accountOrganizationStorageAdapter =
-                mock(AccountOrganizationStorageAdapter.class);
+        final OrganizationStorageAdapter organizationStorageAdapter =
+                mock(OrganizationStorageAdapter.class);
         final ExpositionStorageAdapter expositionStorageAdapter = mock(ExpositionStorageAdapter.class);
         final OrganizationSettingsService organizationSettingsService =
-                new OrganizationSettingsService(expositionStorageAdapter, accountOrganizationStorageAdapter);
+                new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .build();
@@ -222,7 +221,7 @@ public class OrganizationSettingsServiceTest {
 
         // When
         SymeoException expectedSymeoException = null;
-        when(accountOrganizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(UUID.randomUUID(), organization.getId()))
+        when(organizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(UUID.randomUUID(), organization.getId()))
                 .thenReturn(Optional.empty());
         try {
             organizationSettingsService.updateOrganizationSettings(organizationSettings);

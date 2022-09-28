@@ -3,12 +3,15 @@ package io.symeo.monolithic.backend.domain.model.insight;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -189,5 +192,43 @@ public class PullRequestViewTest {
                 .mergeDate(mergeDate)
                 .status(status)
                 .build();
+    }
+
+    @Test
+    void should_return_ordered_commits() throws SymeoException {
+        // Given
+        final ArrayList<Commit> commits = new ArrayList<>(List.of(
+                Commit.builder().date(stringToDate("2022-02-01")).build(),
+                Commit.builder().date(stringToDate("2022-01-01")).build()
+        ));
+        commits.add(null);
+        final PullRequestView pullRequestView = PullRequestView.builder()
+                .commits(commits)
+                .build();
+
+        // When
+        final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
+
+        // Then
+        assertThat(commitsOrderByDate.get(0).getDate().before(commitsOrderByDate.get(1).getDate())).isTrue();
+        assertThat(commitsOrderByDate).hasSize(2);
+    }
+
+    @Test
+    void should_return_ordered_comments() throws SymeoException {
+        // Given
+        final PullRequestView pullRequestView = PullRequestView.builder()
+                .comments(List.of(
+                        Comment.builder().creationDate(stringToDate("2022-02-03")).build(),
+                        Comment.builder().creationDate(stringToDate("2022-01-03")).build()
+                ))
+                .build();
+
+        // When
+        final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
+
+        // Then
+        assertThat(commentsOrderByDate.get(0).getCreationDate().before(commentsOrderByDate.get(1).getCreationDate()))
+                .isTrue();
     }
 }

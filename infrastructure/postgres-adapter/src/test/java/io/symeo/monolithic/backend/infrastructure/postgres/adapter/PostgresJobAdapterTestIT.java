@@ -9,7 +9,6 @@ import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresJobAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper;

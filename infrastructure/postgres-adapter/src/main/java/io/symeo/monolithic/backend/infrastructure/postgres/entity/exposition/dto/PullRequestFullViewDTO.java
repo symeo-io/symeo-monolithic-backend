@@ -37,8 +37,10 @@ public class PullRequestFullViewDTO {
     String state;
     @Column(name = "vcs_url")
     String vcsUrl;
-    @Column(name = "branch_name")
-    String branchName;
+    @Column(name = "head")
+    String head;
+    @Column(name = "base")
+    String base;
     @Column(name = "title")
     String title;
     @Column(name = "commit_number")
@@ -47,4 +49,6 @@ public class PullRequestFullViewDTO {
     String vcsRepository;
     @Column(name = "author_login")
     String authorLogin;
+    @Column(name = "merge_commit_sha")
+    String mergeCommitSha;
 }

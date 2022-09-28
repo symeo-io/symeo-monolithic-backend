@@ -1,6 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.configuration;
 
-import io.symeo.monolithic.backend.infrastructure.postgres.*;
+import io.symeo.monolithic.backend.infrastructure.postgres.adapter.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
@@ -33,37 +33,39 @@ public class PostgresConfiguration {
                                                      final PullRequestSizeRepository pullRequestSizeRepository,
                                                      final PullRequestFullViewRepository pullRequestFullViewRepository,
                                                      final CustomPullRequestViewRepository customPullRequestViewRepository,
-                                                     final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository) {
+                                                     final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository,
+                                                     final CommitRepository commitRepository,
+                                                     final TagRepository tagRepository) {
         return new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
                 pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository,
-                customPullRequestViewRepository,
-                pullRequestWithCommitsAndCommentsRepository);
+                customPullRequestViewRepository, pullRequestWithCommitsAndCommentsRepository, commitRepository,
+                tagRepository);
     }
 
     @Bean
-    public PostgresAccountUserAdapter postgresAccountAdapter(final UserRepository userRepository,
-                                                             final VcsOrganizationRepository vcsOrganizationRepository) {
-        return new PostgresAccountUserAdapter(userRepository, vcsOrganizationRepository);
+    public PostgresUserAdapter postgresAccountAdapter(final UserRepository userRepository,
+                                                      final VcsOrganizationRepository vcsOrganizationRepository) {
+        return new PostgresUserAdapter(userRepository, vcsOrganizationRepository);
     }
 
     @Bean
-    public PostgresAccountOrganizationAdapter postgresOrganizationAdapter(final VcsOrganizationRepository vcsOrganizationRepository,
-                                                                          final OrganizationRepository organizationRepository,
-                                                                          final OrganizationSettingsRepository organizationSettingsRepository) {
-        return new PostgresAccountOrganizationAdapter(vcsOrganizationRepository, organizationRepository,
+    public PostgresOrganizationAdapter postgresOrganizationAdapter(final VcsOrganizationRepository vcsOrganizationRepository,
+                                                                   final OrganizationRepository organizationRepository,
+                                                                   final OrganizationSettingsRepository organizationSettingsRepository) {
+        return new PostgresOrganizationAdapter(vcsOrganizationRepository, organizationRepository,
                 organizationSettingsRepository);
     }
 
     @Bean
-    public PostgresAccountTeamAdapter postgresTeamAdapter(final TeamRepository teamRepository,
-                                                          final UserRepository userRepository,
-                                                          final TeamGoalRepository teamGoalRepository) {
-        return new PostgresAccountTeamAdapter(teamRepository, userRepository, teamGoalRepository);
+    public PostgresTeamAdapter postgresTeamAdapter(final TeamRepository teamRepository,
+                                                   final UserRepository userRepository,
+                                                   final TeamGoalRepository teamGoalRepository) {
+        return new PostgresTeamAdapter(teamRepository, userRepository, teamGoalRepository);
     }
 
     @Bean
-    public PostgresAccountOnboardingAdapter postgresAccountOnboardingAdapter(final OnboardingRepository onboardingRepository) {
-        return new PostgresAccountOnboardingAdapter(onboardingRepository);
+    public PostgresOnboardingAdapter postgresAccountOnboardingAdapter(final OnboardingRepository onboardingRepository) {
+        return new PostgresOnboardingAdapter(onboardingRepository);
     }
 
     @Bean

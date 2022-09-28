@@ -16,7 +16,7 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "user", schema = "account_storage")
+@Table(name = "user", schema = "organization_storage")
 @EntityListeners(AuditingEntityListener.class)
 public class UserEntity  {
 
@@ -28,7 +28,7 @@ public class UserEntity  {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_to_organization",
-            schema = "account_storage",
+            schema = "organization_storage",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "organization_id")
     )

@@ -17,7 +17,7 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
-@Table(name = "team_goal", schema = "account_storage")
+@Table(name = "team_goal", schema = "organization_storage")
 public class TeamGoalEntity {
 
     @Id

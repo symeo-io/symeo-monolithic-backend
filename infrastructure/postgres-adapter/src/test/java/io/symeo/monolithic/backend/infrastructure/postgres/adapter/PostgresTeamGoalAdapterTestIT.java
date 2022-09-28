@@ -4,7 +4,6 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.TeamGoal;
 import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
-import io.symeo.monolithic.backend.infrastructure.postgres.PostgresTeamGoalAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
