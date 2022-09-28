@@ -22,7 +22,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SymeoOrganizationSettingsIT extends AbstractSymeoBackForFrontendApiIT {
+public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontendApiIT {
 
     @Autowired
     public UserRepository userRepository;

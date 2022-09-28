@@ -69,13 +69,13 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
                                                                                            final String pullRequestMergedOnBranchRegex,
                                                                                            final List<String> excludeBranchRegexes) throws SymeoException {
         final List<PullRequestView> currentPullRequestViews =
-                expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
+                expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                                 endDate)
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
                         .collect(Collectors.toList());
         final List<PullRequestView> previousPullRequestViews =
-                expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, startDate)
+                expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, startDate)
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
                         .toList();
@@ -119,13 +119,13 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
                                                                              final String deployOnTagRegex,
                                                                              final List<String> excludeBranchRegexes) throws SymeoException {
         final List<PullRequestView> currentPullRequestViews =
-                expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
+                expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                                 endDate)
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
                         .collect(Collectors.toList());
         final List<PullRequestView> previousPullRequestViews =
-                expositionStorageAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, startDate)
+                expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, startDate)
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
                         .toList();

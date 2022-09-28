@@ -21,12 +21,11 @@ public class CycleTimeService {
                                                                final List<Commit> allCommitsUntilEndDate) {
         final List<PullRequestView> pullRequestViewsToComputeCycleTime =
                 filterPullRequestForCycleTimeComputation(pullRequestViews);
-        final int pullRequestSize = pullRequestViewsToComputeCycleTime.size();
-        if (pullRequestSize == 0) {
+        if (pullRequestViewsToComputeCycleTime.size() == 0) {
             return empty();
         }
         return of(computeCycleTimeForTagRegexToDeploySettings(pullRequestViewsToComputeCycleTime,
-                tagsMatchingDeployTagRegex, allCommitsUntilEndDate, pullRequestSize));
+                tagsMatchingDeployTagRegex, allCommitsUntilEndDate));
     }
 
     public Optional<AverageCycleTime> buildForPullRequestMergedOnBranchRegexSettings(final List<PullRequestView> pullRequestViews,
@@ -34,13 +33,11 @@ public class CycleTimeService {
                                                                                      final List<Commit> allCommitsUntilEndDate) {
         final List<PullRequestView> pullRequestViewsToComputeCycleTime =
                 filterPullRequestForCycleTimeComputation(pullRequestViews);
-        final int pullRequestSize = pullRequestViewsToComputeCycleTime.size();
-        if (pullRequestSize == 0) {
+        if (pullRequestViewsToComputeCycleTime.size() == 0) {
             return empty();
         }
         return of(computeCycleTimeForPullRequestMergedOnBranchRegexSettings(pullRequestViewsToComputeCycleTime,
-                pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate, allCommitsUntilEndDate,
-                pullRequestSize));
+                pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate, allCommitsUntilEndDate));
     }
 
     private static List<PullRequestView> filterPullRequestForCycleTimeComputation(List<PullRequestView> pullRequestWithCommitsViews) {

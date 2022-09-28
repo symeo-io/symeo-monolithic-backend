@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getNumberOfMinutesBetweenDates;
 import static io.symeo.monolithic.backend.domain.model.platform.vcs.CommitHistory.initializeFromCommits;
@@ -27,6 +28,58 @@ public class CycleTime {
     Long deployTime;
     // To display PR data on graphs
     PullRequestView pullRequestView;
+
+    public static CycleTime computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(final PullRequestView pullRequestView,
+                                                                                          final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
+                                                                                          final List<Commit> allCommits) {
+        final CommitHistory commitHistory = initializeFromCommits(allCommits);
+        return computeCycleTimeWithDeployTimeSupplier(
+                pullRequestView,
+                commitHistory,
+                computeDeployTimeWithPullRequestMatchingDeliverySettingsSupplier(
+                        pullRequestView,
+                        pullRequestViewsMatchingDeliverySettings,
+                        commitHistory
+                )
+        );
+    }
+
+    public static CycleTime computeCycleTimeForTagRegexToDeploySettings(PullRequestView pullRequestView,
+                                                                        final List<Tag> tagsMatchedToDeploy,
+                                                                        final List<Commit> allCommits) {
+        final CommitHistory commitHistory = initializeFromCommits(allCommits);
+        return computeCycleTimeWithDeployTimeSupplier(
+                pullRequestView,
+                commitHistory,
+                computeDeployTimeForTagRegexToDeploySettingsSupplier(
+                        pullRequestView,
+                        tagsMatchedToDeploy,
+                        commitHistory
+                )
+        );
+    }
+
+    private static CycleTime computeCycleTimeWithDeployTimeSupplier(PullRequestView pullRequestView,
+                                                                    final CommitHistory commitHistory,
+                                                                    final Supplier<Long> deployTimeSupplier) {
+
+        pullRequestView = pullRequestView.toBuilder()
+                .commits(pullRequestView.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
+                .build();
+        final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
+        final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
+        final Date mergeDate = pullRequestView.getMergeDate();
+        final Long codingTime = computeCodingTime(commitsOrderByDate, commentsOrderByDate);
+        final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);
+        final Long deployTime = deployTimeSupplier.get();
+        return CycleTime.builder()
+                .codingTime(codingTime)
+                .reviewTime(reviewTime)
+                .deployTime(deployTime)
+                .value(getCycleTimeValue(codingTime, reviewTime, deployTime))
+                .pullRequestView(pullRequestView)
+                .build();
+    }
 
     private static Long computeReviewTime(final List<Commit> commitsOrderByDate,
                                           final List<Comment> commentsOrderByDate,
@@ -78,30 +131,6 @@ public class CycleTime {
         return lastCommitBeforeFirstReview;
     }
 
-    public static CycleTime computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(PullRequestView pullRequestView,
-                                                                                          final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
-                                                                                          final List<Commit> allCommits) {
-        final CommitHistory commitHistory = initializeFromCommits(allCommits);
-        pullRequestView = pullRequestView.toBuilder()
-                .commits(pullRequestView.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
-                .build();
-        final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
-        final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
-        final Date mergeDate = pullRequestView.getMergeDate();
-        final Long codingTime = computeCodingTime(commitsOrderByDate, commentsOrderByDate);
-        final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);
-        final Long deployTime =
-                computeDeployTimeWithPullRequestMatchingDeliverySettings(pullRequestView,
-                        pullRequestViewsMatchingDeliverySettings, commitHistory);
-        return CycleTime.builder()
-                .codingTime(codingTime)
-                .reviewTime(reviewTime)
-                .deployTime(deployTime)
-                .value(getCycleTimeValue(codingTime, reviewTime, deployTime))
-                .pullRequestView(pullRequestView)
-                .build();
-    }
-
     private static Long getCycleTimeValue(Long codingTime, Long reviewTime, Long deployTime) {
         if (isNull(codingTime) && isNull(reviewTime) && isNull(deployTime)) {
             return null;
@@ -113,77 +142,61 @@ public class CycleTime {
         return isNull(value) ? 0L : value;
     }
 
-    public static CycleTime computeCycleTimeForTagRegexToDeploySettings(PullRequestView pullRequestView,
-                                                                        final List<Tag> tagsMatchedToDeploy,
-                                                                        final List<Commit> allCommits) {
-        final CommitHistory commitHistory = initializeFromCommits(allCommits);
-        pullRequestView = pullRequestView.toBuilder()
-                .commits(pullRequestView.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
-                .build();
-        final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
-        final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
-        final Date mergeDate = pullRequestView.getMergeDate();
-        final Long codingTime = computeCodingTime(commitsOrderByDate, commentsOrderByDate);
-        final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);
-        final Long deployTime =
-                computeDeployTimeForTagRegexToDeploySettings(pullRequestView,
-                        tagsMatchedToDeploy, commitHistory);
-        return CycleTime.builder()
-                .codingTime(codingTime)
-                .reviewTime(reviewTime)
-                .deployTime(deployTime)
-                .value(getCycleTimeValue(codingTime, reviewTime, deployTime))
-                .pullRequestView(pullRequestView)
-                .build();
-    }
+    private static Supplier<Long> computeDeployTimeWithPullRequestMatchingDeliverySettingsSupplier(
+            final PullRequestView pullRequestView,
+            final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
+            final CommitHistory commitHistory
+    ) {
+        return () -> {
+            if (pullRequestViewsMatchingDeliverySettings.isEmpty()) {
+                return null;
+            }
 
-
-    private static Long computeDeployTimeWithPullRequestMatchingDeliverySettings(final PullRequestView pullRequestView,
-                                                                                 final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
-                                                                                 final CommitHistory commitHistory) {
-        if (pullRequestViewsMatchingDeliverySettings.isEmpty()) {
-            return null;
-        }
-
-        final Commit mergeCommit = commitHistory.getCommitFromSha(pullRequestView.getMergeCommitSha());
-        Date firstMergeDateForCommitOnBranch = null;
-        for (PullRequestView pullRequestViewsMatchingDeliverySetting : pullRequestViewsMatchingDeliverySettings) {
-            if (commitHistory.isCommitPresentOnMergeCommitHistory(pullRequestView.getMergeCommitSha(),
-                    pullRequestViewsMatchingDeliverySetting.getMergeCommitSha())) {
-                final Date mergeDate = pullRequestViewsMatchingDeliverySetting.getMergeDate();
-                if (isNull(firstMergeDateForCommitOnBranch)) {
-                    firstMergeDateForCommitOnBranch = mergeDate;
-                } else if (mergeDate.before(firstMergeDateForCommitOnBranch)) {
-                    firstMergeDateForCommitOnBranch = mergeDate;
+            final Commit mergeCommit = commitHistory.getCommitFromSha(pullRequestView.getMergeCommitSha());
+            Date firstMergeDateForCommitOnBranch = null;
+            for (PullRequestView pullRequestViewsMatchingDeliverySetting :
+                    pullRequestViewsMatchingDeliverySettings) {
+                if (commitHistory.isCommitPresentOnMergeCommitHistory(pullRequestView.getMergeCommitSha(),
+                        pullRequestViewsMatchingDeliverySetting.getMergeCommitSha())) {
+                    final Date mergeDate = pullRequestViewsMatchingDeliverySetting.getMergeDate();
+                    if (isNull(firstMergeDateForCommitOnBranch)) {
+                        firstMergeDateForCommitOnBranch = mergeDate;
+                    } else if (mergeDate.before(firstMergeDateForCommitOnBranch)) {
+                        firstMergeDateForCommitOnBranch = mergeDate;
+                    }
                 }
             }
-        }
-        return isNull(firstMergeDateForCommitOnBranch) ? null : getNumberOfMinutesBetweenDates(mergeCommit.getDate(),
-                firstMergeDateForCommitOnBranch);
+            return isNull(firstMergeDateForCommitOnBranch) ? null :
+                    getNumberOfMinutesBetweenDates(mergeCommit.getDate(),
+                            firstMergeDateForCommitOnBranch);
+        };
     }
 
-    private static Long computeDeployTimeForTagRegexToDeploySettings(final PullRequestView pullRequestView,
-                                                                     final List<Tag> tagsMatchedToDeploy,
-                                                                     final CommitHistory commitHistory) {
-        if (tagsMatchedToDeploy.isEmpty()) {
-            return null;
-        }
-
-        final Commit mergeCommit = commitHistory.getCommitFromSha(pullRequestView.getMergeCommitSha());
-        Date firstMergeDateForCommitOnBranch = null;
-        for (Tag tagMatchedToDeploy : tagsMatchedToDeploy) {
-            if (commitHistory.isCommitPresentOnMergeCommitHistory(pullRequestView.getMergeCommitSha(),
-                    tagMatchedToDeploy.getCommitSha())) {
-                final Date mergeDate = commitHistory.getCommitFromSha(tagMatchedToDeploy.getCommitSha()).getDate();
-                if (isNull(firstMergeDateForCommitOnBranch)) {
-                    firstMergeDateForCommitOnBranch = mergeDate;
-                } else if (mergeDate.before(firstMergeDateForCommitOnBranch)) {
-                    firstMergeDateForCommitOnBranch = mergeDate;
+    private static Supplier<Long> computeDeployTimeForTagRegexToDeploySettingsSupplier(final PullRequestView pullRequestView,
+                                                                                       final List<Tag> tagsMatchedToDeploy,
+                                                                                       final CommitHistory commitHistory) {
+        return () -> {
+            if (tagsMatchedToDeploy.isEmpty()) {
+                return null;
+            }
+            final Commit mergeCommit = commitHistory.getCommitFromSha(pullRequestView.getMergeCommitSha());
+            Date firstMergeDateForCommitOnBranch = null;
+            for (Tag tagMatchedToDeploy : tagsMatchedToDeploy) {
+                if (commitHistory.isCommitPresentOnMergeCommitHistory(pullRequestView.getMergeCommitSha(),
+                        tagMatchedToDeploy.getCommitSha())) {
+                    final Date mergeDate =
+                            commitHistory.getCommitFromSha(tagMatchedToDeploy.getCommitSha()).getDate();
+                    if (isNull(firstMergeDateForCommitOnBranch)) {
+                        firstMergeDateForCommitOnBranch = mergeDate;
+                    } else if (mergeDate.before(firstMergeDateForCommitOnBranch)) {
+                        firstMergeDateForCommitOnBranch = mergeDate;
+                    }
                 }
             }
-        }
-        return isNull(firstMergeDateForCommitOnBranch) ? null : getNumberOfMinutesBetweenDates(mergeCommit.getDate(),
-                firstMergeDateForCommitOnBranch);
+            return isNull(firstMergeDateForCommitOnBranch) ? null :
+                    getNumberOfMinutesBetweenDates(mergeCommit.getDate(),
+                            firstMergeDateForCommitOnBranch);
+        };
     }
 
 

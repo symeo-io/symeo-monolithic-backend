@@ -156,7 +156,6 @@ public class PostgresExpositionAdapterTestIT {
                                         .creationDate(new Date())
                                         .id(faker.rickAndMorty().character())
                                         .build()
-
                         )).build(),
                 buildPullRequest(2).toBuilder()
                         .comments(List.of(
@@ -474,7 +473,7 @@ public class PostgresExpositionAdapterTestIT {
 
         // When
         final List<PullRequestView> pullRequestViews =
-                postgresExpositionAdapter.readMergedPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate);
+                postgresExpositionAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate);
 
         // Then
         assertThat(pullRequestViews).hasSize(4);
