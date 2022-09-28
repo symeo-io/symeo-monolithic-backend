@@ -48,7 +48,7 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
     @Container
     static PostgreSQLContainer postgresSQLContainer =
             new PostgreSQLContainer<>("postgres:13")
-                    .withDatabaseName("symeo.-monolithic-backend");
+                    .withDatabaseName("symeo-monolithic-backend");
 
 
     @DynamicPropertySource

@@ -9,9 +9,9 @@ import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganiza
 import io.symeo.monolithic.backend.domain.job.runnable.InitializeOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.port.in.DataProcessingJobAdapter;
-import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
@@ -100,7 +100,9 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     @Override
     public void startAll() throws SymeoException {
         final List<Organization> organizations = organizationStorageAdapter.findAllOrganization();
-        organizations.forEach(organization -> symeoJobApiAdapter.startJobForOrganizationId(organization.getId()));
+        for (Organization organization : organizations) {
+            symeoJobApiAdapter.startJobForOrganizationId(organization.getId());
+        }
     }
 
 
