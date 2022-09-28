@@ -7,7 +7,6 @@ import io.symeo.monolithic.backend.domain.model.account.Team;
 import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamGoalEntity;
@@ -35,9 +34,7 @@ import java.util.UUID;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresTeamAdapterTestIT {
+public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
 
     private final Faker faker = new Faker();
     @Autowired

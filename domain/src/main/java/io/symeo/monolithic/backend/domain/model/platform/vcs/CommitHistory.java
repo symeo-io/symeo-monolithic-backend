@@ -4,7 +4,6 @@ import lombok.Builder;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -15,7 +14,6 @@ public class CommitHistory {
 
     private final List<Commit> commits;
     private final Map<String, Commit> commitsMappedToSha;
-    private final List<String> allBranches;
 
     public static CommitHistory initializeFromCommits(List<Commit> allCommits) {
         return CommitHistory.builder()
@@ -23,11 +21,6 @@ public class CommitHistory {
                         allCommits.stream()
                                 .collect(Collectors.toMap(Commit::getSha, Function.identity()))
                 )
-                .allBranches(
-                        allCommits.stream()
-                                .map(Commit::getHead)
-                                .filter(Objects::nonNull)
-                                .toList())
                 .build();
     }
 

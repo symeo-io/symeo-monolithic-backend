@@ -6,7 +6,6 @@ import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
-import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.*;
@@ -18,11 +17,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -34,9 +29,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresExpositionAdapterTestIT {
+
+public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
 
     private final Faker faker = new Faker();
 
@@ -64,6 +58,8 @@ public class PostgresExpositionAdapterTestIT {
     private PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
     @Autowired
     private TagRepository tagRepository;
+    @Autowired
+    private CustomCommitRepository customCommitRepository;
     private PostgresExpositionAdapter postgresExpositionAdapter;
 
 
@@ -83,7 +79,7 @@ public class PostgresExpositionAdapterTestIT {
         postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
                 pullRequestFullViewRepository, customPullRequestViewRepository,
-                pullRequestWithCommitsAndCommentsRepository, commitRepository, tagRepository);
+                pullRequestWithCommitsAndCommentsRepository, commitRepository, tagRepository, customCommitRepository);
     }
 
     @Test
@@ -350,7 +346,7 @@ public class PostgresExpositionAdapterTestIT {
         final List<PullRequestView> pullRequestViewsPage12 =
                 postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
                         teamId, from, to, 0, pageSize,
-                        "size", "asc"
+                        "creation_date", "desc"
                 );
         final List<PullRequestView> pullRequestViewsPage21 =
                 postgresExpositionAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
@@ -1042,9 +1038,15 @@ public class PostgresExpositionAdapterTestIT {
             final Optional<Commit> optionalCommit =
                     commits.stream().filter(commit -> commit.getSha().equals(commitEntity.getSha())).findFirst();
             optionalCommit
-                    .ifPresentOrElse(commit -> assertThat(commit.getParentShaList())
-                                    .hasSize(commitEntity.getParentShaList().size()),
+                    .ifPresentOrElse(commit -> {
+                                assertThat(commit.getParentShaList()).hasSize(commitEntity.getParentShaList().size());
+                                assertThat(commit.getSha()).isEqualTo(commitEntity.getSha());
+                                assertThat(commit.getMessage()).isEqualTo(commitEntity.getMessage());
+                                assertThat(commit.getRepositoryId()).isEqualTo(commitEntity.getRepositoryId());
+                                assertThat(commit.getAuthor()).isEqualTo(commitEntity.getAuthorLogin());
+                            },
                             () -> assertThat(true).isFalse());
         }
     }
+
 }
