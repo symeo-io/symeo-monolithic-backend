@@ -1,7 +1,9 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationAndTeamJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
@@ -18,6 +20,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Te
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import java.util.List;
 import java.util.UUID;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.ORGANISATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +48,8 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
     public JobRepository jobRepository;
     @Autowired
     public OrganizationService organizationService;
+    @Autowired
+    public SymeoJobApiProperties symeoJobApiProperties;
     private static final UUID organizationId = UUID.randomUUID();
 
     private static final String mail = faker.name().firstName() + "@" + faker.name().firstName() + ".fr";
@@ -201,18 +207,15 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.teams[1].repository_ids[1]").isEqualTo(teams.get(1).getRepositoryIds().get(1))
                 .jsonPath("$.teams[1].name").isNotEmpty();
         Thread.sleep(2000);
-        final List<JobEntity> jobRepositoryAll1 =
-                jobRepository.findLastJobsForCodeAndOrganizationAndLimitAndTeamByTechnicalModificationDate(
-                        CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organizationId,
-                        teams.get(0).getId(), 2);
-        final List<JobEntity> jobRepositoryAll2 =
-                jobRepository.findLastJobsForCodeAndOrganizationAndLimitAndTeamByTechnicalModificationDate(
-                        CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organizationId,
-                        teams.get(1).getId(), 2);
-        assertThat(jobRepositoryAll1).hasSize(1);
-        assertThat(jobRepositoryAll1.get(0).getTeamId()).isEqualTo(teams.get(0).getId());
-        assertThat(jobRepositoryAll2).hasSize(1);
-        assertThat(jobRepositoryAll2.get(0).getTeamId()).isEqualTo(teams.get(1).getId());
+
+        wireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
+                                "?organization_id=%s&team_id=%s", organizationId, teams.get(0).getId()))
+                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
+        wireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
+                                "?organization_id=%s&team_id=%s", organizationId, teams.get(1).getId()))
+                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
     }
 
     @Test
@@ -220,6 +223,15 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
     void should_return_last_two_vcs_data_collection_job_status_given_a_team_id() {
         // Given
         final TeamEntity teamEntity = teamRepository.findAll().get(0);
+        jobRepository.save(JobEntity.builder()
+                .organizationId(organizationId)
+                .status(Job.FAILED)
+                .teamId(teamEntity.getId())
+                .tasks("[{\"input\": {\"id\": \"github-495382833\", \"name\": \"symeo-monolithic-backend\", " +
+                        "\"defaultBranch\": \"staging\", \"organizationId\": null, \"vcsOrganizationId\": " +
+                        "\"github-105865802\", \"vcsOrganizationName\": \"symeo-io\"}, \"status\": \"DONE\"}]")
+                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
+                .build());
         final List<JobEntity> jobs =
                 jobRepository.findLastJobsForCodeAndOrganizationAndLimitAndTeamByTechnicalModificationDate(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organizationId, teamEntity.getId(), 2);
         final JobEntity jobEntity = jobs.get(0);

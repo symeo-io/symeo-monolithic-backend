@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.*;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.dataProcessingExceptionToContracts;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 
 @AllArgsConstructor
@@ -27,7 +27,19 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
     private final String jobApiHeaderKey;
 
     @Override
-    public ResponseEntity<DataProcessingSymeoErrorsContract> startDataProcessingJob(final UUID organizationId) {
+    public ResponseEntity<DataProcessingSymeoErrorsContract> startDataProcessingJobForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) {
+        try {
+            dataProcessingJobAdapter.startToCollectVcsDataForOrganizationIdAndTeamId(organizationId, teamId);
+            return ResponseEntity.ok().build();
+        } catch (SymeoException e) {
+            LOGGER.error("Error while starting vcs data collection job for organizationId {} and teamId {}",
+                    organizationId, teamId, e);
+            return mapSymeoExceptionToContract(() -> dataProcessingExceptionToContracts(e), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<DataProcessingSymeoErrorsContract> startDataProcessingJobForOrganizationId(UUID organizationId) {
         try {
             dataProcessingJobAdapter.startToCollectVcsDataForOrganizationId(organizationId);
             return ResponseEntity.ok().build();

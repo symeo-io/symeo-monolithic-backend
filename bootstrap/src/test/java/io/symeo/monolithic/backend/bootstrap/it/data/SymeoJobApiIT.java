@@ -41,15 +41,15 @@ public class SymeoJobApiIT extends AbstractSymeoDataCollectionAndApiIT {
                 .is2xxSuccessful();
 
         wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB +
+                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION +
                                 "?organization_id=%s", organizationEntities.get(0).getId().toString()))
                         .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
         wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB +
+                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION +
                                 "?organization_id=%s", organizationEntities.get(1).getId().toString()))
                         .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
         wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB +
+                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION +
                                 "?organization_id=%s", organizationEntities.get(2).getId().toString()))
                         .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
     }

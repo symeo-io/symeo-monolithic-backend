@@ -1,6 +1,8 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import com.github.javafaker.Faker;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import io.symeo.monolithic.backend.bootstrap.ITAuthenticationContextProvider;
 import io.symeo.monolithic.backend.bootstrap.SymeoMonolithicBackendITApplication;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +11,14 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -31,6 +38,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Testcontainers
 @Slf4j
 @DirtiesContext
+@ContextConfiguration(initializers = AbstractSymeoBackForFrontendApiIT.WireMockInitializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class AbstractSymeoBackForFrontendApiIT {
 
@@ -52,6 +60,8 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
 
     @Autowired
     WebTestClient client;
+    @Autowired
+    protected WireMockServer wireMockServer;
 
 
     protected URI getApiURI(final String path) {
@@ -110,10 +120,38 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
     protected static final String TEAMS_GOALS_REST_API = "/api/v1/teams/goals";
     protected static final String JOBS_REST_API_VCS_DATA_COLLECTION_STATUS = "/api/v1/jobs/vcs-data-collection/status";
     protected static final String TEAMS_REST_API_CYCLE_TIME = "/api/v1/teams/cycle-time";
+    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM = "/job/v1/data-processing/team";
 
     @Autowired
     ITAuthenticationContextProvider authenticationContextProvider;
 
     static protected final Faker faker = new Faker();
+
+
+    public static class WireMockInitializer
+            implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            WireMockServer wireMockServer = new WireMockServer(new WireMockConfiguration().dynamicPort());
+            wireMockServer.start();
+
+            configurableApplicationContext
+                    .getBeanFactory()
+                    .registerSingleton("wireMockServer", wireMockServer);
+
+            configurableApplicationContext.addApplicationListener(
+                    applicationEvent -> {
+                        if (applicationEvent instanceof ContextClosedEvent) {
+                            wireMockServer.stop();
+                        }
+                    });
+
+            TestPropertyValues.of(
+                            "application.job-api.url:http://localhost:" + wireMockServer.port() + "/")
+                    .applyTo(configurableApplicationContext);
+        }
+
+    }
 
 }

@@ -197,7 +197,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
         // When
         client.get()
-                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_id",
+                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION, "organization_id",
                         organizationId.toString()))
                 .exchange()
                 // Then
@@ -422,7 +422,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                         )
         );
         client.get()
-                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB, "organization_id",
+                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION, "organization_id",
                         organizationId.toString()))
                 .exchange()
                 // Then
