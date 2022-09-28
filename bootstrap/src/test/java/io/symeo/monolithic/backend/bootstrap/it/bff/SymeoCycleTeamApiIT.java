@@ -180,8 +180,8 @@ public class SymeoCycleTeamApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .state(PullRequest.MERGE)
                         .build()
         ));
-        final String startDate = "2022-02-01 00:00:00";
-        final String endDate = "2022-04-01 01:00:00";
+        final String startDate = "2022-02-01";
+        final String endDate = "2022-04-01";
 
         // When
         client.get()
@@ -225,8 +225,8 @@ public class SymeoCycleTeamApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .name("infrastructure-demo-95-111-47-212")
                         .build()
         );
-        final String startDate = "2022-02-01 00:00:00";
-        final String endDate = "2022-04-01 01:00:00";
+        final String startDate = "2022-02-01";
+        final String endDate = "2022-04-01";
 
         // When
         client.get()
