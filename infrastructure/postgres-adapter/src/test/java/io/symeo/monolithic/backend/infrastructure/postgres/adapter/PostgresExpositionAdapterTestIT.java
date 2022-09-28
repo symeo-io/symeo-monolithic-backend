@@ -9,10 +9,7 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.TagEntity;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.RepositoryMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
@@ -976,5 +973,70 @@ public class PostgresExpositionAdapterTestIT {
 
         // Then
         assertThat(tagsForTeamId).hasSize(2);
+    }
+
+
+    @Test
+    void should_read_all_commits_given_a_team_id() throws SymeoException {
+        // Given
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .name(faker.name().firstName())
+                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .build();
+        organizationRepository.save(OrganizationMapper.domainToEntity(organization));
+        final RepositoryEntity repositoryEntity = repositoryRepository.save(
+                RepositoryEntity.builder().id("1").name(faker.dragonBall().character()).organizationId(organization.getId()).build()
+        );
+        final TeamEntity teamEntity =
+                teamRepository.save(TeamEntity.builder().name(faker.rickAndMorty().character()).organizationId(organization.getId()).id(UUID.randomUUID())
+                        .repositoryIds(
+                                List.of(repositoryEntity.getId()
+                                )).build());
+        teamRepository.save(teamEntity);
+        commitRepository.saveAll(
+                List.of(
+                        CommitEntity.builder()
+                                .message(faker.business().creditCardExpiry())
+                                .sha(UUID.randomUUID() + faker.ancient().god())
+                                .date(ZonedDateTime.now())
+                                .authorLogin(faker.dragonBall().character())
+                                .parentShaList(List.of(
+                                        faker.name().firstName(),
+                                        faker.name().lastName(),
+                                        faker.name().name()
+                                ))
+                                .repositoryId(repositoryEntity.getId())
+                                .build(),
+                        CommitEntity.builder()
+                                .message(faker.business().creditCardExpiry())
+                                .sha(UUID.randomUUID() + faker.ancient().god())
+                                .date(ZonedDateTime.now())
+                                .authorLogin(faker.dragonBall().character())
+                                .parentShaList(List.of(
+                                        faker.name().firstName(),
+                                        faker.name().lastName(),
+                                        faker.name().name()
+                                ))
+                                .repositoryId(repositoryEntity.getId())
+                                .build(),
+                        CommitEntity.builder()
+                                .message(faker.business().creditCardExpiry())
+                                .sha(UUID.randomUUID() + faker.ancient().god())
+                                .date(ZonedDateTime.now())
+                                .authorLogin(faker.dragonBall().character())
+                                .repositoryId(repositoryEntity.getId())
+                                .build()
+                )
+        );
+
+        // When
+        final List<Commit> commits = postgresExpositionAdapter.readAllCommitsForTeamId(teamEntity.getId());
+
+        // Then
+        assertThat(commits).hasSize(3);
+        assertThat(commits.get(0).getParentShaList()).hasSize(3);
+        assertThat(commits.get(1).getParentShaList()).hasSize(3);
+        assertThat(commits.get(2).getParentShaList()).hasSize(0);
     }
 }

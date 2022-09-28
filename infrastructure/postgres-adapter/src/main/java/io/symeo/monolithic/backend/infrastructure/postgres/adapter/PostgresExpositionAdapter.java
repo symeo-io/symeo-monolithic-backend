@@ -22,6 +22,7 @@ import java.util.UUID;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.buildPagination;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.SortingMapper.directionToPostgresSortingValue;
+import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.CommitMapper.filterDuplicatedCommits;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper.sortingParameterToDatabaseAttribute;
 
 @AllArgsConstructor
@@ -269,10 +270,10 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     @Transactional(readOnly = true)
     public List<Commit> readAllCommitsForTeamId(UUID teamId) throws SymeoException {
         try {
-            return commitRepository.findAllByTeamId(teamId)
+            return filterDuplicatedCommits(commitRepository.findAllByTeamId(teamId)
                     .stream()
                     .map(CommitMapper::entityToDomain)
-                    .toList();
+                    .toList());
         } catch (Exception e) {
             final String message = String.format("Failed to read commits for teamId %s", teamId);
             LOGGER.error(message, e);

@@ -49,4 +49,6 @@ public class CommitEntity {
     @UpdateTimestamp
     @Column(name = "technical_modification_date")
     ZonedDateTime technicalModificationDate;
+
+
 }
