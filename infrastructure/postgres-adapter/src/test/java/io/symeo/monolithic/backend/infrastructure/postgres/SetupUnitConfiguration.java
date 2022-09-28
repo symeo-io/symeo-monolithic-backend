@@ -1,12 +1,38 @@
 package io.symeo.monolithic.backend.infrastructure.postgres;
 
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomCommitRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomPullRequestViewRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class,
-  HibernateJpaAutoConfiguration.class})
-public class SetupUnitConfiguration extends BaseTestConfiguration {
+import javax.persistence.EntityManager;
+
+@Configuration
+@EnableAutoConfiguration
+@EntityScan(basePackages = {
+        "io.symeo.monolithic.backend.infrastructure.postgres.entity"
+})
+@EnableJpaRepositories(basePackages = {
+        "io.symeo.monolithic.backend.infrastructure.postgres.repository"
+})
+@EnableTransactionManagement
+@EnableJpaAuditing
+public class SetupUnitConfiguration {
+
+    @Bean
+    public CustomPullRequestViewRepository customPullRequestViewRepository(final EntityManager entityManager) {
+        return new CustomPullRequestViewRepository(entityManager);
+    }
+
+
+    @Bean
+    public CustomCommitRepository customCommitRepository(final EntityManager entityManager) {
+        return new CustomCommitRepository(entityManager);
+    }
 
 }

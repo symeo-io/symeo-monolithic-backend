@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.buildPagination;
@@ -38,6 +37,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
     private final CommitRepository commitRepository;
     private final TagRepository tagRepository;
+    private final CustomCommitRepository customCommitRepository;
 
     @Override
     public void savePullRequestDetailsWithLinkedComments(List<PullRequest> pullRequests) {
@@ -270,12 +270,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     @Transactional(readOnly = true)
     public List<Commit> readAllCommitsForTeamId(UUID teamId) throws SymeoException {
         try {
-            return commitRepository.findAllByTeamId(teamId)
-                    .stream()
-                    .map(CommitMapper::entityToDomain)
-                    .collect(Collectors.toSet())
-                    .stream()
-                    .toList();
+            return customCommitRepository.findAllByTeamId(teamId);
         } catch (Exception e) {
             final String message = String.format("Failed to read commits for teamId %s", teamId);
             LOGGER.error(message, e);

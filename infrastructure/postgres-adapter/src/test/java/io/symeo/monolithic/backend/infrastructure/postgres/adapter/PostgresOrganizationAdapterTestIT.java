@@ -7,7 +7,6 @@ import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySetting
 import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationSettingsRepository;
@@ -26,9 +25,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresOrganizationAdapterTestIT {
+public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
 
     private final Faker faker = new Faker();
     @Autowired
@@ -170,7 +167,8 @@ public class PostgresOrganizationAdapterTestIT {
         final Optional<OrganizationSettings> validOrganizationSettings =
                 postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), organizationId);
         final Optional<OrganizationSettings> wrongIdOrganizationSettings =
-                postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(UUID.randomUUID(), organizationId);
+                postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(UUID.randomUUID(),
+                        organizationId);
         final Optional<OrganizationSettings> wrongOrganizationIdOrganizationSettings =
                 postgresOrganizationAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(), UUID.randomUUID());
         // Then

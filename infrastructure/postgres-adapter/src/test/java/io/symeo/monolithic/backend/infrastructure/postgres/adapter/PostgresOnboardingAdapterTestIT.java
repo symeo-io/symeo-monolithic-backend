@@ -3,7 +3,6 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.Onboarding;
-import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import org.assertj.core.api.Assertions;
@@ -17,9 +16,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.util.UUID;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresOnboardingAdapterTestIT {
+public class PostgresOnboardingAdapterTestIT extends AbstractPostgresIT {
 
     private final Faker faker = new Faker();
     @Autowired

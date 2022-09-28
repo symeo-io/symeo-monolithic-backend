@@ -9,17 +9,12 @@ import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -31,9 +26,7 @@ import java.util.UUID;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.job.JobMapper.entityToDomain;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresJobAdapterTestIT {
+public class PostgresJobAdapterTestIT extends AbstractPostgresIT {
 
     @Autowired
     public JobRepository jobRepository;
@@ -208,6 +201,7 @@ public class PostgresJobAdapterTestIT {
         postgresJobAdapter.updateJobWithTasksForJobId(id, tasks);
 
         // Then
-        assertThat(jobRepository.findById(id).get().getTasks()).isEqualTo(JobMapper.mapTasksToJsonString(tasks));
+        assertThat(jobRepository.findById(id).get().getTasks().replace(" ", ""))
+                .isEqualTo(JobMapper.mapTasksToJsonString(tasks));
     }
 }

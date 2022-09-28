@@ -16,7 +16,6 @@ public class Commit {
     String sha;
     @Builder.Default
     List<String> parentShaList = List.of();
-    String head;
     String repositoryId;
 
     public static String getNameFromBranch(String branchName) {

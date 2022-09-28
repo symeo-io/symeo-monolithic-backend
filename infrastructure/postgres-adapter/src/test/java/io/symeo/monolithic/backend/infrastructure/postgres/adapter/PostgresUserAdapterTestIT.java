@@ -6,7 +6,6 @@ import io.symeo.monolithic.backend.domain.model.account.Onboarding;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.infrastructure.postgres.SetupConfiguration;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OnboardingEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
@@ -32,9 +31,7 @@ import java.util.UUID;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SetupConfiguration.class)
-public class PostgresUserAdapterTestIT {
+public class PostgresUserAdapterTestIT extends AbstractPostgresIT {
 
     private final Faker faker = new Faker();
     @Autowired

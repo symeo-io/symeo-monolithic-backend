@@ -75,7 +75,7 @@ spring:
           use_jdbc_metadata_defaults: false
     generate-ddl: false
     open-in-view: false
-    show-sql: false
+    show-sql: true
 
 server:
   port: 9999
