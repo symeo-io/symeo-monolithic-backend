@@ -35,18 +35,4 @@ public interface CommitMapper {
                 .build();
     }
 
-    static List<Commit> filterDuplicatedCommits(List<Commit> duplicatedCommits) {
-        final Set<String> allCommitShas = new HashSet<>();
-        return duplicatedCommits.stream()
-                .filter(commit -> {
-                    final String sha = commit.getSha();
-                    if (allCommitShas.contains(sha)) {
-                        return false;
-                    } else {
-                        allCommitShas.add(sha);
-                        return true;
-                    }
-                })
-                .toList();
-    }
 }

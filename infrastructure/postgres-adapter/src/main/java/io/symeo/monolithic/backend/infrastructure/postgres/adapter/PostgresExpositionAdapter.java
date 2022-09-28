@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.buildPagination;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.SortingMapper.directionToPostgresSortingValue;
-import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.CommitMapper.filterDuplicatedCommits;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper.sortingParameterToDatabaseAttribute;
 
 @AllArgsConstructor
@@ -270,10 +270,12 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     @Transactional(readOnly = true)
     public List<Commit> readAllCommitsForTeamId(UUID teamId) throws SymeoException {
         try {
-            return filterDuplicatedCommits(commitRepository.findAllByTeamId(teamId)
+            return commitRepository.findAllByTeamId(teamId)
                     .stream()
                     .map(CommitMapper::entityToDomain)
-                    .toList());
+                    .collect(Collectors.toSet())
+                    .stream()
+                    .toList();
         } catch (Exception e) {
             final String message = String.format("Failed to read commits for teamId %s", teamId);
             LOGGER.error(message, e);

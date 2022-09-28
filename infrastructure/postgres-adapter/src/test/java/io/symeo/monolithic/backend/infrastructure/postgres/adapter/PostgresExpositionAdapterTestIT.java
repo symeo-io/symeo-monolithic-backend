@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -994,40 +995,41 @@ public class PostgresExpositionAdapterTestIT {
                                 List.of(repositoryEntity.getId()
                                 )).build());
         teamRepository.save(teamEntity);
+        final List<CommitEntity> commitEntities = List.of(
+                CommitEntity.builder()
+                        .message(faker.business().creditCardExpiry())
+                        .sha(UUID.randomUUID() + faker.ancient().god())
+                        .date(ZonedDateTime.now())
+                        .authorLogin(faker.dragonBall().character())
+                        .parentShaList(List.of(
+                                faker.name().firstName(),
+                                faker.name().lastName(),
+                                faker.name().name()
+                        ))
+                        .repositoryId(repositoryEntity.getId())
+                        .build(),
+                CommitEntity.builder()
+                        .message(faker.business().creditCardExpiry())
+                        .sha(UUID.randomUUID() + faker.ancient().god())
+                        .date(ZonedDateTime.now())
+                        .authorLogin(faker.dragonBall().character())
+                        .parentShaList(List.of(
+                                faker.name().firstName(),
+                                faker.name().lastName(),
+                                faker.name().name()
+                        ))
+                        .repositoryId(repositoryEntity.getId())
+                        .build(),
+                CommitEntity.builder()
+                        .message(faker.business().creditCardExpiry())
+                        .sha(UUID.randomUUID() + faker.ancient().god())
+                        .date(ZonedDateTime.now())
+                        .authorLogin(faker.dragonBall().character())
+                        .repositoryId(repositoryEntity.getId())
+                        .build()
+        );
         commitRepository.saveAll(
-                List.of(
-                        CommitEntity.builder()
-                                .message(faker.business().creditCardExpiry())
-                                .sha(UUID.randomUUID() + faker.ancient().god())
-                                .date(ZonedDateTime.now())
-                                .authorLogin(faker.dragonBall().character())
-                                .parentShaList(List.of(
-                                        faker.name().firstName(),
-                                        faker.name().lastName(),
-                                        faker.name().name()
-                                ))
-                                .repositoryId(repositoryEntity.getId())
-                                .build(),
-                        CommitEntity.builder()
-                                .message(faker.business().creditCardExpiry())
-                                .sha(UUID.randomUUID() + faker.ancient().god())
-                                .date(ZonedDateTime.now())
-                                .authorLogin(faker.dragonBall().character())
-                                .parentShaList(List.of(
-                                        faker.name().firstName(),
-                                        faker.name().lastName(),
-                                        faker.name().name()
-                                ))
-                                .repositoryId(repositoryEntity.getId())
-                                .build(),
-                        CommitEntity.builder()
-                                .message(faker.business().creditCardExpiry())
-                                .sha(UUID.randomUUID() + faker.ancient().god())
-                                .date(ZonedDateTime.now())
-                                .authorLogin(faker.dragonBall().character())
-                                .repositoryId(repositoryEntity.getId())
-                                .build()
-                )
+                commitEntities
         );
 
         // When
@@ -1035,8 +1037,14 @@ public class PostgresExpositionAdapterTestIT {
 
         // Then
         assertThat(commits).hasSize(3);
-        assertThat(commits.get(0).getParentShaList()).hasSize(3);
-        assertThat(commits.get(1).getParentShaList()).hasSize(3);
-        assertThat(commits.get(2).getParentShaList()).hasSize(0);
+
+        for (CommitEntity commitEntity : commitEntities) {
+            final Optional<Commit> optionalCommit =
+                    commits.stream().filter(commit -> commit.getSha().equals(commitEntity.getSha())).findFirst();
+            optionalCommit
+                    .ifPresentOrElse(commit -> assertThat(commit.getParentShaList())
+                                    .hasSize(commitEntity.getParentShaList().size()),
+                            () -> assertThat(true).isFalse());
+        }
     }
 }
