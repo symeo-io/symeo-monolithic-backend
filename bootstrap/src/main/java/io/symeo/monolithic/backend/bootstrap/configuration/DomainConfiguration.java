@@ -79,8 +79,8 @@ public class DomainConfiguration {
 
     @Bean
     public TeamFacadeAdapter teamFacadeAdapter(final TeamStorage teamStorage,
-                                               final DataProcessingJobAdapter dataProcessingJobAdapter) {
-        return new TeamService(teamStorage, dataProcessingJobAdapter);
+                                               final SymeoJobApiAdapter symeoJobApiAdapter) {
+        return new TeamService(teamStorage, symeoJobApiAdapter);
     }
 
     @Bean
@@ -122,9 +122,10 @@ public class DomainConfiguration {
 
     @Bean
     public CycleTimeMetricsFacadeAdapter cycleTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter,
-                                                               final OrganizationSettingsFacade organizationSettingsFacade,
-                                                               final CycleTimeService cycleTimeService) {
-        return new CycleTimeMetricsMetricsService(expositionStorageAdapter, organizationSettingsFacade, cycleTimeService);
+                                                                final OrganizationSettingsFacade organizationSettingsFacade,
+                                                                final CycleTimeService cycleTimeService) {
+        return new CycleTimeMetricsMetricsService(expositionStorageAdapter, organizationSettingsFacade,
+                cycleTimeService);
     }
 
     @Bean

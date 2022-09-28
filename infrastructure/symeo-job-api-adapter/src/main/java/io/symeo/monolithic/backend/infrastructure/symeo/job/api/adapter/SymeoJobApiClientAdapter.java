@@ -15,4 +15,9 @@ public class SymeoJobApiClientAdapter implements SymeoJobApiAdapter {
     public void startJobForOrganizationId(UUID organizationId) throws SymeoException {
         symeoHttpClient.startJobForOrganizationId(organizationId);
     }
+
+    @Override
+    public void startJobForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
+        symeoHttpClient.startJobForOrganizationIdAndTeamId(organizationId, teamId);
+    }
 }

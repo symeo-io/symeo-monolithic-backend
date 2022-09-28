@@ -100,7 +100,7 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
     }
 
     protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
-    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB = "/job/v1/data-processing";
+    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION = "/job/v1/data-processing/organization";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL = "/job/v1/data-processing/all";
 
     public static class WireMockInitializer
