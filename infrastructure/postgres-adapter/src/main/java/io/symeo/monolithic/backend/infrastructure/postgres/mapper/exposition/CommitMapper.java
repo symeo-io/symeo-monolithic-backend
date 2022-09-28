@@ -6,6 +6,9 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.Com
 import java.sql.Date;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public interface CommitMapper {
 
@@ -30,5 +33,20 @@ public interface CommitMapper {
                 .repositoryId(commitEntity.getRepositoryId())
                 .parentShaList(commitEntity.getParentShaList())
                 .build();
+    }
+
+    static List<Commit> filterDuplicatedCommits(List<Commit> duplicatedCommits) {
+        final Set<String> allCommitShas = new HashSet<>();
+        return duplicatedCommits.stream()
+                .filter(commit -> {
+                    final String sha = commit.getSha();
+                    if (allCommitShas.contains(sha)) {
+                        return false;
+                    } else {
+                        allCommitShas.add(sha);
+                        return true;
+                    }
+                })
+                .toList();
     }
 }
