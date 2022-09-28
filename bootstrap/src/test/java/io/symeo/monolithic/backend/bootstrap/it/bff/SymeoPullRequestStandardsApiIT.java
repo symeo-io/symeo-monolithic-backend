@@ -206,27 +206,22 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.curves.limit").isEqualTo(5)
-                .jsonPath("$.curves.piece_curve[0].label").isEqualTo("branch-1")
                 .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.piece_curve[0].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[0].value").isEqualTo(
                         ChronoUnit.DAYS.between(LocalDate.of(2022,1,7), LocalDate.now(ZoneId.of("Greenwich")))
                 )
-                .jsonPath("$.curves.piece_curve[1].label").isEqualTo("branch-2")
                 .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.piece_curve[1].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[1].value").isEqualTo(
                         ChronoUnit.DAYS.between(LocalDate.of(2022, 1, 20), LocalDate.now(ZoneId.of("Greenwich")))
                 )
-                .jsonPath("$.curves.piece_curve[2].label").isEqualTo("branch-5")
                 .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-20")
                 .jsonPath("$.curves.piece_curve[2].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[2].value").isEqualTo(13)
-                .jsonPath("$.curves.piece_curve[3].label").isEqualTo("branch-6")
                 .jsonPath("$.curves.piece_curve[3].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.piece_curve[3].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[3].value").isEqualTo(34)
-                .jsonPath("$.curves.piece_curve[6].label").isEqualTo("branch-10")
                 .jsonPath("$.curves.piece_curve[6].date").isEqualTo("2022-01-26")
                 .jsonPath("$.curves.piece_curve[6].link").isEqualTo(vcsUrl)
                 .jsonPath("$.curves.piece_curve[6].value").isEqualTo(37)
@@ -301,22 +296,16 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.curves.limit").isEqualTo(300)
                 .jsonPath("$.curves.piece_curve[0].date").isEqualTo("2022-01-20")
-                .jsonPath("$.curves.piece_curve[0].label").isEqualTo("branch-15")
                 .jsonPath("$.curves.piece_curve[0].value").isEqualTo(500)
                 .jsonPath("$.curves.piece_curve[1].date").isEqualTo("2022-01-05")
-                .jsonPath("$.curves.piece_curve[1].label").isEqualTo("branch-14")
                 .jsonPath("$.curves.piece_curve[1].value").isEqualTo(200)
                 .jsonPath("$.curves.piece_curve[2].date").isEqualTo("2022-01-26")
-                .jsonPath("$.curves.piece_curve[2].label").isEqualTo("branch-10")
                 .jsonPath("$.curves.piece_curve[2].value").isEqualTo(300)
                 .jsonPath("$.curves.piece_curve[3].date").isEqualTo("2022-01-26")
-                .jsonPath("$.curves.piece_curve[3].label").isEqualTo("branch-11")
                 .jsonPath("$.curves.piece_curve[3].value").isEqualTo(400)
                 .jsonPath("$.curves.piece_curve[4].date").isEqualTo("2022-01-12")
-                .jsonPath("$.curves.piece_curve[4].label").isEqualTo("branch-18")
                 .jsonPath("$.curves.piece_curve[4].value").isEqualTo(20)
                 .jsonPath("$.curves.piece_curve[5].date").isEqualTo("2022-01-12")
-                .jsonPath("$.curves.piece_curve[5].label").isEqualTo("branch-4")
                 .jsonPath("$.curves.piece_curve[5].value").isEqualTo(100)
                 .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-01-26")
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(250)
@@ -557,7 +546,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-1")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-2")
@@ -585,7 +573,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-2")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-3")
@@ -613,7 +600,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-3")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-4")
@@ -650,7 +636,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-4")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-5")
@@ -687,7 +672,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-5")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-6")
@@ -724,7 +708,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-6")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-7")
@@ -761,7 +744,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-7")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-8")
@@ -798,7 +780,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-8")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-9")
@@ -835,7 +816,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-9")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-10")
@@ -872,7 +852,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-10")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-11")
@@ -909,7 +888,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-11")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-12")
@@ -946,7 +924,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-12")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-13")
@@ -983,7 +960,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-13")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-14")
@@ -1020,7 +996,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-14")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-15")
@@ -1057,7 +1032,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-15")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-16")
@@ -1094,7 +1068,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-16")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-17")
@@ -1131,7 +1104,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-17")
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-18")
@@ -1168,7 +1140,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
-                .branchName("branch-18")
                 .build());
         return pullRequestEntities;
 
