@@ -10,6 +10,7 @@ import org.springframework.util.StopWatch;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -42,6 +43,7 @@ public class SymeoMonolithicBackendConfiguration {
     static {
         final String timezoneId = "Europe/Paris";
         LOGGER.info("Setting default system timezone to {}", timezoneId);
-        System.setProperty("user.timezone", timezoneId);
+        System.setProperty("user.timezone", "Asia/Kolkata");
+        TimeZone.setDefault(TimeZone.getTimeZone(timezoneId));
     }
 }
