@@ -8,7 +8,6 @@
         <module>application</module>
         <module>domain</module>
         <module>infrastructure</module>
-        <module>symeo-json-to-pojo-generator</module>
         <module>symeo-data-processing-api</module>
         <module>symeo-frontend-api</module>
     </modules>
