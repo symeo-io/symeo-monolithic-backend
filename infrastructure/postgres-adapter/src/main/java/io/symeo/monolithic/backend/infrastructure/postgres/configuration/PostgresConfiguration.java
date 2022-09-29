@@ -33,13 +33,13 @@ public class PostgresConfiguration {
                                                      final PullRequestSizeRepository pullRequestSizeRepository,
                                                      final PullRequestFullViewRepository pullRequestFullViewRepository,
                                                      final CustomPullRequestViewRepository customPullRequestViewRepository,
-                                                     final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository,
+                                                     final CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository,
                                                      final CommitRepository commitRepository,
                                                      final TagRepository tagRepository,
                                                      final CustomCommitRepository customCommitRepository) {
         return new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
                 pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository,
-                customPullRequestViewRepository, pullRequestWithCommitsAndCommentsRepository, commitRepository,
+                customPullRequestViewRepository, customPullRequestWithCommitsAndCommentsRepository, commitRepository,
                 tagRepository, customCommitRepository);
     }
 
@@ -88,5 +88,10 @@ public class PostgresConfiguration {
     @Bean
     public CustomCommitRepository customCommitRepository(final EntityManager entityManager) {
         return new CustomCommitRepository(entityManager);
+    }
+
+    @Bean
+    public CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository(final EntityManager entityManager) {
+        return new CustomPullRequestWithCommitsAndCommentsRepository(entityManager);
     }
 }

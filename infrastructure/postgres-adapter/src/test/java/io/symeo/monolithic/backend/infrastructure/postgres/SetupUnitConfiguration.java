@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres;
 
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomCommitRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomPullRequestViewRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomPullRequestWithCommitsAndCommentsRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -35,4 +36,9 @@ public class SetupUnitConfiguration {
         return new CustomCommitRepository(entityManager);
     }
 
+
+    @Bean
+    public CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository(final EntityManager entityManager) {
+        return new CustomPullRequestWithCommitsAndCommentsRepository(entityManager);
+    }
 }
