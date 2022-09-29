@@ -114,7 +114,25 @@ public class PostgresJobAdapter implements JobStorage {
     }
 
     @Override
-    public List<Job> findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(UUID organizationId, UUID teamId) {
-        return null;
+    @Transactional(readOnly = true)
+    public List<Job> findLastTwoJobsInProgressOrFinishedForVcsDataCollectionJob(UUID organizationId, UUID teamId) throws SymeoException {
+        try {
+            final List<Job> list = new ArrayList<>();
+            for (JobEntity jobEntity :
+                    jobRepository.findLastTwoJobsInProgressOrFinishedForVcsDataCollectionJob(organizationId, teamId)) {
+                Job job = entityToDomain(jobEntity);
+                list.add(job);
+            }
+            return list;
+        } catch (Exception e) {
+            final String message = String.format("Failed to find jobs in progress or finished for organizationId %s " +
+                    "and teamId %s", organizationId, teamId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .rootException(e)
+                    .build();
+        }
     }
 }

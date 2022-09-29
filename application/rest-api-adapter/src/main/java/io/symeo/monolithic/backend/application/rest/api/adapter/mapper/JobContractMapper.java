@@ -31,6 +31,9 @@ public interface JobContractMapper {
 
     private static LastJobsContract jobsToContract(final List<Job> jobs) {
         final LastJobsContract lastJobsContract = new LastJobsContract();
+        if (jobs.size() == 0) {
+            return lastJobsContract;
+        }
         lastJobsContract.setCurrentJob(jobToContract(jobs.get(0)));
         if (jobs.size() == 2) {
             lastJobsContract.setPreviousJob(jobToContract(jobs.get(1)));
