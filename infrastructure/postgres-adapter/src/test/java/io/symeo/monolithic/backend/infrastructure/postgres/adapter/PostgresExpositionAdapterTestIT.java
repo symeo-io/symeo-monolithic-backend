@@ -55,7 +55,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
-    private PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
+    private CustomPullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
     @Autowired
     private TagRepository tagRepository;
     @Autowired
@@ -401,6 +401,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                 .title(faker.gameOfThrones().character())
                 .lastUpdateDate(now)
                 .state(PullRequest.MERGE)
+                .commitShaList(List.of(faker.name().firstName()))
                 .build();
         final PullRequestEntity pr11 = PullRequestEntity.builder()
                 .id("11")
@@ -425,6 +426,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                 .title(faker.gameOfThrones().character())
                 .state(PullRequest.MERGE)
                 .lastUpdateDate(now)
+                .commitShaList(List.of(faker.ancient().god(), faker.ancient().hero()))
                 .build();
         final PullRequestEntity pr3 = PullRequestEntity.builder()
                 .id("3")
@@ -471,8 +473,24 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
 
         // Then
         assertThat(pullRequestViews).hasSize(4);
-        assertThat(pullRequestViews.get(0).getComments()).hasSize(2);
-        assertThat(pullRequestViews.get(1).getComments()).hasSize(1);
+        for (PullRequestView pullRequestView : pullRequestViews) {
+            if (pullRequestView.getId().equals("1")) {
+                assertThat(pullRequestView.getComments()).hasSize(2);
+                assertThat(pullRequestView.getCommitShaList()).hasSize(1);
+            }
+            if (pullRequestView.getId().equals("11")) {
+                assertThat(pullRequestView.getComments()).hasSize(0);
+                assertThat(pullRequestView.getCommitShaList()).hasSize(0);
+            }
+            if (pullRequestView.getId().equals("2")) {
+                assertThat(pullRequestView.getComments()).hasSize(1);
+                assertThat(pullRequestView.getCommitShaList()).hasSize(2);
+            }
+            if (pullRequestView.getId().equals("3")) {
+                assertThat(pullRequestView.getComments()).hasSize(0);
+                assertThat(pullRequestView.getCommitShaList()).hasSize(0);
+            }
+        }
     }
 
 
