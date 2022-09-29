@@ -34,7 +34,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     private final PullRequestSizeRepository pullRequestSizeRepository;
     private final PullRequestFullViewRepository pullRequestFullViewRepository;
     private final CustomPullRequestViewRepository customPullRequestViewRepository;
-    private final PullRequestWithCommitsAndCommentsRepository pullRequestWithCommitsAndCommentsRepository;
+    private final CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository;
     private final CommitRepository commitRepository;
     private final TagRepository tagRepository;
     private final CustomCommitRepository customCommitRepository;
@@ -154,11 +154,8 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     public List<PullRequestView> readPullRequestsWithCommitsForTeamIdUntilEndDate(UUID teamId,
                                                                                   Date endDate) throws SymeoException {
         try {
-            return pullRequestWithCommitsAndCommentsRepository.findAllByTeamIdUntilEndDate(teamId,
-                            endDate)
-                    .stream()
-                    .map(PullRequestMapper::withCommitsAndCommentsToDomain)
-                    .toList();
+            return customPullRequestWithCommitsAndCommentsRepository.findAllByTeamIdUntilEndDate(teamId,
+                    endDate);
         } catch (Exception e) {
             final String message = String.format("Failed to read PR with commits and comments for teamId %s", teamId);
             LOGGER.error(message, e);
