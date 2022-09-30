@@ -218,39 +218,6 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                         .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
     }
 
-    @Test
-    @Order(7)
-    void should_return_last_two_vcs_data_collection_job_status_given_a_team_id() {
-        // Given
-        final TeamEntity teamEntity = teamRepository.findAll().get(0);
-        jobRepository.save(JobEntity.builder()
-                .organizationId(organizationId)
-                .status(Job.FAILED)
-                .teamId(teamEntity.getId())
-                .tasks("[{\"input\": {\"id\": \"github-495382833\", \"name\": \"symeo-monolithic-backend\", " +
-                        "\"defaultBranch\": \"staging\", \"organizationId\": null, \"vcsOrganizationId\": " +
-                        "\"github-105865802\", \"vcsOrganizationName\": \"symeo-io\"}, \"status\": \"DONE\"}]")
-                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
-                .build());
-        final List<JobEntity> jobs =
-                jobRepository.findLastJobsForCodeAndOrganizationAndLimitAndTeamByTechnicalModificationDate(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE, organizationId, teamEntity.getId(), 2);
-        final JobEntity jobEntity = jobs.get(0);
-
-        // When
-        client.get()
-                .uri(getApiURI(JOBS_REST_API_VCS_DATA_COLLECTION_STATUS, "team_id", teamEntity.getId().toString()))
-                .exchange()
-                // Then
-                .expectStatus()
-                .is2xxSuccessful()
-                .expectBody()
-                .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.jobs.current_job.id").isEqualTo(jobEntity.getId())
-                .jsonPath("$.jobs.current_job.status").isEqualTo(jobEntity.getStatus())
-                .jsonPath("$.jobs.current_job.code").isEqualTo(jobEntity.getCode())
-                .jsonPath("$.jobs.previous_job").isEmpty();
-    }
-
     @Order(8)
     @Test
     void should_get_teams() {

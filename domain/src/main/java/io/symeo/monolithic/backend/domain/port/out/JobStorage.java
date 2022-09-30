@@ -19,7 +19,7 @@ public interface JobStorage {
                                                                                          UUID organizationId,
                                                                                          UUID teamId, int i) throws SymeoException;
 
-    List<Job> findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(UUID organizationId, UUID teamId);
-
     void updateJobWithTasksForJobId(Long jobId, List<Task> tasks) throws SymeoException;
+
+    List<Job> findLastTwoJobsInProgressOrFinishedForVcsDataCollectionJob(UUID organizationId, UUID teamId) throws SymeoException;
 }

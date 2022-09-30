@@ -7,6 +7,8 @@ import io.symeo.monolithic.backend.domain.job.Job;
 import io.symeo.monolithic.backend.domain.job.JobRunnable;
 import io.symeo.monolithic.backend.domain.job.Task;
 import io.symeo.monolithic.backend.domain.job.runnable.CollectRepositoriesJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationAndTeamJobRunnable;
+import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
@@ -203,5 +205,105 @@ public class PostgresJobAdapterTestIT extends AbstractPostgresIT {
         // Then
         assertThat(jobRepository.findById(id).get().getTasks().replace(" ", ""))
                 .isEqualTo(JobMapper.mapTasksToJsonString(tasks));
+    }
+
+
+    @Test
+    void should_find_last_two_jobs_in_progress_or_finished_for_vcs_data_collection_job() throws SymeoException,
+            IOException, InterruptedException {
+        // Given
+        final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
+        final UUID organizationId = UUID.randomUUID();
+        final UUID teamId = UUID.randomUUID();
+        final String tasks = "[{\"input\": {\"id\": \"github-512630813\", \"name\": \"symeo-webapp\", " +
+                "\"defaultBranch\": \"staging\", \"organizationId\": null, \"vcsOrganizationId\": " +
+                "\"github-105865802\", \"vcsOrganizationName\": \"symeo-io\"}, \"status\": \"DONE\"}, {\"input\": " +
+                "{\"id\": \"github-495382833\", \"name\": \"symeo-monolithic-backend\", \"defaultBranch\": " +
+                "\"staging\", \"organizationId\": null, \"vcsOrganizationId\": \"github-105865802\", " +
+                "\"vcsOrganizationName\": \"symeo-io\"}, \"status\": \"DONE\"}]";
+        final JobEntity expectedJob1 = JobEntity
+                .builder()
+                .organizationId(organizationId)
+                .teamId(teamId)
+                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
+                .tasks(tasks)
+                .status(Job.STARTED)
+                .build();
+        final JobEntity expectedJob2 = JobEntity
+                .builder()
+                .organizationId(organizationId)
+                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                .tasks(tasks)
+                .status(Job.FINISHED)
+                .build();
+        jobRepository.saveAll(
+                List.of(
+                        JobEntity
+                                .builder()
+                                .organizationId(organizationId)
+                                .teamId(teamId)
+                                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
+                                .tasks(tasks)
+                                .status(Job.STARTED)
+                                .build(),
+                        JobEntity
+                                .builder()
+                                .organizationId(organizationId)
+                                .teamId(teamId)
+                                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
+                                .tasks(tasks)
+                                .status(Job.FAILED)
+                                .build(),
+                        JobEntity
+                                .builder()
+                                .organizationId(organizationId)
+                                .teamId(teamId)
+                                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
+                                .tasks(tasks)
+                                .status(Job.RESTARTED)
+                                .build(),
+                        JobEntity
+                                .builder()
+                                .organizationId(organizationId)
+                                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                                .tasks(tasks)
+                                .status(Job.CREATED)
+                                .build(),
+                        JobEntity
+                                .builder()
+                                .organizationId(organizationId)
+                                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                                .tasks(tasks)
+                                .status(Job.FAILED)
+                                .build(),
+                        JobEntity
+                                .builder()
+                                .organizationId(organizationId)
+                                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                                .tasks(tasks)
+                                .status(Job.RESTARTED)
+                                .build(),
+                        JobEntity
+                                .builder()
+                                .organizationId(organizationId)
+                                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                                .tasks(tasks)
+                                .status(Job.STARTED)
+                                .build()
+                )
+        );
+        Thread.sleep(100L);
+        jobRepository.save(expectedJob1);
+        Thread.sleep(100L);
+        jobRepository.save(expectedJob2);
+
+        // When
+        final List<Job> lastTwoJobsInProgressOrFinishedForVcsDataCollectionJob =
+                postgresJobAdapter.findLastTwoJobsInProgressOrFinishedForVcsDataCollectionJob(organizationId, teamId);
+
+        // Then
+        assertThat(lastTwoJobsInProgressOrFinishedForVcsDataCollectionJob).hasSize(2);
+        assertThat(lastTwoJobsInProgressOrFinishedForVcsDataCollectionJob.get(0)).isEqualTo(entityToDomain(expectedJob2));
+        assertThat(lastTwoJobsInProgressOrFinishedForVcsDataCollectionJob.get(1)).isEqualTo(entityToDomain(expectedJob1));
     }
 }
