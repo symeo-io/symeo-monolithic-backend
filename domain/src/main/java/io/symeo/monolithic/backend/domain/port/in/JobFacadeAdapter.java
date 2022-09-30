@@ -11,6 +11,5 @@ public interface JobFacadeAdapter {
 
     List<Job> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String code, Organization organization) throws SymeoException;
 
-    List<Job> findLastJobsForCodeAndOrganizationAndLimitAndTeamId(String jobCode, UUID organizationId,
-                                                                  UUID teamId, int i) throws SymeoException;
+    List<Job> findLastTwoJobsInProgressOrFinishedForVcsDataCollectionJob(UUID organizationId, UUID teamId) throws SymeoException;
 }
