@@ -115,7 +115,7 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     private List<GithubPullRequestDTO> getGithubPullRequestDTOs(Repository repository,
                                                                 List<GithubPullRequestDTO> githubPullRequestDTOList) {
-        return githubPullRequestDTOList.stream()
+        return githubPullRequestDTOList.parallelStream()
                 .map(githubPullRequestDTO -> {
                     try {
                         return Optional.of(getPullRequestDetailsForPullRequestNumber(repository, githubPullRequestDTO));

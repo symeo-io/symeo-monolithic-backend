@@ -5,6 +5,9 @@ databaseChangeLog:
       file: db/changelog/changelogs/00000010_init_exposition_storage_schema.sql
   - include:
       file: db/changelog/changelogs/00000020_init_job_storage_schema.sql
+  - include:
+      file: db/changelog/changelogs/00000030_update_varchar_size.sql
+
 
 
 
