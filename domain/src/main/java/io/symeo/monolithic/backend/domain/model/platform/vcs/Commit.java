@@ -18,7 +18,7 @@ public class Commit {
     List<String> parentShaList = List.of();
     String repositoryId;
 
-    public static String getNameFromBranch(String branchName) {
-        return ALL + "_for_branch_" + branchName.replace("/", "-");
+    public static String getNameFromBranchAndRepository(String branchName, Repository repository) {
+        return ALL + "_for_repository_" + repository.getId() + "_and_branch_" + branchName.replace("/", "-");
     }
 }

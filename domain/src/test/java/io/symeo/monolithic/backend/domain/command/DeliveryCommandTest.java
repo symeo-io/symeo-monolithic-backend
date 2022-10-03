@@ -149,7 +149,7 @@ public class DeliveryCommandTest {
                 .save(
                         organization.getId(),
                         versionControlSystemAdapter.getName(),
-                        Branch.ALL,
+                        Branch.getNameFromRepository(repository),
                         bytes
                 );
         assertThat(branchListResult).isEqualTo(branches);
@@ -192,13 +192,13 @@ public class DeliveryCommandTest {
         // When
         when(versionControlSystemAdapter.getName()).thenReturn(faker.ancient().god());
         when(rawStorageAdapter.exists(organization.getId(), versionControlSystemAdapter.getName(),
-                Commit.getNameFromBranch(branches.get(0))))
+                Commit.getNameFromBranchAndRepository(branches.get(0),repository)))
                 .thenReturn(false);
         when(rawStorageAdapter.exists(organization.getId(), versionControlSystemAdapter.getName(),
-                Commit.getNameFromBranch(branches.get(1))))
+                Commit.getNameFromBranchAndRepository(branches.get(1),repository)))
                 .thenReturn(true);
         when(rawStorageAdapter.read(organization.getId(), versionControlSystemAdapter.getName(),
-                Commit.getNameFromBranch(branches.get(1))))
+                Commit.getNameFromBranchAndRepository(branches.get(1),repository)))
                 .thenReturn(alreadyCollectedCommits);
         when(versionControlSystemAdapter.getRawCommitsForBranchFromLastCollectionDate(
                 vcsOrganizationName, repository.getName(), branches.get(0), lastCollectionDate, null)
