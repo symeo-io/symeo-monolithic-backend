@@ -68,6 +68,11 @@ public class CycleTime {
                 .build();
         final List<Comment> commentsOrderByDate = pullRequestView.getCommentsOrderByDate();
         final List<Commit> commitsOrderByDate = pullRequestView.getCommitsOrderByDate();
+        if (commitsOrderByDate.size() == 0) {
+            return CycleTime.builder()
+                    .pullRequestView(pullRequestView)
+                    .build();
+        }
         final Date mergeDate = pullRequestView.getMergeDate();
         final Long codingTime = computeCodingTime(commitsOrderByDate, commentsOrderByDate);
         final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);

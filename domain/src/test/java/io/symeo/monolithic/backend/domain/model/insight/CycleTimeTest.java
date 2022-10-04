@@ -290,6 +290,47 @@ public class CycleTimeTest {
             assertThat(cycleTime.getDeployTime()).isEqualTo(1320L);
             assertThat(cycleTime.getValue()).isEqualTo(1320L);
         }
+
+
+        @Test
+        void should_manage_pull_request_with_branch_deleted_on_vcs() {
+            // Given
+            final Commit commit1 = Commit.builder().sha(faker.pokemon().name() + "-1").date(stringToDateTime("2022-01" +
+                    "-03 15:55:00")).build();
+            final Commit mergeCommit = Commit.builder()
+                    .sha(faker.pokemon().name() + "-2")
+                    .date(stringToDateTime("2022-01-04 16:00:00"))
+                    .parentShaList(List.of(commit1.getSha()))
+                    .build();
+            final Commit mergeCommit2 = Commit.builder()
+                    .sha(faker.pokemon().name() + "-2-merge")
+                    .date(stringToDateTime("2022-01-05 14:00:00"))
+                    .parentShaList(List.of())
+                    .build();
+
+            final PullRequestView pullRequestView = PullRequestView.builder()
+                    .status(PullRequest.MERGE)
+                    .creationDate(stringToDateTime("2022-01-01 13:00:00"))
+                    .mergeDate(mergeCommit.getDate())
+                    .mergeCommitSha(mergeCommit.getSha())
+                    .commitShaList(List.of(mergeCommit.getSha()))
+                    .build();
+
+            // When
+            CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
+                    pullRequestView,
+                    List.of(PullRequestView.builder()
+                            .status(PullRequest.MERGE)
+                            .creationDate(stringToDateTime("2022-01-01 13:00:00"))
+                            .mergeDate(mergeCommit2.getDate())
+                            .mergeCommitSha(mergeCommit2.getSha())
+                            .commitShaList(List.of(mergeCommit2.getSha()))
+                            .build()),
+                    List.of());
+
+            // Then
+            assertThat(true);
+        }
     }
 
     @Nested
