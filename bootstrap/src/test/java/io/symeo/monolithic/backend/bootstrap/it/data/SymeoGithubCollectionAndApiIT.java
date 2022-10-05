@@ -454,6 +454,17 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         wireMockServer.stubFor(
                 get(
+                        urlEqualTo(String.format("/repos/%s/%s/commits?page=%s&per_page=%s&sha=%s", organization.getVcsOrganization().getName(),
+                                githubRepositoryDTOS[0].getName(), "2", githubProperties.getSize(), "add-update-organization-settings")))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        "[]", 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
                         urlEqualTo(String.format("/repos/%s/%s/git/matching-refs/tags", organization.getVcsOrganization().getName(),
                                 githubRepositoryDTOS[0].getName())))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
@@ -490,7 +501,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
             assertThat(pullRequestEntity.getVcsRepositoryId()).isEqualTo("github-" + githubRepositoryDTOS[0].getId());
         });
         final List<CommitEntity> commitEntities = commitRepository.findAll();
-        assertThat(commitEntities).hasSize(99);
+        assertThat(commitEntities).hasSize(100);
 
         final List<OrganizationSettingsEntity> organizationSettings = organizationSettingsRepository.findAll();
         assertThat(organizationSettings).hasSize(1);
@@ -761,6 +772,17 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         wireMockServer.stubFor(
                 get(
+                        urlEqualTo(String.format("/repos/%s/%s/commits?page=%s&per_page=%s&sha=%s", organization.getVcsOrganization().getName(),
+                                repositoryEntity.getName(), "2", githubProperties.getSize(), "aws")))
+                        .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
+                        .willReturn(
+                                jsonResponse(
+                                        "[]", 200
+                                )
+                        )
+        );
+        wireMockServer.stubFor(
+                get(
                         urlEqualTo(String.format("/repos/%s/%s/git/matching-refs/tags", organization.getVcsOrganization().getName(),
                                 repositoryEntity.getName())))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
@@ -796,7 +818,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
             assertThat(pullRequestEntity.getVcsRepositoryId()).isEqualTo("github-" + githubRepositoryDTOS[0].getId());
         });
         final List<CommitEntity> commitEntities = commitRepository.findAll();
-        assertThat(commitEntities).hasSize(99);
+        assertThat(commitEntities).hasSize(100);
 
         final List<OrganizationSettingsEntity> organizationSettings = organizationSettingsRepository.findAll();
         assertThat(organizationSettings).hasSize(2);
