@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -98,9 +99,21 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
                 .build()
                 .toUri();
     }
+    protected URI getApiURI(final String path, final Map<String, String> params) {
+        final UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance()
+                .scheme("http")
+                .host("localhost")
+                .port(port)
+                .path(path);
+        params.forEach(uriComponentsBuilder::queryParam);
+        return uriComponentsBuilder
+                .build()
+                .toUri();
+    }
 
     protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION = "/job/v1/data-processing/organization";
+    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM = "/job/v1/data-processing/team";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL = "/job/v1/data-processing/all";
 
     public static class WireMockInitializer
