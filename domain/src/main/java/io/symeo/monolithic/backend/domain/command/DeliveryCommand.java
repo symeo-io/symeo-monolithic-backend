@@ -58,7 +58,8 @@ public class DeliveryCommand {
         final byte[] rawBranches =
                 versionControlSystemAdapter.getRawBranches(organization.getVcsOrganization().getName(),
                         repository.getName());
-        rawStorageAdapter.save(organization.getId(), versionControlSystemAdapter.getName(), Branch.ALL, rawBranches);
+        rawStorageAdapter.save(organization.getId(), versionControlSystemAdapter.getName(),
+                Branch.getNameFromRepository(repository), rawBranches);
         return versionControlSystemAdapter.branchesBytesToDomain(rawBranches);
     }
 
@@ -69,7 +70,7 @@ public class DeliveryCommand {
         final Set<Commit> commitsCollected = new HashSet<>();
         for (String branchName : branches) {
             byte[] alreadyCollectedCommits = null;
-            final String contentName = Commit.getNameFromBranch(branchName);
+            final String contentName = Commit.getNameFromBranchAndRepository(branchName, repository);
             if (rawStorageAdapter.exists(organization.getId(), versionControlSystemAdapter.getName(),
                     contentName)) {
                 alreadyCollectedCommits = rawStorageAdapter.read(organization.getId(),

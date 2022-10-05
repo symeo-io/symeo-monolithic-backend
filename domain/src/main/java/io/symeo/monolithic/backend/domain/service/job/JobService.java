@@ -21,19 +21,8 @@ public class JobService implements JobFacadeAdapter {
     }
 
     @Override
-    public List<Job> findLastJobsForCodeAndOrganizationAndLimitAndTeamId(final String jobCode,
-                                                                         final UUID organizationId,
-                                                                         final UUID teamId,
-                                                                         final int numberOfJobToFind) throws SymeoException {
-        return jobStorage.findLastJobsForCodeAndOrganizationIdAndLimitAndTeamIdOrderByUpdateDateDesc(jobCode, organizationId,
-                teamId,
-                numberOfJobToFind);
+    public List<Job> findLastTwoJobsInProgressOrFinishedForVcsDataCollectionJob(UUID organizationId, UUID teamId) throws SymeoException {
+        return jobStorage.findLastTwoJobsInProgressOrFinishedForVcsDataCollectionJob(organizationId, teamId);
     }
-
-    public List<Job> findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(final UUID organizationId,
-                                                                                final UUID teamId) {
-        return jobStorage.findLastFailedJobsForOrganizationIdAndTeamIdForEachJobCode(organizationId, teamId);
-    }
-
 
 }

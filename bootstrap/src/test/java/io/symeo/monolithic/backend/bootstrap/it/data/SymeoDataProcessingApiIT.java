@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 
-public class SymeoJobApiIT extends AbstractSymeoDataCollectionAndApiIT {
+public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiIT {
 
     @Autowired
     OrganizationRepository organizationRepository;
