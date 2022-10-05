@@ -17,6 +17,11 @@ paths:
       description: |
         Start to collect and process data given an organization id
       parameters:
+        - in: header
+          name: X-SYMEO-JOB-KEY-X
+          required: true
+          schema:
+            type: string
         - in: query
           name: organization_id
           required: true
@@ -58,6 +63,11 @@ paths:
       description: |
         Start to collect and process data given an organization id and a team id
       parameters:
+        - in: header
+          name: X-SYMEO-JOB-KEY-X
+          required: true
+          schema:
+            type: string
         - in: query
           name: organization_id
           required: true

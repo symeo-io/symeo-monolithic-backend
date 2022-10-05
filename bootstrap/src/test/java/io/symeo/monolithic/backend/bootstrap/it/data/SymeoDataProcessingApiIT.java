@@ -56,11 +56,37 @@ public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiI
 
     @Test
     @Order(2)
-    void should_return_unauthorized_response_for_wrong_api_key() {
+    void should_return_unauthorized_response_for_wrong_api_key_for_all_data_collection_job() {
         // When
         client.get()
                 .uri(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL)
                 .header(symeoJobApiProperties.getHeaderKey(), FAKER.ancient().god())
+                .exchange()
+                // Then
+                .expectStatus()
+                .is4xxClientError();
+    }
+
+    @Test
+    @Order(3)
+    void should_return_unauthorized_response_for_wrong_api_key_for_job_given_an_organization() {
+        // When
+        client.get()
+                .uri(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION)
+                .header(symeoJobApiProperties.getHeaderKey(), FAKER.gameOfThrones().character())
+                .exchange()
+                // Then
+                .expectStatus()
+                .is4xxClientError();
+    }
+
+    @Test
+    @Order(4)
+    void should_return_unauthorized_response_for_wrong_api_key_for_job_given_a_team() {
+        // When
+        client.get()
+                .uri(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
+                .header(symeoJobApiProperties.getHeaderKey(), FAKER.pokemon().name())
                 .exchange()
                 // Then
                 .expectStatus()
