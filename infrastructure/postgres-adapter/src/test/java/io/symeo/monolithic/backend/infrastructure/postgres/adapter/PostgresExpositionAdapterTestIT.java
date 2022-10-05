@@ -234,7 +234,6 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         pullRequestRepository.saveAll(
                 buildPullRequestStubs(organization.getId(), repositoryId, startDate, endDate)
         );
-        final List<PullRequestEntity> pullRequestEntity = pullRequestRepository.findAll();
         final TeamEntity teamEntity =
                 teamRepository.save(TeamEntity.builder().name(faker.rickAndMorty().character()).organizationId(organization.getId()).id(UUID.randomUUID())
                         .repositoryIds(
