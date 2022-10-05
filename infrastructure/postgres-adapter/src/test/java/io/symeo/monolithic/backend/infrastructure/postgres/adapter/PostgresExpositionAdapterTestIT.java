@@ -234,6 +234,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         pullRequestRepository.saveAll(
                 buildPullRequestStubs(organization.getId(), repositoryId, startDate, endDate)
         );
+        final List<PullRequestEntity> pullRequestEntity = pullRequestRepository.findAll();
         final TeamEntity teamEntity =
                 teamRepository.save(TeamEntity.builder().name(faker.rickAndMorty().character()).organizationId(organization.getId()).id(UUID.randomUUID())
                         .repositoryIds(
@@ -774,7 +775,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                 .build();
         final PullRequestEntity pr9 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
-                .id(faker.rickAndMorty().character() + "-5")
+                .id(faker.rickAndMorty().character() + "-9")
                 .organizationId(organizationId)
                 .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
                 .mergeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(1))
