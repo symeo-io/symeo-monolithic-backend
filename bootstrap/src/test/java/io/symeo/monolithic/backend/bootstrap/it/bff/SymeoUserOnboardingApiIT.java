@@ -3,8 +3,6 @@ package io.symeo.monolithic.backend.bootstrap.it.bff;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.job.Job;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationAndTeamJobRunnable;
 import io.symeo.monolithic.backend.domain.model.account.Organization;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.domain.service.account.OrganizationService;
@@ -15,7 +13,6 @@ import io.symeo.monolithic.backend.frontend.contract.api.model.UpdateTeamRequest
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
@@ -319,7 +316,7 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
 
     @Order(12)
     @Test
-    void should_update_team() {
+    void should_update_team_and_launch_job_on_updated_team() {
         // Given
         final List<TeamEntity> teams = teamRepository.findAll();
         final TeamEntity teamEntity = teams.get(0);
@@ -346,6 +343,11 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
         assertThat(teamsAfterUpdate.get(0).getName()).isEqualTo(newName);
         assertThat(teamsAfterUpdate.get(0).getRepositoryIds()).hasSize(newRepositoryIds.size());
         teamsAfterUpdate.get(0).getRepositoryIds().forEach(repositoryId -> assertThat(newRepositoryIds.contains(repositoryId)).isTrue());
+
+        wireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
+                                "?organization_id=%s&team_id=%s", teamEntity.getOrganizationId(), teamEntity.getId()))
+                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
     }
 
     @Order(13)
