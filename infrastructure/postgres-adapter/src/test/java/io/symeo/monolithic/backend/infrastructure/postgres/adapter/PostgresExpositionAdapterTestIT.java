@@ -774,7 +774,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                 .build();
         final PullRequestEntity pr9 = PullRequestEntity.builder()
                 .code(faker.harryPotter().book())
-                .id(faker.rickAndMorty().character() + "-5")
+                .id(faker.rickAndMorty().character() + "-9")
                 .organizationId(organizationId)
                 .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
                 .mergeDate(endDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(1))
