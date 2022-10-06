@@ -124,4 +124,23 @@ public class TeamServiceTest {
         // Then
         verify(teamStorage, times(1)).update(team);
     }
+
+    @Test
+    void should_update_team_and_start_vcs_data_collection_for_a_team_given_a_team() throws SymeoException {
+        // Given
+        final TeamStorage teamStorage = mock(TeamStorage.class);
+        final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
+        final TeamService teamService = new TeamService(teamStorage, symeoJobApiAdapter);
+        final Team team = Team.builder()
+                .id(UUID.randomUUID())
+                .organizationId(UUID.randomUUID())
+                .build();
+
+        // When
+        teamService.update(team);
+
+        // Then
+        verify(teamStorage, times(1)).update(team);
+        verify(symeoJobApiAdapter, times(1)).startJobForOrganizationIdAndTeamId(team.getOrganizationId(), team.getId());
+    }
 }

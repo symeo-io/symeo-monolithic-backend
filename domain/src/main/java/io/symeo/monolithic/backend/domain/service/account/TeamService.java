@@ -55,5 +55,6 @@ public class TeamService implements TeamFacadeAdapter {
     @Override
     public void update(Team team) throws SymeoException {
         teamStorage.update(team);
+        symeoJobApiAdapter.startJobForOrganizationIdAndTeamId(team.getOrganizationId(), team.getId());
     }
 }
