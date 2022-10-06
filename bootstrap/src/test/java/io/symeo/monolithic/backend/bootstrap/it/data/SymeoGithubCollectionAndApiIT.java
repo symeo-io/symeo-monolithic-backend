@@ -31,6 +31,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Or
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterAll;
@@ -85,6 +86,8 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
     public OrganizationSettingsRepository organizationSettingsRepository;
     @Autowired
     public TagRepository tagRepository;
+    @Autowired
+    public SymeoJobApiProperties symeoJobApiProperties;
     private static final UUID firstOrganizationId = UUID.randomUUID();
     private static final UUID secondOrganizationId = UUID.randomUUID();
     private static final UUID firstTeamId = UUID.randomUUID();
@@ -203,8 +206,9 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
         // When
         client.get()
-                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION, "organization_id",
-                        firstOrganizationId.toString()))
+                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION, Map.of("organization_id",
+                        firstOrganizationId.toString())))
+                .header(symeoJobApiProperties.getHeaderKey(), symeoJobApiProperties.getApiKey())
                 .exchange()
                 // Then
                 .expectStatus()
@@ -476,8 +480,9 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                         )
         );
         client.get()
-                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION, "organization_id",
-                        firstOrganizationId.toString()))
+                .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION, Map.of("organization_id",
+                        firstOrganizationId.toString())))
+                .header(symeoJobApiProperties.getHeaderKey(), symeoJobApiProperties.getApiKey())
                 .exchange()
                 // Then
                 .expectStatus()
@@ -796,6 +801,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
         client.get()
                 .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM, Map.of("organization_id", secondOrganizationId.toString(), "team_id", secondTeamId.toString())))
+                .header(symeoJobApiProperties.getHeaderKey(), symeoJobApiProperties.getApiKey())
                 .exchange()
                 // Then
                 .expectStatus()

@@ -27,8 +27,12 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
     private final String jobApiHeaderKey;
 
     @Override
-    public ResponseEntity<DataProcessingSymeoErrorsContract> startDataProcessingJobForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) {
+    public ResponseEntity<DataProcessingSymeoErrorsContract> startDataProcessingJobForOrganizationIdAndTeamId(String X_SYMEO_JOB_KEY_X, UUID organizationId, UUID teamId) {
         try {
+            if (!X_SYMEO_JOB_KEY_X.equals(jobApiKey)) {
+                LOGGER.error("Unauthorized header key {} = {}", jobApiHeaderKey, X_SYMEO_JOB_KEY_X);
+                return ResponseEntity.status(403).build();
+            }
             dataProcessingJobAdapter.startToCollectVcsDataForOrganizationIdAndTeamId(organizationId, teamId);
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {
@@ -39,8 +43,12 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
     }
 
     @Override
-    public ResponseEntity<DataProcessingSymeoErrorsContract> startDataProcessingJobForOrganizationId(UUID organizationId) {
+    public ResponseEntity<DataProcessingSymeoErrorsContract> startDataProcessingJobForOrganizationId(String X_SYMEO_JOB_KEY_X, UUID organizationId) {
         try {
+            if (!X_SYMEO_JOB_KEY_X.equals(jobApiKey)) {
+                LOGGER.error("Unauthorized header key {} = {}", jobApiHeaderKey, X_SYMEO_JOB_KEY_X);
+                return ResponseEntity.status(403).build();
+            }
             dataProcessingJobAdapter.startToCollectVcsDataForOrganizationId(organizationId);
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {
