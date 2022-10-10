@@ -1190,9 +1190,96 @@ paths:
                 $ref: '#/components/schemas/CycleTimeResponseContract'
               example:
                 cycle_time:
+                  current_start_date: 1992-08-01
+                  current_end_date: 1992-08-14
+                  previous_start_date: 1992-08-18
+                  previous-end_date: 1992-08-01
                   average:
-                    value: 11.4
-                    tendency_percentage: -12.3
+                    value: 15
+                    tendency_percentage: 3
+                  coding_time:
+                    value: 16.3
+                    tendency_percentage: 3
+                  review_time:
+                    value: 5.4
+                    tendency_percentage: 5
+                  time_to_deploy:
+                    value: 23
+                    tendency_percentage: -7.3
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+  /api/v1/teams/deployment:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Deployment
+      summary: Get Deployment Metrics
+      operationId: getDeploymentMetrics
+      description: |
+        Get Deployment Metrics
+      parameters:
+        - in: query
+          name: team_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+      responses:
+        "200":
+          description: 'Successfully retrieved deployment metrics'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentResponseContract'
+              example:
+                deployment:
+                  current_start_date: 1992-08-01
+                  current_end_date: 1992-08-14
+                  previous_start_date: 1992-08-18
+                  previous-end_date: 1992-08-01
+                  deploy_count:
+                    value: 15
+                    tendency_percentage: 3
+                  deploys_per_day:
+                    value: 1.2
+                    tendency_percentage: 3
+                  average_time_between_deploys:
+                    value: 1
+                    tendency_percentage: 5
+                  last_deploy:
+                    value: 2.3
+                    repository: symeo-webapp
                 errors:
                   [ ]
         "401":
@@ -1808,6 +1895,13 @@ components:
           type: number
         tendency_percentage:
           type: number
+    MetricWithLabelContract:
+      type: object
+      properties:
+        value:
+          type: number
+        label:
+          type: string
     PullRequestContract:
       type: object
       properties:
@@ -1883,6 +1977,36 @@ components:
               $ref: '#/components/schemas/MetricsContract'
             time_to_deploy:
               $ref: '#/components/schemas/MetricsContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'
+    DeploymentResponseContract:
+      type: object
+      properties:
+        deployment:
+          type: object
+          properties:
+            current_start_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            current_end_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            previous_start_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            previous_end_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            deploy_count:
+              $ref: '#/components/schemas/MetricsContract'
+            deploys_per_day:
+              $ref: '#/components/schemas/MetricsContract'
+            average_time_between_deploys:
+              $ref: '#/components/schemas/MetricsContract'
+            last_deploy:
+              $ref: '#/components/schemas/MetricWithLabelContract'
         errors:
           type: array
           items:
