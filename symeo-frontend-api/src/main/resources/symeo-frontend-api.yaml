@@ -1279,6 +1279,7 @@ paths:
                     tendency_percentage: 5
                   last_deploy:
                     value: 2.3
+                    repository: symeo-webapp
                 errors:
                   [ ]
         "401":
@@ -1894,11 +1895,13 @@ components:
           type: number
         tendency_percentage:
           type: number
-    MetricWithoutTendencyContract:
+    MetricWithLabelContract:
       type: object
       properties:
         value:
           type: number
+        label:
+          type: string
     PullRequestContract:
       type: object
       properties:
@@ -2003,7 +2006,7 @@ components:
             average_time_between_deploys:
               $ref: '#/components/schemas/MetricsContract'
             last_deploy:
-              $ref: '#/components/schemas/MetricWithoutTendencyContract'
+              $ref: '#/components/schemas/MetricWithLabelContract'
         errors:
           type: array
           items:
