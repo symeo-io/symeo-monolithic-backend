@@ -85,4 +85,8 @@ public class DateHelper {
     public static Long getNumberOfMinutesBetweenDates(final Date date1, final Date date2) {
         return ChronoUnit.MINUTES.between(date1.toInstant(), date2.toInstant());
     }
+
+    public static Long getNumberOfDaysBetweenStartDateAndEndDate(Date date1, Date date2) {
+        return ChronoUnit.DAYS.between(date1.toInstant(), date2.toInstant());
+    }
 }

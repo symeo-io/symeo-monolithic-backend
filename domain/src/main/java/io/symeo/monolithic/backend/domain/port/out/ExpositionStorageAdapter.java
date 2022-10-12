@@ -62,4 +62,6 @@ public interface ExpositionStorageAdapter {
     void saveTags(List<Tag> tags) throws SymeoException;
 
     List<Tag> findTagsForTeamId(UUID teamId) throws SymeoException;
+
+    List<Commit> readCommitsMatchingShaListBetweenStartDateAndEndDate(List<String> shaList, Date startDate, Date endDate) throws SymeoException;
 }
