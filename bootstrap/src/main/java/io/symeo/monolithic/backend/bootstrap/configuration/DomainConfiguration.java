@@ -9,9 +9,7 @@ import io.symeo.monolithic.backend.domain.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.service.DataProcessingJobService;
 import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.service.account.*;
-import io.symeo.monolithic.backend.domain.service.insights.CycleTimeMetricsMetricsService;
-import io.symeo.monolithic.backend.domain.service.insights.CycleTimeService;
-import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
+import io.symeo.monolithic.backend.domain.service.insights.*;
 import io.symeo.monolithic.backend.domain.service.job.JobService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
@@ -142,5 +140,18 @@ public class DomainConfiguration {
     @Bean
     public CycleTimeService cycleTimeService() {
         return new CycleTimeService();
+    }
+
+    @Bean
+    public DeploymentMetricsFacadeAdapter deploymentMetricsFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter,
+                                                                         final OrganizationSettingsFacade organizationSettingsFacade,
+                                                                         final DeploymentService deploymentService) {
+        return new DeploymentMetricsService(expositionStorageAdapter, organizationSettingsFacade,
+                deploymentService);
+    }
+
+    @Bean
+    public DeploymentService deploymentService() {
+        return new DeploymentService();
     }
 }

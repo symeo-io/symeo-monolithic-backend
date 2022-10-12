@@ -29,10 +29,8 @@ import static java.util.Objects.nonNull;
 @AllArgsConstructor
 public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter {
 
-    private final OrganizationSettingsFacade organizationSettingsFacade;
-
     private final ExpositionStorageAdapter expositionStorageAdapter;
-
+    private final OrganizationSettingsFacade organizationSettingsFacade;
     private final DeploymentService deploymentService;
 
     @Override

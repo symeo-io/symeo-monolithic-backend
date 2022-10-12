@@ -1,6 +1,5 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition;
 
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,10 +18,9 @@ public interface CommitRepository extends JpaRepository<CommitEntity, String> {
             "                                 where ttr.team_id = :teamId)")
     List<CommitEntity> findAllByTeamId(@Param("teamId") UUID teamId);
 
-    @Query(nativeQuery = true, value = "select * from exposition_storage.commit c" +
-            " where c.sha in :shaList " +
-            " and c.date <= :endDate and c.date > :startDate")
-    List<Commit> findAllForShaListBetweenStartDateAndEndDate(@Param("shaList") List<String> shaList,
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM exposition_storage.commit as c WHERE c.sha IN (:shaList) AND c.date <= :endDate AND c.date > :startDate")
+    List<CommitEntity> findAllForShaListBetweenStartDateAndEndDate(@Param("shaList") List<String> shaList,
                                                              @Param("startDate") Date startDate,
                                                              @Param("endDate") Date endDate);
 }

@@ -316,7 +316,9 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     @Override
     public List<Commit> readCommitsMatchingShaListBetweenStartDateAndEndDate(List<String> shaList, Date startDate, Date endDate) throws SymeoException {
         try {
-            return commitRepository.findAllForShaListBetweenStartDateAndEndDate(shaList, startDate, endDate);
+            return commitRepository.findAllForShaListBetweenStartDateAndEndDate(shaList, startDate, endDate).stream()
+                    .map(CommitMapper::entityToDomain)
+                    .toList();
         } catch (Exception e) {
             final String message = String.format("Failed to read commits for shaList %s between startDate %s and endDate %s", shaList, startDate, endDate);
             LOGGER.error(message, e);

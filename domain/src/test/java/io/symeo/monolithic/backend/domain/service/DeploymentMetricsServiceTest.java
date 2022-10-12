@@ -36,8 +36,8 @@ public class DeploymentMetricsServiceTest {
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final DeploymentService deploymentService = mock(DeploymentService.class);
         final DeploymentMetricsService deploymentMetricsService = new DeploymentMetricsService(
-                organizationSettingsFacade,
                 expositionStorageAdapter,
+                organizationSettingsFacade,
                 deploymentService
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
@@ -75,8 +75,8 @@ public class DeploymentMetricsServiceTest {
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final DeploymentService deploymentService = mock(DeploymentService.class);
         final DeploymentMetricsService deploymentMetricsService = new DeploymentMetricsService(
-                organizationSettingsFacade,
                 expositionStorageAdapter,
+                organizationSettingsFacade,
                 deploymentService
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
@@ -147,8 +147,8 @@ public class DeploymentMetricsServiceTest {
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final DeploymentService deploymentService = mock(DeploymentService.class);
         final DeploymentMetricsService deploymentMetricsService = new DeploymentMetricsService(
-                organizationSettingsFacade,
                 expositionStorageAdapter,
+                organizationSettingsFacade,
                 deploymentService
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
