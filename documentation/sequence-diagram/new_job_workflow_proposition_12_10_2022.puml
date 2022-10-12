@@ -6,6 +6,7 @@ participant "monolithic-backend" as backend order 40
 database "organization-storage" order 50
 participant sqs order 60
 participant "symeo-repositories-job" order 70
+participant "symeo-settings-job" order 75
 participant "symeo-vcs-data-job" order 80
 participant "symeo-quality-data-job" order 90
 database "exposition-storage" order 100
@@ -14,27 +15,62 @@ collections "raw-storage" order 120
 
 
 
-alt collect data
+alt User onboarding
 user -> frontend: Onboarding
 frontend -> github: Redirect to connect organization
 github -> frontend
 github -> backend: github webhook
 backend -> "organization-storage": create organization
-backend -> sqs: publish ORGANIZATION_CREATED message
-"symeo-repositories-job" -> sqs: consumes ORGANIZATION_CREATED message
+backend -> sqs: publish UPDATE_ORGANIZATION_REPOSITORIES message
+backend -> sqs: publish INIT_ORGANIZATION_SETTINGS message
+"symeo-repositories-job" -> sqs: consumes UPDATE_ORGANIZATION_REPOSITORIES message
 "symeo-repositories-job" -> "job-storage": write job COLLECT_REPOSITORIES_FOR_ORGANIZATION_JOB in STARTED status
 "symeo-repositories-job" -> github: collect repositories
 "symeo-repositories-job" -> "raw-storage": write repositories raw data
 "symeo-repositories-job" -> "exposition-storage": write repositories data
 "symeo-repositories-job" -> "job-storage": update job COLLECT_REPOSITORIES_FOR_ORGANIZATION_JOB in FINISHED status
-"symeo-repositories-job" -> sqs: publish UPDATE_ORGANIZATION_DATA_MESSAGE
-"symeo-vcs-data-job" -> sqs: consumes UPDATE_ORGANIZATION_DATA_MESSAGE message
+"symeo-settings-job" -> sqs: consumes INIT_ORGANIZATION_SETTINGS message
+"symeo-settings-job" -> "job-storage": write job INITIALIZE_ORGANIZATION_SETTINGS_JOB in STARTED status
+"symeo-settings-job" -> github: collect data
+"symeo-settings-job" -> "raw-storage": write raw data
+"symeo-settings-job" -> "exposition-storage": write settings data
+"symeo-settings-job" -> "job-storage": update job INITIALIZE_ORGANIZATION_SETTINGS_JOB in FINISHED status
+user -> frontend: creates/updates new team
+frontend -> backend: creates/updates new team
+backend -> sqs: publish UPDATE_TEAM_VCS_DATA_MESSAGE message
+backend -> sqs: publish UPDATE_TEAM_QUALITY_DATA_MESSAGE message
+"symeo-vcs-data-job" -> sqs: consumes UPDATE_TEAM_VCS_DATA_MESSAGE message
 "symeo-vcs-data-job" -> "job-storage": write job COLLECT_VCS_DATA_FOR_REPOSITORIES_JOB in STARTED status
 "symeo-vcs-data-job" -> github: collect data
 "symeo-vcs-data-job" -> "raw-storage": write vcs raw data
 "symeo-vcs-data-job" -> "exposition-storage": write vcs data
 "symeo-vcs-data-job" -> "job-storage": update job COLLECT_VCS_DATA_FOR_REPOSITORIES_JOB in FINISHED status
-"symeo-quality-data-job" -> sqs: consumes UPDATE_ORGANIZATION_DATA_MESSAGE message
+"symeo-quality-data-job" -> sqs: consumes UPDATE_TEAM_QUALITY_DATA_MESSAGE message
+"symeo-quality-data-job" -> "job-storage": write job COLLECT_QUALITY_DATA_FOR_REPOSITORIES_JOB in STARTED status
+"symeo-quality-data-job" -> github: collect data
+"symeo-quality-data-job" -> "raw-storage": write quality raw data
+"symeo-quality-data-job" -> "exposition-storage": write quality data
+"symeo-quality-data-job" -> "job-storage": update job COLLECT_QUALITY_DATA_FOR_REPOSITORIES_JOB in FINISHED status
+end
+
+alt morning update
+backend -> backend: morning update cron
+backend -> sqs: publish UPDATE_ORGANIZATION_REPOSITORIES message
+backend -> sqs: publish UPDATE_TEAM_VCS_DATA_MESSAGE message
+backend -> sqs: publish UPDATE_TEAM_QUALITY_DATA_MESSAGE message
+"symeo-repositories-job" -> sqs: consumes UPDATE_ORGANIZATION_REPOSITORIES message
+"symeo-repositories-job" -> "job-storage": write job COLLECT_REPOSITORIES_FOR_ORGANIZATION_JOB in STARTED status
+"symeo-repositories-job" -> github: collect repositories
+"symeo-repositories-job" -> "raw-storage": write repositories raw data
+"symeo-repositories-job" -> "exposition-storage": write repositories data
+"symeo-repositories-job" -> "job-storage": update job COLLECT_REPOSITORIES_FOR_ORGANIZATION_JOB in FINISHED status
+"symeo-vcs-data-job" -> sqs: consumes UPDATE_TEAM_VCS_DATA_MESSAGE message
+"symeo-vcs-data-job" -> "job-storage": write job COLLECT_VCS_DATA_FOR_REPOSITORIES_JOB in STARTED status
+"symeo-vcs-data-job" -> github: collect data
+"symeo-vcs-data-job" -> "raw-storage": write vcs raw data
+"symeo-vcs-data-job" -> "exposition-storage": write vcs data
+"symeo-vcs-data-job" -> "job-storage": update job COLLECT_VCS_DATA_FOR_REPOSITORIES_JOB in FINISHED status
+"symeo-quality-data-job" -> sqs: consumes UPDATE_TEAM_QUALITY_DATA_MESSAGE message
 "symeo-quality-data-job" -> "job-storage": write job COLLECT_QUALITY_DATA_FOR_REPOSITORIES_JOB in STARTED status
 "symeo-quality-data-job" -> github: collect data
 "symeo-quality-data-job" -> "raw-storage": write quality raw data
