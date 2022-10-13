@@ -5,7 +5,9 @@ import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import lombok.Builder;
 import lombok.Value;
 
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.IntStream;
 
 @Builder(toBuilder = true)
 @Value
@@ -23,9 +25,14 @@ public class Deployment {
         final Float deploysPerDay = computeDeploysPerDay(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.size(),
                 numberOfDaysBetweenStartDateAndEndDate);
 
+        final List<Date> deployDateList = new ArrayList<>(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.stream().map(PullRequestView::getMergeDate).toList());
+        Collections.sort(deployDateList);
+        final Float averageTimeBetweenDeploys = computeAverageTimeBetweenDeploys(deployDateList);
+
         return Optional.of(Deployment.builder()
                 .deployCount(deployCount)
                 .deploysPerDay(deploysPerDay)
+                .averageTimeBetweenDeploys(averageTimeBetweenDeploys)
                 .build());
     }
 
@@ -35,13 +42,29 @@ public class Deployment {
         final Float deploysPerDay = computeDeploysPerDay(commitsMatchingTagRegexBetweenStartDateAndEndDate.size(),
                 numberOfDaysBetweenStartDateAndEndDate);
 
+        final List<Date> deployDateList = new ArrayList<>(commitsMatchingTagRegexBetweenStartDateAndEndDate.stream().map(Commit::getDate).toList());
+        Collections.sort(deployDateList);
+        final Float averageTimeBetweenDeploys = computeAverageTimeBetweenDeploys(deployDateList);
+
         return Optional.of(Deployment.builder()
                 .deployCount(deployCount)
                 .deploysPerDay(deploysPerDay)
+                .averageTimeBetweenDeploys(averageTimeBetweenDeploys)
                 .build());
     }
 
+    private static Float computeAverageTimeBetweenDeploys(List<Date> deployDatesList) {
+        if (deployDatesList.size() >= 2) {
+            return (float) IntStream.range(1, deployDatesList.size())
+                    .mapToLong(i -> ChronoUnit.MINUTES.between(deployDatesList.get(i - 1).toInstant(), deployDatesList.get(i).toInstant()))
+                    .average()
+                    .getAsDouble();
+        } else {
+            return null;
+        }
+    }
+
     private static Float computeDeploysPerDay(int numberOfPullRequestOrCommitsMatchingDeploySettings, Long numberOfDaysBetweenStartDateAndEndDate) {
-        return Math.round(10f * numberOfPullRequestOrCommitsMatchingDeploySettings / numberOfDaysBetweenStartDateAndEndDate) / 10f;
+        return numberOfPullRequestOrCommitsMatchingDeploySettings != 0 ? Math.round(10f * numberOfPullRequestOrCommitsMatchingDeploySettings / numberOfDaysBetweenStartDateAndEndDate) / 10f : null;
     }
 }

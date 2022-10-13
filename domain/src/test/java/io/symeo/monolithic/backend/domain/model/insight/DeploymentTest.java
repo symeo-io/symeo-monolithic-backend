@@ -28,7 +28,12 @@ public class DeploymentTest {
                 List.of(
                         PullRequestView.builder().id(fakePullRequestView1).base("staging").mergeDate(stringToDate("2022-01-15")).build(),
                         PullRequestView.builder().id(fakePullRequestView2).base("staging").mergeDate(stringToDate("2022-01-17")).build(),
-                        PullRequestView.builder().id(fakePullRequestView3).base("staging").mergeDate(stringToDate("2022-01-19")).build()
+                        PullRequestView.builder().id(fakePullRequestView3).base("staging").mergeDate(stringToDate("2022-01-20")).build()
+                );
+
+        final List<PullRequestView> soloPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate =
+                List.of(
+                        PullRequestView.builder().id(fakePullRequestView1).base("staging").mergeDate(stringToDate("2022-01-15")).build()
                 );
 
         final List<PullRequestView> emptyPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of();
@@ -37,8 +42,13 @@ public class DeploymentTest {
         final Optional<Deployment> deployment =
                 Deployment.computeDeploymentForPullRequestMergedOnBranchRegexSettings(
                         pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
-                        numberOfDaysBetweenStartDateAndEndDate);
-
+                        numberOfDaysBetweenStartDateAndEndDate
+                );
+        final Optional<Deployment> soloDeployment =
+                Deployment.computeDeploymentForPullRequestMergedOnBranchRegexSettings(
+                        soloPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
+                        numberOfDaysBetweenStartDateAndEndDate
+                );
         final Optional<Deployment> emptyDeployment =
                 Deployment.computeDeploymentForPullRequestMergedOnBranchRegexSettings(
                         emptyPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
@@ -50,12 +60,21 @@ public class DeploymentTest {
                 Optional.of(Deployment.builder()
                         .deployCount(3)
                         .deploysPerDay(0.2f)
+                        .averageTimeBetweenDeploys(3600.0f)
+                        .build())
+        );
+        assertThat(soloDeployment).isEqualTo(
+                Optional.of(Deployment.builder()
+                        .deployCount(1)
+                        .deploysPerDay(0.1f)
+                        .averageTimeBetweenDeploys(null)
                         .build())
         );
         assertThat(emptyDeployment).isEqualTo(
                 Optional.of(Deployment.builder()
                         .deployCount(0)
-                        .deploysPerDay(0.0f)
+                        .deploysPerDay(null)
+                        .averageTimeBetweenDeploys(null)
                         .build())
         );
     }
@@ -66,12 +85,20 @@ public class DeploymentTest {
         // Given
         final String fakeCommitSha1 = faker.pokemon().name() + "-1";
         final String fakeCommitSha2 = faker.pokemon().name() + "-2";
+        final String fakeCommitSha3 = faker.pokemon().name() + "-3";
+        final String fakeCommitSha4 = faker.pokemon().name() + "-4";
         final Long numberOfDaysBetweenStartDateAndEndDate = 20L;
 
         final List<Commit> commitsMatchingTagRegexBetweenStartDateAndEndDate =
                 List.of(
                         Commit.builder().sha(fakeCommitSha1).date(stringToDate("2022-01-15")).build(),
-                        Commit.builder().sha(fakeCommitSha2).date(stringToDate("2022-01-25")).build()
+                        Commit.builder().sha(fakeCommitSha2).date(stringToDate("2022-01-25")).build(),
+                        Commit.builder().sha(fakeCommitSha3).date(stringToDate("2022-01-26")).build(),
+                        Commit.builder().sha(fakeCommitSha4).date(stringToDate("2022-01-30")).build()
+                );
+        final List<Commit> soloCommitsMatchingTagRegexBetweenStartDateAndEndDate =
+                List.of(
+                        Commit.builder().sha(fakeCommitSha1).date(stringToDate("2022-01-15")).build()
                 );
 
         final List<Commit> emptyCommitsMatchingTagRegexBetweenStartDateAndEndDate = List.of();
@@ -81,7 +108,11 @@ public class DeploymentTest {
                 Deployment.computeDeploymentForTagRegexToDeploySettings(
                         commitsMatchingTagRegexBetweenStartDateAndEndDate,
                         numberOfDaysBetweenStartDateAndEndDate);
-
+        final Optional<Deployment> soloDeployment =
+                Deployment.computeDeploymentForTagRegexToDeploySettings(
+                        soloCommitsMatchingTagRegexBetweenStartDateAndEndDate,
+                        numberOfDaysBetweenStartDateAndEndDate
+                );
         final Optional<Deployment> emptyDeployment =
                 Deployment.computeDeploymentForTagRegexToDeploySettings(
                         emptyCommitsMatchingTagRegexBetweenStartDateAndEndDate,
@@ -91,14 +122,23 @@ public class DeploymentTest {
         // Then
         assertThat(deployment).isEqualTo(
                 Optional.of(Deployment.builder()
-                        .deployCount(2)
+                        .deployCount(4)
+                        .deploysPerDay(0.2f)
+                        .averageTimeBetweenDeploys(7200.0f)
+                        .build())
+        );
+        assertThat(soloDeployment).isEqualTo(
+                Optional.of(Deployment.builder()
+                        .deployCount(1)
                         .deploysPerDay(0.1f)
+                        .averageTimeBetweenDeploys(null)
                         .build())
         );
         assertThat(emptyDeployment).isEqualTo(
                 Optional.of(Deployment.builder()
                         .deployCount(0)
-                        .deploysPerDay(0.0f)
+                        .deploysPerDay(null)
+                        .averageTimeBetweenDeploys(null)
                         .build())
         );
     }
