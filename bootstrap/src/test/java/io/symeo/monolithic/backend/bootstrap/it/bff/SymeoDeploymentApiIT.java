@@ -166,7 +166,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
         final CommitEntity deployCommit2 = CommitEntity.builder()
                 .sha(deployCommitSha2)
                 .message(faker.harryPotter().character())
-                .date(ofInstant(stringToDateTime("2022-04-04 22:00:00").toInstant(), ZoneId.systemDefault()))
+                .date(ofInstant(stringToDateTime("2022-02-25 22:00:00").toInstant(), ZoneId.systemDefault()))
                 .repositoryId(repositoryId)
                 .parentShaList(List.of(commit2.getSha()))
                 .authorLogin(faker.harryPotter().character())
@@ -176,7 +176,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
 
         pullRequestRepository.saveAll(List.of(
                 PullRequestEntity.builder()
-                        .id(faker.dragonBall().character())
+                        .id(faker.dragonBall().character()+"-1")
                         .creationDate(ofInstant(stringToDateTime("2022-03-01 08:00:00").toInstant(),
                                 ZoneId.systemDefault()))
                         .lastUpdateDate(mergeCommit1.getDate())
@@ -191,7 +191,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .code("1")
                         .build(),
                 PullRequestEntity.builder()
-                        .id(faker.rickAndMorty().character())
+                        .id(faker.dragonBall().character()+"-2")
                         .creationDate(ofInstant(stringToDateTime("2022-03-03 14:00:00").toInstant(),
                                 ZoneId.systemDefault()))
                         .lastUpdateDate(deployCommit1.getDate())
@@ -206,8 +206,8 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .state(PullRequest.MERGE)
                         .build(),
                 PullRequestEntity.builder()
-                        .id(faker.rickAndMorty().character())
-                        .creationDate(ofInstant(stringToDateTime("2022-03-05 13:40:15").toInstant(),
+                        .id(faker.dragonBall().character()+"-3")
+                        .creationDate(ofInstant(stringToDateTime("2022-02-22 13:40:15").toInstant(),
                                 ZoneId.systemDefault()))
                         .lastUpdateDate(deployCommit2.getDate())
                         .commitShaList(List.of(commit3.getSha()))
@@ -221,8 +221,8 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .state(PullRequest.MERGE)
                         .build()
         ));
-        final String startDate = "2022-02-01";
-        final String endDate = "2022-04-01";
+        final String startDate = "2022-03-01";
+        final String endDate = "2022-03-07";
 
         // When
         client.get()
@@ -234,12 +234,14 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.deployment.current_start_date").isEqualTo("2022-02-01")
-                .jsonPath("$.deployment.current_end_date").isEqualTo("2022-04-01")
-                .jsonPath("$.deployment.previous_start_date").isEqualTo("2021-12-05")
-                .jsonPath("$.deployment.previous_end_date").isEqualTo("2022-02-01")
+                .jsonPath("$.deployment.current_start_date").isEqualTo(startDate)
+                .jsonPath("$.deployment.current_end_date").isEqualTo(endDate)
+                .jsonPath("$.deployment.previous_start_date").isEqualTo("2022-02-23")
+                .jsonPath("$.deployment.previous_end_date").isEqualTo(startDate)
                 .jsonPath("$.deployment.deploy_count.value").isEqualTo(1)
-                .jsonPath("$.deployment.deploy_count.tendency_percentage").isEqualTo(0.0f);
+                .jsonPath("$.deployment.deploy_count.tendency_percentage").isEqualTo(0.0f)
+                .jsonPath("$.deployment.deploys_per_day.value").isEqualTo(0.2f)
+                .jsonPath("$.deployment.deploys_per_day.tendency_percentage").isEqualTo(0.0f);
     }
 
     @Order(3)
@@ -265,8 +267,8 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .build();
         tagRepository.saveAll(List.of(tagEntity1, tagEntity2));
 
-        final String startDate = "2022-02-01";
-        final String endDate = "2022-04-01";
+        final String startDate = "2022-03-01";
+        final String endDate = "2022-03-07";
 
         // When
         client.get()
@@ -277,7 +279,13 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .expectStatus()
                 .is2xxSuccessful()
                 .expectBody()
+                .jsonPath("$.deployment.current_start_date").isEqualTo(startDate)
+                .jsonPath("$.deployment.current_end_date").isEqualTo(endDate)
+                .jsonPath("$.deployment.previous_start_date").isEqualTo("2022-02-23")
+                .jsonPath("$.deployment.previous_end_date").isEqualTo(startDate)
                 .jsonPath("$.deployment.deploy_count.value").isEqualTo(1)
-                .jsonPath("$.deployment.deploy_count.tendency_percentage").isEqualTo(0.0f);
+                .jsonPath("$.deployment.deploy_count.tendency_percentage").isEqualTo(0.0f)
+                .jsonPath("$.deployment.deploys_per_day.value").isEqualTo(0.2f)
+                .jsonPath("$.deployment.deploys_per_day.tendency_percentage").isEqualTo(0.0f);
     }
 }

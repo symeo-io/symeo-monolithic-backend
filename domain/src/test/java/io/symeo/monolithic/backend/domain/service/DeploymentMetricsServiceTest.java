@@ -98,10 +98,18 @@ public class DeploymentMetricsServiceTest {
         final Deployment deployment1 =
                 Deployment.builder()
                         .deployCount(20)
+                        .deploysPerDay(0.1f)
+                        .averageTimeBetweenDeploys(4.6f)
+                        .lastDeploy(1.4f)
+                        .lastDeployRepository("test-repo-1")
                         .build();
         final Deployment deployment2 =
                 Deployment.builder()
                         .deployCount(10)
+                        .deploysPerDay(0.3f)
+                        .averageTimeBetweenDeploys(3.2f)
+                        .lastDeploy(0.7f)
+                        .lastDeployRepository("test-repo-2")
                         .build();
 
         // When
@@ -137,6 +145,12 @@ public class DeploymentMetricsServiceTest {
                         .currentEndDate(endDate)
                         .previousStartDate(previousStartDate)
                         .previousEndDate(startDate)
+                        .deploysPerDay(0.1f)
+                        .deploysPerDayTendencyPercentage(-66.7f)
+                        .averageTimeBetweenDeploys(4.6f)
+                        .averageTimeBetweenDeploysTendencyPercentage(43.7f)
+                        .lastDeploy(1.4f)
+                        .lastDeployRepository("test-repo-1")
                         .build()
         );
     }
@@ -182,10 +196,18 @@ public class DeploymentMetricsServiceTest {
         final Deployment deployment1 =
                 Deployment.builder()
                         .deployCount(20)
+                        .deploysPerDay(0.1f)
+                        .averageTimeBetweenDeploys(4.6f)
+                        .lastDeploy(1.4f)
+                        .lastDeployRepository("test-repo-1")
                         .build();
         final Deployment deployment2 =
                 Deployment.builder()
                         .deployCount(15)
+                        .deploysPerDay(0.3f)
+                        .averageTimeBetweenDeploys(3.2f)
+                        .lastDeploy(0.7f)
+                        .lastDeployRepository("test-repo-2")
                         .build();
 
         // When
@@ -232,6 +254,12 @@ public class DeploymentMetricsServiceTest {
                 DeploymentMetrics.builder()
                         .deployCount(20)
                         .deployCountTendencyPercentage(33.3f)
+                        .deploysPerDay(0.1f)
+                        .deploysPerDayTendencyPercentage(-66.7f)
+                        .averageTimeBetweenDeploys(4.6f)
+                        .averageTimeBetweenDeploysTendencyPercentage(43.7f)
+                        .lastDeploy(1.4f)
+                        .lastDeployRepository("test-repo-1")
                         .currentStartDate(startDate)
                         .currentEndDate(endDate)
                         .previousStartDate(previousStartDate)

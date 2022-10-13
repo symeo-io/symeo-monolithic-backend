@@ -49,11 +49,13 @@ public class DeploymentTest {
         assertThat(deployment).isEqualTo(
                 Optional.of(Deployment.builder()
                         .deployCount(3)
+                        .deploysPerDay(0.2f)
                         .build())
         );
         assertThat(emptyDeployment).isEqualTo(
                 Optional.of(Deployment.builder()
                         .deployCount(0)
+                        .deploysPerDay(0.0f)
                         .build())
         );
     }
@@ -90,11 +92,13 @@ public class DeploymentTest {
         assertThat(deployment).isEqualTo(
                 Optional.of(Deployment.builder()
                         .deployCount(2)
+                        .deploysPerDay(0.1f)
                         .build())
         );
         assertThat(emptyDeployment).isEqualTo(
                 Optional.of(Deployment.builder()
                         .deployCount(0)
+                        .deploysPerDay(0.0f)
                         .build())
         );
     }
