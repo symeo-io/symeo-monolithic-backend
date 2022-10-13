@@ -54,8 +54,8 @@ public interface DeploymentContractMapper {
     }
     static void mapDeploysPerDay(DeploymentMetrics deploymentMetrics, DeploymentResponseContractDeployment deployment) {
         final MetricsContract deploysPerDay = new MetricsContract();
-        deploysPerDay.setValue(BigDecimal.valueOf(0));
-        deploysPerDay.setTendencyPercentage(BigDecimal.valueOf(0));
+        deploysPerDay.setValue(BigDecimal.valueOf(deploymentMetrics.getDeploysPerDay()));
+        deploysPerDay.setTendencyPercentage(BigDecimal.valueOf(deploymentMetrics.getDeploysPerDayTendencyPercentage()));
         deployment.setDeploysPerDay(deploysPerDay);
     }
 
