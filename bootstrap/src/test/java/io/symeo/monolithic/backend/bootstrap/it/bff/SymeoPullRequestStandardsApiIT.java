@@ -231,9 +231,9 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(23)
                 .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.average_curve[1].value").isEqualTo(
-                        Math.floorDiv(ChronoUnit.DAYS.between(LocalDate.of(2022, 1, 7), LocalDate.now(ZoneId.of("Greenwich")))
+                        Math.round((ChronoUnit.DAYS.between(LocalDate.of(2022, 1, 7), LocalDate.now(ZoneId.of("Greenwich")))
                                 + ChronoUnit.DAYS.between(LocalDate.of(2022, 1, 20), LocalDate.now(ZoneId.of("Greenwich")))
-                                + 34 + 21 + 6, 5)
+                                + 34 + 21 + 6) / 5f)
                 )
                 .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-20")
                 .jsonPath("$.curves.average_curve[2].value").isEqualTo(15.5);

@@ -137,4 +137,18 @@ public class DateHelperTest {
         // Then
         assertThat(dateTimeToString).isEqualTo(dateAsString);
     }
+
+    @Test
+    void should_get_number_of_days_between_start_date_and_end_date() throws SymeoException {
+        // Given
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-01-05");
+
+        // When
+        final Long numberOfDaysBetweenPreviousAndFutureDate =
+                getNumberOfDaysBetweenStartDateAndEndDate(startDate, endDate);
+
+        // Then
+        assertThat(numberOfDaysBetweenPreviousAndFutureDate).isEqualTo(4);
+    }
 }
