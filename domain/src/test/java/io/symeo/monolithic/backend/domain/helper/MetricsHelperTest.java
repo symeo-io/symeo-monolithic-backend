@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MetricsHelperTest {
 
     @Test
-    void should_get_tendency_percentage() {
+    void should_return_tendency_percentage() {
         // Given
         final Float currentValue = 100f;
         final Float previousValue = 50f;

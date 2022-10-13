@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.DeploymentContractMapper.*;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.DeploymentContractMapper.errorToContract;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
@@ -34,7 +35,7 @@ public class DeploymentRestApiAdapter implements DeploymentApi {
                                                                            String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(DeploymentContractMapper.toContract(deploymentMetricsFacadeAdapter
+            return ok(toContract(deploymentMetricsFacadeAdapter
                     .computeDeploymentMetricsForTeamIdFromStartDateToEndDate(authenticatedUser.getOrganization(),
                             teamId, stringToDate(startDate),
                             stringToDate(endDate))));
