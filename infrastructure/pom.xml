@@ -16,6 +16,7 @@
         <module>aws-s3-adapter</module>
         <module>sendgrid-adapter</module>
         <module>symeo-job-api-adapter</module>
+        <module>testing-metrics-adapter</module>
     </modules>
     <artifactId>infrastructure</artifactId>
 

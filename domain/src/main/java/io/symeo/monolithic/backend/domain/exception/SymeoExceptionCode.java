@@ -24,6 +24,9 @@ public interface SymeoExceptionCode {
     String INVALID_URI_FOR_GITHUB = "T.INVALID_URI_FOR_GITHUB";
     String GITHUB_APP_JWT_GENERATION = "T.GITHUB_APP_JWT_GENERATION";
 
+    // Git Exception Codes
+    String GIT_FAILED_TO_OPEN_REPOSITORY = "T.GIT_FAILED_TO_OPEN_REPOSITORY";
+
     // Auth0 Exception Codes
     String MISSING_MAIL_AUTH0 = "T.MISSING_MAIL_AUTH0";
 
