@@ -9,6 +9,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static java.time.temporal.ChronoUnit.*;
+
 @Builder(toBuilder = true)
 @Value
 public class Deployment {
@@ -25,9 +27,8 @@ public class Deployment {
         final Float deploysPerDay = computeDeploysPerDay(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.size(),
                 numberOfDaysBetweenStartDateAndEndDate);
 
-        final List<Date> deployDateList = new ArrayList<>(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.stream().map(PullRequestView::getMergeDate).toList());
-        Collections.sort(deployDateList);
-        final Float averageTimeBetweenDeploys = computeAverageTimeBetweenDeploys(deployDateList);
+        final List<Date> sortedDeployDateList = pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.stream().map(PullRequestView::getMergeDate).sorted().toList();
+        final Float averageTimeBetweenDeploys = computeAverageTimeBetweenDeploys(sortedDeployDateList);
 
         return Optional.of(Deployment.builder()
                 .deployCount(deployCount)
@@ -42,9 +43,8 @@ public class Deployment {
         final Float deploysPerDay = computeDeploysPerDay(commitsMatchingTagRegexBetweenStartDateAndEndDate.size(),
                 numberOfDaysBetweenStartDateAndEndDate);
 
-        final List<Date> deployDateList = new ArrayList<>(commitsMatchingTagRegexBetweenStartDateAndEndDate.stream().map(Commit::getDate).toList());
-        Collections.sort(deployDateList);
-        final Float averageTimeBetweenDeploys = computeAverageTimeBetweenDeploys(deployDateList);
+        final List<Date> sortedDeployDateList = commitsMatchingTagRegexBetweenStartDateAndEndDate.stream().map(Commit::getDate).sorted().toList();
+        final Float averageTimeBetweenDeploys = computeAverageTimeBetweenDeploys(sortedDeployDateList);
 
         return Optional.of(Deployment.builder()
                 .deployCount(deployCount)
@@ -56,7 +56,7 @@ public class Deployment {
     private static Float computeAverageTimeBetweenDeploys(List<Date> deployDatesList) {
         if (deployDatesList.size() >= 2) {
             return (float) IntStream.range(1, deployDatesList.size())
-                    .mapToLong(i -> ChronoUnit.MINUTES.between(deployDatesList.get(i - 1).toInstant(), deployDatesList.get(i).toInstant()))
+                    .mapToLong(i -> MINUTES.between(deployDatesList.get(i - 1).toInstant(), deployDatesList.get(i).toInstant()))
                     .average()
                     .getAsDouble();
         } else {
