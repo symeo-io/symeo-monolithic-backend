@@ -6,12 +6,11 @@ import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimeResponse
 import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimeResponseContractCycleTime;
 import io.symeo.monolithic.backend.frontend.contract.api.model.MetricsContract;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.ContractMapperHelper.floatToBigDecimal;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
-import static java.util.Objects.isNull;
 
 public interface CycleTimeContractMapper {
 
@@ -72,9 +71,5 @@ public interface CycleTimeContractMapper {
         average.setTendencyPercentage(floatToBigDecimal(cycleTimeMetrics.getAverageTendencyPercentage()));
         average.setValue(floatToBigDecimal(cycleTimeMetrics.getAverage()));
         cycleTime.setAverage(average);
-    }
-
-    static BigDecimal floatToBigDecimal(final Float floatToConvert) {
-        return isNull(floatToConvert) ? null : new BigDecimal(Float.toString(floatToConvert));
     }
 }

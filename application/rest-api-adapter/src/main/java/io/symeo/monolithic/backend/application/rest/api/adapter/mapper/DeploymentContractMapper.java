@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.ContractMapperHelper.floatToBigDecimal;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
 
 public interface DeploymentContractMapper {
@@ -52,23 +53,24 @@ public interface DeploymentContractMapper {
         deployCount.setTendencyPercentage(BigDecimal.valueOf(deploymentMetrics.getDeployCountTendencyPercentage()));
         deployment.setDeployCount(deployCount);
     }
+
     static void mapDeploysPerDay(DeploymentMetrics deploymentMetrics, DeploymentResponseContractDeployment deployment) {
         final MetricsContract deploysPerDay = new MetricsContract();
-        deploysPerDay.setValue(BigDecimal.valueOf(deploymentMetrics.getDeploysPerDay()));
-        deploysPerDay.setTendencyPercentage(BigDecimal.valueOf(deploymentMetrics.getDeploysPerDayTendencyPercentage()));
+        deploysPerDay.setValue(floatToBigDecimal(deploymentMetrics.getDeploysPerDay()));
+        deploysPerDay.setTendencyPercentage(floatToBigDecimal(deploymentMetrics.getDeploysPerDayTendencyPercentage()));
         deployment.setDeploysPerDay(deploysPerDay);
     }
 
     static void mapAverageTimeBetweenDeploys(DeploymentMetrics deploymentMetrics, DeploymentResponseContractDeployment deployment) {
         final MetricsContract averageTimeBetweenDeploys = new MetricsContract();
-        averageTimeBetweenDeploys.setValue(BigDecimal.valueOf(0));
-        averageTimeBetweenDeploys.setTendencyPercentage(BigDecimal.valueOf(0));
+        averageTimeBetweenDeploys.setValue(floatToBigDecimal(deploymentMetrics.getAverageTimeBetweenDeploys()));
+        averageTimeBetweenDeploys.setTendencyPercentage(floatToBigDecimal(deploymentMetrics.getAverageTimeBetweenDeploysTendencyPercentage()));
         deployment.setAverageTimeBetweenDeploys(averageTimeBetweenDeploys);
     }
 
     static void mapLastDeploy(DeploymentMetrics deploymentMetrics, DeploymentResponseContractDeployment deployment) {
         final MetricWithLabelContract lastDeploy = new MetricWithLabelContract();
-        lastDeploy.setValue(BigDecimal.valueOf(0));
+        lastDeploy.setValue(floatToBigDecimal(0f));
         lastDeploy.setLabel("TODO");
         deployment.setLastDeploy(lastDeploy);
     }
