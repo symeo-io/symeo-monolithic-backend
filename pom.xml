@@ -35,7 +35,7 @@
         <javafaker.version>1.0.2</javafaker.version>
         <liquibase-core.version>4.10.0</liquibase-core.version>
         <auth0-spring-security-api.version>1.5.1</auth0-spring-security-api.version>
-        <aws-java-sdk-s3.version>1.12.7</aws-java-sdk-s3.version>
+        <aws-java-sdk-s3.version>1.12.320</aws-java-sdk-s3.version>
         <wiremock-jre8.version>2.33.2</wiremock-jre8.version>
         <reactor-netty.version>1.0.21</reactor-netty.version>
         <jjwt-jackson.version>0.11.2</jjwt-jackson.version>
