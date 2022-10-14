@@ -19,6 +19,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Us
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import lombok.NonNull;
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -193,11 +195,11 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
 
     @Order(5)
     @Test
-    void should_get_time_to_merge_curves_given_a_team_id() {
+    void should_get_time_to_merge_curves_given_a_team_id() throws SymeoException {
         // Given
         final String startDate = "2022-01-15";
         final String endDate = "2022-02-01";
-
+        final Date now = new Date();
         // When
         client.get()
                 .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_CURVES, getParams(currentTeamId, startDate, endDate)))
@@ -231,9 +233,11 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(23)
                 .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.average_curve[1].value").isEqualTo(
-                        Math.round((ChronoUnit.DAYS.between(LocalDate.of(2022, 1, 7), LocalDate.now(ZoneId.of("Greenwich")))
-                                + ChronoUnit.DAYS.between(LocalDate.of(2022, 1, 20), LocalDate.now(ZoneId.of("Greenwich")))
-                                + 34 + 21 + 6) / 5f)
+                        Math.round(10f * (hoursToDays(TimeUnit.HOURS.convert(now.getTime() - stringToDate("2022-01-07").getTime(),
+                                TimeUnit.MILLISECONDS))
+                                + hoursToDays(TimeUnit.HOURS.convert(now.getTime() - stringToDate("2022-01-20").getTime(),
+                                TimeUnit.MILLISECONDS))
+                                + 34 + 21 + 6) / 5f) / 10f
                 )
                 .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-20")
                 .jsonPath("$.curves.average_curve[2].value").isEqualTo(15.5);
