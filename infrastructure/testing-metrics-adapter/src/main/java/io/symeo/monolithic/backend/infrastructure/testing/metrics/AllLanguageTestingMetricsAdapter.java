@@ -9,14 +9,6 @@ import io.symeo.monolithic.backend.infrastructure.testing.metrics.languages.java
 import io.symeo.monolithic.backend.infrastructure.testing.metrics.languages.php.PHPTestingMetricsAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-
-import java.io.File;
-import java.io.IOException;
-
-import static io.symeo.monolithic.backend.domain.exception.SymeoException.getSymeoException;
-import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.GIT_FAILED_TO_OPEN_REPOSITORY;
 
 @AllArgsConstructor
 @Slf4j
@@ -26,9 +18,11 @@ public class AllLanguageTestingMetricsAdapter implements TestingMetricsAdapter {
     private JavaScriptTestingMetricsAdapter javaScriptTestingMetricsAdapter;
     private PHPTestingMetricsAdapter phpTestingMetricsAdapter;
 
+    private GitRepositoryService gitRepositoryService;
+
     @Override
     public Integer getRepositoryTestCount(String repositoryFilesPath, String commitSha) throws SymeoException {
-        this.checkoutRepositoryToCommit(repositoryFilesPath, commitSha);
+        this.gitRepositoryService.checkoutRepositoryToCommit(repositoryFilesPath, commitSha);
 
         Integer results = 0;
         for (String language : supportedLanguages) {
@@ -39,7 +33,7 @@ public class AllLanguageTestingMetricsAdapter implements TestingMetricsAdapter {
 
     @Override
     public TestToCodeRatio getRepositoryTestToCodeRatio(String repositoryFilesPath, String commitSha) throws SymeoException {
-        this.checkoutRepositoryToCommit(repositoryFilesPath, commitSha);
+        this.gitRepositoryService.checkoutRepositoryToCommit(repositoryFilesPath, commitSha);
         Integer totalCodeLines = 0;
         Integer testCodeLines = 0;
 
@@ -49,15 +43,6 @@ public class AllLanguageTestingMetricsAdapter implements TestingMetricsAdapter {
         }
 
         return TestToCodeRatio.builder().testCodeLines(testCodeLines).totalCodeLines(totalCodeLines).build();
-    }
-
-    private void checkoutRepositoryToCommit(String repositoryFilesPath, String commitSha) throws SymeoException {
-        try {
-            File gitDirectory = new File(repositoryFilesPath + "/.git");
-            Git.open(gitDirectory).checkout().setName(commitSha).call();
-        } catch (IOException | GitAPIException e) {
-            throw getSymeoException("Failed to open git repository folder at " + repositoryFilesPath + " with commit " + commitSha, GIT_FAILED_TO_OPEN_REPOSITORY);
-        }
     }
 
     private LanguageTestingMetricAdapter getLanguageTestingMetricAdapter(String language) {

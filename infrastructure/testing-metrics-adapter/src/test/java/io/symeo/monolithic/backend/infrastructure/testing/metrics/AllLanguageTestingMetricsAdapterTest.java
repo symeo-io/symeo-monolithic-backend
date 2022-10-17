@@ -8,24 +8,45 @@ import io.symeo.monolithic.backend.infrastructure.testing.metrics.languages.php.
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 public class AllLanguageTestingMetricsAdapterTest {
 
     @Test
-    void should_switch_repository_branch() throws SymeoException {
-        JavaTestingMetricsAdapter javaTestingMetricsAdapter = new JavaTestingMetricsAdapter();
-        JavaScriptTestingMetricsAdapter javaScriptTestingMetricsAdapter = new JavaScriptTestingMetricsAdapter();
-        PHPTestingMetricsAdapter phpTestingMetricsAdapter = new PHPTestingMetricsAdapter();
-        AllLanguageTestingMetricsAdapter testingMetricsAdapter = new AllLanguageTestingMetricsAdapter(javaTestingMetricsAdapter, javaScriptTestingMetricsAdapter, phpTestingMetricsAdapter);
-        Integer result = testingMetricsAdapter.getRepositoryTestCount("/Users/georgesbiaux/Projects/Catlean/catlean-monolithic-backend", "c1bb0b399b39bd62a324b869f0f21430dc07ac88");
-        TestToCodeRatio testToCodeRatio = testingMetricsAdapter.getRepositoryTestToCodeRatio("/Users/georgesbiaux/Projects/Catlean/catlean-monolithic-backend", "c1bb0b399b39bd62a324b869f0f21430dc07ac88");
-        System.out.println("result");
-        System.out.println(result);
-        System.out.println("testToCodeRatio");
-        System.out.println(testToCodeRatio.getTestCodeLines());
-        System.out.println(testToCodeRatio.getTotalCodeLines());
-        System.out.println(testToCodeRatio.getRatio());
+    void should_compute_test_count_and_switch_repository_branch() throws SymeoException {
+        // Given
+        final JavaTestingMetricsAdapter javaTestingMetricsAdapter = new JavaTestingMetricsAdapter();
+        final JavaScriptTestingMetricsAdapter javaScriptTestingMetricsAdapter = new JavaScriptTestingMetricsAdapter();
+        final PHPTestingMetricsAdapter phpTestingMetricsAdapter = new PHPTestingMetricsAdapter();
+        final GitRepositoryService gitRepositoryService = mock(GitRepositoryService.class);
 
-        assertThat(result).isNotNull();
+        final AllLanguageTestingMetricsAdapter testingMetricsAdapter = new AllLanguageTestingMetricsAdapter(javaTestingMetricsAdapter, javaScriptTestingMetricsAdapter, phpTestingMetricsAdapter, gitRepositoryService);
+
+        // When
+        Integer result = testingMetricsAdapter.getRepositoryTestCount("src/test/resources/TestRepository", "c1bb0b399b39bd62a324b869f0f21430dc07ac88");
+
+        // Then
+        verify(gitRepositoryService, times(1)).checkoutRepositoryToCommit("src/test/resources/TestRepository", "c1bb0b399b39bd62a324b869f0f21430dc07ac88");
+        assertThat(result).isEqualTo(102);
+    }
+
+    @Test
+    void should_compute_test_to_code_ratio_and_switch_repository_branch() throws SymeoException {
+        // Given
+        final JavaTestingMetricsAdapter javaTestingMetricsAdapter = new JavaTestingMetricsAdapter();
+        final JavaScriptTestingMetricsAdapter javaScriptTestingMetricsAdapter = new JavaScriptTestingMetricsAdapter();
+        final PHPTestingMetricsAdapter phpTestingMetricsAdapter = new PHPTestingMetricsAdapter();
+        final GitRepositoryService gitRepositoryService = mock(GitRepositoryService.class);
+
+        final AllLanguageTestingMetricsAdapter testingMetricsAdapter = new AllLanguageTestingMetricsAdapter(javaTestingMetricsAdapter, javaScriptTestingMetricsAdapter, phpTestingMetricsAdapter, gitRepositoryService);
+
+        // When
+        TestToCodeRatio result = testingMetricsAdapter.getRepositoryTestToCodeRatio("src/test/resources/TestRepository", "c1bb0b399b39bd62a324b869f0f21430dc07ac88");
+
+        // Then
+        verify(gitRepositoryService, times(1)).checkoutRepositoryToCommit("src/test/resources/TestRepository", "c1bb0b399b39bd62a324b869f0f21430dc07ac88");
+        assertThat(result.getTestCodeLines()).isEqualTo(2417);
+        assertThat(result.getTotalCodeLines()).isEqualTo(3445);
+        assertThat(result.getRatio()).isEqualTo((float) 2417 / 3445);
     }
 }

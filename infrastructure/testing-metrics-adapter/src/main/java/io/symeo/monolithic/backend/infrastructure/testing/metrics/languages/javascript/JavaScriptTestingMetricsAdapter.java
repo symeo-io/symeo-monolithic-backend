@@ -13,7 +13,7 @@ public class JavaScriptTestingMetricsAdapter extends AbstractLanguageTestingMetr
     private final String[] testFilesSuffixes = {"test.ts", "test.tsx", "spec.ts", "spec.tsx", "test.js", "spec.js", "test.jsx", "spec.jsx"};
     private final String[] ignoredFolders = {"node_modules", "dist", "build"};
     private final String[] codeFilesSuffixes ={".ts", ".tsx", ".js", ".jsx"};
-    private final Pattern testRegex = Pattern.compile("^(it|test)\\(['\"](.*)['\"]", Pattern.MULTILINE);
+    private final Pattern testRegex = Pattern.compile("^\\s*(it|test)\\(['\"](.*)['\"]", Pattern.MULTILINE);
 
     @Override
     public Integer getTestCount(String repositoryFilesPath) throws SymeoException {

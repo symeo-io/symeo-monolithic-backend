@@ -2,6 +2,8 @@ package io.symeo.monolithic.backend.infrastructure.testing.metrics.languages;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -47,9 +49,9 @@ public abstract class AbstractLanguageTestingMetricsAdapter {
     public Integer getLineCountForFilePaths(List<String> filesPaths) {
         int result = 0;
         for (String filePath : filesPaths) {
-            try {
-                Path path = Paths.get(filePath);
-                result += (int) Files.lines(path).count();
+            Path path = Paths.get(filePath);
+            try (Stream<String> lines = Files.lines(path)) {
+                result += (int) lines.filter(line -> !line.equals("\n") && !line.equals("")).count();
             } catch (IOException ignored) {
             }
         }
