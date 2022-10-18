@@ -70,8 +70,8 @@ public interface DeploymentContractMapper {
 
     static void mapLastDeploy(DeploymentMetrics deploymentMetrics, DeploymentResponseContractDeployment deployment) {
         final MetricWithLabelContract lastDeploy = new MetricWithLabelContract();
-        lastDeploy.setValue(floatToBigDecimal(0f));
-        lastDeploy.setLabel("TODO");
+        lastDeploy.setValue(floatToBigDecimal(deploymentMetrics.getLastDeployDuration()));
+        lastDeploy.setLabel(deploymentMetrics.getLastDeployRepository());
         deployment.setLastDeploy(lastDeploy);
     }
 }

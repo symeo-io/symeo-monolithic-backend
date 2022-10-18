@@ -26,7 +26,7 @@ public class DeploymentMetricsTest {
                         .deployCount(20)
                         .deploysPerDay(0.1f)
                         .averageTimeBetweenDeploys(4.6f)
-                        .lastDeploy(1.4f)
+                        .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
                         .build());
         final Optional<Deployment> previousDeployment =
@@ -34,7 +34,7 @@ public class DeploymentMetricsTest {
                         .deployCount(5)
                         .deploysPerDay(0.3f)
                         .averageTimeBetweenDeploys(3.2f)
-                        .lastDeploy(0.7f)
+                        .lastDeployDuration(0.7f)
                         .lastDeployRepository("test-repo-2")
                         .build());
 
@@ -90,7 +90,7 @@ public class DeploymentMetricsTest {
                         .deploysPerDayTendencyPercentage(0.0f)
                         .averageTimeBetweenDeploys(4.6f)
                         .averageTimeBetweenDeploysTendencyPercentage(0.0f)
-                        .lastDeploy(1.4f)
+                        .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
                         .build()
         );
@@ -108,7 +108,7 @@ public class DeploymentMetricsTest {
                         .deploysPerDayTendencyPercentage(-66.7f)
                         .averageTimeBetweenDeploys(4.6f)
                         .averageTimeBetweenDeploysTendencyPercentage(43.7f)
-                        .lastDeploy(1.4f)
+                        .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
                         .build()
         );

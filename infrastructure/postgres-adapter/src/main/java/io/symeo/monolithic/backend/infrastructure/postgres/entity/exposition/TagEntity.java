@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -35,4 +36,7 @@ public class TagEntity {
     @UpdateTimestamp
     @Column(name = "technical_modification_date")
     ZonedDateTime technicalModificationDate;
+    @ManyToOne()
+    @JoinColumn(name = "repository_id", referencedColumnName = "id", insertable = false, updatable = false)
+    RepositoryEntity repositoryEntity;
 }

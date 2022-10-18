@@ -14,6 +14,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.Rep
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
+import liquibase.pro.packaged.T;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,9 +70,9 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         commentRepository.deleteAll();
         teamRepository.deleteAll();
         pullRequestRepository.deleteAll();
+        tagRepository.deleteAll();
         repositoryRepository.deleteAll();
         organizationRepository.deleteAll();
-        tagRepository.deleteAll();
     }
 
     @BeforeEach
@@ -924,6 +925,10 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
     void should_save_tags() throws SymeoException {
         // Given
         final String repositoryId = faker.rickAndMorty().character();
+        final String repositoryName = faker.dragonBall().character();
+        repositoryRepository.saveAll(
+                List.of(RepositoryEntity.builder().id(repositoryId).name(repositoryName).build())
+        );
         final List<Tag> tags = List.of(
                 Tag.builder().commitSha(faker.name().firstName())
                         .repository(Repository.builder().id(repositoryId).build())
@@ -936,6 +941,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
 
         // When
         postgresExpositionAdapter.saveTags(tags);
+        final List<TagEntity> tagList = tagRepository.findAll();
 
         // Then
         assertThat(tagRepository.findAll()).hasSize(tags.size());
@@ -950,10 +956,11 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                 .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         organizationRepository.save(OrganizationMapper.domainToEntity(organization));
+        final String fakeRepositoryName = faker.dragonBall().character();
         final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(
                 List.of(
-                        RepositoryEntity.builder().id("1").name(faker.dragonBall().character()).organizationId(organization.getId()).build(),
-                        RepositoryEntity.builder().id("2").name(faker.dragonBall().character()).organizationId(organization.getId()).build()
+                        RepositoryEntity.builder().id("1").name(fakeRepositoryName + "-1").organizationId(organization.getId()).build(),
+                        RepositoryEntity.builder().id("2").name(fakeRepositoryName + "-2").organizationId(organization.getId()).build()
                 )
         );
         final String repositoryId = repositoryEntities.get(0).getId();
@@ -988,6 +995,8 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
 
         // Then
         assertThat(tagsForTeamId).hasSize(2);
+        assertThat(tagsForTeamId.get(0).getRepository().getName()).isEqualTo(fakeRepositoryName + "-1");
+        assertThat(tagsForTeamId.get(1).getRepository().getName()).isEqualTo(fakeRepositoryName + "-1");
     }
 
 

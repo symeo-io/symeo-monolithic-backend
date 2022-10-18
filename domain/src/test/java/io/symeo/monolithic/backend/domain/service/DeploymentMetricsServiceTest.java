@@ -100,7 +100,7 @@ public class DeploymentMetricsServiceTest {
                         .deployCount(20)
                         .deploysPerDay(0.1f)
                         .averageTimeBetweenDeploys(4.6f)
-                        .lastDeploy(1.4f)
+                        .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
                         .build();
         final Deployment deployment2 =
@@ -108,7 +108,7 @@ public class DeploymentMetricsServiceTest {
                         .deployCount(10)
                         .deploysPerDay(0.3f)
                         .averageTimeBetweenDeploys(3.2f)
-                        .lastDeploy(0.7f)
+                        .lastDeployDuration(0.7f)
                         .lastDeployRepository("test-repo-2")
                         .build();
 
@@ -118,18 +118,19 @@ public class DeploymentMetricsServiceTest {
                         organization.getId(),
                         "^staging$"
                 ));
+
         when(expositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate))
                 .thenReturn(currentPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
         when(expositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId, previousStartDate, startDate))
                 .thenReturn(previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
 
         when(deploymentService.buildForPullRequestMergedOnBranchRegexSettings(
-                List.of(currentPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)), numberOfDaysBetweenStartDateAndEndDate
-        )).thenReturn(Optional.of(deployment1));
+                List.of(currentPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)), numberOfDaysBetweenStartDateAndEndDate))
+                .thenReturn(Optional.of(deployment1));
 
         when(deploymentService.buildForPullRequestMergedOnBranchRegexSettings(
-                List.of(previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)), numberOfDaysBetweenStartDateAndEndDate
-        )).thenReturn(Optional.of(deployment2));
+                List.of(previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)), numberOfDaysBetweenStartDateAndEndDate))
+                .thenReturn(Optional.of(deployment2));
 
         final Optional<DeploymentMetrics> optionalDeploymentMetrics =
                 deploymentMetricsService.computeDeploymentMetricsForTeamIdFromStartDateToEndDate(organization, teamId, startDate, endDate);
@@ -149,7 +150,7 @@ public class DeploymentMetricsServiceTest {
                         .deploysPerDayTendencyPercentage(-66.7f)
                         .averageTimeBetweenDeploys(4.6f)
                         .averageTimeBetweenDeploysTendencyPercentage(43.7f)
-                        .lastDeploy(1.4f)
+                        .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
                         .build()
         );
@@ -185,6 +186,7 @@ public class DeploymentMetricsServiceTest {
                 Tag.builder().name(faker.funnyName().name() + "-1").commitSha(fakeCommitSha4).build(),
                 Tag.builder().name(faker.funnyName().name() + "-2").commitSha(fakeCommitSha5).build()
         );
+
         final List<Commit> currentCommitsMatchingTagRegexBetweenStartDateAndEndDate = List.of(
                 Commit.builder().sha(fakeCommitSha1).date(stringToDate("2022-01-15")).build(),
                 Commit.builder().sha(fakeCommitSha2).date(stringToDate("2022-01-25")).build()
@@ -198,7 +200,7 @@ public class DeploymentMetricsServiceTest {
                         .deployCount(20)
                         .deploysPerDay(0.1f)
                         .averageTimeBetweenDeploys(4.6f)
-                        .lastDeploy(1.4f)
+                        .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
                         .build();
         final Deployment deployment2 =
@@ -206,7 +208,7 @@ public class DeploymentMetricsServiceTest {
                         .deployCount(15)
                         .deploysPerDay(0.3f)
                         .averageTimeBetweenDeploys(3.2f)
-                        .lastDeploy(0.7f)
+                        .lastDeployDuration(0.7f)
                         .lastDeployRepository("test-repo-2")
                         .build();
 
@@ -237,12 +239,12 @@ public class DeploymentMetricsServiceTest {
 
         when(deploymentService.buildForTagRegexSettings(
                 currentCommitsMatchingTagRegexBetweenStartDateAndEndDate,
-                numberOfDaysBetweenStartDateAndEndDate
-        )).thenReturn(Optional.of(deployment1));
+                numberOfDaysBetweenStartDateAndEndDate,
+                tagsMatchingDeployTagRegex)).thenReturn(Optional.of(deployment1));
         when(deploymentService.buildForTagRegexSettings(
                 previousCommitMatchingTagRegexBetweenStartDateAndEndDate,
-                numberOfDaysBetweenStartDateAndEndDate
-        )).thenReturn(Optional.of(deployment2));
+                numberOfDaysBetweenStartDateAndEndDate,
+                tagsMatchingDeployTagRegex)).thenReturn(Optional.of(deployment2));
 
         final Optional<DeploymentMetrics> optionalDeploymentMetrics =
                 deploymentMetricsService.computeDeploymentMetricsForTeamIdFromStartDateToEndDate(organization, teamId, startDate, endDate);
@@ -258,7 +260,7 @@ public class DeploymentMetricsServiceTest {
                         .deploysPerDayTendencyPercentage(-66.7f)
                         .averageTimeBetweenDeploys(4.6f)
                         .averageTimeBetweenDeploysTendencyPercentage(43.7f)
-                        .lastDeploy(1.4f)
+                        .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
                         .currentStartDate(startDate)
                         .currentEndDate(endDate)
