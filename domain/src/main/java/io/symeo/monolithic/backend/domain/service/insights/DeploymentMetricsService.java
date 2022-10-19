@@ -46,10 +46,10 @@ public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter 
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
 
         if (nonNull(pullRequestMergedOnBranchRegex)) {
-            return getDeploymentMetricsForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, previousStartDate,
+            return getDeploymentMetricsForPullRequestMergedOnBranchRegex(organization, teamId, startDate, endDate, previousStartDate,
                     pullRequestMergedOnBranchRegex);
         } else if (nonNull(tagRegex)) {
-            return getDeploymentMetricsForDeployOnTagRegex(teamId, startDate, endDate, previousStartDate,
+            return getDeploymentMetricsForDeployOnTagRegex(organization, teamId, startDate, endDate, previousStartDate,
                     tagRegex);
         }
         LOGGER.warn("DeploymentMetrics not computed due to missing delivery settings for organization {} and teamId {} " +
@@ -58,7 +58,8 @@ public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter 
         return Optional.empty();
     }
 
-    private Optional<DeploymentMetrics> getDeploymentMetricsForPullRequestMergedOnBranchRegex(UUID teamId,
+    private Optional<DeploymentMetrics> getDeploymentMetricsForPullRequestMergedOnBranchRegex(Organization organization,
+                                                                                              UUID teamId,
                                                                                               Date startDate,
                                                                                               Date endDate,
                                                                                               Date previousStartDate,
@@ -87,7 +88,8 @@ public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter 
                 endDate);
     }
 
-    private Optional<DeploymentMetrics> getDeploymentMetricsForDeployOnTagRegex(UUID teamId,
+    private Optional<DeploymentMetrics> getDeploymentMetricsForDeployOnTagRegex(Organization organization,
+                                                                                UUID teamId,
                                                                                 Date startDate,
                                                                                 Date endDate,
                                                                                 Date previousStartDate,
@@ -95,8 +97,10 @@ public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter 
         final Pattern tagPattern = Pattern.compile(deployOnTagRegex);
         final Long numberOfDaysBetweenStartDateAndEndDate = getNumberOfDaysBetweenStartDateAndEndDate(startDate, endDate);
 
+        final List<Tag> tagsMatchingTeamIdAndDeployTagRegex =
+                expositionStorageAdapter.findTagsForTeamId(teamId);
         final List<String> commitsShaForTagsMatchingTeamIdAndDeployTagRegex =
-                expositionStorageAdapter.findTagsForTeamId(teamId)
+                tagsMatchingTeamIdAndDeployTagRegex
                         .stream()
                         .filter(tag -> tagPattern.matcher(tag.getName()).find())
                         .map(Tag::getCommitSha)
@@ -111,13 +115,13 @@ public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter 
         final Optional<Deployment> optionalCurrentDeployment =
                 deploymentService.buildForTagRegexSettings(
                         currentCommitsMatchingTagRegexBetweenStartDateAndEndDate,
-                        numberOfDaysBetweenStartDateAndEndDate
-                );
+                        numberOfDaysBetweenStartDateAndEndDate,
+                        tagsMatchingTeamIdAndDeployTagRegex);
         final Optional<Deployment> optionalPreviousDeployment =
                 deploymentService.buildForTagRegexSettings(
                         previousCommitMatchingTagRegexBetweenStartDateAndEndDate,
-                        numberOfDaysBetweenStartDateAndEndDate
-                );
+                        numberOfDaysBetweenStartDateAndEndDate,
+                        tagsMatchingTeamIdAndDeployTagRegex);
         return buildFromCurrentAndPreviousDeployment(optionalCurrentDeployment, optionalPreviousDeployment, previousStartDate, startDate,
                 endDate);
     }

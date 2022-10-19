@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
+import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.TagEntity;
 
@@ -17,6 +18,10 @@ public interface TagMapper {
         return Tag.builder()
                 .commitSha(tagEntity.getSha())
                 .name(tagEntity.getName())
+                .repository(Repository.builder()
+                        .id(tagEntity.getRepositoryEntity().getId())
+                        .name(tagEntity.getRepositoryEntity().getName())
+                        .build())
                 .build();
     }
 }

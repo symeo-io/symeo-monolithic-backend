@@ -21,14 +21,15 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
-import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDateTime;
 import static java.time.ZonedDateTime.ofInstant;
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
 
@@ -53,11 +54,14 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
     private static final UUID activeUserId = UUID.randomUUID();
     private static final UUID teamId = UUID.randomUUID();
     private static final String repositoryId = faker.gameOfThrones().character();
+    private static final String repositoryName = faker.name().lastName();
     private static final UUID organizationSettingsId = UUID.randomUUID();
     private static final String deployCommitSha1 = faker.rickAndMorty().character() + "-deploy-1";
     private static final String deployCommitSha2 = faker.rickAndMorty().character() + "-deploy-2";
     private static final String deployCommitSha3 = faker.rickAndMorty().character() + "-deploy-3";
     private static final String mergeCommitSha = faker.rickAndMorty().character() + "-merge";
+    private static final LocalDateTime now = LocalDateTime.now();
+
 
 
     @Order(1)
@@ -92,7 +96,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
         final RepositoryEntity repositoryEntity = repositoryRepository.save(
                 RepositoryEntity.builder()
                         .defaultBranch(faker.ancient().hero())
-                        .name(faker.name().lastName())
+                        .name(repositoryName)
                         .organizationId(organizationId)
                         .id(repositoryId)
                         .build()
@@ -196,6 +200,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .base("staging")
                         .authorLogin(faker.harryPotter().character())
                         .vcsRepositoryId(repositoryId)
+                        .vcsRepository(repositoryName)
                         .state(PullRequest.MERGE)
                         .code("1")
                         .build(),
@@ -209,6 +214,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .mergeCommitSha(deployCommit1.getSha())
                         .authorLogin(faker.harryPotter().character())
                         .vcsRepositoryId(repositoryId)
+                        .vcsRepository(repositoryName)
                         .base("main")
                         .head("staging")
                         .code("2")
@@ -224,6 +230,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .mergeCommitSha(deployCommit2.getSha())
                         .authorLogin(faker.harryPotter().character())
                         .vcsRepositoryId(repositoryId)
+                        .vcsRepository(repositoryName)
                         .base("main")
                         .head("staging")
                         .code("3")
@@ -239,6 +246,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .mergeCommitSha(deployCommit3.getSha())
                         .authorLogin(faker.harryPotter().character())
                         .vcsRepositoryId(repositoryId)
+                        .vcsRepository(repositoryName)
                         .base("main")
                         .head("staging")
                         .code("4")
@@ -267,12 +275,16 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.deployment.deploys_per_day.value").isEqualTo(0.3f)
                 .jsonPath("$.deployment.deploys_per_day.tendency_percentage").isEqualTo(50.0f)
                 .jsonPath("$.deployment.average_time_between_deploys.value").isEqualTo(1440.0f)
-                .jsonPath("$.deployment.average_time_between_deploys.tendency_percentage").isEqualTo(null);
+                .jsonPath("$.deployment.average_time_between_deploys.tendency_percentage").isEqualTo(null)
+                .jsonPath("$.deployment.last_deploy.value").isEqualTo(
+                        MINUTES.between(stringToDate("2022-03-05").toInstant(), now.atZone(ZoneId.of("Europe/Paris")).toInstant())
+                )
+                .jsonPath("$.deployment.last_deploy.label").isEqualTo(repositoryName);
     }
 
     @Order(3)
     @Test
-    void should_compute_deployment_for_tag_to_deploy_regex() {
+    void should_compute_deployment_for_tag_to_deploy_regex() throws SymeoException {
         // Given
         final OrganizationSettingsEntity organizationSettingsEntity = OrganizationSettingsEntity.builder()
                 .id(organizationSettingsId)
@@ -319,6 +331,10 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.deployment.deploys_per_day.value").isEqualTo(0.3f)
                 .jsonPath("$.deployment.deploys_per_day.tendency_percentage").isEqualTo(50.0f)
                 .jsonPath("$.deployment.average_time_between_deploys.value").isEqualTo(1440.0f)
-                .jsonPath("$.deployment.average_time_between_deploys.tendency_percentage").isEqualTo(null);
+                .jsonPath("$.deployment.average_time_between_deploys.tendency_percentage").isEqualTo(null)
+                .jsonPath("$.deployment.last_deploy.value").isEqualTo(
+                        MINUTES.between(stringToDate("2022-03-05").toInstant(), now.atZone(ZoneId.of("Europe/Paris")).toInstant())
+                )
+                .jsonPath("$.deployment.last_deploy.label").isEqualTo(repositoryName);
     }
 }
