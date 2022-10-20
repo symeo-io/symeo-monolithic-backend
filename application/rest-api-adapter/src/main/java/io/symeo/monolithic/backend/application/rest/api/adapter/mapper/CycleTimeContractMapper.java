@@ -1,11 +1,15 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
+import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.insight.CycleTimeMetrics;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimeResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimeResponseContractCycleTime;
-import io.symeo.monolithic.backend.frontend.contract.api.model.MetricsContract;
+import io.symeo.monolithic.backend.frontend.contract.api.model.*;
 
+import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,5 +75,47 @@ public interface CycleTimeContractMapper {
         average.setTendencyPercentage(floatToBigDecimal(cycleTimeMetrics.getAverageTendencyPercentage()));
         average.setValue(floatToBigDecimal(cycleTimeMetrics.getAverage()));
         cycleTime.setAverage(average);
+    }
+
+    Faker FAKER = new Faker();
+
+    static CycleTimePiecesResponseContract toPiecesContract(final Date startDate, final Date endDate) {
+        final CycleTimePiecesResponseContract cycleTimePiecesResponseContract = new CycleTimePiecesResponseContract();
+
+        final CycleTimePiecesPageContract cycleTimePiecesPageContract = new CycleTimePiecesPageContract();
+        final List<CycleTimePieceContract> pieces = getCycleTimePieceContracts(startDate, endDate);
+        cycleTimePiecesPageContract.setPieces(
+                pieces
+        );
+        final int numberOfPage = FAKER.number().numberBetween(1, 200);
+        cycleTimePiecesPageContract.setTotalPageNumber(numberOfPage);
+        cycleTimePiecesPageContract.setTotalItemNumber(pieces.size() * numberOfPage);
+        cycleTimePiecesResponseContract.setPiecesPage(cycleTimePiecesPageContract);
+        return cycleTimePiecesResponseContract;
+    }
+
+    private static List<CycleTimePieceContract> getCycleTimePieceContracts(final Date startDate, final Date endDate) {
+
+        final ArrayList<CycleTimePieceContract> list = new ArrayList<>();
+        for (int i = 0; i <= FAKER.number().numberBetween(5, 50); i++) {
+            final CycleTimePieceContract cycleTimePieceContract = new CycleTimePieceContract();
+            cycleTimePieceContract.author(FAKER.rickAndMorty().character());
+            final double codingTime = FAKER.number().randomDouble(2, 1, 10000);
+            cycleTimePieceContract.codingTime(BigDecimal.valueOf(codingTime));
+            final double reviewTime = FAKER.number().randomDouble(2, 1, 10000);
+            cycleTimePieceContract.reviewTime(BigDecimal.valueOf(reviewTime));
+            final double timeToDeploy = FAKER.number().randomDouble(2, 1, 10000);
+            cycleTimePieceContract.timeToDeploy(BigDecimal.valueOf(timeToDeploy));
+            cycleTimePieceContract.status(FAKER.ancient().god());
+            cycleTimePieceContract.id(FAKER.idNumber().valid());
+            cycleTimePieceContract.cycleTime(BigDecimal.valueOf(codingTime + reviewTime + timeToDeploy));
+            cycleTimePieceContract.setVcsRepository(FAKER.pokemon().name());
+            cycleTimePieceContract.setVcsUrl("http://wwww.symeo.io");
+            cycleTimePieceContract.setTitle(FAKER.harryPotter().character());
+            cycleTimePieceContract.setCreationDate(ZonedDateTime.ofInstant(FAKER.date().between(startDate, endDate).toInstant(), ZoneId.systemDefault()));
+            cycleTimePieceContract.setMergeDate(ZonedDateTime.ofInstant(FAKER.date().between(startDate, endDate).toInstant(), ZoneId.systemDefault()));
+            list.add(cycleTimePieceContract);
+        }
+        return list;
     }
 }

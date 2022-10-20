@@ -8,6 +8,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.port.in.CycleTimeMetricsFacadeAdapter;
 import io.symeo.monolithic.backend.frontend.contract.api.CycleTimeApi;
+import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimePiecesResponseContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimeResponseContract;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,17 @@ public class CycleTimeRestApiAdapter implements CycleTimeApi {
                             stringToDate(endDate))));
         } catch (SymeoException e) {
             return mapSymeoExceptionToContract(() -> errorToContract(e), e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<CycleTimePiecesResponseContract> getCycleTimePieces(UUID teamId, Integer pageIndex,
+                                                                              Integer pageSize, String startDate,
+                                                                              String endDate) {
+        try {
+            return ok(CycleTimeContractMapper.toPiecesContract(stringToDate(startDate), stringToDate(endDate)));
+        } catch (SymeoException e) {
+            throw new RuntimeException(e);
         }
     }
 }
