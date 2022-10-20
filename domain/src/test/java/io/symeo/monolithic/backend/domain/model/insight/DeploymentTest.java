@@ -110,6 +110,10 @@ public class DeploymentTest {
         final String fakeRepositoryName2 = faker.dog().name() + "-2";
         final String fakeRepositoryName3 = faker.dog().name() + "-3";
 
+        final String fakeTagName = faker.cat().name() + "-tag-1";
+
+        final String fakeVcsUrl = faker.gameOfThrones().character();
+
         final Long numberOfDaysBetweenStartDateAndEndDate = 20L;
         final LocalDateTime now = LocalDateTime.now();
 
@@ -128,25 +132,23 @@ public class DeploymentTest {
         final List<Commit> emptyCommitsMatchingTagRegexBetweenStartDateAndEndDate = List.of();
 
         final List<Tag> tagsMatchingTeamIdAndDeployTagRegex = List.of(
-                Tag.builder().repository(Repository.builder().id(fakeRepositoryId1).name(fakeRepositoryName1).build()).build(),
-                Tag.builder().repository(Repository.builder().id(fakeRepositoryId2).name(fakeRepositoryName2).build()).build(),
-                Tag.builder().repository(Repository.builder().id(fakeRepositoryId3).name(fakeRepositoryName3).build()).build()
+                Tag.builder().commitSha(fakeCommitSha1).repository(Repository.builder().id(fakeRepositoryId1).name(fakeRepositoryName1).build()).name(fakeTagName).vcsUrl(fakeVcsUrl).build(),
+                Tag.builder().commitSha(fakeCommitSha2).repository(Repository.builder().id(fakeRepositoryId2).name(fakeRepositoryName2).build()).name(fakeTagName).vcsUrl(fakeVcsUrl).build(),
+                Tag.builder().commitSha(fakeCommitSha3).repository(Repository.builder().id(fakeRepositoryId3).name(fakeRepositoryName3).build()).name(fakeTagName).vcsUrl(fakeVcsUrl).build(),
+                Tag.builder().commitSha(fakeCommitSha4).repository(Repository.builder().id(fakeRepositoryId3).name(fakeRepositoryName3).build()).name(fakeTagName).vcsUrl(fakeVcsUrl).build()
         );
 
         // When
         final Optional<Deployment> deployment =
-                Deployment.computeDeploymentForTagRegexToDeploySettings(
-                        commitsMatchingTagRegexBetweenStartDateAndEndDate,
+                Deployment.computeDeploymentForTagRegexToDeploySettings(commitsMatchingTagRegexBetweenStartDateAndEndDate,
                         numberOfDaysBetweenStartDateAndEndDate,
                         tagsMatchingTeamIdAndDeployTagRegex);
         final Optional<Deployment> soloDeployment =
-                Deployment.computeDeploymentForTagRegexToDeploySettings(
-                        soloCommitsMatchingTagRegexBetweenStartDateAndEndDate,
+                Deployment.computeDeploymentForTagRegexToDeploySettings(soloCommitsMatchingTagRegexBetweenStartDateAndEndDate,
                         numberOfDaysBetweenStartDateAndEndDate,
                         tagsMatchingTeamIdAndDeployTagRegex);
         final Optional<Deployment> emptyDeployment =
-                Deployment.computeDeploymentForTagRegexToDeploySettings(
-                        emptyCommitsMatchingTagRegexBetweenStartDateAndEndDate,
+                Deployment.computeDeploymentForTagRegexToDeploySettings(emptyCommitsMatchingTagRegexBetweenStartDateAndEndDate,
                         numberOfDaysBetweenStartDateAndEndDate,
                         tagsMatchingTeamIdAndDeployTagRegex);
 
@@ -158,6 +160,7 @@ public class DeploymentTest {
                         .averageTimeBetweenDeploys(7200.0f)
                         .lastDeployDuration((float) MINUTES.between(stringToDate("2022-01-30").toInstant(), now.atZone(ZoneId.of("Europe/Paris")).toInstant()))
                         .lastDeployRepository(fakeRepositoryName3)
+                        .lastDeployLink(fakeVcsUrl)
                         .build())
         );
         assertThat(soloDeployment).isEqualTo(
@@ -167,6 +170,7 @@ public class DeploymentTest {
                         .averageTimeBetweenDeploys(null)
                         .lastDeployDuration((float) MINUTES.between(stringToDate("2022-01-15").toInstant(), now.atZone(ZoneId.of("Europe/Paris")).toInstant()))
                         .lastDeployRepository(fakeRepositoryName1)
+                        .lastDeployLink(fakeVcsUrl)
                         .build())
         );
         assertThat(emptyDeployment).isEqualTo(
@@ -176,6 +180,7 @@ public class DeploymentTest {
                         .averageTimeBetweenDeploys(null)
                         .lastDeployDuration(null)
                         .lastDeployRepository(null)
+                        .lastDeployLink(null)
                         .build())
         );
     }

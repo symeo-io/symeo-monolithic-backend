@@ -7,7 +7,8 @@ databaseChangeLog:
       file: db/changelog/changelogs/00000020_init_job_storage_schema.sql
   - include:
       file: db/changelog/changelogs/00000030_update_varchar_size.sql
-
+  - include:
+      file: db/changelog/changelogs/00000040_add_vcs_api_url_column_to_tag_table.sql
 
 
 

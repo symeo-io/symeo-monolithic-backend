@@ -27,6 +27,7 @@ public class DeploymentMetrics {
     Float averageTimeBetweenDeploysTendencyPercentage;
     Float lastDeployDuration;
     String lastDeployRepository;
+    String lastDeployLink;
 
     public static Optional<DeploymentMetrics> buildFromCurrentAndPreviousDeployment(Optional<Deployment> optionalCurrentDeployment,
                                                                                     Optional<Deployment> optionalPreviousDeployment,
@@ -72,6 +73,7 @@ public class DeploymentMetrics {
                 )
                 .lastDeployDuration(currentDeployment.getLastDeployDuration())
                 .lastDeployRepository(currentDeployment.getLastDeployRepository())
+                .lastDeployLink(currentDeployment.getLastDeployLink())
                 .build());
     }
 
@@ -92,6 +94,7 @@ public class DeploymentMetrics {
                 .averageTimeBetweenDeploysTendencyPercentage(EMPTY_PERCENTAGE)
                 .lastDeployDuration(currentDeployment.getLastDeployDuration())
                 .lastDeployRepository(currentDeployment.getLastDeployRepository())
+                .lastDeployLink(currentDeployment.getLastDeployLink())
                 .build());
     }
 }

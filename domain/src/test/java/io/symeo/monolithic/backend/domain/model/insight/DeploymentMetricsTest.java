@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.domain.model.insight;
 
+import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class DeploymentMetricsTest {
 
+    private static final Faker faker = new Faker();
+
     @Test
     void should_build_deployment_metrics_given_current_and_previous_deployment() throws SymeoException {
         // Given
@@ -21,6 +24,8 @@ public class DeploymentMetricsTest {
         final Optional<Deployment> emptyCurrentDeployment = Optional.empty();
         final Optional<Deployment> emptyPreviousDeployment = Optional.empty();
 
+        final String fakeDeployLink = faker.gameOfThrones().character();
+
         final Optional<Deployment> currentDeployment =
                 Optional.of(Deployment.builder()
                         .deployCount(20)
@@ -28,6 +33,7 @@ public class DeploymentMetricsTest {
                         .averageTimeBetweenDeploys(4.6f)
                         .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
+                        .lastDeployLink(fakeDeployLink)
                         .build());
         final Optional<Deployment> previousDeployment =
                 Optional.of(Deployment.builder()
@@ -36,6 +42,7 @@ public class DeploymentMetricsTest {
                         .averageTimeBetweenDeploys(3.2f)
                         .lastDeployDuration(0.7f)
                         .lastDeployRepository("test-repo-2")
+                        .lastDeployLink(fakeDeployLink)
                         .build());
 
         // When
@@ -92,6 +99,7 @@ public class DeploymentMetricsTest {
                         .averageTimeBetweenDeploysTendencyPercentage(0.0f)
                         .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
+                        .lastDeployLink(fakeDeployLink)
                         .build()
         );
 
@@ -110,6 +118,7 @@ public class DeploymentMetricsTest {
                         .averageTimeBetweenDeploysTendencyPercentage(43.7f)
                         .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
+                        .lastDeployLink(fakeDeployLink)
                         .build()
         );
     }

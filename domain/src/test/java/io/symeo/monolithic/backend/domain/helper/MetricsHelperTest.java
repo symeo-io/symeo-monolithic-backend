@@ -10,8 +10,8 @@ public class MetricsHelperTest {
     @Test
     void should_return_tendency_percentage() {
         // Given
-        final Float currentValue = 100f;
-        final Float previousValue = 50f;
+        final Float currentValue = 88f;
+        final Float previousValue = 63f;
 
         // When
         final Float tendencyPercentage = getTendencyPercentage(currentValue, previousValue);
@@ -20,7 +20,7 @@ public class MetricsHelperTest {
         final Float tendencyPercentageWithEmptyCurrentAndPreviousValue = getTendencyPercentage(null, null);
 
         // Then
-        assertThat(tendencyPercentage).isEqualTo(100f);
+        assertThat(tendencyPercentage).isEqualTo(39.7f);
         assertThat(tendencyPercentageWithEmptyPreviousValue).isNull();
         assertThat(tendencyPercentageWithEmptyCurrentValue).isNull();
         assertThat(tendencyPercentageWithEmptyCurrentAndPreviousValue).isNull();

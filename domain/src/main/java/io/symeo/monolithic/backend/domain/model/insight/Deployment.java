@@ -23,6 +23,7 @@ public class Deployment {
     Float averageTimeBetweenDeploys;
     Float lastDeployDuration;
     String lastDeployRepository;
+    String lastDeployLink;
 
     public static Optional<Deployment> computeDeploymentForPullRequestMergedOnBranchRegexSettings(List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
                                                                                                   Long numberOfDaysBetweenStartDateAndEndDate) {
@@ -35,6 +36,7 @@ public class Deployment {
 
         final Float lastDeployDuration = computeLastDeployDurationForPullRequestViewsMergedOnMatchedBranches(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
         final String lastDeployRepository = computeLastDeployRepositoryForForPullRequestViewsMergedOnMatchedBranches(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
+        final String lastDeployLink = computeLastDeployLinkForPullRequestViewsMergedOnMatchedBranches(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
 
         return Optional.of(Deployment.builder()
                 .deployCount(deployCount)
@@ -42,6 +44,7 @@ public class Deployment {
                 .averageTimeBetweenDeploys(averageTimeBetweenDeploys)
                 .lastDeployDuration(lastDeployDuration)
                 .lastDeployRepository(lastDeployRepository)
+                .lastDeployLink(lastDeployLink)
                 .build());
     }
 
@@ -58,6 +61,8 @@ public class Deployment {
         final Float lastDeployDuration = computeLastDeployDurationForTagRegexMatchingDeploySettings(commitsMatchingTagRegexBetweenStartDateAndEndDate);
         final String lastDeployRepository = computeLastDeployRepositoryForCommitsMatchingTagRegexBetweenStartDateAndEndDate(
                 commitsMatchingTagRegexBetweenStartDateAndEndDate, tagsMatchingTeamIdAndDeployTagRegex);
+        final String lastDeployLink = computeLastDeployLinkForForCommitsMatchingTagRegexBetweenStartDateAndEndDate(commitsMatchingTagRegexBetweenStartDateAndEndDate,
+                tagsMatchingTeamIdAndDeployTagRegex);
 
         return Optional.of(Deployment.builder()
                 .deployCount(deployCount)
@@ -65,6 +70,7 @@ public class Deployment {
                 .averageTimeBetweenDeploys(averageTimeBetweenDeploys)
                 .lastDeployDuration(lastDeployDuration)
                 .lastDeployRepository(lastDeployRepository)
+                .lastDeployLink(lastDeployLink)
                 .build());
     }
 
@@ -80,16 +86,13 @@ public class Deployment {
     }
 
     private static Float computeDeploysPerDay(int numberOfPullRequestOrCommitsMatchingDeploySettings, Long numberOfDaysBetweenStartDateAndEndDate) {
-        return numberOfPullRequestOrCommitsMatchingDeploySettings != 0 ? Math.round(10f * numberOfPullRequestOrCommitsMatchingDeploySettings / numberOfDaysBetweenStartDateAndEndDate) / 10f : null;
+        return numberOfPullRequestOrCommitsMatchingDeploySettings != 0 ? Math.round(10 * numberOfPullRequestOrCommitsMatchingDeploySettings / (numberOfDaysBetweenStartDateAndEndDate * 1.0)) / 10.0f : null;
     }
 
     private static Float computeLastDeployDurationForPullRequestViewsMergedOnMatchedBranches(List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate) {
         final LocalDateTime now = LocalDateTime.now();
         final PullRequestView lastDeployForPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate =
-                pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate
-                        .stream()
-                        .max(Comparator.comparing(PullRequestView::getMergeDate))
-                        .orElse(null);
+                findLastDeployPullRequestViewForPullRequestViewList(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
         if (isNull(lastDeployForPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate)) {
             return null;
         } else {
@@ -135,10 +138,41 @@ public class Deployment {
         }
     }
 
+    private static PullRequestView findLastDeployPullRequestViewForPullRequestViewList(List<PullRequestView> pullRequestViewList) {
+        return pullRequestViewList
+                .stream()
+                .max(Comparator.comparing(PullRequestView::getMergeDate))
+                .orElse(null);
+    }
+
     private static Commit findLastDeployCommitInCommitsList(List<Commit> commitsList) {
         return commitsList
                 .stream()
                 .max(Comparator.comparing(Commit::getDate))
                 .orElse(null);
+    }
+
+    private static String computeLastDeployLinkForPullRequestViewsMergedOnMatchedBranches(List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate) {
+        final PullRequestView lastDeployForPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate =
+                findLastDeployPullRequestViewForPullRequestViewList(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
+        return isNull(lastDeployForPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate)
+                ? null
+                : lastDeployForPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.getVcsUrl();
+    }
+
+    private static String computeLastDeployLinkForForCommitsMatchingTagRegexBetweenStartDateAndEndDate(List<Commit> commitsMatchingTagRegexBetweenStartDateAndEndDate,
+                                                                                                       List<Tag> tagsMatchingTeamIdAndDeployTagRegex) {
+        final Commit lastDeployCommitForTagRegexMatchingDeploySettings =
+                findLastDeployCommitInCommitsList(commitsMatchingTagRegexBetweenStartDateAndEndDate);
+        if (isNull(lastDeployCommitForTagRegexMatchingDeploySettings)) {
+            return null;
+        } else {
+            return tagsMatchingTeamIdAndDeployTagRegex
+                    .stream()
+                    .filter(tag -> tag.getCommitSha().equals(lastDeployCommitForTagRegexMatchingDeploySettings.getSha()))
+                    .findFirst()
+                    .map(Tag::getVcsUrl)
+                    .orElse(null);
+        }
     }
 }

@@ -4,6 +4,7 @@ json-local-storage:
 github:
   app:
     api: "https://api.github.com/"
+    url-host: "https://github.com/"
     size: 100
     github-app-id: ${GITHUB_APP_ID}
     private-key-certificate-path: ${GITHUB_PRIVATE_KEY_PATH}

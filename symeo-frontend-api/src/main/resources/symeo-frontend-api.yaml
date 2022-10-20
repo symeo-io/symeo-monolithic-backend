@@ -1279,7 +1279,8 @@ paths:
                     tendency_percentage: 5
                   last_deploy:
                     value: 2.3
-                    repository: symeo-webapp
+                    label: symeo-webapp
+                    link: https://github.com/symeo-io/symeo-monolithic-backend/pull/125
                 errors:
                   [ ]
         "401":
@@ -1895,12 +1896,14 @@ components:
           type: number
         tendency_percentage:
           type: number
-    MetricWithLabelContract:
+    MetricWithLabelAndUrlContract:
       type: object
       properties:
         value:
           type: number
         label:
+          type: string
+        link:
           type: string
     PullRequestContract:
       type: object
@@ -2006,7 +2009,7 @@ components:
             average_time_between_deploys:
               $ref: '#/components/schemas/MetricsContract'
             last_deploy:
-              $ref: '#/components/schemas/MetricWithLabelContract'
+              $ref: '#/components/schemas/MetricWithLabelAndUrlContract'
         errors:
           type: array
           items:

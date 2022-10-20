@@ -14,7 +14,6 @@ import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.Rep
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
-import liquibase.pro.packaged.T;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -941,10 +940,10 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
 
         // When
         postgresExpositionAdapter.saveTags(tags);
-        final List<TagEntity> tagList = tagRepository.findAll();
 
         // Then
-        assertThat(tagRepository.findAll()).hasSize(tags.size());
+        final List<TagEntity> tagList = tagRepository.findAll();
+        assertThat(tagList).hasSize(tags.size());
     }
 
     @Test

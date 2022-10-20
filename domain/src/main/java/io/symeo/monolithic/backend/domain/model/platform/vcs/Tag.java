@@ -10,6 +10,7 @@ public class Tag {
     String name;
     String commitSha;
     Repository repository;
+    String vcsUrl;
 
     public static String getNameFromRepository(final Repository repository) {
         return ALL + "_for_repository_" + repository.getId();
