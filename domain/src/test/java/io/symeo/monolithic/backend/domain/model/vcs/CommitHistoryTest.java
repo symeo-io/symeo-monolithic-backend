@@ -92,7 +92,7 @@ public class CommitHistoryTest {
                                 .build(),
                         Commit.builder()
                                 .sha(sha2)
-                                .parentShaList(List.of(sha3, faker.name().lastName()))
+                                .parentShaList(List.of(faker.name().lastName(), sha3))
                                 .build(),
                         Commit.builder()
                                 .sha(sha3)
@@ -104,6 +104,51 @@ public class CommitHistoryTest {
                                 .parentShaList(List.of(mergeSha, faker.name().name()))
                                 .build(),
                         mergeCommit
+                )
+        );
+
+        // When
+        final boolean commitPresentOnMergeCommitHistory =
+                commitHistory.isCommitPresentOnMergeCommitHistory(mergeCommit.getSha(), sha3);
+
+        // Then
+        assertThat(commitPresentOnMergeCommitHistory).isTrue();
+    }
+
+    @Test
+    void should_find_if_a_commit_is_present_in_a_given_commit_history_with_filtered_commit_before_pr() throws SymeoException {
+        // Given
+        final String mergeSha = faker.gameOfThrones().character();
+        final Commit mergeCommit = Commit.builder()
+                .sha(mergeSha)
+                .date(stringToDate("2022-01-01"))
+                .parentShaList(List.of(faker.ancient().hero()))
+                .build();
+        final String sha1 = faker.rickAndMorty().character() + "-1";
+        final String sha2 = faker.rickAndMorty().character() + "-2";
+        final String sha3 = faker.rickAndMorty().character() + "-3";
+        final String sha4 = faker.rickAndMorty().character() + "-4";
+        final Date mergeDateOnBranch = stringToDate("2022-01-15");
+        final CommitHistory commitHistory = CommitHistory.initializeFromCommits(
+                List.of(
+
+                        Commit.builder()
+                                .sha(sha1)
+                                .parentShaList(List.of(sha2, faker.name().firstName()))
+                                .build(),
+                        Commit.builder()
+                                .sha(sha2)
+                                .parentShaList(List.of(faker.rickAndMorty().location(), faker.pokemon().name()))
+                                .build(),
+                        Commit.builder()
+                                .sha(sha3)
+                                .date(mergeDateOnBranch)
+                                .parentShaList(List.of(sha4))
+                                .build(),
+                        Commit.builder()
+                                .sha(sha4)
+                                .parentShaList(List.of(mergeSha, faker.name().name()))
+                                .build()
                 )
         );
 

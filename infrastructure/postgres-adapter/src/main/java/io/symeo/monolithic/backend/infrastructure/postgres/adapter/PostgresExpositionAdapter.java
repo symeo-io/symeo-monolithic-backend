@@ -265,9 +265,9 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Commit> readAllCommitsForTeamId(UUID teamId) throws SymeoException {
+    public List<Commit> readAllCommitsForTeamIdAfterStartDate(final UUID teamId, final Date startDate) throws SymeoException {
         try {
-            return customCommitRepository.findAllByTeamId(teamId);
+            return customCommitRepository.findAllByTeamIdAfterStartDate(teamId, startDate);
         } catch (Exception e) {
             final String message = String.format("Failed to read commits for teamId %s", teamId);
             LOGGER.error(message, e);

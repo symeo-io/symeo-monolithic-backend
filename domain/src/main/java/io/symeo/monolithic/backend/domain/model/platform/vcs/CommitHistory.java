@@ -39,7 +39,9 @@ public class CommitHistory {
             return false;
         }
         for (Commit commit : futureCommit.getParentShaList().stream().map(this::getCommitFromSha).toList()) {
-            if (commit.getSha().equals(pastCommit.getSha())) {
+            if (isNull(commit)) {
+                return false;
+            } else if (commit.getSha().equals(pastCommit.getSha())) {
                 return true;
             } else if (!commit.getParentShaList().isEmpty()) {
                 return isCommitPresentInCommitHistory(pastCommit, commit);

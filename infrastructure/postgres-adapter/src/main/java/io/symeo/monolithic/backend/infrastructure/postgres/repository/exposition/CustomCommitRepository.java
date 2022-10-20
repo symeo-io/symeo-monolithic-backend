@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.util.Objects.isNull;
@@ -18,15 +19,19 @@ public class CustomCommitRepository {
             " c.message cm, c.date cd, ctps.parent_sha ctpsp" +
             " from exposition_storage.commit c" +
             " left join exposition_storage.commit_to_parent_sha ctps on ctps.sha = c.sha " +
-            " where c.repository_id in (select ttr.repository_id" +
+            " where c.date >= ':startDate' " +
+            " and c.repository_id in (select ttr.repository_id" +
             "                                 from exposition_storage.team_to_repository ttr " +
             "                                 where ttr.team_id = ':teamId') ";
 
     private final EntityManager entityManager;
 
-    public List<Commit> findAllByTeamId(final UUID teamId) {
-        final Query nativeQuery = entityManager.createNativeQuery(FIND_COMMITS_BY_TEAM_ID_QUERY.replace(":teamId",
-                teamId.toString()));
+    public List<Commit> findAllByTeamIdAfterStartDate(final UUID teamId, final Date startDate) {
+        final Query nativeQuery = entityManager.createNativeQuery(
+                FIND_COMMITS_BY_TEAM_ID_QUERY
+                        .replace(":teamId", teamId.toString())
+                        .replace(":startDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startDate))
+        );
         final List<Object[]> resultList = nativeQuery.getResultList();
         return mapResultListToCommitList(resultList);
     }

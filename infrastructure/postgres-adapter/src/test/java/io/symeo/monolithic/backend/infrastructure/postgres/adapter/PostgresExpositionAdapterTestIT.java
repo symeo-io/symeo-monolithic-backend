@@ -1009,6 +1009,13 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                                 List.of(repositoryEntity.getId()
                                 )).build());
         teamRepository.save(teamEntity);
+        final CommitEntity ignoredCommit = CommitEntity.builder()
+                .message(faker.business().creditCardExpiry())
+                .sha(UUID.randomUUID() + faker.ancient().god())
+                .date(ZonedDateTime.now().minusDays(2))
+                .authorLogin(faker.dragonBall().character())
+                .repositoryId(repositoryEntity.getId())
+                .build();
         final List<CommitEntity> commitEntities = List.of(
                 CommitEntity.builder()
                         .message(faker.business().creditCardExpiry())
@@ -1034,23 +1041,19 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                         ))
                         .repositoryId(repositoryEntity.getId())
                         .build(),
-                CommitEntity.builder()
-                        .message(faker.business().creditCardExpiry())
-                        .sha(UUID.randomUUID() + faker.ancient().god())
-                        .date(ZonedDateTime.now())
-                        .authorLogin(faker.dragonBall().character())
-                        .repositoryId(repositoryEntity.getId())
-                        .build()
+                ignoredCommit
         );
         commitRepository.saveAll(
                 commitEntities
         );
 
         // When
-        final List<Commit> commits = postgresExpositionAdapter.readAllCommitsForTeamId(teamEntity.getId());
+        final List<Commit> commits =
+                postgresExpositionAdapter.readAllCommitsForTeamIdAfterStartDate(teamEntity.getId(),
+                        Date.from(ZonedDateTime.now().minusDays(1).toInstant()));
 
         // Then
-        assertThat(commits).hasSize(3);
+        assertThat(commits).hasSize(2);
 
         for (CommitEntity commitEntity : commitEntities) {
             final Optional<Commit> optionalCommit =
@@ -1063,7 +1066,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                                 assertThat(commit.getRepositoryId()).isEqualTo(commitEntity.getRepositoryId());
                                 assertThat(commit.getAuthor()).isEqualTo(commitEntity.getAuthorLogin());
                             },
-                            () -> assertThat(true).isFalse());
+                            () -> assertThat(commitEntity.getSha()).isEqualTo(ignoredCommit.getSha()));
         }
     }
 

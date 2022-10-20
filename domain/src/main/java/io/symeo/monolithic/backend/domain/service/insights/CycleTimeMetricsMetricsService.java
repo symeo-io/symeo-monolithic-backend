@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.getPreviousStartDateFromStartDateAndEndDate;
 import static io.symeo.monolithic.backend.domain.model.insight.CycleTimeMetrics.buildFromCurrentAndPreviousCycleTimes;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -56,18 +57,19 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
             return getCycleTimeMetricsForDeployOnTagRegex(teamId, startDate, endDate, previousStartDate, tagRegex,
                     excludeBranchRegexes);
         }
-        LOGGER.warn("CycleTimeMetrics not computed due to missing delivery settings for organization {} and teamId {} " +
+        LOGGER.warn("CycleTimeMetrics not computed due to missing delivery settings for organization {} and teamId {}" +
+                        " " +
                         "and organizationSettings {}",
                 organization, teamId, organizationSettings);
         return Optional.empty();
     }
 
     private Optional<CycleTimeMetrics> getCycleTimeMetricsForPullRequestMergedOnBranchRegex(final UUID teamId,
-                                                                                           final Date startDate,
-                                                                                           final Date endDate,
-                                                                                           final Date previousStartDate,
-                                                                                           final String pullRequestMergedOnBranchRegex,
-                                                                                           final List<String> excludeBranchRegexes) throws SymeoException {
+                                                                                            final Date startDate,
+                                                                                            final Date endDate,
+                                                                                            final Date previousStartDate,
+                                                                                            final String pullRequestMergedOnBranchRegex,
+                                                                                            final List<String> excludeBranchRegexes) throws SymeoException {
         final List<PullRequestView> currentPullRequestViews =
                 expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                                 endDate)
@@ -79,8 +81,9 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
                         .toList();
-        final List<Commit> allCommitsUntilEndDate =
-                expositionStorageAdapter.readAllCommitsForTeamId(teamId);
+        final Date oldestCreationDate = findOldestCreationDate(previousPullRequestViews);
+        final List<Commit> allCommitFromPreviousStartDate =
+                expositionStorageAdapter.readAllCommitsForTeamIdAfterStartDate(teamId, oldestCreationDate);
         final Pattern branchPattern = Pattern.compile(pullRequestMergedOnBranchRegex);
 
         final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate =
@@ -92,7 +95,7 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
                 cycleTimeService.buildForPullRequestMergedOnBranchRegexSettings(
                         currentPullRequestViews,
                         pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
-                        allCommitsUntilEndDate
+                        allCommitFromPreviousStartDate
                 );
 
 
@@ -105,7 +108,7 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
                 cycleTimeService.buildForPullRequestMergedOnBranchRegexSettings(
                         previousPullRequestViews,
                         previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
-                        allCommitsUntilEndDate
+                        allCommitFromPreviousStartDate
                 );
 
         return buildFromCurrentAndPreviousCycleTimes(currentCycleTime, previousCycleTime, previousStartDate, startDate,
@@ -113,11 +116,11 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
     }
 
     private Optional<CycleTimeMetrics> getCycleTimeMetricsForDeployOnTagRegex(final UUID teamId,
-                                                                             final Date startDate,
-                                                                             final Date endDate,
-                                                                             final Date previousStartDate,
-                                                                             final String deployOnTagRegex,
-                                                                             final List<String> excludeBranchRegexes) throws SymeoException {
+                                                                              final Date startDate,
+                                                                              final Date endDate,
+                                                                              final Date previousStartDate,
+                                                                              final String deployOnTagRegex,
+                                                                              final List<String> excludeBranchRegexes) throws SymeoException {
         final List<PullRequestView> currentPullRequestViews =
                 expositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                                 endDate)
@@ -129,8 +132,9 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
                         .toList();
-        final List<Commit> allCommitsUntilEndDate =
-                expositionStorageAdapter.readAllCommitsForTeamId(teamId);
+        final Date oldestCreationDate = findOldestCreationDate(previousPullRequestViews);
+        final List<Commit> allCommitsFromPreviousStartDate =
+                expositionStorageAdapter.readAllCommitsForTeamIdAfterStartDate(teamId, oldestCreationDate);
         final Pattern tagPattern = Pattern.compile(deployOnTagRegex);
 
         final List<Tag> tagsMatchingDeployTagRegex =
@@ -143,14 +147,14 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
                 cycleTimeService.buildForTagRegexSettings(
                         currentPullRequestViews,
                         tagsMatchingDeployTagRegex,
-                        allCommitsUntilEndDate
+                        allCommitsFromPreviousStartDate
                 );
 
         final Optional<AverageCycleTime> previousCycleTime =
                 cycleTimeService.buildForTagRegexSettings(
                         previousPullRequestViews,
                         tagsMatchingDeployTagRegex,
-                        allCommitsUntilEndDate
+                        allCommitsFromPreviousStartDate
                 );
         return buildFromCurrentAndPreviousCycleTimes(currentCycleTime, previousCycleTime, previousStartDate, startDate,
                 endDate);
@@ -161,5 +165,20 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
         return excludeBranchRegexes.isEmpty() || excludeBranchRegexes.stream().anyMatch(
                 regex -> !Pattern.compile(regex).matcher(pullRequestView.getHead()).find()
         );
+    }
+
+
+    private Date findOldestCreationDate(final List<PullRequestView> allPullRequestViews) {
+        Date oldestCreationDate = null;
+        for (PullRequestView pullRequestView : allPullRequestViews) {
+            final Date creationDate = pullRequestView.getCreationDate();
+            if (isNull(oldestCreationDate)) {
+                oldestCreationDate = creationDate;
+            } else if (creationDate.before(oldestCreationDate)) {
+                oldestCreationDate = creationDate;
+
+            }
+        }
+        return oldestCreationDate;
     }
 }
