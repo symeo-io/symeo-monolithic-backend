@@ -352,8 +352,14 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     @Override
     public byte[] getRawTags(String vcsOrganizationName, String repositoryName) throws SymeoException {
-        return dtoToBytes(githubHttpClient.getTagsForOrganizationAndRepository(vcsOrganizationName,
-                repositoryName));
+        final GithubTagDTO[] githubTagDTOS = githubHttpClient.getTagsForOrganizationAndRepository(vcsOrganizationName,
+                repositoryName);
+        for (GithubTagDTO githubTagDTO : githubTagDTOS) {
+            githubTagDTO.setVcsApiUrl(
+                    properties.getUrlHost() + vcsOrganizationName + "/" + repositoryName + "/tree/" + githubTagDTO.getRef().replace("refs/tags/", "")
+            );
+        }
+        return dtoToBytes(githubTagDTOS);
     }
 
     @Override

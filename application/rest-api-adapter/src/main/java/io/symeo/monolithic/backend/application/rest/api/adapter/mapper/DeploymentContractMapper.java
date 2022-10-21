@@ -4,7 +4,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.insight.DeploymentMetrics;
 import io.symeo.monolithic.backend.frontend.contract.api.model.DeploymentResponseContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.DeploymentResponseContractDeployment;
-import io.symeo.monolithic.backend.frontend.contract.api.model.MetricWithLabelContract;
+import io.symeo.monolithic.backend.frontend.contract.api.model.MetricWithLabelAndUrlContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.MetricsContract;
 
 import java.math.BigDecimal;
@@ -50,7 +50,7 @@ public interface DeploymentContractMapper {
     static void mapDeployCount(DeploymentMetrics deploymentMetrics, DeploymentResponseContractDeployment deployment) {
         final MetricsContract deployCount = new MetricsContract();
         deployCount.setValue(BigDecimal.valueOf(deploymentMetrics.getDeployCount()));
-        deployCount.setTendencyPercentage(BigDecimal.valueOf(deploymentMetrics.getDeployCountTendencyPercentage()));
+        deployCount.setTendencyPercentage(floatToBigDecimal(deploymentMetrics.getDeployCountTendencyPercentage()));
         deployment.setDeployCount(deployCount);
     }
 
@@ -69,9 +69,10 @@ public interface DeploymentContractMapper {
     }
 
     static void mapLastDeploy(DeploymentMetrics deploymentMetrics, DeploymentResponseContractDeployment deployment) {
-        final MetricWithLabelContract lastDeploy = new MetricWithLabelContract();
+        final MetricWithLabelAndUrlContract lastDeploy = new MetricWithLabelAndUrlContract();
         lastDeploy.setValue(floatToBigDecimal(deploymentMetrics.getLastDeployDuration()));
         lastDeploy.setLabel(deploymentMetrics.getLastDeployRepository());
+        lastDeploy.setLink(deploymentMetrics.getLastDeployLink());
         deployment.setLastDeploy(lastDeploy);
     }
 }

@@ -85,6 +85,7 @@ public interface GithubMapper {
         return Tag.builder()
                 .name(githubTagDTO.getRef().replace("refs/tags/", ""))
                 .commitSha(githubTagDTO.getObject().getSha())
+                .vcsUrl(githubTagDTO.getVcsApiUrl())
                 .build();
     }
 }

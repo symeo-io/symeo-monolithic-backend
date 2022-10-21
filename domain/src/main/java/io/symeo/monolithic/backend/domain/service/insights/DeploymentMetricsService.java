@@ -46,10 +46,10 @@ public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter 
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
 
         if (nonNull(pullRequestMergedOnBranchRegex)) {
-            return getDeploymentMetricsForPullRequestMergedOnBranchRegex(organization, teamId, startDate, endDate, previousStartDate,
+            return getDeploymentMetricsForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, previousStartDate,
                     pullRequestMergedOnBranchRegex);
         } else if (nonNull(tagRegex)) {
-            return getDeploymentMetricsForDeployOnTagRegex(organization, teamId, startDate, endDate, previousStartDate,
+            return getDeploymentMetricsForDeployOnTagRegex(teamId, startDate, endDate, previousStartDate,
                     tagRegex);
         }
         LOGGER.warn("DeploymentMetrics not computed due to missing delivery settings for organization {} and teamId {} " +
@@ -58,8 +58,7 @@ public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter 
         return Optional.empty();
     }
 
-    private Optional<DeploymentMetrics> getDeploymentMetricsForPullRequestMergedOnBranchRegex(Organization organization,
-                                                                                              UUID teamId,
+    private Optional<DeploymentMetrics> getDeploymentMetricsForPullRequestMergedOnBranchRegex(UUID teamId,
                                                                                               Date startDate,
                                                                                               Date endDate,
                                                                                               Date previousStartDate,
@@ -88,8 +87,7 @@ public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter 
                 endDate);
     }
 
-    private Optional<DeploymentMetrics> getDeploymentMetricsForDeployOnTagRegex(Organization organization,
-                                                                                UUID teamId,
+    private Optional<DeploymentMetrics> getDeploymentMetricsForDeployOnTagRegex(UUID teamId,
                                                                                 Date startDate,
                                                                                 Date endDate,
                                                                                 Date previousStartDate,

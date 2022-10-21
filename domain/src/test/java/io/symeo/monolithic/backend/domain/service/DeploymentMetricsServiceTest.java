@@ -85,6 +85,7 @@ public class DeploymentMetricsServiceTest {
         final Date endDate = stringToDate("2022-02-01");
         final Long numberOfDaysBetweenStartDateAndEndDate = getNumberOfDaysBetweenStartDateAndEndDate(startDate, endDate);
         final Date previousStartDate = DateHelper.getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone());
+        final String fakeDeployLink = faker.gameOfThrones().character();
 
         final List<PullRequestView> currentPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
                 PullRequestView.builder().id(faker.cat().name()).base("staging").mergeDate(stringToDate("2022-01-15")).build(),
@@ -102,6 +103,7 @@ public class DeploymentMetricsServiceTest {
                         .averageTimeBetweenDeploys(4.6f)
                         .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
+                        .lastDeployLink(fakeDeployLink + "-current")
                         .build();
         final Deployment deployment2 =
                 Deployment.builder()
@@ -110,6 +112,7 @@ public class DeploymentMetricsServiceTest {
                         .averageTimeBetweenDeploys(3.2f)
                         .lastDeployDuration(0.7f)
                         .lastDeployRepository("test-repo-2")
+                        .lastDeployLink(fakeDeployLink + "-previous")
                         .build();
 
         // When
@@ -152,6 +155,7 @@ public class DeploymentMetricsServiceTest {
                         .averageTimeBetweenDeploysTendencyPercentage(43.7f)
                         .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
+                        .lastDeployLink(fakeDeployLink + "-current")
                         .build()
         );
     }
@@ -172,6 +176,8 @@ public class DeploymentMetricsServiceTest {
         final Date endDate = stringToDate("2022-02-01");
         final Long numberOfDaysBetweenStartDateAndEndDate = getNumberOfDaysBetweenStartDateAndEndDate(startDate, endDate);
         final Date previousStartDate = DateHelper.getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone());
+
+        final String fakeDeployLink = faker.gameOfThrones().character();
 
         final String fakeCommitSha1 = faker.pokemon().name() + "-1";
         final String fakeCommitSha2 = faker.pokemon().name() + "-2";
@@ -202,6 +208,7 @@ public class DeploymentMetricsServiceTest {
                         .averageTimeBetweenDeploys(4.6f)
                         .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
+                        .lastDeployLink(fakeDeployLink + "-current")
                         .build();
         final Deployment deployment2 =
                 Deployment.builder()
@@ -210,6 +217,7 @@ public class DeploymentMetricsServiceTest {
                         .averageTimeBetweenDeploys(3.2f)
                         .lastDeployDuration(0.7f)
                         .lastDeployRepository("test-repo-2")
+                        .lastDeployLink(fakeDeployLink + "-previous")
                         .build();
 
         // When
@@ -237,12 +245,10 @@ public class DeploymentMetricsServiceTest {
                         .toList(), previousStartDate, startDate
         )).thenReturn(previousCommitMatchingTagRegexBetweenStartDateAndEndDate);
 
-        when(deploymentService.buildForTagRegexSettings(
-                currentCommitsMatchingTagRegexBetweenStartDateAndEndDate,
+        when(deploymentService.buildForTagRegexSettings(currentCommitsMatchingTagRegexBetweenStartDateAndEndDate,
                 numberOfDaysBetweenStartDateAndEndDate,
                 tagsMatchingDeployTagRegex)).thenReturn(Optional.of(deployment1));
-        when(deploymentService.buildForTagRegexSettings(
-                previousCommitMatchingTagRegexBetweenStartDateAndEndDate,
+        when(deploymentService.buildForTagRegexSettings(previousCommitMatchingTagRegexBetweenStartDateAndEndDate,
                 numberOfDaysBetweenStartDateAndEndDate,
                 tagsMatchingDeployTagRegex)).thenReturn(Optional.of(deployment2));
 
@@ -254,6 +260,10 @@ public class DeploymentMetricsServiceTest {
         assertThat(optionalDeploymentMetrics).isPresent();
         assertThat(optionalDeploymentMetrics.get()).isEqualTo(
                 DeploymentMetrics.builder()
+                        .currentStartDate(startDate)
+                        .currentEndDate(endDate)
+                        .previousStartDate(previousStartDate)
+                        .previousEndDate(startDate)
                         .deployCount(20)
                         .deployCountTendencyPercentage(33.3f)
                         .deploysPerDay(0.1f)
@@ -262,10 +272,7 @@ public class DeploymentMetricsServiceTest {
                         .averageTimeBetweenDeploysTendencyPercentage(43.7f)
                         .lastDeployDuration(1.4f)
                         .lastDeployRepository("test-repo-1")
-                        .currentStartDate(startDate)
-                        .currentEndDate(endDate)
-                        .previousStartDate(previousStartDate)
-                        .previousEndDate(startDate)
+                        .lastDeployLink(fakeDeployLink + "-current")
                         .build()
         );
     }

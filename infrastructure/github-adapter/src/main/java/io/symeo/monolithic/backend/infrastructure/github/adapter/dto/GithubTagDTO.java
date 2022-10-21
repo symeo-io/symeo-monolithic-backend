@@ -8,6 +8,7 @@ import lombok.Data;
 public class GithubTagDTO {
     String ref;
     GithubTagDetailDTO object;
+    String vcsApiUrl;
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
