@@ -39,6 +39,6 @@ public class TagEntity {
     @ManyToOne()
     @JoinColumn(name = "repository_id", referencedColumnName = "id", insertable = false, updatable = false)
     RepositoryEntity repositoryEntity;
-    @Column(name = "vcs_api_url")
-    String vcsApiUrl;
+    @Column(name = "vcs_url")
+    String vcsUrl;
 }

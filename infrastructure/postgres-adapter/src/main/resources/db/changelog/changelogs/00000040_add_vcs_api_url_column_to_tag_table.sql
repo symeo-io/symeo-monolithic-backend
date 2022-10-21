@@ -1,1 +1,0 @@
-alter table exposition_storage.tag add vcs_api_url VARCHAR(255) NULL;

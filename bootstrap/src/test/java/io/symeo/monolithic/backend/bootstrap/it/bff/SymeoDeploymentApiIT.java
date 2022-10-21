@@ -351,31 +351,31 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .sha(deployCommitSha1)
                 .repositoryId(repositoryId)
                 .name("deploy")
-                .vcsApiUrl(fakeDeployLink)
+                .vcsUrl(fakeDeployLink)
                 .build();
         final TagEntity tagEntity2 = TagEntity.builder()
                 .sha(deployCommitSha2)
                 .repositoryId(repositoryId)
                 .name("deploy")
-                .vcsApiUrl(fakeDeployLink)
+                .vcsUrl(fakeDeployLink)
                 .build();
         final TagEntity tagEntity3 = TagEntity.builder()
                 .sha(deployCommitSha3)
                 .repositoryId(repositoryId)
                 .name("deploy")
-                .vcsApiUrl(fakeDeployLink)
+                .vcsUrl(fakeDeployLink)
                 .build();
         final TagEntity tagEntity4 = TagEntity.builder()
                 .sha(deployCommitSha4)
                 .repositoryId(repositoryId)
                 .name("deploy")
-                .vcsApiUrl(fakeDeployLink)
+                .vcsUrl(fakeDeployLink)
                 .build();
         final TagEntity tagEntity5 = TagEntity.builder()
                 .sha(deployCommitSha5)
                 .repositoryId(repositoryId)
                 .name("deploy")
-                .vcsApiUrl(fakeDeployLink)
+                .vcsUrl(fakeDeployLink)
                 .build();
         tagRepository.saveAll(List.of(tagEntity1, tagEntity2, tagEntity3, tagEntity4, tagEntity5));
 
