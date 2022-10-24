@@ -1348,7 +1348,7 @@ paths:
                       date: 2022-01-01
                       coding_time: 5.4
                       review_time: 2.2
-                      deploy_time: 2.5
+                      time_to_deploy: 2.5
                 errors:
                   [ ]
         "401":
@@ -1441,7 +1441,7 @@ paths:
                       cycle_time: 5.4
                       coding_time: 5.4
                       review_time: 2.2
-                      deploy_time: 2.5
+                      time_to_deploy: 2.5
                 errors:
                   [ ]
         "401":
@@ -2197,7 +2197,7 @@ components:
         review_time:
           type: number
           format: int64
-        deploy_time:
+        time_to_deploy:
           type: number
           format: int64
         label:

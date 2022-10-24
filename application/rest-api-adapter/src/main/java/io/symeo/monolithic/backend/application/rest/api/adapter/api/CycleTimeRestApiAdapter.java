@@ -8,6 +8,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.model.account.User;
 import io.symeo.monolithic.backend.domain.port.in.CycleTimeMetricsFacadeAdapter;
 import io.symeo.monolithic.backend.frontend.contract.api.CycleTimeApi;
+import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimeCurveResponseContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimePiecesResponseContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimeResponseContract;
 import lombok.AllArgsConstructor;
@@ -46,12 +47,25 @@ public class CycleTimeRestApiAdapter implements CycleTimeApi {
     @Override
     public ResponseEntity<CycleTimePiecesResponseContract> getCycleTimePieces(UUID teamId, Integer pageIndex,
                                                                               Integer pageSize, String startDate,
-                                                                              String endDate, String sortBy, String sortDir) {
+                                                                              String endDate, String sortBy,
+                                                                              String sortDir) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
             return ok(CycleTimeContractMapper.toPiecesContract(cycleTimeMetricsFacadeAdapter
                     .computeCycleTimePiecesForTeamIdFromStartDateToEndDate(authenticatedUser.getOrganization(),
-                            teamId, stringToDate(startDate), stringToDate(endDate), pageIndex, pageSize, sortBy, sortDir)));
+                            teamId, stringToDate(startDate), stringToDate(endDate), pageIndex, pageSize, sortBy,
+                            sortDir)));
+        } catch (SymeoException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Override
+    public ResponseEntity<CycleTimeCurveResponseContract> getCycleTimeCurve(UUID teamId, String startDate,
+                                                                            String endDate) {
+        try {
+            return ok(CycleTimeContractMapper.toCurveContract(stringToDate(startDate), stringToDate(endDate)));
         } catch (SymeoException e) {
             throw new RuntimeException(e);
         }

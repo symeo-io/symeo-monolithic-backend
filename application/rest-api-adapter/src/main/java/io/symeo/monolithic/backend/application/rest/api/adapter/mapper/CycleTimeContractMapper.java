@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,9 +111,41 @@ public interface CycleTimeContractMapper {
             cycleTimePieceContract.setVcsUrl(cycleTimePiece.getVcsUrl());
             cycleTimePieceContract.setTitle(cycleTimePiece.getTitle());
             cycleTimePieceContract.setCreationDate(ZonedDateTime.ofInstant(cycleTimePiece.getCreationDate().toInstant(), ZoneId.systemDefault()));
-            cycleTimePieceContract.setMergeDate(ZonedDateTime.ofInstant(cycleTimePiece.getMergeDate().toInstant(), ZoneId.systemDefault()));
+            cycleTimePieceContract.setMergeDate(ZonedDateTime.ofInstant(cycleTimePiece.getMergeDate().toInstant(),
+                    ZoneId.systemDefault()));
             list.add(cycleTimePieceContract);
         }
         return list;
+    }
+
+    Faker FAKER = new Faker();
+
+    static CycleTimeCurveResponseContract toCurveContract(Date startDate, Date endDate) {
+        final CycleTimeCurveResponseContract cycleTimeCurveResponseContract = new CycleTimeCurveResponseContract();
+        final CycleTimeCurveContract curves = new CycleTimeCurveContract();
+        final List<CurveDataResponseContract> averageCurve = new ArrayList<>();
+        final List<CycleTimePieceCurveDataResponseContract> pieceCurve = new ArrayList<>();
+        for (int i = 0; i < FAKER.number().numberBetween(10, 50); i++) {
+            final CurveDataResponseContract curveDataResponseContract = new CurveDataResponseContract();
+            curveDataResponseContract.setValue(BigDecimal.valueOf(FAKER.number().numberBetween(1, 200)));
+            final String date = dateToString(FAKER.date().between(startDate, endDate));
+            curveDataResponseContract.setDate(date);
+            averageCurve.add(curveDataResponseContract);
+
+            final CycleTimePieceCurveDataResponseContract piece =
+                    new CycleTimePieceCurveDataResponseContract();
+            piece.setDate(date);
+            piece.setCodingTime(BigDecimal.valueOf(FAKER.number().numberBetween(1, 100)));
+            piece.setReviewTime(BigDecimal.valueOf(FAKER.number().numberBetween(1, 100)));
+            piece.setTimeToDeploy(BigDecimal.valueOf(FAKER.number().numberBetween(1, 100)));
+            piece.setValue(BigDecimal.valueOf(FAKER.number().numberBetween(1, 100)));
+            piece.setLabel(FAKER.rickAndMorty().character());
+            piece.setLink("http://www.symeo.io");
+            pieceCurve.add(piece);
+        }
+        curves.setAverageCurve(averageCurve);
+        curves.setPieceCurve(pieceCurve);
+        cycleTimeCurveResponseContract.setCurves(curves);
+        return cycleTimeCurveResponseContract;
     }
 }
