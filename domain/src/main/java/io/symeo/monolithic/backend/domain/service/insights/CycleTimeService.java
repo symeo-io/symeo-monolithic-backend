@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.domain.service.insights;
 
 import io.symeo.monolithic.backend.domain.model.insight.AverageCycleTime;
+import io.symeo.monolithic.backend.domain.model.insight.CycleTimePiece;
 import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
 import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
@@ -38,6 +39,30 @@ public class CycleTimeService {
         }
         return of(computeCycleTimeForPullRequestMergedOnBranchRegexSettings(pullRequestViewsToComputeCycleTime,
                 pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate, allCommitsUntilEndDate));
+    }
+
+    public List<CycleTimePiece> buildCycleTimePiecesForPullRequestsMergedOnBranchRegexSettings(List<PullRequestView> pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted,
+                                                                                               List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
+                                                                                               List<Commit> allCommitsUntilEndDate) {
+        final List<PullRequestView> pullRequestViewsToComputeCycleTime =
+                filterPullRequestForCycleTimeComputation(pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted);
+        if (pullRequestViewsToComputeCycleTime.size() == 0) {
+            return List.of();
+        }
+        return CycleTimePiece.computeForPullRequestMergedOnBranchRegexSettings(pullRequestViewsToComputeCycleTime,
+                pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate, allCommitsUntilEndDate);
+    }
+
+    public List<CycleTimePiece> buildCycleTimePiecesForTagRegexSettings(List<PullRequestView> pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted,
+                                                                        List<Tag> tagsMatchingDeployTagRegex,
+                                                                        List<Commit> allCommitsUntilEndDate) {
+        final List<PullRequestView> pullRequestViewsToComputeCycleTime =
+                filterPullRequestForCycleTimeComputation(pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted);
+        if (pullRequestViewsToComputeCycleTime.size() == 0) {
+            return List.of();
+        }
+        return CycleTimePiece.computeForTagRegexSettings(pullRequestViewsToComputeCycleTime,
+                tagsMatchingDeployTagRegex,allCommitsUntilEndDate);
     }
 
     private static List<PullRequestView> filterPullRequestForCycleTimeComputation(List<PullRequestView> pullRequestWithCommitsViews) {

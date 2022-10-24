@@ -46,9 +46,12 @@ public class CycleTimeRestApiAdapter implements CycleTimeApi {
     @Override
     public ResponseEntity<CycleTimePiecesResponseContract> getCycleTimePieces(UUID teamId, Integer pageIndex,
                                                                               Integer pageSize, String startDate,
-                                                                              String endDate) {
+                                                                              String endDate, String sortBy, String sortDir) {
         try {
-            return ok(CycleTimeContractMapper.toPiecesContract(stringToDate(startDate), stringToDate(endDate)));
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            return ok(CycleTimeContractMapper.toPiecesContract(cycleTimeMetricsFacadeAdapter
+                    .computeCycleTimePiecesForTeamIdFromStartDateToEndDate(authenticatedUser.getOrganization(),
+                            teamId, stringToDate(startDate), stringToDate(endDate), pageIndex, pageSize, sortBy, sortDir)));
         } catch (SymeoException e) {
             throw new RuntimeException(e);
         }

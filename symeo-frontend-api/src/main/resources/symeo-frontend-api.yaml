@@ -1408,6 +1408,18 @@ paths:
           schema:
             type: string
             pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: sort_by
+          required: true
+          schema:
+            type: string
+            enum: ["status", "creation_date", "merge_date", "id", "vcs_url", "title", "author", "vcs_repository"]
+        - in: query
+          name: sort_dir
+          required: true
+          schema:
+            type: string
+            enum: ["asc", "desc"]
       responses:
         "200":
           description: 'Successfully retrieved cycle time pieces'
