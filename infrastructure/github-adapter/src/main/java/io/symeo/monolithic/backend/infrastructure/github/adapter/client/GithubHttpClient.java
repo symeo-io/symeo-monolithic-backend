@@ -16,9 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,7 +55,7 @@ public class GithubHttpClient {
         final String uri =
                 api
                         + "orgs/"
-                        + organizationName
+                        + encodeValue(organizationName)
                         + "/repos?sort=name&per_page="
                         + size.toString()
                         + "&page="
@@ -71,9 +73,9 @@ public class GithubHttpClient {
         final String uri =
                 api
                         + "repos/"
-                        + organizationName
-                        + "/" +
-                        repositoryName
+                        + encodeValue(organizationName)
+                        + "/"
+                        + encodeValue(repositoryName)
                         + "/pulls?sort=updated&direction=desc&state=all&per_page="
                         + size.toString()
                         + "&page="
@@ -90,9 +92,9 @@ public class GithubHttpClient {
         final String uri =
                 api
                         + "repos/"
-                        + organizationName
-                        + "/" +
-                        repositoryName
+                        + encodeValue(organizationName)
+                        + "/"
+                        + encodeValue(repositoryName)
                         + "/pulls/"
                         + number;
         return get(
@@ -110,9 +112,9 @@ public class GithubHttpClient {
         final String uri =
                 api
                         + "repos/"
-                        + organizationName
+                        + encodeValue(organizationName)
                         + "/"
-                        + repositoryName
+                        + encodeValue(repositoryName)
                         + "/pulls/"
                         + pullRequestNumber
                         + "/commits?page="
@@ -134,9 +136,9 @@ public class GithubHttpClient {
         final String uri =
                 api
                         + "repos/"
-                        + organizationName
+                        + encodeValue(organizationName)
                         + "/"
-                        + repositoryName
+                        + encodeValue(repositoryName)
                         + "/pulls/"
                         + pullRequestNumber
                         + "/comments?page="
@@ -157,9 +159,9 @@ public class GithubHttpClient {
         final String uri =
                 api
                         + "repos/"
-                        + vcsOrganizationName
-                        + "/" +
-                        repositoryName
+                        + encodeValue(vcsOrganizationName)
+                        + "/"
+                        + encodeValue(repositoryName)
                         + "/branches"
                         + "?per_page="
                         + size.toString()
@@ -179,9 +181,9 @@ public class GithubHttpClient {
         String uri =
                 api
                         + "repos/"
-                        + vcsOrganizationName
+                        + encodeValue(vcsOrganizationName)
                         + "/"
-                        + repositoryName
+                        + encodeValue(repositoryName)
                         + "/commits"
                         + String.format("?since=%s",
                         new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(lastCollectionDate))
@@ -189,7 +191,7 @@ public class GithubHttpClient {
                         + size.toString()
                         + "&page="
                         + page.toString()
-                        + String.format("&sha=%s", branchName);
+                        + String.format("&sha=%s", encodeValue(branchName));
         return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
     }
 
@@ -201,13 +203,13 @@ public class GithubHttpClient {
         String uri =
                 api
                         + "repos/"
-                        + vcsOrganizationName
+                        + encodeValue(vcsOrganizationName)
                         + "/"
-                        + repositoryName
+                        + encodeValue(repositoryName)
                         + "/commits"
                         + String.format("?page=%s", page.toString())
                         + String.format("&per_page=%s", size.toString())
-                        + String.format("&sha=%s", branchName);
+                        + String.format("&sha=%s", encodeValue(branchName));
         return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
     }
 
@@ -215,9 +217,9 @@ public class GithubHttpClient {
         String uri =
                 api
                         + "repos/"
-                        + vcsOrganizationName
+                        + encodeValue(vcsOrganizationName)
                         + "/"
-                        + repositoryName
+                        + encodeValue(repositoryName)
                         + "/git/matching-refs/tags";
         return get(uri, vcsOrganizationName, GithubTagDTO[].class);
     }
@@ -348,4 +350,9 @@ public class GithubHttpClient {
                 .message(message)
                 .build();
     }
+
+    private static String encodeValue(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
+    }
+
 }
