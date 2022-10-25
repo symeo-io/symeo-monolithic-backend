@@ -66,13 +66,13 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
 
     @Override
     public CycleTimePiecePage computeCycleTimePiecesForTeamIdFromStartDateToEndDate(final Organization organization,
-                                                                                      final UUID teamId,
-                                                                                      final Date startDate,
-                                                                                      final Date endDate,
-                                                                                      final Integer pageIndex,
-                                                                                      final Integer pageSize,
-                                                                                      final String sortBy,
-                                                                                      final String sortDir) throws SymeoException {
+                                                                                    final UUID teamId,
+                                                                                    final Date startDate,
+                                                                                    final Date endDate,
+                                                                                    final Integer pageIndex,
+                                                                                    final Integer pageSize,
+                                                                                    final String sortBy,
+                                                                                    final String sortDir) throws SymeoException {
         final OrganizationSettings organizationSettings =
                 organizationSettingsFacade.getOrganizationSettingsForOrganization(organization);
         final List<String> excludeBranchRegexes =
@@ -188,20 +188,20 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
     }
 
     private CycleTimePiecePage getCycleTimePiecesForPullRequestMergedOnBranchRegex(final UUID teamId,
-                                                                                     final Date startDate,
-                                                                                     final Date endDate,
-                                                                                     final Integer pageIndex,
-                                                                                     final Integer pageSize,
-                                                                                     final String sortBy,
-                                                                                     final String sortDir,
-                                                                                     final String pullRequestMergedOnBranchRegex,
-                                                                                     final List<String> excludeBranchRegexes) throws SymeoException {
+                                                                                   final Date startDate,
+                                                                                   final Date endDate,
+                                                                                   final Integer pageIndex,
+                                                                                   final Integer pageSize,
+                                                                                   final String sortBy,
+                                                                                   final String sortDir,
+                                                                                   final String pullRequestMergedOnBranchRegex,
+                                                                                   final List<String> excludeBranchRegexes) throws SymeoException {
         validatePagination(pageIndex, pageSize);
         validateSortingInputs(sortDir, sortBy, PullRequestView.AVAILABLE_SORTING_PARAMETERS);
         final int totalNumberOfRequestViewsForTeamIdAndStartDateAndEndDate =
                 expositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId, startDate, endDate);
         final List<PullRequestView> pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted =
-                expositionStorageAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
+                expositionStorageAdapter.findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(
                                 teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir)
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes)).toList();
@@ -227,20 +227,20 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
     }
 
     private CycleTimePiecePage getCycleTimePiecesForDeployOnTagRegex(final UUID teamId,
-                                                                       final Date startDate,
-                                                                       final Date endDate,
-                                                                       final Integer pageIndex,
-                                                                       final Integer pageSize,
-                                                                       final String sortBy,
-                                                                       final String sortDir,
-                                                                       final String deployOnTagRegex,
-                                                                       final List<String> excludeBranchRegexes) throws SymeoException {
+                                                                     final Date startDate,
+                                                                     final Date endDate,
+                                                                     final Integer pageIndex,
+                                                                     final Integer pageSize,
+                                                                     final String sortBy,
+                                                                     final String sortDir,
+                                                                     final String deployOnTagRegex,
+                                                                     final List<String> excludeBranchRegexes) throws SymeoException {
         validatePagination(pageIndex, pageSize);
         validateSortingInputs(sortDir, sortBy, PullRequestView.AVAILABLE_SORTING_PARAMETERS);
         final int totalNumberOfRequestViewsForTeamIdAndStartDateAndEndDate =
                 expositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId, startDate, endDate);
         final List<PullRequestView> pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted =
-                expositionStorageAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
+                expositionStorageAdapter.findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(
                                 teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir)
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes)).toList();

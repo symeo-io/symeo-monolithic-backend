@@ -132,6 +132,31 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
+    public List<PullRequestView> findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(UUID teamId,
+                                                                                              Date startDate,
+                                                                                              Date endDate,
+                                                                                              int pageIndex,
+                                                                                              int pageSize,
+                                                                                              String sortingParameter,
+                                                                                              String sortingDirection) throws SymeoException {
+        try {
+            final Pagination pagination = buildPagination(pageIndex, pageSize);
+            return customPullRequestViewRepository.findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(
+                    teamId, startDate, endDate, pagination.getStart(), pagination.getEnd(),
+                    sortingParameterToDatabaseAttribute(sortingParameter),
+                    directionToPostgresSortingValue(sortingDirection));
+        } catch (Exception e) {
+            final String message = String.format("Failed to find all PR details for teamId %s", teamId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
     public int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(final UUID teamId,
                                                                                  final Date startDate,
                                                                                  final Date endDate) throws SymeoException {

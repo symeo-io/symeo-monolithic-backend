@@ -39,6 +39,15 @@ public interface ExpositionStorageAdapter {
                                                                                                  String sortingDirection)
             throws SymeoException;
 
+    List<PullRequestView> findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(UUID teamId,
+                                                                                       Date startDate,
+                                                                                       Date endDate,
+                                                                                       int pageIndex,
+                                                                                       int pageSize,
+                                                                                       String sortingParameter,
+                                                                                       String sortingDirection)
+            throws SymeoException;
+
     int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 
