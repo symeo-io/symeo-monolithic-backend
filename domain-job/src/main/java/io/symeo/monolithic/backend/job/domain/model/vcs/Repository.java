@@ -1,9 +1,6 @@
 package io.symeo.monolithic.backend.job.domain.model.vcs;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -13,10 +10,15 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Repository {
     public static final String ALL = "repositories";
+    @NonNull
     String id;
+    @NonNull
     String name;
+    @NonNull
     UUID organizationId;
+    @NonNull
     String vcsOrganizationId;
+    @NonNull
     String vcsOrganizationName;
     String defaultBranch;
 }

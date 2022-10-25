@@ -5,6 +5,7 @@ import io.symeo.monolithic.backend.job.domain.port.in.JobAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.JobExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -20,7 +21,8 @@ public class JobService implements JobAdapter {
     }
 
     @Override
-    public void startToCollectVcsDataForOrganizationIdAndVcsOrganizationId(UUID organizationId) throws SymeoException {
+    public void startToCollectVcsDataForOrganizationIdAndRepositoryIds(UUID organizationId,
+                                                                       List<String> repositoryIds) throws SymeoException {
 
     }
 

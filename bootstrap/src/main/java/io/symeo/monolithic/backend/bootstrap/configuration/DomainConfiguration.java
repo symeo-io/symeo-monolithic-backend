@@ -139,7 +139,8 @@ public class DomainConfiguration {
             }
 
             @Override
-            public void startToCollectVcsDataForOrganizationIdAndVcsOrganizationId(UUID organizationId) throws SymeoException {
+            public void startToCollectVcsDataForOrganizationIdAndRepositoryIds(UUID organizationId,
+                                                                               List<String> repositoryIds) throws SymeoException {
 
             }
 

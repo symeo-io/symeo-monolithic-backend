@@ -1,12 +1,12 @@
 package io.symeo.monolithic.backend.job.domain.port.out;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.job.domain.model.vcs.github.GithubBranchDTO;
-import io.symeo.monolithic.backend.job.domain.model.vcs.github.GithubTagDTO;
-import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubCommentsDTO;
-import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubCommitsDTO;
-import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubPullRequestDTO;
-import io.symeo.monolithic.backend.job.domain.model.vcs.github.repo.GithubRepositoryDTO;
+import io.symeo.monolithic.backend.job.domain.github.dto.GithubBranchDTO;
+import io.symeo.monolithic.backend.job.domain.github.dto.GithubTagDTO;
+import io.symeo.monolithic.backend.job.domain.github.dto.pr.GithubCommentsDTO;
+import io.symeo.monolithic.backend.job.domain.github.dto.pr.GithubCommitsDTO;
+import io.symeo.monolithic.backend.job.domain.github.dto.pr.GithubPullRequestDTO;
+import io.symeo.monolithic.backend.job.domain.github.dto.repo.GithubRepositoryDTO;
 
 import java.util.Date;
 

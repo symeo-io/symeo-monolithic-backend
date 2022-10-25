@@ -151,4 +151,22 @@ public class DateHelperTest {
         // Then
         assertThat(numberOfDaysBetweenPreviousAndFutureDate).isEqualTo(4);
     }
+
+
+    @Test
+    void should_get_date_ranges_from_start_date_and_date_range_size_and_number_of_day() throws SymeoException {
+        // Given
+        final Date startDate = stringToDate("2022-03-15");
+        final int dateRangeNumberOfDay = 9;
+        final int rangeNumberOfDay = 3;
+
+        // When
+        final List<List<Date>> dates =
+                getDateRangesFromStartDateAndDateRangeNumberOfDayAndRangeNumberOfDays(
+                        startDate, dateRangeNumberOfDay, rangeNumberOfDay, TimeZone.getDefault()
+                );
+
+        // Then
+        assertThat(dates).hasSize(dateRangeNumberOfDay / rangeNumberOfDay);
+    }
 }

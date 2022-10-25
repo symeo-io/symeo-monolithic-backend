@@ -89,4 +89,24 @@ public class DateHelper {
     public static Long getNumberOfDaysBetweenStartDateAndEndDate(Date date1, Date date2) {
         return ChronoUnit.DAYS.between(date1.toInstant(), date2.toInstant());
     }
+
+    public static List<List<Date>> getDateRangesFromStartDateAndDateRangeNumberOfDayAndRangeNumberOfDays(Date startDate,
+                                                                                                         final int dateRangeNumberOfDay,
+                                                                                                         final int rangeNumberOfDay,
+                                                                                                         final TimeZone timeZone) {
+        int numberOfDays = 0;
+        final List<List<Date>> dates = new ArrayList<>();
+        while (numberOfDays < dateRangeNumberOfDay) {
+            final Date endDate =
+                    Date.from((
+                            startDate.toInstant().atZone(timeZone.toZoneId())
+                                    .toLocalDate().minusDays(rangeNumberOfDay))
+                            .atStartOfDay(timeZone.toZoneId())
+                            .toInstant());
+            dates.add(List.of(startDate, endDate));
+            startDate = endDate;
+            numberOfDays += rangeNumberOfDay;
+        }
+        return dates;
+    }
 }
