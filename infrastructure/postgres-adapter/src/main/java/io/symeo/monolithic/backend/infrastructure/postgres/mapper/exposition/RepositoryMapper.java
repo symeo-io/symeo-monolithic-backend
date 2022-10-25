@@ -2,7 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
-import io.symeo.monolithic.backend.job.domain.model.Repository;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 
 public interface RepositoryMapper {
 

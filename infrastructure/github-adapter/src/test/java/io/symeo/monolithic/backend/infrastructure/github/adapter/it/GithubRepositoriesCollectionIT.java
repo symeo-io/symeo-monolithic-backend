@@ -2,9 +2,9 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.it;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationAccessTokenDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.installation.GithubInstallationDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.installation.GithubInstallationAccessTokenDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.installation.GithubInstallationDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.repo.GithubRepositoryDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

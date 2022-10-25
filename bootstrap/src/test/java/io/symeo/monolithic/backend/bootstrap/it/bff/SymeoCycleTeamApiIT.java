@@ -15,7 +15,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.TagRepository;
-import io.symeo.monolithic.backend.job.domain.model.PullRequest;
+import io.symeo.monolithic.backend.job.domain.model.vcs.PullRequest;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,7 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
-import io.symeo.monolithic.backend.job.domain.model.Commit;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Commit;
 
 import java.sql.Date;
 import java.time.ZoneId;

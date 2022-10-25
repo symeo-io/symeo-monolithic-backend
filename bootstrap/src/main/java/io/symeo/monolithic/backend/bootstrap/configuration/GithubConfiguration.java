@@ -2,7 +2,7 @@ package io.symeo.monolithic.backend.bootstrap.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubHttpApiClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.jwt.DefaultGithubJwtTokenProvider;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.jwt.GithubJwtTokenProvider;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
@@ -37,18 +37,18 @@ public class GithubConfiguration {
     }
 
     @Bean
-    public GithubHttpClient githubHttpClient(final HttpClient httpClient,
-                                             final ObjectMapper objectMapper,
-                                             final GithubJwtTokenProvider githubJwtTokenProvider,
-                                             final GithubProperties githubProperties) {
-        return new GithubHttpClient(objectMapper, httpClient, githubJwtTokenProvider, githubProperties.getApi());
+    public GithubHttpApiClient githubHttpClient(final HttpClient httpClient,
+                                                final ObjectMapper objectMapper,
+                                                final GithubJwtTokenProvider githubJwtTokenProvider,
+                                                final GithubProperties githubProperties) {
+        return new GithubHttpApiClient(objectMapper, httpClient, githubJwtTokenProvider, githubProperties.getApi());
     }
 
     @Bean
     public GithubAdapter githubAdapter(
-            final GithubHttpClient githubHttpClient, final GithubProperties githubProperties,
+            final GithubHttpApiClient githubHttpApiClient, final GithubProperties githubProperties,
             final ObjectMapper objectMapper) {
-        return new GithubAdapter(githubHttpClient, githubProperties, objectMapper);
+        return new GithubAdapter(githubHttpApiClient, githubProperties, objectMapper);
     }
 
     @Bean

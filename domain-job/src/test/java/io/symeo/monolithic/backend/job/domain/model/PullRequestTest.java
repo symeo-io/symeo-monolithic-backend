@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.job.domain.model;
 
+import io.symeo.monolithic.backend.job.domain.model.vcs.PullRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;

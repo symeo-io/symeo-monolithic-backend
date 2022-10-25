@@ -12,7 +12,7 @@ import io.symeo.monolithic.backend.domain.bff.service.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.bff.service.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.bff.storage.TeamStandardInMemoryStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
+import io.symeo.monolithic.backend.job.domain.port.in.JobAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -130,20 +130,16 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public DataProcessingJobAdapter dataProcessingJobAdapter() {
-        return new DataProcessingJobAdapter() {
+    public JobAdapter dataProcessingJobAdapter() {
+        return new JobAdapter() {
             @Override
-            public void startToCollectRepositoriesForOrganizationId(UUID organizationId) throws SymeoException {
+            public void startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(UUID organizationId,
+                                                                                        String vcsOrganizationId) throws SymeoException {
 
             }
 
             @Override
-            public void startToCollectVcsDataForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
-
-            }
-
-            @Override
-            public void startToCollectVcsDataForOrganizationId(UUID organizationId) throws SymeoException {
+            public void startToCollectVcsDataForOrganizationIdAndVcsOrganizationId(UUID organizationId) throws SymeoException {
 
             }
 

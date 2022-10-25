@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubTagDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubHttpApiClient;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.GithubTagDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
-import io.symeo.monolithic.backend.job.domain.model.Repository;
-import io.symeo.monolithic.backend.job.domain.model.Tag;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class GithubAdapterTagTest extends AbstractGithubAdapterTest {
     @Test
     void should_collect_tag_given_an_organizationName_and_repository() throws IOException, SymeoException {
         // Given
-        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
+        final GithubHttpApiClient githubHttpApiClient = mock(GithubHttpApiClient.class);
         final String urlHost = faker.gameOfThrones().character();
         final GithubProperties properties = new GithubProperties();
         properties.setSize(3);
@@ -34,12 +34,12 @@ public class GithubAdapterTagTest extends AbstractGithubAdapterTest {
                 .vcsOrganizationName(faker.rickAndMorty().character())
                 .name(faker.ancient().god())
                 .build();
-        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient, properties, new ObjectMapper());
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpApiClient, properties, new ObjectMapper());
         final GithubTagDTO[] githubTagStub = getStubsFromClassT("get_tags_for_organization_and_repository",
                 "get_repo_1_organization_1_tags.json", GithubTagDTO[].class);
 
         // When
-        when(githubHttpClient.getTagsForOrganizationAndRepository(repository.getVcsOrganizationName(),
+        when(githubHttpApiClient.getTagsForOrganizationAndRepository(repository.getVcsOrganizationName(),
                 repository.getName()))
                 .thenReturn(githubTagStub);
         final GithubTagDTO[] resultGithubTagDTOS = githubAdapter.bytesToDto(

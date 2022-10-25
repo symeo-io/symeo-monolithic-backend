@@ -3,13 +3,13 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.unit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubHttpApiClient;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubCommentsDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
-import io.symeo.monolithic.backend.job.domain.model.Comment;
-import io.symeo.monolithic.backend.job.domain.model.Repository;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Comment;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class GithubAdapterCommentsTest extends AbstractGithubAdapterTest {
     @Test
     void should_collect_comments_given_a_pull_request_number() throws SymeoException, IOException {
         // Given
-        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
+        final GithubHttpApiClient githubHttpApiClient = mock(GithubHttpApiClient.class);
         final GithubProperties properties = new GithubProperties();
         properties.setSize(3);
         final GithubPullRequestDTO githubPullRequestDTO = new GithubPullRequestDTO();
@@ -58,7 +58,7 @@ public class GithubAdapterCommentsTest extends AbstractGithubAdapterTest {
                 .vcsOrganizationName(faker.rickAndMorty().character())
                 .name(faker.ancient().god())
                 .build();
-        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient, properties, new ObjectMapper());
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpApiClient, properties, new ObjectMapper());
         final GithubPullRequestDTO[] githubPullRequestStubs1 = getStubsFromClassT("get_pull_requests_for_repo",
                 "get_pr_for_repo_page_1_size_1.json", GithubPullRequestDTO[].class);
         final GithubPullRequestDTO githubPullRequestDetails = getStubsFromClassT("get_pull_request_details_for_pr_id",
@@ -71,12 +71,12 @@ public class GithubAdapterCommentsTest extends AbstractGithubAdapterTest {
                 GithubCommentsDTO[].class);
 
         // When
-        when(githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(), repository.getName(), 1, properties.getSize()))
+        when(githubHttpApiClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(), repository.getName(), 1, properties.getSize()))
                 .thenReturn(githubPullRequestStubs1);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+        when(githubHttpApiClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 80))
                 .thenReturn(githubPullRequestDetails);
-        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
+        when(githubHttpApiClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 80, 1, properties.getSize()))
                 .thenReturn(githubCommentsStubs1);
 
@@ -87,7 +87,7 @@ public class GithubAdapterCommentsTest extends AbstractGithubAdapterTest {
         final GithubCommentsDTO[] exactSizeGithubCommentsDTOSResult =
                 exactSizeGithubPullRequestDTOSResult[0].getGithubCommentsDTOS();
 
-        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
+        when(githubHttpApiClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 80, 2, properties.getSize()))
                 .thenReturn(githubCommentsStubs2);
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
@@ -95,7 +95,7 @@ public class GithubAdapterCommentsTest extends AbstractGithubAdapterTest {
                 githubAdapter.bytesToDto(rawPullRequestsForRepository, GithubPullRequestDTO[].class);
         final GithubCommentsDTO[] githubCommentsDTOSResult = githubPullRequestDTOSResult[0].getGithubCommentsDTOS();
 
-        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
+        when(githubHttpApiClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
                 repository.getName(), 80, 1, properties.getSize()))
                 .thenReturn(null);
         final byte[] nullRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);

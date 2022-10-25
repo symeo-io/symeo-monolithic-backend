@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import io.symeo.monolithic.backend.data.processing.contract.api.DataProcessingJobApi;
 import io.symeo.monolithic.backend.data.processing.contract.api.model.DataProcessingSymeoErrorsContract;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
+import io.symeo.monolithic.backend.job.domain.port.in.JobAdapter;
 import io.symeo.monolithic.backend.job.rest.api.adapter.mapper.SymeoErrorContractMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
 
-    private final DataProcessingJobAdapter dataProcessingJobAdapter;
+    private final JobAdapter jobAdapter;
     private final String jobApiKey;
     private final String jobApiHeaderKey;
 
@@ -32,7 +32,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
                 LOGGER.error("Unauthorized header key {} = {}", jobApiHeaderKey, X_SYMEO_JOB_KEY_X);
                 return ResponseEntity.status(403).build();
             }
-            dataProcessingJobAdapter.startToCollectVcsDataForOrganizationIdAndTeamId(organizationId, teamId);
+            jobAdapter.startToCollectVcsDataForOrganizationIdAndTeamId(organizationId, teamId);
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {
             LOGGER.error("Error while starting vcs data collection job for organizationId {} and teamId {}",
@@ -48,7 +48,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
                 LOGGER.error("Unauthorized header key {} = {}", jobApiHeaderKey, X_SYMEO_JOB_KEY_X);
                 return ResponseEntity.status(403).build();
             }
-            dataProcessingJobAdapter.startToCollectVcsDataForOrganizationId(organizationId);
+            jobAdapter.startToCollectVcsDataForOrganizationId(organizationId);
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {
             LOGGER.error("Error while starting vcs data collection job for organizationId {}", organizationId, e);
@@ -63,7 +63,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
                 LOGGER.error("Unauthorized header key {} = {}", jobApiHeaderKey, X_SYMEO_JOB_KEY_X);
                 return ResponseEntity.status(403).build();
             }
-            dataProcessingJobAdapter.startAll();
+            jobAdapter.startAll();
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {
             LOGGER.error("Error while starting all data collection jobs", e);

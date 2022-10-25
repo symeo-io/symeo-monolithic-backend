@@ -16,7 +16,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.Rep
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
-import io.symeo.monolithic.backend.job.domain.model.*;
+import io.symeo.monolithic.backend.job.domain.model.vcs.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

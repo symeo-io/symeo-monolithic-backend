@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 public class SymeoMonolithicBackendConfiguration {
 
     @Around(
-            "(execution(* io.symeo.monolithic.backend.infrastructure.github.adapter.client" +
-                    ".GithubHttpClient.*(..)) || execution(* io.symeo.monolithic.backend.application.rest.api.adapter" +
+            "(execution(* io.symeo.monolithic.backend.infrastructure.github.adapter" +
+                    ".GithubHttpApiClient.*(..)) || execution(* io.symeo.monolithic.backend.application.rest.api.adapter" +
                     ".api.*.*(..)))"
     )
     public Object around(ProceedingJoinPoint point) throws Throwable {

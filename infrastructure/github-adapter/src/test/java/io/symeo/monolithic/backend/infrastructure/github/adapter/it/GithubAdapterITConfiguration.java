@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.it;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubHttpApiClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.jwt.GithubJwtTokenProvider;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
 import lombok.Data;
@@ -16,10 +16,10 @@ public class GithubAdapterITConfiguration {
 
 
     @Bean
-    public GithubAdapter githubAdapter(final GithubHttpClient githubHttpClient,
+    public GithubAdapter githubAdapter(final GithubHttpApiClient githubHttpApiClient,
                                        final GithubProperties githubProperties,
                                        final ObjectMapper objectMapper) {
-        return new GithubAdapter(githubHttpClient, githubProperties, objectMapper);
+        return new GithubAdapter(githubHttpApiClient, githubProperties, objectMapper);
     }
 
     @Bean
@@ -29,9 +29,9 @@ public class GithubAdapterITConfiguration {
     }
 
     @Bean
-    public GithubHttpClient githubHttpClient(final GithubProperties githubProperties, final ObjectMapper objectMapper
+    public GithubHttpApiClient githubHttpClient(final GithubProperties githubProperties, final ObjectMapper objectMapper
             , final HttpClient httpClient, final GithubJwtTokenProvider githubJwtTokenProvider) {
-        return new GithubHttpClient(objectMapper, httpClient, githubJwtTokenProvider, githubProperties.getApi());
+        return new GithubHttpApiClient(objectMapper, httpClient, githubJwtTokenProvider, githubProperties.getApi());
     }
 
     @Bean

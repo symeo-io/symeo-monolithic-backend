@@ -2,11 +2,11 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.unit;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
+import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubHttpApiClient;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.repo.GithubRepositoryDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
-import io.symeo.monolithic.backend.job.domain.model.Repository;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -27,8 +27,8 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
         githubProperties.setSize(3);
         githubProperties.setGithubAppId(faker.name().name());
         githubProperties.setPrivateKeyCertificatePath(faker.animal().name());
-        final GithubHttpClient githubHttpClient = Mockito.mock(GithubHttpClient.class);
-        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpClient,
+        final GithubHttpApiClient githubHttpApiClient = Mockito.mock(GithubHttpApiClient.class);
+        final GithubAdapter githubAdapter = new GithubAdapter(githubHttpApiClient,
                 githubProperties, objectMapper);
 
         final GithubRepositoryDTO[] githubRepositoryStubs1 = getStubsFromClassT("get_repositories_for_org",
@@ -40,9 +40,9 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
         final GithubRepositoryDTO[] githubRepositoryStubs3 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_3_size_3" +
                         ".json", GithubRepositoryDTO[].class);
-        when(githubHttpClient.getRepositoriesForOrganizationName(organizationName, 1, 3)).thenReturn(githubRepositoryStubs1);
-        when(githubHttpClient.getRepositoriesForOrganizationName(organizationName, 2, 3)).thenReturn(githubRepositoryStubs2);
-        when(githubHttpClient.getRepositoriesForOrganizationName(organizationName, 3, 3)).thenReturn(githubRepositoryStubs3);
+        when(githubHttpApiClient.getRepositoriesForOrganizationName(organizationName, 1, 3)).thenReturn(githubRepositoryStubs1);
+        when(githubHttpApiClient.getRepositoriesForOrganizationName(organizationName, 2, 3)).thenReturn(githubRepositoryStubs2);
+        when(githubHttpApiClient.getRepositoriesForOrganizationName(organizationName, 3, 3)).thenReturn(githubRepositoryStubs3);
 
 
         // When
@@ -62,7 +62,7 @@ public class GithubAdapterRepositoriesTest extends AbstractGithubAdapterTest {
         githubProperties.setSize(3);
         githubProperties.setGithubAppId(faker.name().name());
         githubProperties.setPrivateKeyCertificatePath(faker.animal().name());
-        final GithubAdapter githubAdapter = new GithubAdapter(Mockito.mock(GithubHttpClient.class),
+        final GithubAdapter githubAdapter = new GithubAdapter(Mockito.mock(GithubHttpApiClient.class),
                 githubProperties, objectMapper);
         final GithubRepositoryDTO[] githubRepositoryStubs1 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_1_size_3" +

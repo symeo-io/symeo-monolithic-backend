@@ -1,12 +1,12 @@
 package io.symeo.monolithic.backend.infrastructure.github.adapter.mapper;
 
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubTagDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
-import io.symeo.monolithic.backend.job.domain.model.*;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.GithubBranchDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.GithubTagDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubCommentsDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubCommitsDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubPullRequestDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.repo.GithubRepositoryDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.*;
 
 import java.util.Arrays;
 import java.util.List;

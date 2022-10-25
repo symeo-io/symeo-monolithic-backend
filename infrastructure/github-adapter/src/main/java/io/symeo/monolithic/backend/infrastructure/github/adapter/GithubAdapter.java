@@ -4,16 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubTagDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.GithubBranchDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.GithubTagDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubCommentsDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubCommitsDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.pr.GithubPullRequestDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.github.repo.GithubRepositoryDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
-import io.symeo.monolithic.backend.job.domain.model.*;
+import io.symeo.monolithic.backend.job.domain.model.vcs.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,14 +28,14 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class GithubAdapter {
 
-    private GithubHttpClient githubHttpClient;
+    private GithubHttpApiClient githubHttpApiClient;
     private GithubProperties properties;
     private ObjectMapper objectMapper;
 
     public byte[] getRawRepositories(final String vcsOrganizationName) throws SymeoException {
         int page = 1;
         GithubRepositoryDTO[] githubRepositoryDTOS =
-                this.githubHttpClient.getRepositoriesForOrganizationName(
+                this.githubHttpApiClient.getRepositoriesForOrganizationName(
                         vcsOrganizationName, page, properties.getSize());
         if (isNull(githubRepositoryDTOS) || githubRepositoryDTOS.length == 0) {
             return new byte[0];
@@ -46,7 +45,7 @@ public class GithubAdapter {
         while (githubRepositoryDTOS.length == properties.getSize()) {
             page += 1;
             githubRepositoryDTOS =
-                    this.githubHttpClient.getRepositoriesForOrganizationName(
+                    this.githubHttpApiClient.getRepositoriesForOrganizationName(
                             vcsOrganizationName, page, properties.getSize());
             githubRepositoryDTOList.addAll(Arrays.stream(githubRepositoryDTOS).toList());
         }
@@ -73,7 +72,7 @@ public class GithubAdapter {
                                                   final byte[] alreadyRawCollectedPullRequests) throws SymeoException {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
-                this.githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
+                this.githubHttpApiClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
                         repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
         if (isNull(githubPullRequestDTOS) || githubPullRequestDTOS.length == 0) {
             return new byte[0];
@@ -83,7 +82,7 @@ public class GithubAdapter {
         while (nonNull(githubPullRequestDTOS) && githubPullRequestDTOS.length == properties.getSize()) {
             page += 1;
             githubPullRequestDTOS =
-                    this.githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
+                    this.githubHttpApiClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
                             repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
             if (nonNull(githubPullRequestDTOS)) {
                 githubPullRequestDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
@@ -160,7 +159,7 @@ public class GithubAdapter {
     private GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(Repository repository,
                                                                            GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
         final GithubPullRequestDTO pullRequestDetailsForPullRequestNumber =
-                githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                githubHttpApiClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
                         repository.getName(), currentGithubPullRequestDTO.getNumber());
         pullRequestDetailsForPullRequestNumber.setGithubCommentsDTOS(getCommentsForPullRequestNumber(repository,
                 currentGithubPullRequestDTO));
@@ -173,7 +172,7 @@ public class GithubAdapter {
                                                                 GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
         int page = 1;
         GithubCommentsDTO[] githubCommentsDTOS =
-                githubHttpClient.getCommentsForPullRequestNumber(
+                githubHttpApiClient.getCommentsForPullRequestNumber(
                         repository.getVcsOrganizationName(), repository.getName(),
                         currentGithubPullRequestDTO.getNumber(), page, properties.getSize());
         if (isNull(githubCommentsDTOS) || githubCommentsDTOS.length == 0) {
@@ -183,7 +182,7 @@ public class GithubAdapter {
                 new ArrayList<>(List.of(githubCommentsDTOS));
         while (nonNull(githubCommentsDTOS) && githubCommentsDTOS.length == properties.getSize()) {
             page += 1;
-            githubCommentsDTOS = githubHttpClient.getCommentsForPullRequestNumber(
+            githubCommentsDTOS = githubHttpApiClient.getCommentsForPullRequestNumber(
                     repository.getVcsOrganizationName(), repository.getName(),
                     currentGithubPullRequestDTO.getNumber(), page, properties.getSize()
             );
@@ -198,7 +197,7 @@ public class GithubAdapter {
                                                               GithubPullRequestDTO currentGithubPullRequestDTO) throws SymeoException {
         int page = 1;
         GithubCommitsDTO[] githubCommitsDTOS =
-                githubHttpClient.getCommitsForPullRequestNumber(
+                githubHttpApiClient.getCommitsForPullRequestNumber(
                         repository.getVcsOrganizationName(), repository.getName(),
                         currentGithubPullRequestDTO.getNumber(), page, properties.getSize());
         if (isNull(githubCommitsDTOS) || githubCommitsDTOS.length == 0) {
@@ -208,7 +207,7 @@ public class GithubAdapter {
                 new ArrayList<>(List.of(githubCommitsDTOS));
         while (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length == properties.getSize()) {
             page += 1;
-            githubCommitsDTOS = githubHttpClient.getCommitsForPullRequestNumber(
+            githubCommitsDTOS = githubHttpApiClient.getCommitsForPullRequestNumber(
                     repository.getVcsOrganizationName(), repository.getName(),
                     currentGithubPullRequestDTO.getNumber(), page, properties.getSize()
             );
@@ -279,7 +278,7 @@ public class GithubAdapter {
 
         int page = 1;
         GithubBranchDTO[] githubBranchDTOS =
-                this.githubHttpClient.getBranchesForOrganizationAndRepository(
+                this.githubHttpApiClient.getBranchesForOrganizationAndRepository(
                         vcsOrganizationName, repositoryName, page, properties.getSize());
         if (isNull(githubBranchDTOS) || githubBranchDTOS.length == 0) {
             return new byte[0];
@@ -289,7 +288,7 @@ public class GithubAdapter {
         while (githubBranchDTOS.length == properties.getSize()) {
             page += 1;
             githubBranchDTOS =
-                    this.githubHttpClient.getBranchesForOrganizationAndRepository(
+                    this.githubHttpApiClient.getBranchesForOrganizationAndRepository(
                             vcsOrganizationName, repositoryName, page, properties.getSize());
             githubBranchDTOList.addAll(Arrays.stream(githubBranchDTOS).toList());
         }
@@ -315,7 +314,7 @@ public class GithubAdapter {
                 alreadyCollectedRawGithubCommitsDTOS);
         int page = 1;
         GithubCommitsDTO[] githubCommitsDTOS = getGithubCommitsDTOSFromLastCollectionDate(lastCollectionDate,
-                githubHttpClient, vcsOrganizationName, repositoryName, branchName, page, properties);
+                githubHttpApiClient, vcsOrganizationName, repositoryName, branchName, page, properties);
         if (isNull(githubCommitsDTOS) || githubCommitsDTOS.length == 0) {
             return new byte[0];
         }
@@ -323,7 +322,7 @@ public class GithubAdapter {
                 new ArrayList<>(List.of(githubCommitsDTOS));
         while (githubCommitsDTOS.length == properties.getSize()) {
             page += 1;
-            githubCommitsDTOS = getGithubCommitsDTOSFromLastCollectionDate(lastCollectionDate, githubHttpClient,
+            githubCommitsDTOS = getGithubCommitsDTOSFromLastCollectionDate(lastCollectionDate, githubHttpApiClient,
                     vcsOrganizationName, repositoryName, branchName, page, properties);
             githubCommitsDTOList.addAll(Arrays.stream(githubCommitsDTOS).toList());
         }
@@ -341,7 +340,7 @@ public class GithubAdapter {
     }
 
     public byte[] getRawTags(String vcsOrganizationName, String repositoryName) throws SymeoException {
-        final GithubTagDTO[] githubTagDTOS = githubHttpClient.getTagsForOrganizationAndRepository(vcsOrganizationName,
+        final GithubTagDTO[] githubTagDTOS = githubHttpApiClient.getTagsForOrganizationAndRepository(vcsOrganizationName,
                 repositoryName);
         for (GithubTagDTO githubTagDTO : githubTagDTOS) {
             githubTagDTO.setVcsApiUrl(
@@ -358,15 +357,15 @@ public class GithubAdapter {
     }
 
     private GithubCommitsDTO[] getGithubCommitsDTOSFromLastCollectionDate(Date lastCollectionDate,
-                                                                          GithubHttpClient githubHttpClient,
+                                                                          GithubHttpApiClient githubHttpApiClient,
                                                                           String vcsOrganizationName,
                                                                           String repositoryName, String branchName,
                                                                           int page, GithubProperties properties) throws SymeoException {
         return isNull(lastCollectionDate) ?
-                githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranch(vcsOrganizationName,
+                githubHttpApiClient.getCommitsForOrganizationAndRepositoryAndBranch(vcsOrganizationName,
                         repositoryName, branchName, page, properties.getSize())
                 :
-                githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName,
+                githubHttpApiClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName,
                         repositoryName, branchName, lastCollectionDate, page, properties.getSize());
     }
 

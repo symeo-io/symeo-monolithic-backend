@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.TagEntity;
-import io.symeo.monolithic.backend.job.domain.model.Tag;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Tag;
 
 public interface TagMapper {
 

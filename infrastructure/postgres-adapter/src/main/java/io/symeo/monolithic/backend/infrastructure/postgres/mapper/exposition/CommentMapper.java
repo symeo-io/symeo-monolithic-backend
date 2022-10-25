@@ -2,7 +2,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommentView;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
-import io.symeo.monolithic.backend.job.domain.model.Comment;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Comment;
 
 import java.sql.Date;
 import java.time.ZoneId;

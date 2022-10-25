@@ -5,8 +5,8 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.Com
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestWithCommentsDTO;
-import io.symeo.monolithic.backend.job.domain.model.Commit;
-import io.symeo.monolithic.backend.job.domain.model.PullRequest;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Commit;
+import io.symeo.monolithic.backend.job.domain.model.vcs.PullRequest;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

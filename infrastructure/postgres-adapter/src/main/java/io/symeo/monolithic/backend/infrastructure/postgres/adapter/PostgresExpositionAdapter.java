@@ -10,7 +10,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.pagination.Pagination;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
-import io.symeo.monolithic.backend.job.domain.model.*;
+import io.symeo.monolithic.backend.job.domain.model.vcs.*;
 import io.symeo.monolithic.backend.job.domain.port.out.JobExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -17,7 +17,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Te
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
-import io.symeo.monolithic.backend.job.domain.model.PullRequest;
+import io.symeo.monolithic.backend.job.domain.model.vcs.PullRequest;
 import lombok.NonNull;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
