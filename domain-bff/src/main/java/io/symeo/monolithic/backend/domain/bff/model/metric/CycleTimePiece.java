@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime.*;
+
 @Builder(toBuilder = true)
 @Value
 @Slf4j
@@ -35,7 +37,7 @@ public class CycleTimePiece {
         List<CycleTimePiece> cycleTimePieces = new ArrayList<>();
         for (PullRequestView pullRequestView : pullRequestViewsToComputeCycleTime) {
             final CycleTime cycleTimeForPullRequestView =
-                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView,
+                    computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView,
                             pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate, allCommitsUntilEndDate);
 
             cycleTimePieces.add(CycleTimePiece.builder()
@@ -62,7 +64,7 @@ public class CycleTimePiece {
         List<CycleTimePiece> cycleTimePieces = new ArrayList<>();
         for (PullRequestView pullRequestView : pullRequestViewsToComputeCycleTime) {
             final CycleTime cycleTimeForTagRegexSettings =
-                    CycleTime.computeCycleTimeForTagRegexToDeploySettings(pullRequestView,
+                    computeCycleTimeForTagRegexToDeploySettings(pullRequestView,
                             tagsMatchingDeployTagRegex, allCommitsUntilEndDate);
 
             cycleTimePieces.add(CycleTimePiece.builder()

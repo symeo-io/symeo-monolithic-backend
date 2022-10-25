@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.*;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 
@@ -202,13 +203,13 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
                                                                                    final String sortDir,
                                                                                    final String pullRequestMergedOnBranchRegex,
                                                                                    final List<String> excludeBranchRegexes) throws SymeoException {
-        PaginationHelper.validatePagination(pageIndex, pageSize);
-        PaginationHelper.validateSortingInputs(sortDir, sortBy, PullRequestView.AVAILABLE_SORTING_PARAMETERS);
+        validatePagination(pageIndex, pageSize);
+        validateSortingInputs(sortDir, sortBy, PullRequestView.AVAILABLE_SORTING_PARAMETERS);
         final int totalNumberOfRequestViewsForTeamIdAndStartDateAndEndDate =
                 bffExpositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
                         startDate, endDate);
         final List<PullRequestView> pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted =
-                bffExpositionStorageAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
+                bffExpositionStorageAdapter.findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(
                                 teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir)
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes)).toList();
@@ -223,9 +224,9 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
 
         final List<CycleTimePiece> cycleTimePiecesForPage =
                 cycleTimeService.buildCycleTimePiecesForPullRequestsMergedOnBranchRegexSettings(
-                pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted,
-                pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
-                allCommitsUntilEndDate);
+                        pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted,
+                        pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
+                        allCommitsUntilEndDate);
 
         return CycleTimePiecePage.builder()
                 .totalNumberOfPieces(totalNumberOfRequestViewsForTeamIdAndStartDateAndEndDate)
@@ -243,13 +244,13 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
                                                                      final String sortDir,
                                                                      final String deployOnTagRegex,
                                                                      final List<String> excludeBranchRegexes) throws SymeoException {
-        PaginationHelper.validatePagination(pageIndex, pageSize);
-        PaginationHelper.validateSortingInputs(sortDir, sortBy, PullRequestView.AVAILABLE_SORTING_PARAMETERS);
+        validatePagination(pageIndex, pageSize);
+        validateSortingInputs(sortDir, sortBy, PullRequestView.AVAILABLE_SORTING_PARAMETERS);
         final int totalNumberOfRequestViewsForTeamIdAndStartDateAndEndDate =
                 bffExpositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
                         startDate, endDate);
         final List<PullRequestView> pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted =
-                bffExpositionStorageAdapter.readPullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted(
+                bffExpositionStorageAdapter.findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(
                                 teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir)
                         .stream()
                         .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes)).toList();

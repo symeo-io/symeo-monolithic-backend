@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.ContractMapperHelper.floatToBigDecimal;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.ContractMapperHelper.longToBigDecimal;
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateTimeToString;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
 
 public interface CycleTimeContractMapper {
@@ -101,18 +103,17 @@ public interface CycleTimeContractMapper {
         for (CycleTimePiece cycleTimePiece : cycleTimePieces) {
             final CycleTimePieceContract cycleTimePieceContract = new CycleTimePieceContract();
             cycleTimePieceContract.author(cycleTimePiece.getAuthor());
-            cycleTimePieceContract.codingTime(BigDecimal.valueOf(cycleTimePiece.getCodingTime()));
-            cycleTimePieceContract.reviewTime(BigDecimal.valueOf(cycleTimePiece.getReviewTime()));
-            cycleTimePieceContract.timeToDeploy(BigDecimal.valueOf(cycleTimePiece.getDeployTime()));
+            cycleTimePieceContract.codingTime(longToBigDecimal(cycleTimePiece.getCodingTime()));
+            cycleTimePieceContract.reviewTime(longToBigDecimal(cycleTimePiece.getReviewTime()));
+            cycleTimePieceContract.timeToDeploy(longToBigDecimal(cycleTimePiece.getDeployTime()));
+            cycleTimePieceContract.cycleTime(longToBigDecimal(cycleTimePiece.getCycleTime()));
             cycleTimePieceContract.status(cycleTimePiece.getState());
             cycleTimePieceContract.id(cycleTimePiece.getId());
-            cycleTimePieceContract.cycleTime(BigDecimal.valueOf(cycleTimePiece.getCycleTime()));
             cycleTimePieceContract.setVcsRepository(cycleTimePiece.getRepository());
             cycleTimePieceContract.setVcsUrl(cycleTimePiece.getVcsUrl());
             cycleTimePieceContract.setTitle(cycleTimePiece.getTitle());
-            cycleTimePieceContract.setCreationDate(ZonedDateTime.ofInstant(cycleTimePiece.getCreationDate().toInstant(), ZoneId.systemDefault()));
-            cycleTimePieceContract.setMergeDate(ZonedDateTime.ofInstant(cycleTimePiece.getMergeDate().toInstant(),
-                    ZoneId.systemDefault()));
+            cycleTimePieceContract.setCreationDate(dateTimeToString(cycleTimePiece.getCreationDate()));
+            cycleTimePieceContract.setMergeDate(dateTimeToString(cycleTimePiece.getMergeDate()));
             list.add(cycleTimePieceContract);
         }
         return list;
