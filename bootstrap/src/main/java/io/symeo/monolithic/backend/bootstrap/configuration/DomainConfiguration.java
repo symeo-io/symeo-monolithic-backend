@@ -1,5 +1,7 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.job.JobView;
 import io.symeo.monolithic.backend.domain.bff.port.in.*;
 import io.symeo.monolithic.backend.domain.bff.port.out.*;
 import io.symeo.monolithic.backend.domain.bff.query.CurveQuery;
@@ -9,8 +11,13 @@ import io.symeo.monolithic.backend.domain.bff.service.organization.*;
 import io.symeo.monolithic.backend.domain.bff.service.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.bff.service.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.bff.storage.TeamStandardInMemoryStorage;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+import java.util.UUID;
 
 @Configuration
 public class DomainConfiguration {
@@ -109,5 +116,41 @@ public class DomainConfiguration {
     @Bean
     public DeploymentService deploymentService() {
         return new DeploymentService();
+    }
+
+    @Bean
+    public JobFacadeAdapter jobFacadeAdapter() {
+        return new JobFacadeAdapter() {
+            @Override
+            public List<JobView> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String jobCode,
+                                                                                       Organization organization) {
+                return null;
+            }
+        };
+    }
+
+    @Bean
+    public DataProcessingJobAdapter dataProcessingJobAdapter() {
+        return new DataProcessingJobAdapter() {
+            @Override
+            public void startToCollectRepositoriesForOrganizationId(UUID organizationId) throws SymeoException {
+
+            }
+
+            @Override
+            public void startToCollectVcsDataForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
+
+            }
+
+            @Override
+            public void startToCollectVcsDataForOrganizationId(UUID organizationId) throws SymeoException {
+
+            }
+
+            @Override
+            public void startAll() throws SymeoException {
+
+            }
+        };
     }
 }
