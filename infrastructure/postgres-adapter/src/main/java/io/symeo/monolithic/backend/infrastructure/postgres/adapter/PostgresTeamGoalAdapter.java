@@ -1,8 +1,8 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.TeamGoal;
+import io.symeo.monolithic.backend.domain.bff.port.out.TeamGoalStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.TeamGoal;
-import io.symeo.monolithic.backend.domain.port.out.TeamGoalStorage;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.TeamGoalMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;

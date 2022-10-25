@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
-import io.symeo.monolithic.backend.domain.port.out.VersionControlSystemAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubBranchDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubTagDTO;
@@ -15,6 +13,7 @@ import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPu
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
+import io.symeo.monolithic.backend.job.domain.model.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,13 +27,12 @@ import static java.util.Objects.nonNull;
 
 @AllArgsConstructor
 @Slf4j
-public class GithubAdapter implements VersionControlSystemAdapter {
+public class GithubAdapter {
 
     private GithubHttpClient githubHttpClient;
     private GithubProperties properties;
     private ObjectMapper objectMapper;
 
-    @Override
     public byte[] getRawRepositories(final String vcsOrganizationName) throws SymeoException {
         int page = 1;
         GithubRepositoryDTO[] githubRepositoryDTOS =
@@ -56,13 +54,11 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     }
 
-    @Override
     public String getName() {
         return "github";
     }
 
 
-    @Override
     public List<Repository> repositoriesBytesToDomain(final byte[] repositoriesBytes) throws SymeoException {
 
         GithubRepositoryDTO[] githubRepositoryDTOS = bytesToDto(repositoriesBytes,
@@ -73,7 +69,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
 
     }
 
-    @Override
     public byte[] getRawPullRequestsForRepository(final Repository repository,
                                                   final byte[] alreadyRawCollectedPullRequests) throws SymeoException {
         int page = 1;
@@ -225,7 +220,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     }
 
 
-    @Override
     public List<PullRequest> pullRequestsBytesToDomain(final byte[] bytes) throws SymeoException {
         if (bytes.length == 0) {
             return List.of();
@@ -271,7 +265,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     }
 
 
-    @Override
     public List<Commit> commitsBytesToDomain(final byte[] rawCommits) throws SymeoException {
         if (rawCommits.length == 0) {
             return List.of();
@@ -282,7 +275,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
     }
 
 
-    @Override
     public byte[] getRawBranches(String vcsOrganizationName, String repositoryName) throws SymeoException {
 
         int page = 1;
@@ -304,7 +296,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         return dtoToBytes(githubBranchDTOList.toArray());
     }
 
-    @Override
     public List<Branch> branchesBytesToDomain(byte[] rawBranches) throws SymeoException {
         if (rawBranches.length == 0) {
             return List.of();
@@ -314,7 +305,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public byte[] getRawCommitsForBranchFromLastCollectionDate(final String vcsOrganizationName,
                                                                final String repositoryName,
                                                                final String branchName,
@@ -350,7 +340,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         return dtoToBytes(githubCommitsDTOList.toArray());
     }
 
-    @Override
     public byte[] getRawTags(String vcsOrganizationName, String repositoryName) throws SymeoException {
         final GithubTagDTO[] githubTagDTOS = githubHttpClient.getTagsForOrganizationAndRepository(vcsOrganizationName,
                 repositoryName);
@@ -362,7 +351,6 @@ public class GithubAdapter implements VersionControlSystemAdapter {
         return dtoToBytes(githubTagDTOS);
     }
 
-    @Override
     public List<Tag> tagsBytesToDomain(byte[] rawTags) throws SymeoException {
         return Arrays.stream(bytesToDto(rawTags, GithubTagDTO[].class))
                 .map(GithubMapper::mapTagToDomain)

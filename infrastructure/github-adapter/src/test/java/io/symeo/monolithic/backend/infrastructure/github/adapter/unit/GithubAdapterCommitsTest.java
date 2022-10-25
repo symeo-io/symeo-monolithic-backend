@@ -2,23 +2,21 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
+import io.symeo.monolithic.backend.job.domain.model.Commit;
+import io.symeo.monolithic.backend.job.domain.model.Repository;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.TimeZone;
 
-import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,7 +46,8 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
     }
 
 //    @Test
-//    void should_collect_commits_given_a_repository_and_no_already_collected_commits_and_no_collection_date() throws SymeoException,
+//    void should_collect_commits_given_a_repository_and_no_already_collected_commits_and_no_collection_date() throws
+//    SymeoException,
 //            IOException {
 //        // Given
 //        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
@@ -90,7 +89,8 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
 
 
 //    @Test
-//    void should_collect_commits_given_a_repository_and_no_already_collected_commits_and_a_collection_date() throws SymeoException,
+//    void should_collect_commits_given_a_repository_and_no_already_collected_commits_and_a_collection_date() throws
+//    SymeoException,
 //            IOException {
 //        // Given
 //        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
@@ -110,11 +110,13 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
 //        final Date lastCollectionDate = stringToDate("2020-01-01");
 //
 //        // When
-//        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName,
+//        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate
+//        (vcsOrganizationName,
 //                repositoryName,
 //                lastCollectionDate, 1, size))
 //                .thenReturn(githubCommitsDTOS1);
-//        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName,
+//        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate
+//        (vcsOrganizationName,
 //                repositoryName,
 //                lastCollectionDate, 2, size))
 //                .thenReturn(githubCommitsDTOS2);
@@ -134,7 +136,8 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
 //    }
 
 //    @Test
-//    void should_collect_commits_given_a_repository_and_already_collected_commits_and_a_collection_date() throws SymeoException,
+//    void should_collect_commits_given_a_repository_and_already_collected_commits_and_a_collection_date() throws
+//    SymeoException,
 //            IOException {
 //        // Given
 //        final GithubHttpClient githubHttpClient = mock(GithubHttpClient.class);
@@ -157,11 +160,13 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
 //        final Date lastCollectionDate = stringToDate("2020-01-01");
 //
 //        // When
-//        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName,
+//        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate
+//        (vcsOrganizationName,
 //                repositoryName,
 //                lastCollectionDate, 1, size))
 //                .thenReturn(githubCommitsDTOS1);
-//        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(vcsOrganizationName,
+//        when(githubHttpClient.getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate
+//        (vcsOrganizationName,
 //                repositoryName,
 //                lastCollectionDate, 2, size))
 //                .thenReturn(githubCommitsDTOS2);
@@ -212,26 +217,36 @@ public class GithubAdapterCommitsTest extends AbstractGithubAdapterTest {
         // When
         when(githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(), repository.getName(), 1, properties.getSize()))
                 .thenReturn(githubPullRequestStubs1);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80))
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80))
                 .thenReturn(githubPullRequestDetails);
-        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 1, properties.getSize()))
+        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80, 1, properties.getSize()))
                 .thenReturn(githubCommitsStubs1);
 
-        final byte[] exactSizeRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
-        final GithubPullRequestDTO[] exactSizeGithubPullRequestDTOSResult = githubAdapter.bytesToDto(exactSizeRawPullRequestsForRepository, GithubPullRequestDTO[].class);
-        final GithubCommitsDTO[] exactSizeGithubCommitsDTOSResult = exactSizeGithubPullRequestDTOSResult[0].getGithubCommitsDTOS();
+        final byte[] exactSizeRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository
+                , null);
+        final GithubPullRequestDTO[] exactSizeGithubPullRequestDTOSResult =
+                githubAdapter.bytesToDto(exactSizeRawPullRequestsForRepository, GithubPullRequestDTO[].class);
+        final GithubCommitsDTO[] exactSizeGithubCommitsDTOSResult =
+                exactSizeGithubPullRequestDTOSResult[0].getGithubCommitsDTOS();
 
-        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 2, properties.getSize()))
+        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80, 2, properties.getSize()))
                 .thenReturn(githubCommitsStubs2);
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
-        final GithubPullRequestDTO[] githubPullRequestDTOSResult = githubAdapter.bytesToDto(rawPullRequestsForRepository, GithubPullRequestDTO[].class);
+        final GithubPullRequestDTO[] githubPullRequestDTOSResult =
+                githubAdapter.bytesToDto(rawPullRequestsForRepository, GithubPullRequestDTO[].class);
         final GithubCommitsDTO[] githubCommitsDTOSResult = githubPullRequestDTOSResult[0].getGithubCommitsDTOS();
 
-        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 1, properties.getSize()))
+        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80, 1, properties.getSize()))
                 .thenReturn(null);
         final byte[] nullRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
-        final GithubPullRequestDTO[] nullGithubPullRequestDTOSResult = githubAdapter.bytesToDto(nullRawPullRequestsForRepository, GithubPullRequestDTO[].class);
-        final GithubCommitsDTO[] nullGithubCommitsDTOSResult = nullGithubPullRequestDTOSResult[0].getGithubCommitsDTOS();
+        final GithubPullRequestDTO[] nullGithubPullRequestDTOSResult =
+                githubAdapter.bytesToDto(nullRawPullRequestsForRepository, GithubPullRequestDTO[].class);
+        final GithubCommitsDTO[] nullGithubCommitsDTOSResult =
+                nullGithubPullRequestDTOSResult[0].getGithubCommitsDTOS();
 
 
         // Then

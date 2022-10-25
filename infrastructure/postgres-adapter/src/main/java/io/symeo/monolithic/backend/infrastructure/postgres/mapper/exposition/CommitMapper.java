@@ -1,14 +1,12 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
+import io.symeo.monolithic.backend.job.domain.model.Commit;
 
 import java.sql.Date;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public interface CommitMapper {
 
@@ -24,8 +22,8 @@ public interface CommitMapper {
                 .build();
     }
 
-    static Commit entityToDomain(final CommitEntity commitEntity) {
-        return Commit.builder()
+    static CommitView entityToDomain(final CommitEntity commitEntity) {
+        return CommitView.builder()
                 .sha(commitEntity.getSha())
                 .message(commitEntity.getMessage())
                 .author(commitEntity.getAuthorLogin())

@@ -3,13 +3,13 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.unit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.GithubTagDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
+import io.symeo.monolithic.backend.job.domain.model.Repository;
+import io.symeo.monolithic.backend.job.domain.model.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -39,7 +39,8 @@ public class GithubAdapterTagTest extends AbstractGithubAdapterTest {
                 "get_repo_1_organization_1_tags.json", GithubTagDTO[].class);
 
         // When
-        when(githubHttpClient.getTagsForOrganizationAndRepository(repository.getVcsOrganizationName(), repository.getName()))
+        when(githubHttpClient.getTagsForOrganizationAndRepository(repository.getVcsOrganizationName(),
+                repository.getName()))
                 .thenReturn(githubTagStub);
         final GithubTagDTO[] resultGithubTagDTOS = githubAdapter.bytesToDto(
                 githubAdapter.getRawTags(repository.getVcsOrganizationName(), repository.getName()),

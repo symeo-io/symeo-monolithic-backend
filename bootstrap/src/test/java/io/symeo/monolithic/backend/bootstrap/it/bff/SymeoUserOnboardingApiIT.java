@@ -2,10 +2,9 @@ package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.domain.service.account.OrganizationService;
 import io.symeo.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
@@ -82,7 +81,10 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                 Organization.builder()
                         .id(organizationId)
                         .name(organizationName)
-                        .vcsOrganization(VcsOrganization.builder().vcsId(faker.rickAndMorty().character()).name(organizationName).build())
+                        .vcsOrganization(
+                                Organization.VcsOrganization.builder()
+                                        .vcsId(faker.rickAndMorty().character())
+                                        .name(organizationName).build())
                         .build()
         );
         final LinkOrganizationToCurrentUserRequestContract requestContract =

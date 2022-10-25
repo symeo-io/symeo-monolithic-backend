@@ -1,12 +1,11 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationSettingsRepository;
@@ -14,11 +13,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -56,7 +51,7 @@ public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
                 .name(name)
-                .vcsOrganization(VcsOrganization.builder()
+                .vcsOrganization(Organization.VcsOrganization.builder()
                         .name(faker.name().bloodGroup())
                         .vcsId(faker.dragonBall().character())
                         .externalId(externalId).build())
@@ -80,7 +75,7 @@ public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
         final Organization organization = Organization.builder()
                 .name(name)
                 .id(organizationId)
-                .vcsOrganization(VcsOrganization.builder()
+                .vcsOrganization(Organization.VcsOrganization.builder()
                         .name(vcsOrganizationName)
                         .vcsId(faker.dragonBall().character())
                         .externalId(externalId).build())

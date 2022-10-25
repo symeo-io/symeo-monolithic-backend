@@ -5,11 +5,11 @@ import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.A
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
 import io.symeo.monolithic.backend.application.rest.api.adapter.properties.RepositoryRetryProperties;
 import io.symeo.monolithic.backend.application.rest.api.adapter.service.RepositoryRetryService;
-import io.symeo.monolithic.backend.domain.port.in.*;
-import io.symeo.monolithic.backend.domain.query.CurveQuery;
-import io.symeo.monolithic.backend.domain.query.HistogramQuery;
-import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
-import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
+import io.symeo.monolithic.backend.domain.bff.port.in.*;
+import io.symeo.monolithic.backend.domain.bff.query.CurveQuery;
+import io.symeo.monolithic.backend.domain.bff.query.HistogramQuery;
+import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationSettingsService;
+import io.symeo.monolithic.backend.domain.bff.service.vcs.RepositoryService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;

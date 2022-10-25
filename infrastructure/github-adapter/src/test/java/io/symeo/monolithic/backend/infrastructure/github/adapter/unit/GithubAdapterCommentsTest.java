@@ -2,22 +2,19 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.repo.GithubRepositoryDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
+import io.symeo.monolithic.backend.job.domain.model.Comment;
+import io.symeo.monolithic.backend.job.domain.model.Repository;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,26 +73,36 @@ public class GithubAdapterCommentsTest extends AbstractGithubAdapterTest {
         // When
         when(githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(), repository.getName(), 1, properties.getSize()))
                 .thenReturn(githubPullRequestStubs1);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80))
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80))
                 .thenReturn(githubPullRequestDetails);
-        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 1, properties.getSize()))
+        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80, 1, properties.getSize()))
                 .thenReturn(githubCommentsStubs1);
 
-        final byte[] exactSizeRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
-        final GithubPullRequestDTO[] exactSizeGithubPullRequestDTOSResult = githubAdapter.bytesToDto(exactSizeRawPullRequestsForRepository, GithubPullRequestDTO[].class);
-        final GithubCommentsDTO[] exactSizeGithubCommentsDTOSResult = exactSizeGithubPullRequestDTOSResult[0].getGithubCommentsDTOS();
+        final byte[] exactSizeRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository
+                , null);
+        final GithubPullRequestDTO[] exactSizeGithubPullRequestDTOSResult =
+                githubAdapter.bytesToDto(exactSizeRawPullRequestsForRepository, GithubPullRequestDTO[].class);
+        final GithubCommentsDTO[] exactSizeGithubCommentsDTOSResult =
+                exactSizeGithubPullRequestDTOSResult[0].getGithubCommentsDTOS();
 
-        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 2, properties.getSize()))
+        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80, 2, properties.getSize()))
                 .thenReturn(githubCommentsStubs2);
         final byte[] rawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
-        final GithubPullRequestDTO[] githubPullRequestDTOSResult = githubAdapter.bytesToDto(rawPullRequestsForRepository, GithubPullRequestDTO[].class);
+        final GithubPullRequestDTO[] githubPullRequestDTOSResult =
+                githubAdapter.bytesToDto(rawPullRequestsForRepository, GithubPullRequestDTO[].class);
         final GithubCommentsDTO[] githubCommentsDTOSResult = githubPullRequestDTOSResult[0].getGithubCommentsDTOS();
 
-        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 1, properties.getSize()))
+        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80, 1, properties.getSize()))
                 .thenReturn(null);
         final byte[] nullRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
-        final GithubPullRequestDTO[] nullGithubPullRequestDTOSResult = githubAdapter.bytesToDto(nullRawPullRequestsForRepository, GithubPullRequestDTO[].class);
-        final GithubCommentsDTO[] nullGithubCommentsDTOSResult = nullGithubPullRequestDTOSResult[0].getGithubCommentsDTOS();
+        final GithubPullRequestDTO[] nullGithubPullRequestDTOSResult =
+                githubAdapter.bytesToDto(nullRawPullRequestsForRepository, GithubPullRequestDTO[].class);
+        final GithubCommentsDTO[] nullGithubCommentsDTOSResult =
+                nullGithubPullRequestDTOSResult[0].getGithubCommentsDTOS();
 
 
         // Then

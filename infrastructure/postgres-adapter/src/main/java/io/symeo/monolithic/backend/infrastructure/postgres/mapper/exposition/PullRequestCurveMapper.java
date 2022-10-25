@@ -1,6 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
-import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestSizeDTO;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestTimeToMergeDTO;
 

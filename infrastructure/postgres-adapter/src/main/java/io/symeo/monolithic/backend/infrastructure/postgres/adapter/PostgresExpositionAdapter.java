@@ -1,16 +1,17 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.pagination.Pagination;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Tag;
-import io.symeo.monolithic.backend.domain.port.out.ExpositionStorageAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
+import io.symeo.monolithic.backend.job.domain.model.*;
+import io.symeo.monolithic.backend.job.domain.port.out.JobExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposit
 
 @AllArgsConstructor
 @Slf4j
-public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
+public class PostgresExpositionAdapter implements JobExpositionStorageAdapter, BffExpositionStorageAdapter {
 
     private final PullRequestRepository pullRequestRepository;
     private final RepositoryRepository repositoryRepository;
@@ -52,7 +53,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Repository> readRepositoriesForOrganization(Organization organization) {
+    public List<RepositoryView> readRepositoriesForOrganization(Organization organization) {
         return repositoryRepository.findRepositoryEntitiesByOrganizationId(organization.getId())
                 .stream()
                 .map(RepositoryMapper::entityToDomain)
@@ -202,7 +203,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Repository> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
+    public List<RepositoryView> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
         try {
             return repositoryRepository.findAllRepositoriesForOrganizationIdAndTeamId(organizationId, teamId)
                     .stream()
@@ -222,7 +223,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException {
+    public List<RepositoryView> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException {
         try {
             return repositoryRepository.findAllRepositoriesLinkedToTeamsForOrganizationId(organizationId)
                     .stream()
@@ -265,7 +266,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Commit> readAllCommitsForTeamId(UUID teamId) throws SymeoException {
+    public List<CommitView> readAllCommitsForTeamId(UUID teamId) throws SymeoException {
         try {
             return customCommitRepository.findAllByTeamId(teamId);
         } catch (Exception e) {
@@ -297,7 +298,7 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
-    public List<Tag> findTagsForTeamId(UUID teamId) throws SymeoException {
+    public List<TagView> findTagsForTeamId(UUID teamId) throws SymeoException {
         try {
             return tagRepository.findAllForTeamId(teamId).stream()
                     .map(TagMapper::entityToDomain)
@@ -314,13 +315,15 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
     }
 
     @Override
-    public List<Commit> readCommitsMatchingShaListBetweenStartDateAndEndDate(List<String> shaList, Date startDate, Date endDate) throws SymeoException {
+    public List<CommitView> readCommitsMatchingShaListBetweenStartDateAndEndDate(List<String> shaList, Date startDate,
+                                                                                 Date endDate) throws SymeoException {
         try {
             return commitRepository.findAllForShaListBetweenStartDateAndEndDate(shaList, startDate, endDate).stream()
                     .map(CommitMapper::entityToDomain)
                     .toList();
         } catch (Exception e) {
-            final String message = String.format("Failed to read commits for shaList %s between startDate %s and endDate %s", shaList, startDate, endDate);
+            final String message = String.format("Failed to read commits for shaList %s between startDate %s and " +
+                    "endDate %s", shaList, startDate, endDate);
             LOGGER.error(message, e);
             throw SymeoException.builder()
                     .rootException(e)
@@ -328,5 +331,10 @@ public class PostgresExpositionAdapter implements ExpositionStorageAdapter {
                     .message(message)
                     .build();
         }
+    }
+
+    @Override
+    public VcsOrganization findVcsOrganizationById(UUID vcsOrganizationId) {
+        return null;
     }
 }

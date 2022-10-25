@@ -1,9 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.github.adapter.unit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.client.GithubHttpClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCommentsDTO;
@@ -11,6 +8,8 @@ import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubCo
 import io.symeo.monolithic.backend.infrastructure.github.adapter.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.mapper.GithubMapper;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.properties.GithubProperties;
+import io.symeo.monolithic.backend.job.domain.model.PullRequest;
+import io.symeo.monolithic.backend.job.domain.model.Repository;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -218,7 +217,7 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
     }
 
     @Test
-    void should_get_pull_request_with_size_exactly_the_same_than_pagination_size() throws SymeoException, IOException{
+    void should_get_pull_request_with_size_exactly_the_same_than_pagination_size() throws SymeoException, IOException {
         // Given
         final String token = faker.pokemon().name();
         final GithubProperties properties = new GithubProperties();
@@ -242,15 +241,20 @@ public class GithubAdapterPullRequestsTest extends AbstractGithubAdapterTest {
         // When
         when(githubHttpClient.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(repository.getVcsOrganizationName(), repository.getName(), 1, properties.getSize()))
                 .thenReturn(githubPullRequestStubs1);
-        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80))
+        when(githubHttpClient.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80))
                 .thenReturn(githubPullRequestDetails);
-        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 1, properties.getSize()))
+        when(githubHttpClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80, 1, properties.getSize()))
                 .thenReturn(githubCommitsStubs1);
-        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), 80, 1, properties.getSize()))
+        when(githubHttpClient.getCommentsForPullRequestNumber(repository.getVcsOrganizationName(),
+                repository.getName(), 80, 1, properties.getSize()))
                 .thenReturn(githubCommentsStubs1);
 
-        final byte[] exactSizeRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository, null);
-        final GithubPullRequestDTO[] exactSizeGithubPullRequestDTOSResult = githubAdapter.bytesToDto(exactSizeRawPullRequestsForRepository, GithubPullRequestDTO[].class);
+        final byte[] exactSizeRawPullRequestsForRepository = githubAdapter.getRawPullRequestsForRepository(repository
+                , null);
+        final GithubPullRequestDTO[] exactSizeGithubPullRequestDTOSResult =
+                githubAdapter.bytesToDto(exactSizeRawPullRequestsForRepository, GithubPullRequestDTO[].class);
 
         // Then
         assertThat(exactSizeGithubPullRequestDTOSResult.length).isEqualTo(githubPullRequestStubs1.length);

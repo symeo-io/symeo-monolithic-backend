@@ -1,63 +1,28 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
-import io.symeo.monolithic.backend.domain.command.DeliveryCommand;
-import io.symeo.monolithic.backend.domain.job.JobManager;
-import io.symeo.monolithic.backend.domain.port.in.*;
-import io.symeo.monolithic.backend.domain.port.out.*;
-import io.symeo.monolithic.backend.domain.query.CurveQuery;
-import io.symeo.monolithic.backend.domain.query.HistogramQuery;
-import io.symeo.monolithic.backend.domain.service.DataProcessingJobService;
-import io.symeo.monolithic.backend.domain.service.OrganizationSettingsService;
-import io.symeo.monolithic.backend.domain.service.account.*;
-import io.symeo.monolithic.backend.domain.service.insights.*;
-import io.symeo.monolithic.backend.domain.service.job.JobService;
-import io.symeo.monolithic.backend.domain.service.platform.vcs.PullRequestService;
-import io.symeo.monolithic.backend.domain.service.platform.vcs.RepositoryService;
-import io.symeo.monolithic.backend.domain.service.platform.vcs.VcsService;
-import io.symeo.monolithic.backend.domain.storage.TeamStandardInMemoryStorage;
+import io.symeo.monolithic.backend.domain.bff.port.in.*;
+import io.symeo.monolithic.backend.domain.bff.port.out.*;
+import io.symeo.monolithic.backend.domain.bff.query.CurveQuery;
+import io.symeo.monolithic.backend.domain.bff.query.HistogramQuery;
+import io.symeo.monolithic.backend.domain.bff.service.insights.*;
+import io.symeo.monolithic.backend.domain.bff.service.organization.*;
+import io.symeo.monolithic.backend.domain.bff.service.vcs.PullRequestService;
+import io.symeo.monolithic.backend.domain.bff.service.vcs.RepositoryService;
+import io.symeo.monolithic.backend.domain.bff.storage.TeamStandardInMemoryStorage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.concurrent.Executor;
 
 @Configuration
 public class DomainConfiguration {
 
-    @Bean
-    public DeliveryCommand deliveryCommand(
-            final RawStorageAdapter rawStorageAdapter,
-            final VersionControlSystemAdapter versionControlSystemAdapter) {
-        return new DeliveryCommand(rawStorageAdapter, versionControlSystemAdapter);
-    }
 
     @Bean
-    public VcsService deliveryProcessorService(final DeliveryCommand deliveryCommand,
-                                               final ExpositionStorageAdapter expositionStorageAdapter) {
-        return new VcsService(deliveryCommand, expositionStorageAdapter);
-    }
-
-
-    @Bean
-    public DataProcessingJobService dataProcessingJobService(final VcsService vcsService,
-                                                             final OrganizationStorageAdapter organizationStorageAdapter,
-                                                             final RepositoryService repositoryService,
-                                                             final JobManager jobManager,
-                                                             final SymeoJobApiAdapter symeoJobApiAdapter,
-                                                             final OrganizationSettingsService organizationSettingsService,
-                                                             final ExpositionStorageAdapter expositionStorageAdapter,
-                                                             final JobStorage jobStorage) {
-        return new DataProcessingJobService(vcsService, organizationStorageAdapter,
-                repositoryService, jobManager, symeoJobApiAdapter, organizationSettingsService,
-                expositionStorageAdapter, jobStorage);
-    }
-
-    @Bean
-    public RepositoryService repositoryService(final ExpositionStorageAdapter expositionStorageAdapter) {
+    public RepositoryService repositoryService(final BffExpositionStorageAdapter expositionStorageAdapter) {
         return new RepositoryService(expositionStorageAdapter);
     }
 
     @Bean
-    public HistogramQuery histogramQuery(final ExpositionStorageAdapter expositionStorageAdapter,
+    public HistogramQuery histogramQuery(final BffExpositionStorageAdapter expositionStorageAdapter,
                                          final TeamGoalFacadeAdapter teamGoalFacadeAdapter,
                                          final PullRequestHistogramService pullRequestHistogramService) {
         return new HistogramQuery(expositionStorageAdapter, teamGoalFacadeAdapter, pullRequestHistogramService);
@@ -71,8 +36,8 @@ public class DomainConfiguration {
 
     @Bean
     public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter,
-                                                               final DataProcessingJobAdapter dataProcessingJobAdapter) {
-        return new OrganizationService(organizationStorageAdapter, dataProcessingJobAdapter);
+                                                               final SymeoJobApiAdapter symeoJobApiAdapter) {
+        return new OrganizationService(organizationStorageAdapter, symeoJobApiAdapter);
     }
 
     @Bean
@@ -86,13 +51,9 @@ public class DomainConfiguration {
         return new OnboardingService(onboardingStorage);
     }
 
-    @Bean
-    public JobManager jobManager(final Executor executor, final JobStorage jobStorage) {
-        return new JobManager(executor, jobStorage);
-    }
 
     @Bean
-    public CurveQuery curveQuery(final ExpositionStorageAdapter expositionStorageAdapter,
+    public CurveQuery curveQuery(final BffExpositionStorageAdapter expositionStorageAdapter,
                                  final TeamGoalFacadeAdapter teamGoalFacadeAdapter) {
         return new CurveQuery(expositionStorageAdapter, teamGoalFacadeAdapter);
     }
@@ -114,12 +75,12 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public PullRequestFacade pullRequestFacade(final ExpositionStorageAdapter expositionStorageAdapter) {
+    public PullRequestFacade pullRequestFacade(final BffExpositionStorageAdapter expositionStorageAdapter) {
         return new PullRequestService(expositionStorageAdapter);
     }
 
     @Bean
-    public CycleTimeMetricsFacadeAdapter cycleTimeFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter,
+    public CycleTimeMetricsFacadeAdapter cycleTimeFacadeAdapter(final BffExpositionStorageAdapter expositionStorageAdapter,
                                                                 final OrganizationSettingsFacade organizationSettingsFacade,
                                                                 final CycleTimeService cycleTimeService) {
         return new CycleTimeMetricsMetricsService(expositionStorageAdapter, organizationSettingsFacade,
@@ -127,14 +88,9 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public OrganizationSettingsService organizationSettingsService(final ExpositionStorageAdapter expositionStorageAdapter,
+    public OrganizationSettingsService organizationSettingsService(final BffExpositionStorageAdapter expositionStorageAdapter,
                                                                    final OrganizationStorageAdapter organizationStorageAdapter) {
         return new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
-    }
-
-    @Bean
-    public JobFacadeAdapter jobFacadeAdapter(final JobStorage jobStorage) {
-        return new JobService(jobStorage);
     }
 
     @Bean
@@ -143,7 +99,7 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public DeploymentMetricsFacadeAdapter deploymentMetricsFacadeAdapter(final ExpositionStorageAdapter expositionStorageAdapter,
+    public DeploymentMetricsFacadeAdapter deploymentMetricsFacadeAdapter(final BffExpositionStorageAdapter expositionStorageAdapter,
                                                                          final OrganizationSettingsFacade organizationSettingsFacade,
                                                                          final DeploymentService deploymentService) {
         return new DeploymentMetricsService(expositionStorageAdapter, organizationSettingsFacade,

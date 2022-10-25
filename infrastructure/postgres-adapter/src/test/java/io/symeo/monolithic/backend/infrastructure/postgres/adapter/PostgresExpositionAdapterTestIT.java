@@ -1,11 +1,13 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.DateHelper;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.*;
@@ -14,6 +16,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.Rep
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
+import io.symeo.monolithic.backend.job.domain.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -173,7 +176,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         // Given
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
 
         // When
@@ -194,7 +197,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         // Given
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         final List<RepositoryEntity> repositoryEntities = List.of(
                 RepositoryEntity.builder().id("1L").name(faker.gameOfThrones().character())
@@ -206,7 +209,8 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         repositoryRepository.saveAll(repositoryEntities);
 
         // When
-        final List<Repository> repositories = postgresExpositionAdapter.readRepositoriesForOrganization(organization);
+        final List<RepositoryView> repositories =
+                postgresExpositionAdapter.readRepositoriesForOrganization(organization);
 
         // Then
         assertThat(repositories).hasSize(3);
@@ -221,7 +225,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         organizationRepository.save(OrganizationMapper.domainToEntity(organization));
         final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(
@@ -499,11 +503,11 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         // Given
         final Organization organization1 = Organization.builder()
                 .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         final Organization organization2 = Organization.builder()
                 .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         final String defaultBranch1 = faker.rickAndMorty().character();
         final String defaultBranch2 = faker.rickAndMorty().location();
@@ -542,7 +546,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.animal().name())
-                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().name(vcsOrganizationName).build())
                 .build();
         organizationRepository.save(OrganizationMapper.domainToEntity(organization));
         final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(List.of(
@@ -570,12 +574,12 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                         .build());
 
         // When
-        final List<Repository> allRepositoriesForOrganizationIdAndTeamId =
+        final List<RepositoryView> allRepositoriesForOrganizationIdAndTeamId =
                 postgresExpositionAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(),
                         teamEntity.getId());
 
         // Then
-        final List<Repository> expectedRepositories =
+        final List<RepositoryView> expectedRepositories =
                 repositoryEntities.stream().map(RepositoryMapper::entityToDomain).toList();
         allRepositoriesForOrganizationIdAndTeamId.forEach(repository ->
                 assertThat(expectedRepositories.stream()
@@ -591,7 +595,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.animal().name())
-                .vcsOrganization(VcsOrganization.builder().name(vcsOrganizationName).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().name(vcsOrganizationName).build())
                 .build();
         organizationRepository.save(OrganizationMapper.domainToEntity(organization));
         final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(List.of(
@@ -619,7 +623,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                         .build());
 
         // When
-        final List<Repository> allRepositoriesForOrganizationIdAndTeamId =
+        final List<RepositoryView> allRepositoriesForOrganizationIdAndTeamId =
                 postgresExpositionAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(organization.getId());
 
         // Then
@@ -640,7 +644,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
 
     private PullRequest buildPullRequest(int id) {
         return buildPullRequestForOrganization(id,
-                Organization.builder().id(UUID.randomUUID()).vcsOrganization(VcsOrganization.builder().vcsId(faker.rickAndMorty().character()).name(faker.ancient().god()).build()).build());
+                Organization.builder().id(UUID.randomUUID()).vcsOrganization(Organization.VcsOrganization.builder().vcsId(faker.rickAndMorty().character()).name(faker.ancient().god()).build()).build());
     }
 
     private PullRequest buildPullRequestForOrganization(final int id, final Organization organization) {
@@ -952,7 +956,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         organizationRepository.save(OrganizationMapper.domainToEntity(organization));
         final String fakeRepositoryName = faker.dragonBall().character();
@@ -990,7 +994,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         );
 
         // When
-        final List<Tag> tagsForTeamId = postgresExpositionAdapter.findTagsForTeamId(teamEntity.getId());
+        final List<TagView> tagsForTeamId = postgresExpositionAdapter.findTagsForTeamId(teamEntity.getId());
 
         // Then
         assertThat(tagsForTeamId).hasSize(2);
@@ -1005,7 +1009,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
-                .vcsOrganization(VcsOrganization.builder().name(faker.name().name()).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().name(faker.name().name()).build())
                 .build();
         organizationRepository.save(OrganizationMapper.domainToEntity(organization));
         final RepositoryEntity repositoryEntity = repositoryRepository.save(
@@ -1055,13 +1059,13 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         );
 
         // When
-        final List<Commit> commits = postgresExpositionAdapter.readAllCommitsForTeamId(teamEntity.getId());
+        final List<CommitView> commits = postgresExpositionAdapter.readAllCommitsForTeamId(teamEntity.getId());
 
         // Then
         assertThat(commits).hasSize(3);
 
         for (CommitEntity commitEntity : commitEntities) {
-            final Optional<Commit> optionalCommit =
+            final Optional<CommitView> optionalCommit =
                     commits.stream().filter(commit -> commit.getSha().equals(commitEntity.getSha())).findFirst();
             optionalCommit
                     .ifPresentOrElse(commit -> {

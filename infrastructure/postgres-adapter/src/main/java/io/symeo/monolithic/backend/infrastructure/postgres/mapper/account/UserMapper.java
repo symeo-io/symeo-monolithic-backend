@@ -1,6 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.account;
 
-import io.symeo.monolithic.backend.domain.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
 
 import java.util.List;

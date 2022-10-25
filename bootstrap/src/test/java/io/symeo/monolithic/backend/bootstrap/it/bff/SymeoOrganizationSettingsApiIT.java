@@ -1,6 +1,6 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
-import io.symeo.monolithic.backend.domain.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.frontend.contract.api.model.DeliverySettingsContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.DeployDetectionSettingsContract;
 import io.symeo.monolithic.backend.frontend.contract.api.model.OrganizationSettingsContract;
@@ -114,7 +114,8 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                 // Then
                 .expectStatus()
                 .is2xxSuccessful();
-        final OrganizationSettingsEntity updatedOrganizationSettings = organizationSettingsRepository.findById(organizationSettingsId).get();
+        final OrganizationSettingsEntity updatedOrganizationSettings =
+                organizationSettingsRepository.findById(organizationSettingsId).get();
         assertThat(updatedOrganizationSettings.getTagRegex()).isEqualTo(updateOrganizationSettingsContract.getDelivery().getDeployDetection().getTagRegex());
         assertThat(updatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(updateOrganizationSettingsContract.getDelivery().getDeployDetection().getPullRequestMergedOnBranchRegex());
     }
@@ -146,9 +147,11 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
 
             organizationSettingsRepository.save(organizationSettingsEntityToUpdate);
 
-            final OrganizationSettingsContract unauthorizedUpdateOrganizationSettingsContract = new OrganizationSettingsContract();
+            final OrganizationSettingsContract unauthorizedUpdateOrganizationSettingsContract =
+                    new OrganizationSettingsContract();
             final DeliverySettingsContract deliverySettingsContract = new DeliverySettingsContract();
-            final DeployDetectionSettingsContract deployDetectionSettingsContract = new DeployDetectionSettingsContract();
+            final DeployDetectionSettingsContract deployDetectionSettingsContract =
+                    new DeployDetectionSettingsContract();
             deployDetectionSettingsContract.setTagRegex(faker.gameOfThrones().character());
             deployDetectionSettingsContract.setPullRequestMergedOnBranchRegex(faker.gameOfThrones().dragon());
             deliverySettingsContract.setDeployDetection(deployDetectionSettingsContract);
@@ -164,7 +167,8 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                     // Then
                     .expectStatus()
                     .is4xxClientError();
-            final OrganizationSettingsEntity notUpdatedOrganizationSettings = organizationSettingsRepository.findById(organizationSettingsId).get();
+            final OrganizationSettingsEntity notUpdatedOrganizationSettings =
+                    organizationSettingsRepository.findById(organizationSettingsId).get();
             assertThat(notUpdatedOrganizationSettings.getTagRegex()).isEqualTo(organizationSettingsEntityToUpdate.getTagRegex());
             assertThat(notUpdatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(organizationSettingsEntityToUpdate.getPullRequestMergedOnBranchRegex());
         }

@@ -1,13 +1,14 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
-import io.symeo.monolithic.backend.domain.port.out.SymeoJobApiAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.SymeoJobApiAdapter;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoHttpClient;
-import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiClientAdapter;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 import java.net.http.HttpClient;
+import java.util.UUID;
 
 public class SymeoJobApiConfiguration {
 
@@ -25,6 +26,16 @@ public class SymeoJobApiConfiguration {
 
     @Bean
     public SymeoJobApiAdapter symeoJobApiAdapter(final SymeoHttpClient symeoHttpClient) {
-        return new SymeoJobApiClientAdapter(symeoHttpClient);
+        return new SymeoJobApiAdapter() {
+            @Override
+            public void startJobForOrganizationId(UUID organizationId) throws SymeoException {
+
+            }
+
+            @Override
+            public void startJobForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException {
+
+            }
+        };
     }
 }

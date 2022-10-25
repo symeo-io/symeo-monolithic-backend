@@ -6,10 +6,12 @@
     <modules>
         <module>bootstrap</module>
         <module>application</module>
-        <module>domain</module>
+        <module>core</module>
         <module>infrastructure</module>
         <module>symeo-data-processing-api</module>
         <module>symeo-frontend-api</module>
+        <module>domain-job</module>
+        <module>domain-bff</module>
     </modules>
 
     <parent>

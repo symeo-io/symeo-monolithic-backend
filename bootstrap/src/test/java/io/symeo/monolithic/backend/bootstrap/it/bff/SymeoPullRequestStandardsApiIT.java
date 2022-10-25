@@ -1,12 +1,11 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.TeamStandard;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.service.insights.PullRequestHistogramService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
-import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
-import io.symeo.monolithic.backend.domain.service.insights.PullRequestHistogramService;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
@@ -18,18 +17,21 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Te
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
+import io.symeo.monolithic.backend.job.domain.model.PullRequest;
 import lombok.NonNull;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.hoursToDays;
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -111,7 +113,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
 
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_METRICS, getParams(currentTeamId, requestSizeMetricsStartDate,
+                .uri(getApiURI(TEAMS_GOALS_REST_API_PULL_REQUEST_SIZE_METRICS, getParams(currentTeamId,
+                        requestSizeMetricsStartDate,
                         requestSizeMetricsEndDate)))
                 .exchange()
                 // Then
@@ -138,7 +141,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
 
         // When
         client.get()
-                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_METRICS, getParams(currentTeamId, requestTimeToMergeMetricsStartDate,
+                .uri(getApiURI(TEAMS_GOALS_REST_API_TIME_TO_MERGE_METRICS, getParams(currentTeamId,
+                        requestTimeToMergeMetricsStartDate,
                         requestTimeToMergeMetricsEndDate)))
                 .exchange()
                 // Then
@@ -233,7 +237,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(23)
                 .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-02-01")
                 .jsonPath("$.curves.average_curve[1].value").isEqualTo(
-                        Math.round(10f * (hoursToDays(TimeUnit.HOURS.convert(now.getTime() - stringToDate("2022-01-07").getTime(),
+                        Math.round(10f * (hoursToDays(TimeUnit.HOURS.convert(now.getTime() - stringToDate("2022-01-07"
+                                ).getTime(),
                                 TimeUnit.MILLISECONDS))
                                 + hoursToDays(TimeUnit.HOURS.convert(now.getTime() - stringToDate("2022-01-20").getTime(),
                                 TimeUnit.MILLISECONDS))
@@ -287,7 +292,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
     @Test
     void should_get_pull_request_size_curves_given_a_team_id() {
         // Given
-        teamGoalRepository.save(TeamGoalEntity.builder().teamId(currentTeamId).id(UUID.randomUUID()).standardCode(TeamStandard.PULL_REQUEST_SIZE).value("300").build());
+        teamGoalRepository.save(TeamGoalEntity.builder().teamId(currentTeamId).id(UUID.randomUUID())
+                .standardCode(TeamStandard.PULL_REQUEST_SIZE).value("300").build());
         final String startDate = "2022-01-01";
         final String endDate = "2022-02-01";
 

@@ -1,8 +1,8 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
@@ -203,7 +203,8 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .authorLogin(faker.harryPotter().character())
                 .build();
 
-        commitRepository.saveAll(List.of(commit1, mergeCommit1, commit2, deployCommit1, commit3, deployCommit2, deployCommit3, deployCommit4, deployCommit5));
+        commitRepository.saveAll(List.of(commit1, mergeCommit1, commit2, deployCommit1, commit3, deployCommit2,
+                deployCommit3, deployCommit4, deployCommit5));
 
         pullRequestRepository.saveAll(List.of(
                 PullRequestEntity.builder()
@@ -219,7 +220,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .authorLogin(faker.harryPotter().character())
                         .vcsRepositoryId(repositoryId)
                         .vcsRepository(repositoryName)
-                        .state(PullRequest.MERGE)
+                        .state(PullRequestView.MERGE)
                         .code("1")
                         .build(),
                 PullRequestEntity.builder()
@@ -236,7 +237,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .base("main")
                         .head("staging")
                         .code("2")
-                        .state(PullRequest.MERGE)
+                        .state(PullRequestView.MERGE)
                         .build(),
                 PullRequestEntity.builder()
                         .id(faker.dragonBall().character() + "-3")
@@ -252,7 +253,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .base("main")
                         .head("staging")
                         .code("3")
-                        .state(PullRequest.MERGE)
+                        .state(PullRequestView.MERGE)
                         .build(),
                 PullRequestEntity.builder()
                         .id(faker.dragonBall().character() + "-4")
@@ -269,7 +270,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .base("main")
                         .head("staging")
                         .code("4")
-                        .state(PullRequest.MERGE)
+                        .state(PullRequestView.MERGE)
                         .build(),
                 PullRequestEntity.builder()
                         .id(faker.dragonBall().character() + "-5")
@@ -286,7 +287,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .base("main")
                         .head("staging")
                         .code("5")
-                        .state(PullRequest.MERGE)
+                        .state(PullRequestView.MERGE)
                         .build(),
                 PullRequestEntity.builder()
                         .id(faker.dragonBall().character() + "-6")
@@ -303,7 +304,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .base("main")
                         .head("staging")
                         .code("6")
-                        .state(PullRequest.MERGE)
+                        .state(PullRequestView.MERGE)
                         .build()
         ));
         final String startDate = "2022-03-01";
@@ -330,7 +331,8 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.deployment.average_time_between_deploys.value").isEqualTo(1440.0f)
                 .jsonPath("$.deployment.average_time_between_deploys.tendency_percentage").isEqualTo(-33.3f)
                 .jsonPath("$.deployment.last_deploy.value").isEqualTo(
-                        MINUTES.between(stringToDate("2022-03-05").toInstant(), now.atZone(ZoneId.of("Europe/Paris")).toInstant())
+                        MINUTES.between(stringToDate("2022-03-05").toInstant(),
+                                now.atZone(ZoneId.of("Europe/Paris")).toInstant())
                 )
                 .jsonPath("$.deployment.last_deploy.label").isEqualTo(repositoryName)
                 .jsonPath("$.deployment.last_deploy.link").isEqualTo(fakeDeployLink);
@@ -402,7 +404,8 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.deployment.average_time_between_deploys.value").isEqualTo(1440.0f)
                 .jsonPath("$.deployment.average_time_between_deploys.tendency_percentage").isEqualTo(-33.3f)
                 .jsonPath("$.deployment.last_deploy.value").isEqualTo(
-                        MINUTES.between(stringToDate("2022-03-05").toInstant(), now.atZone(ZoneId.of("Europe/Paris")).toInstant())
+                        MINUTES.between(stringToDate("2022-03-05").toInstant(),
+                                now.atZone(ZoneId.of("Europe/Paris")).toInstant())
                 )
                 .jsonPath("$.deployment.last_deploy.label").isEqualTo(repositoryName)
                 .jsonPath("$.deployment.last_deploy.link").isEqualTo(fakeDeployLink);

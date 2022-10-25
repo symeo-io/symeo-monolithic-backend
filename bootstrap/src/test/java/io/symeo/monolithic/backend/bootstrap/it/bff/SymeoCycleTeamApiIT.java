@@ -1,7 +1,6 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
-import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
@@ -16,6 +15,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.TagRepository;
+import io.symeo.monolithic.backend.job.domain.model.PullRequest;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
