@@ -1,10 +1,10 @@
 package io.symeo.monolithic.backend.domain.bff.service.insights;
 
-import io.symeo.monolithic.backend.domain.bff.model.metric.AverageCycleTime;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
+import io.symeo.monolithic.backend.domain.bff.model.metric.*;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +13,12 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
+@AllArgsConstructor
 public class CycleTimeService {
+
+    private final AverageCycleTimeFactory averageCycleTimeFactory;
+
+    private final CycleTimePieceFactory cycleTimePieceFactory;
 
     public Optional<AverageCycleTime> buildForTagRegexSettings(final List<PullRequestView> pullRequestViews,
                                                                final List<TagView> tagsMatchingDeployTagRegex,
@@ -23,7 +28,7 @@ public class CycleTimeService {
         if (pullRequestViewsToComputeCycleTime.size() == 0) {
             return empty();
         }
-        return of(AverageCycleTime.computeCycleTimeForTagRegexToDeploySettings(pullRequestViewsToComputeCycleTime,
+        return of(averageCycleTimeFactory.computeCycleTimeForTagRegexToDeploySettings(pullRequestViewsToComputeCycleTime,
                 tagsMatchingDeployTagRegex, allCommitsUntilEndDate));
     }
 
@@ -35,7 +40,7 @@ public class CycleTimeService {
         if (pullRequestViewsToComputeCycleTime.size() == 0) {
             return empty();
         }
-        return of(AverageCycleTime.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(pullRequestViewsToComputeCycleTime,
+        return of(averageCycleTimeFactory.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(pullRequestViewsToComputeCycleTime,
                 pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate, allCommitsUntilEndDate));
     }
 
@@ -47,7 +52,7 @@ public class CycleTimeService {
         if (pullRequestViewsToComputeCycleTime.size() == 0) {
             return List.of();
         }
-        return CycleTimePiece.computeForPullRequestMergedOnBranchRegexSettings(pullRequestViewsToComputeCycleTime,
+        return cycleTimePieceFactory.computeForPullRequestMergedOnBranchRegexSettings(pullRequestViewsToComputeCycleTime,
                 pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate, allCommitsUntilEndDate);
     }
 
@@ -59,7 +64,7 @@ public class CycleTimeService {
         if (pullRequestViewsToComputeCycleTime.size() == 0) {
             return List.of();
         }
-        return CycleTimePiece.computeForTagRegexSettings(pullRequestViewsToComputeCycleTime,
+        return cycleTimePieceFactory.computeForTagRegexSettings(pullRequestViewsToComputeCycleTime,
                 tagsMatchingDeployTagRegex, allCommitsUntilEndDate);
     }
 

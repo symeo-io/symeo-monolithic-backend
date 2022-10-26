@@ -6,7 +6,7 @@ import io.symeo.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAd
 import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
 import io.symeo.monolithic.backend.job.domain.port.in.JobAdapter;
-import io.symeo.monolithic.backend.job.rest.api.adapter.DataProcessingRestApiAdapter;
+//import io.symeo.monolithic.backend.job.rest.api.adapter.DataProcessingRestApiAdapter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;

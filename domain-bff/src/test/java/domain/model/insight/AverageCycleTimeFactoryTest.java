@@ -2,6 +2,8 @@ package domain.model.insight;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.metric.AverageCycleTime;
+import io.symeo.monolithic.backend.domain.bff.model.metric.AverageCycleTimeFactory;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeFactory;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
@@ -14,9 +16,13 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.getNumberOfMi
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AverageCycleTimeTest {
+public class AverageCycleTimeFactoryTest {
 
     private static final Faker faker = new Faker();
+
+    private static final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
+
+    private static final AverageCycleTimeFactory averageCycleTimeFactory = new AverageCycleTimeFactory(cycleTimeFactory);
 
     @Test
     void should_compute_average_cycle_given_one_commit_on_open_pr() {
@@ -27,7 +33,7 @@ public class AverageCycleTimeTest {
 
         // When
         final AverageCycleTime averageCycleTime =
-                AverageCycleTime.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(
+                averageCycleTimeFactory.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(
                         List.of(
                                 PullRequestView.builder().commitShaList(List.of(commit.getSha())).build()
                         ),
@@ -58,7 +64,7 @@ public class AverageCycleTimeTest {
 
         // When
         final AverageCycleTime averageCycleTime =
-                AverageCycleTime.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(
+                averageCycleTimeFactory.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(
                         List.of(
                                 PullRequestView.builder().commitShaList(List.of(commit1.getSha(), commit2.getSha())).build()
                         ),
@@ -91,7 +97,7 @@ public class AverageCycleTimeTest {
 
         // When
         final AverageCycleTime averageCycleTime =
-                AverageCycleTime.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(
+                averageCycleTimeFactory.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(
                         List.of(
                                 PullRequestView.builder()
                                         .commitShaList(
@@ -134,7 +140,7 @@ public class AverageCycleTimeTest {
 
         // When
         final AverageCycleTime averageCycleTime =
-                AverageCycleTime.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(
+                averageCycleTimeFactory.computeCycleTimeForPullRequestMergedOnBranchRegexSettings(
                         List.of(
                                 PullRequestView.builder()
                                         .commitShaList(
@@ -184,7 +190,7 @@ public class AverageCycleTimeTest {
 
         // When
         final AverageCycleTime averageCycleTime =
-                AverageCycleTime.computeCycleTimeForTagRegexToDeploySettings(
+                averageCycleTimeFactory.computeCycleTimeForTagRegexToDeploySettings(
                         List.of(
                                 PullRequestView.builder()
                                         .commitShaList(

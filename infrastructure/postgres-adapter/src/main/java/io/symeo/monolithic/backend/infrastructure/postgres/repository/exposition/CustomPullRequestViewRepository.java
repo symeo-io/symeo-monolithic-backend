@@ -88,9 +88,9 @@ public class CustomPullRequestViewRepository {
                     "pr.merge_commit_sha pmcs, " +
                     "pr.head             ph, " +
                     "pr.base             pb, " +
-                    "pr.author_login, " +
-                    "pr.vcs_repository, " +
-                    "pr.title " +
+                    "pr.author_login    pal, " +
+                    "pr.vcs_repository  pvr, " +
+                    "pr.title pt " +
                     "from exposition_storage.pull_request pr " +
                     "where pr.state in ('merge', 'open') " +
                     "and pr.creation_date < ':endDate' " +
@@ -100,17 +100,19 @@ public class CustomPullRequestViewRepository {
                     "order by pr.:sortingParameter :sortingDirection " +
                     "limit :endRange offset :startRange) pull_request " +
                     "left join exposition_storage.comment c on pull_request.pi = c.pull_request_id " +
-                    "left join exposition_storage.pull_request_to_commit prtc on prtc.pull_request_id = pull_request.pi ";
+                    "left join exposition_storage.pull_request_to_commit prtc on prtc.pull_request_id = pull_request.pi " +
+                    "order by pull_request.:sortingParameterAlias :sortingDirection";
 
     public List<PullRequestView> findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(final UUID teamId,
                                                                                               final Date startDate,
                                                                                               final Date endDate,
                                                                                               final int start,
                                                                                               final int end,
-                                                                                              final String sortingParameter,
+                                                                                              final String sortingDatabaseAttribute,
                                                                                               final String sortingDirection) {
         final String query = FIND_ALL_BY_TEAM_ID_UNTIL_DATE_PAGINATED_AND_SORTED
-                .replace(":sortingParameter", sortingParameter)
+                .replace(":sortingParameterAlias", sortingParameterToAlias(sortingDatabaseAttribute))
+                .replace(":sortingParameter", sortingDatabaseAttribute)
                 .replace(":sortingDirection", sortingDirection)
                 .replace(":teamId", teamId.toString())
                 .replace(":endRange", Integer.toString(end))
@@ -195,5 +197,19 @@ public class CustomPullRequestViewRepository {
                 .repository(pullRequestVcsRepository)
                 .title(pullRequestTitle)
                 .build();
+    }
+
+    private static final Map<String, String> MAP_SORTING_PARAMETER_TO_ALIAS = Map.of(
+            "creation_date", "pcd",
+            "state", "ps",
+            "merge_date", "pmd",
+            "id", "pid",
+            "vcs_url", "pvu",
+            "title", "pt",
+            "author_login", "pal",
+            "vcs_repository", "pvr"
+    );
+    static String sortingParameterToAlias(final String sortingParameter) {
+        return MAP_SORTING_PARAMETER_TO_ALIAS.get(sortingParameter);
     }
 }

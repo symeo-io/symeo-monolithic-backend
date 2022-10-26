@@ -2,6 +2,7 @@ package domain.model.insight;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeFactory;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommentView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
@@ -17,7 +18,7 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.getNumberOfMi
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CycleTimeTest {
+public class CycleTimeFactoryTest {
 
     private final static Faker faker = new Faker();
 
@@ -28,6 +29,7 @@ public class CycleTimeTest {
         @Test
         void should_compute_cycle_time_given_one_commit() {
             // Given
+            final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final Date commitDate = stringToDateTime("2022-01-01 13:00:00");
             final CommitView onlyCommit = CommitView.builder()
                     .sha(faker.pokemon().name())
@@ -43,7 +45,7 @@ public class CycleTimeTest {
 
 
             // When
-            final CycleTime cycleTime = CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
+            final CycleTime cycleTime = cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
                     pullRequestViewCycleTimeToCompute,
                     pullRequestViewsMatchingDeliverySettings,
                     allCommits
@@ -61,6 +63,7 @@ public class CycleTimeTest {
         @Test
         void should_compute_coding_time_given_two_commits() {
             // Given
+            final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final CommitView commit1 = CommitView.builder()
                     .sha(faker.pokemon().name())
                     .date(stringToDateTime("2022-01-05 10:15:13"))
@@ -80,7 +83,7 @@ public class CycleTimeTest {
 
 
             // When
-            final CycleTime cycleTime = CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
+            final CycleTime cycleTime = cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
                     pullRequestViewCycleTimeToCompute,
                     pullRequestViewsMatchingDeliverySettings,
                     allCommits
@@ -100,6 +103,7 @@ public class CycleTimeTest {
         @Test
         void should_compute_review_time_given_commits_and_comments_for_merged_pr() {
             // Given
+            final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final CommitView commit1 = CommitView.builder().sha(faker.pokemon().name())
                     .date(stringToDateTime("2022-01-03 22:00:00")).build();
             final CommitView commit2 = CommitView.builder().sha(faker.pokemon().location())
@@ -119,7 +123,7 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
+                    cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
                             allCommits);
 
             // Then
@@ -131,6 +135,7 @@ public class CycleTimeTest {
         @Test
         void should_compute_review_time_given_commits_and_comments_for_open_pr() {
             // Given
+            final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final CommitView commit1 = CommitView.builder().sha(faker.pokemon().name())
                     .date(stringToDateTime("2022-01-03 22:00:00")).build();
             final CommitView commit2 = CommitView.builder().sha(faker.pokemon().location())
@@ -149,7 +154,7 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
+                    cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
                             allCommits);
 
             // Then
@@ -165,6 +170,7 @@ public class CycleTimeTest {
         @Test
         void should_compute_zero_review_lag_and_time_given_commits_and_empty_comments() {
             // Given
+            final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final CommitView commit = CommitView.builder().sha(faker.pokemon().name()).date(stringToDateTime("2022-01" +
                     "-03 " +
                     "15:30:00")).build();
@@ -177,7 +183,7 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
+                    cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
                             List.of(commit));
 
             // Then
@@ -187,6 +193,7 @@ public class CycleTimeTest {
         @Test
         void should_compute_review_time_given_a_single_commit() {
             // Given
+            final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final CommitView commit = CommitView.builder().sha(faker.pokemon().name())
                     .date(stringToDateTime("2022-01-03 15:55:00")).build();
             final PullRequestView pullRequestView = PullRequestView.builder()
@@ -198,7 +205,7 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
+                    cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView, List.of(),
                             List.of(commit));
 
             // Then
@@ -212,6 +219,7 @@ public class CycleTimeTest {
         @Test
         void should_compute_deploy_time_for_simple_use_case() {
             // Given
+            final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final CommitView commit1 = CommitView.builder().sha(faker.pokemon().name() + "-1").date(stringToDateTime(
                     "2022-01" +
                             "-03 15:55:00")).build();
@@ -280,7 +288,7 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView,
+                    cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(pullRequestView,
                             pullRequestViewsMatchingDeliverySettings,
                             List.of(commit0, commit1, mergeCommit, commit20, commit21, mergeCommit2, commit30,
                                     commit31, commit3Merge));
@@ -298,6 +306,7 @@ public class CycleTimeTest {
         @Test
         void should_manage_pull_request_with_branch_deleted_on_vcs() {
             // Given
+            final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final CommitView commit1 = CommitView.builder().sha(faker.pokemon().name() + "-1").date(stringToDateTime(
                     "2022-01" +
                             "-03 15:55:00")).build();
@@ -321,7 +330,7 @@ public class CycleTimeTest {
                     .build();
 
             // When
-            CycleTime.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
+            cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
                     pullRequestView,
                     List.of(PullRequestView.builder()
                             .status(PullRequestView.MERGE)
@@ -343,6 +352,7 @@ public class CycleTimeTest {
         @Test
         void should_compute_deploy_time_for_simple_use_case() {
             // Given
+            final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final CommitView commit1 = CommitView.builder().sha(faker.pokemon().name() + "-1").date(stringToDateTime(
                     "2022-01" +
                             "-03 15:55:00")).build();
@@ -398,7 +408,7 @@ public class CycleTimeTest {
 
             // When
             final CycleTime cycleTime =
-                    CycleTime.computeCycleTimeForTagRegexToDeploySettings(pullRequestView,
+                    cycleTimeFactory.computeCycleTimeForTagRegexToDeploySettings(pullRequestView,
                             tags,
                             List.of(commit0, commit1, mergeCommit, commit20, commit21, mergeCommit2, commit30,
                                     commit31, commit3Merge));

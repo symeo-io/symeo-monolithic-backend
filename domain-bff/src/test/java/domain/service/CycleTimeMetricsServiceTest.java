@@ -7,6 +7,8 @@ import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetec
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.model.metric.AverageCycleTime;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetrics;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiecePage;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
@@ -70,6 +72,57 @@ public class CycleTimeMetricsServiceTest {
 
         // Then
         assertThat(optionalCycleTimeMetrics).isEmpty();
+    }
+
+    @Test
+    void should_get_empty_cycle_time_piece_page_for_wrong_delivery_settings() throws SymeoException {
+        // Given
+        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
+        final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
+        final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
+                bffExpositionStorageAdapter,
+                organizationSettingsFacade,
+                cycleTimeService
+        );
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final UUID teamId = UUID.randomUUID();
+        final Date startDate = DateHelper.stringToDate("2022-01-01");
+        final Date endDate = DateHelper.stringToDate("2022-02-01");
+
+        final int pageIndex = faker.number().randomDigit();
+        final int pageSize = faker.number().randomDigit();
+        final String sortBy = faker.gameOfThrones().character();
+        final String sortDir = faker.gameOfThrones().character();
+
+        // When
+        when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
+                .thenReturn(
+                        OrganizationSettings.builder()
+                                .deliverySettings(
+                                        DeliverySettings.builder()
+                                                .deployDetectionSettings(
+                                                        DeployDetectionSettings.builder().build()
+                                                ).build()
+                                )
+                                .build()
+                );
+        final CycleTimePiecePage cycleTimePiecePage =
+                cycleTimeMetricsService.computeCycleTimePiecesForTeamIdFromStartDateToEndDate(
+                        organization,
+                        teamId,
+                        startDate,
+                        endDate,
+                        pageIndex,
+                        pageSize,
+                        sortBy,
+                        sortDir
+                );
+
+        // Then
+        assertThat(cycleTimePiecePage.getTotalNumberOfPieces()).isEqualTo(0);
+        assertThat(cycleTimePiecePage.getTotalNumberOfPages()).isEqualTo(0);
+        assertThat(cycleTimePiecePage.getCycleTimePieces()).isNull();
     }
 
     @Test
@@ -186,6 +239,84 @@ public class CycleTimeMetricsServiceTest {
                         .currentEndDate(endDate)
                         .build()
         );
+    }
+
+    @Test
+    void should_get_cycle_time_pieces_given_merged_on_branch_delivery_settings() throws SymeoException {
+        // Given
+        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
+        final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
+        final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
+                bffExpositionStorageAdapter,
+                organizationSettingsFacade,
+                cycleTimeService
+        );
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final UUID teamId = UUID.randomUUID();
+        final Date startDate = DateHelper.stringToDate("2022-01-01");
+        final Date endDate = DateHelper.stringToDate("2022-02-01");
+
+        final int pageIndex = faker.number().randomDigit();
+        final int pageSize = faker.number().randomDigit();
+        final String sortBy = "vcs_repository";
+        final String sortDir = "desc";
+
+        final int countOfPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination = faker.number().randomDigit();
+
+        final List<PullRequestView> pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted =
+                List.of(
+                        PullRequestView.builder().id(faker.animal().name()).head(faker.ancient().god()).build(),
+                        PullRequestView.builder().id(faker.animal().name()).head("main").build()
+                );
+        final List<CommitView> allCommitsUntilEndDate =
+                List.of(
+                        CommitView.builder().sha(faker.pokemon().name() + "-1").build(),
+                        CommitView.builder().sha(faker.pokemon().name() + "-2").build()
+                );
+        final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
+                PullRequestView.builder().id(faker.animal().name()).base("staging").build(),
+                PullRequestView.builder().id(faker.animal().name()).base(faker.animal().name()).build()
+        );
+        final String cycleTimePieceId1 = faker.name().firstName() + "-1";
+        final String cycleTimePieceId2 = faker.name().firstName() + "-2";
+
+        final List<CycleTimePiece> cycleTimePiecesForPage =
+                List.of(
+                        CycleTimePiece.builder().id(cycleTimePieceId1).build(),
+                        CycleTimePiece.builder().id(cycleTimePieceId2).build()
+                );
+
+        // When
+        when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
+                .thenReturn(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
+                        "^staging$"));
+        when(bffExpositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
+                startDate, endDate))
+                .thenReturn(countOfPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination);
+        when(bffExpositionStorageAdapter.findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(
+                teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir))
+                .thenReturn(pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted);
+        when(bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId))
+                .thenReturn(allCommitsUntilEndDate);
+        when(bffExpositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId,
+                startDate, endDate))
+                .thenReturn(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
+        when(cycleTimeService.buildCycleTimePiecesForPullRequestsMergedOnBranchRegexSettings(
+                pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted,
+                List.of(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)),
+                allCommitsUntilEndDate))
+                .thenReturn(cycleTimePiecesForPage);
+
+        final CycleTimePiecePage cycleTimePiecePage =
+                cycleTimeMetricsService.computeCycleTimePiecesForTeamIdFromStartDateToEndDate(organization,
+                        teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir);
+
+        // Then
+        assertThat(cycleTimePiecePage.getTotalNumberOfPieces()).isEqualTo(countOfPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination);
+        assertThat(cycleTimePiecePage.getTotalNumberOfPages()).isEqualTo(
+                (int) Math.ceil(1.0f * countOfPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination / pageSize));
+        assertThat(cycleTimePiecePage.getCycleTimePieces()).isEqualTo(cycleTimePiecesForPage);
     }
 
 
@@ -308,6 +439,89 @@ public class CycleTimeMetricsServiceTest {
                         .currentEndDate(endDate)
                         .build()
         );
+    }
+
+    @Test
+    void should_get_cycle_time_pieces_given_tag_to_deploy_regex_delivery_settings() throws SymeoException {
+        // Given
+        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
+        final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
+        final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
+                bffExpositionStorageAdapter,
+                organizationSettingsFacade,
+                cycleTimeService
+        );
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final UUID teamId = UUID.randomUUID();
+        final Date startDate = DateHelper.stringToDate("2022-01-01");
+        final Date endDate = DateHelper.stringToDate("2022-02-01");
+
+        final int pageIndex = faker.number().randomDigit();
+        final int pageSize = faker.number().randomDigit();
+        final String sortBy = "vcs_repository";
+        final String sortDir = "desc";
+
+        final int countOfPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination = faker.number().randomDigit();
+
+        final List<PullRequestView> pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted =
+                List.of(
+                        PullRequestView.builder().id(faker.animal().name()).head(faker.ancient().god()).build(),
+                        PullRequestView.builder().id(faker.animal().name()).head("main").build()
+                );
+        final List<CommitView> allCommitsUntilEndDate =
+                List.of(
+                        CommitView.builder().sha(faker.pokemon().name() + "-1").build(),
+                        CommitView.builder().sha(faker.pokemon().name() + "-2").build()
+                );
+        final List<TagView> tagsMatchingDeployTagRegex = List.of(
+                TagView.builder().name("deploy").build(),
+                TagView.builder().name(faker.funnyName().name()).build()
+        );
+        final String cycleTimePieceId1 = faker.name().firstName() + "-1";
+        final String cycleTimePieceId2 = faker.name().firstName() + "-2";
+
+        final List<CycleTimePiece> cycleTimePiecesForPage =
+                List.of(
+                        CycleTimePiece.builder().id(cycleTimePieceId1).build(),
+                        CycleTimePiece.builder().id(cycleTimePieceId2).build()
+                );
+
+        // When
+        when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
+                .thenReturn(OrganizationSettings.builder()
+                        .deliverySettings(DeliverySettings.builder().deployDetectionSettings(
+                                        DeployDetectionSettings.builder()
+                                                .excludeBranchRegexes(List.of("^main$"))
+                                                .tagRegex("^deploy$")
+                                                .build())
+                                .build()
+                        ).build());
+        when(bffExpositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
+                startDate, endDate))
+                .thenReturn(countOfPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination);
+        when(bffExpositionStorageAdapter.findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(
+                teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir))
+                .thenReturn(pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted);
+        when(bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId))
+                .thenReturn(allCommitsUntilEndDate);
+        when(bffExpositionStorageAdapter.findTagsForTeamId(teamId))
+                .thenReturn(tagsMatchingDeployTagRegex);
+        when(cycleTimeService.buildCycleTimePiecesForTagRegexSettings(
+                List.of(pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted.get(0)),
+                List.of(tagsMatchingDeployTagRegex.get(0)),
+                allCommitsUntilEndDate))
+                .thenReturn(cycleTimePiecesForPage);
+
+        final CycleTimePiecePage cycleTimePiecePage =
+                cycleTimeMetricsService.computeCycleTimePiecesForTeamIdFromStartDateToEndDate(organization,
+                        teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir);
+
+        // Then
+        assertThat(cycleTimePiecePage.getTotalNumberOfPieces()).isEqualTo(countOfPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination);
+        assertThat(cycleTimePiecePage.getTotalNumberOfPages()).isEqualTo(
+                (int) Math.ceil(1.0f * countOfPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination / pageSize));
+        assertThat(cycleTimePiecePage.getCycleTimePieces()).isEqualTo(cycleTimePiecesForPage);
     }
 
 
