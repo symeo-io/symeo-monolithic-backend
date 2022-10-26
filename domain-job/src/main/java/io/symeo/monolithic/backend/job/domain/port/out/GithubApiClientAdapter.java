@@ -12,14 +12,14 @@ import java.util.Date;
 
 public interface GithubApiClientAdapter {
 
-    GithubRepositoryDTO[] getRepositoriesForOrganizationName(final String vcsOrganizationName,
-                                                             final Integer page,
-                                                             final Integer size) throws SymeoException;
+    GithubRepositoryDTO[] getRepositoriesForVcsOrganizationName(final String vcsOrganizationName,
+                                                                final Integer page,
+                                                                final Integer size) throws SymeoException;
 
-    GithubPullRequestDTO[] getPullRequestsForRepositoryAndOrganizationOrderByDescDate(final String vcsOrganizationName,
-                                                                                      final String repositoryName,
-                                                                                      final Integer page,
-                                                                                      final Integer size) throws SymeoException;
+    GithubPullRequestDTO[] getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(final String vcsOrganizationName,
+                                                                                         final String repositoryName,
+                                                                                         final Integer page,
+                                                                                         final Integer size) throws SymeoException;
 
     GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(final String vcsOrganizationName,
                                                                    final String repositoryName,
@@ -37,24 +37,24 @@ public interface GithubApiClientAdapter {
                                                         final Integer page,
                                                         final Integer size) throws SymeoException;
 
-    GithubBranchDTO[] getBranchesForOrganizationAndRepository(final String vcsOrganizationName,
-                                                              final String repositoryName,
-                                                              final Integer page,
-                                                              final Integer size) throws SymeoException;
+    GithubBranchDTO[] getBranchesForVcsOrganizationAndRepository(final String vcsOrganizationName,
+                                                                 final String repositoryName,
+                                                                 final Integer page,
+                                                                 final Integer size) throws SymeoException;
 
-    GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
-                                                                                             final String repositoryName,
-                                                                                             final String branchName,
-                                                                                             final Date lastCollectionDate,
-                                                                                             final Integer page,
-                                                                                             final Integer size) throws SymeoException;
+    GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
+                                                                                                final String repositoryName,
+                                                                                                final String branchName,
+                                                                                                final Date lastCollectionDate,
+                                                                                                final Integer page,
+                                                                                                final Integer size) throws SymeoException;
 
-    GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
-                                                                       final String repositoryName,
-                                                                       final String branchName,
-                                                                       final Integer page,
-                                                                       final Integer size) throws SymeoException;
+    GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
+                                                                          final String repositoryName,
+                                                                          final String branchName,
+                                                                          final Integer page,
+                                                                          final Integer size) throws SymeoException;
 
-    GithubTagDTO[] getTagsForOrganizationAndRepository(String vcsOrganizationName, String repositoryName) throws SymeoException;
+    GithubTagDTO[] getTagsForVcsOrganizationAndRepository(String vcsOrganizationName, String repositoryName) throws SymeoException;
 }
 

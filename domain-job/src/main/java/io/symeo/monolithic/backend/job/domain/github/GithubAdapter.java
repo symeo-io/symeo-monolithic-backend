@@ -5,15 +5,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
+import io.symeo.monolithic.backend.job.domain.github.dto.GithubBranchDTO;
+import io.symeo.monolithic.backend.job.domain.github.dto.GithubTagDTO;
 import io.symeo.monolithic.backend.job.domain.github.dto.pr.GithubCommentsDTO;
 import io.symeo.monolithic.backend.job.domain.github.dto.pr.GithubCommitsDTO;
 import io.symeo.monolithic.backend.job.domain.github.dto.pr.GithubPullRequestDTO;
 import io.symeo.monolithic.backend.job.domain.github.dto.repo.GithubRepositoryDTO;
 import io.symeo.monolithic.backend.job.domain.github.mapper.GithubMapper;
 import io.symeo.monolithic.backend.job.domain.github.properties.GithubProperties;
-import io.symeo.monolithic.backend.job.domain.model.vcs.PullRequest;
-import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
-import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.job.domain.model.vcs.*;
 import io.symeo.monolithic.backend.job.domain.port.out.GithubApiClientAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.RawStorageAdapter;
 import lombok.AllArgsConstructor;
@@ -43,7 +43,7 @@ public class GithubAdapter {
     public List<Repository> getRepositoriesForVcsOrganization(final VcsOrganization vcsOrganization) throws SymeoException {
         int page = 1;
         GithubRepositoryDTO[] githubRepositoryDTOS =
-                githubApiClientAdapter.getRepositoriesForOrganizationName(
+                githubApiClientAdapter.getRepositoriesForVcsOrganizationName(
                         vcsOrganization.getName(), page, properties.getSize());
         if (isNull(githubRepositoryDTOS) || githubRepositoryDTOS.length == 0) {
             return new ArrayList<>();
@@ -53,14 +53,15 @@ public class GithubAdapter {
         while (githubRepositoryDTOS.length == properties.getSize()) {
             page += 1;
             githubRepositoryDTOS =
-                    githubApiClientAdapter.getRepositoriesForOrganizationName(
+                    githubApiClientAdapter.getRepositoriesForVcsOrganizationName(
                             vcsOrganization.getName(), page, properties.getSize());
             githubRepositoryDTOList.addAll(Arrays.stream(githubRepositoryDTOS).toList());
         }
         rawStorageAdapter.save(vcsOrganization.getOrganizationId(), ADAPTER_NAME, Repository.ALL,
                 dtoToBytes(githubRepositoryDTOList));
         return githubRepositoryDTOList.stream()
-                .map(githubRepositoryDTO -> mapRepositoryDtoToDomain(githubRepositoryDTO, ADAPTER_NAME))
+                .map(githubRepositoryDTO -> mapRepositoryDtoToDomain(githubRepositoryDTO, ADAPTER_NAME,
+                        vcsOrganization))
                 .toList();
     }
 
@@ -81,7 +82,7 @@ public class GithubAdapter {
                 return getPullRequestWithoutAlreadyCollectedPullRequests(repository, startDate, endDate);
             } else {
                 return getPullRequestsForRepositoryAndAlreadyCollectedPullRequests(repository,
-                        alreadyRawCollectedPullRequests);
+                        alreadyRawCollectedPullRequests, startDate, endDate);
             }
         }
     }
@@ -90,18 +91,23 @@ public class GithubAdapter {
             , Date endDate) throws SymeoException {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
-                githubApiClientAdapter.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
+                githubApiClientAdapter.getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(
                         repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
         if (isNull(githubPullRequestDTOS) || githubPullRequestDTOS.length == 0) {
             return new ArrayList<>();
         }
-
         final List<GithubPullRequestDTO> githubPullRequestDTOList =
-                new ArrayList<>(List.of(githubPullRequestDTOS));
+                new ArrayList<>();
+        for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestDTOS) {
+            if (githubPullRequestDTO.getUpdatedAt().after(startDate)
+                    && githubPullRequestDTO.getUpdatedAt().before(endDate)) {
+                githubPullRequestDTOList.add(githubPullRequestDTO);
+            }
+        }
         while (nonNull(githubPullRequestDTOS) && githubPullRequestDTOS.length == properties.getSize()) {
             page += 1;
             githubPullRequestDTOS =
-                    githubApiClientAdapter.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
+                    githubApiClientAdapter.getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(
                             repository.getVcsOrganizationName(), repository.getName(), page,
                             properties.getSize());
             if (nonNull(githubPullRequestDTOS)) {
@@ -116,40 +122,134 @@ public class GithubAdapter {
                 }
             }
         }
-        return githubPullRequestDTOList.stream()
+        return getGithubPullRequestDTOs(repository, githubPullRequestDTOList)
+                .stream()
                 .map(githubPullRequestDTO -> GithubMapper.mapPullRequestDtoToDomain(githubPullRequestDTO,
-                        ADAPTER_NAME))
+                        ADAPTER_NAME, repository))
                 .toList();
     }
 
     private List<PullRequest> getPullRequestsForRepositoryAndAlreadyCollectedPullRequests(final Repository repository,
-                                                                                         final byte[] alreadyRawCollectedPullRequests) throws SymeoException {
+                                                                                          final byte[] alreadyRawCollectedPullRequests,
+                                                                                          final Date startDate,
+                                                                                          final Date endDate) throws SymeoException {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
-                githubApiClientAdapter.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
+                githubApiClientAdapter.getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(
                         repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
         if (isNull(githubPullRequestDTOS) || githubPullRequestDTOS.length == 0) {
             return new ArrayList<>();
         }
         final List<GithubPullRequestDTO> githubPullRequestDTOList =
-                new ArrayList<>(List.of(githubPullRequestDTOS));
-        while (nonNull(githubPullRequestDTOS) && githubPullRequestDTOS.length == properties.getSize()) {
+                new ArrayList<>();
+        for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestDTOS) {
+            if (githubPullRequestDTO.getUpdatedAt().after(startDate)
+                    && githubPullRequestDTO.getUpdatedAt().before(endDate)) {
+                githubPullRequestDTOList.add(githubPullRequestDTO);
+            }
+        }
+        boolean pullRequestInDateRange = true;
+        while (nonNull(githubPullRequestDTOS) && githubPullRequestDTOS.length == properties.getSize() && pullRequestInDateRange) {
             page += 1;
             githubPullRequestDTOS =
-                    githubApiClientAdapter.getPullRequestsForRepositoryAndOrganizationOrderByDescDate(
+                    githubApiClientAdapter.getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(
                             repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
             if (nonNull(githubPullRequestDTOS)) {
-                githubPullRequestDTOList.addAll(Arrays.stream(githubPullRequestDTOS).toList());
+                for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestDTOS) {
+                    if (githubPullRequestDTO.getUpdatedAt().after(startDate)
+                            && githubPullRequestDTO.getUpdatedAt().before(endDate)) {
+                        githubPullRequestDTOList.add(githubPullRequestDTO);
+                    }
+                    if (githubPullRequestDTO.getCreatedAt().before(startDate)) {
+                        pullRequestInDateRange = false;
+                        break;
+                    }
+
+                }
             }
         }
         return getIncrementalGithubPullRequests(repository,
                 alreadyRawCollectedPullRequests,
                 githubPullRequestDTOList).stream()
                 .map(githubPullRequestDTO -> GithubMapper.mapPullRequestDtoToDomain(githubPullRequestDTO,
-                        ADAPTER_NAME))
+                        ADAPTER_NAME, repository))
                 .toList();
 
     }
+
+    public List<Tag> getTags(final Repository repository) throws SymeoException {
+        final GithubTagDTO[] githubTagDTOS =
+                githubApiClientAdapter.getTagsForVcsOrganizationAndRepository(repository.getVcsOrganizationName(),
+                        repository.getName());
+        for (GithubTagDTO githubTagDTO : githubTagDTOS) {
+            githubTagDTO.setVcsApiUrl(
+                    properties.getUrlHost() + repository.getVcsOrganizationName() + "/" + repository.getName() +
+                            "/tree/" + githubTagDTO.getRef().replace("refs/tags/", "")
+            );
+        }
+        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Tag.getNameFromRepository(repository),
+                dtoToBytes(githubTagDTOS));
+        return Arrays.stream(githubTagDTOS)
+                .map(githubTagDTO -> GithubMapper.mapTagToDomain(githubTagDTO, repository))
+                .toList();
+    }
+
+    public List<Branch> getBranches(final Repository repository) throws SymeoException {
+
+        int page = 1;
+        GithubBranchDTO[] githubBranchDTOS =
+                this.githubApiClientAdapter.getBranchesForVcsOrganizationAndRepository(
+                        repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
+        if (isNull(githubBranchDTOS) || githubBranchDTOS.length == 0) {
+            return new ArrayList<>();
+        }
+        final List<GithubBranchDTO> githubBranchDTOList =
+                new ArrayList<>(List.of(githubBranchDTOS));
+        while (githubBranchDTOS.length == properties.getSize()) {
+            page += 1;
+            githubBranchDTOS =
+                    this.githubApiClientAdapter.getBranchesForVcsOrganizationAndRepository(
+                            repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
+            githubBranchDTOList.addAll(Arrays.stream(githubBranchDTOS).toList());
+        }
+        return githubBranchDTOList.stream()
+                .map(GithubMapper::mapBranchToDomain)
+                .toList();
+    }
+//    public List<Commit> getCommitsForBranchFromLastCollectionDate(final Repository repository,
+//                                                               final String branchName,
+//                                                               Date lastCollectionDate)
+//            throws SymeoException {
+//        lastCollectionDate = getLastCollectionDateFromAlreadyCollectCommits(lastCollectionDate,
+//                alreadyCollectedRawGithubCommitsDTOS);
+//        int page = 1;
+//        GithubCommitsDTO[] githubCommitsDTOS = getGithubCommitsDTOSFromLastCollectionDate(lastCollectionDate,
+//                githubHttpApiClient, vcsOrganizationName, repositoryName, branchName, page, properties);
+//        if (isNull(githubCommitsDTOS) || githubCommitsDTOS.length == 0) {
+//            return new byte[0];
+//        }
+//        final List<GithubCommitsDTO> githubCommitsDTOList =
+//                new ArrayList<>(List.of(githubCommitsDTOS));
+//        while (githubCommitsDTOS.length == properties.getSize()) {
+//            page += 1;
+//            githubCommitsDTOS = getGithubCommitsDTOSFromLastCollectionDate(lastCollectionDate, githubHttpApiClient,
+//                    vcsOrganizationName, repositoryName, branchName, page, properties);
+//            githubCommitsDTOList.addAll(Arrays.stream(githubCommitsDTOS).toList());
+//        }
+//
+//        if (nonNull(alreadyCollectedRawGithubCommitsDTOS) && alreadyCollectedRawGithubCommitsDTOS.length > 0) {
+//            final GithubCommitsDTO[] alreadyCollectedGithubCommitsDTOS =
+//                    bytesToDto(alreadyCollectedRawGithubCommitsDTOS,
+//                            GithubCommitsDTO[].class);
+//            githubCommitsDTOList.addAll(
+//                    compareAlreadyCollectedCommitsToCurrentCommitsAndReturnNotUpdatedCommits(
+//                            Arrays.asList(alreadyCollectedGithubCommitsDTOS), githubCommitsDTOList)
+//            );
+//        }
+
+//        return dtoToBytes(githubCommitsDTOList.toArray());
+
+//    }
 
     private byte[] getAlreadyRawCollectedPullRequests(Repository repository) throws SymeoException {
         byte[] alreadyRawCollectedPullRequests = null;
@@ -193,6 +293,22 @@ public class GithubAdapter {
         return githubDetailedPullRequests;
     }
 
+    private List<GithubPullRequestDTO> getGithubPullRequestDTOs(Repository repository,
+                                                                List<GithubPullRequestDTO> githubPullRequestDTOList) {
+        return githubPullRequestDTOList.parallelStream()
+                .map(githubPullRequestDTO -> {
+                    try {
+                        return Optional.of(getPullRequestDetailsForPullRequestNumber(repository, githubPullRequestDTO));
+                    } catch (SymeoException ex) {
+                        LOGGER.error("Error while getting PR from github", ex);
+                    }
+                    return Optional.empty();
+
+                })
+                .filter(Optional::isPresent)
+                .map(o -> (GithubPullRequestDTO) o.get())
+                .toList();
+    }
 
     private GithubPullRequestDTO[] getGithubPullRequestDTOSFromBytes(byte[] bytes) throws SymeoException {
         return bytesToDto(bytes,

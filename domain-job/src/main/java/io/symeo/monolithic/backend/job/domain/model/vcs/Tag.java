@@ -9,7 +9,7 @@ public class Tag {
     private static final String ALL = "commits";
     String name;
     String commitSha;
-    Repository repository;
+    String repositoryId;
     String vcsUrl;
 
     public static String getNameFromRepository(final Repository repository) {

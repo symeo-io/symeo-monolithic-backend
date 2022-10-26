@@ -1,7 +1,6 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubHttpApiClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.jwt.DefaultGithubJwtTokenProvider;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.jwt.GithubJwtTokenProvider;

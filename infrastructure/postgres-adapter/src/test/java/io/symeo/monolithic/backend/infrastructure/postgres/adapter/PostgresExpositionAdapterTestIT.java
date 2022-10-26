@@ -934,11 +934,11 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         );
         final List<Tag> tags = List.of(
                 Tag.builder().commitSha(faker.name().firstName())
-                        .repository(Repository.builder().id(repositoryId).build())
+                        .repositoryId(repositoryId)
                         .name(faker.name().firstName())
                         .build(),
                 Tag.builder().commitSha(faker.name().lastName())
-                        .repository(Repository.builder().id(repositoryId).build())
+                        .repositoryId(repositoryId)
                         .name(faker.name().firstName())
                         .build());
 

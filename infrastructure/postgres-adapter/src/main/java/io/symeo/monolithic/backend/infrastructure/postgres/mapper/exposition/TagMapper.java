@@ -11,7 +11,7 @@ public interface TagMapper {
         return TagEntity.builder()
                 .name(tag.getName())
                 .sha(tag.getCommitSha())
-                .repositoryId(tag.getRepository().getId())
+                .repositoryId(tag.getRepositoryId())
                 .vcsUrl(tag.getVcsUrl())
                 .build();
     }

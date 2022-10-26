@@ -51,32 +51,32 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
     }
 
     @Override
-    public GithubRepositoryDTO[] getRepositoriesForOrganizationName(final String organizationName,
-                                                                    final Integer page,
-                                                                    final Integer size) throws SymeoException {
+    public GithubRepositoryDTO[] getRepositoriesForVcsOrganizationName(final String vcsOrganizationName,
+                                                                       final Integer page,
+                                                                       final Integer size) throws SymeoException {
         final String uri =
                 api
                         + "orgs/"
-                        + encodeValue(organizationName)
+                        + encodeValue(vcsOrganizationName)
                         + "/repos?sort=name&per_page="
                         + size.toString()
                         + "&page="
                         + page.toString();
         return get(
                 uri,
-                organizationName,
+                vcsOrganizationName,
                 GithubRepositoryDTO[].class);
     }
 
     @Override
-    public GithubPullRequestDTO[] getPullRequestsForRepositoryAndOrganizationOrderByDescDate(final String organizationName,
-                                                                                             final String repositoryName,
-                                                                                             final Integer page,
-                                                                                             final Integer size) throws SymeoException {
+    public GithubPullRequestDTO[] getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(final String vcsOrganizationName,
+                                                                                                final String repositoryName,
+                                                                                                final Integer page,
+                                                                                                final Integer size) throws SymeoException {
         final String uri =
                 api
                         + "repos/"
-                        + encodeValue(organizationName)
+                        + encodeValue(vcsOrganizationName)
                         + "/"
                         + encodeValue(repositoryName)
                         + "/pulls?sort=updated&direction=desc&state=all&per_page="
@@ -85,31 +85,31 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
                         + page.toString();
         return get(
                 uri,
-                organizationName,
+                vcsOrganizationName,
                 GithubPullRequestDTO[].class);
     }
 
     @Override
-    public GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(final String organizationName,
+    public GithubPullRequestDTO getPullRequestDetailsForPullRequestNumber(final String vcsOrganizationName,
                                                                           final String repositoryName,
                                                                           final Integer number) throws SymeoException {
         final String uri =
                 api
                         + "repos/"
-                        + encodeValue(organizationName)
+                        + encodeValue(vcsOrganizationName)
                         + "/"
                         + encodeValue(repositoryName)
                         + "/pulls/"
                         + number;
         return get(
                 uri,
-                organizationName,
+                vcsOrganizationName,
                 GithubPullRequestDTO.class
         );
     }
 
     @Override
-    public GithubCommitsDTO[] getCommitsForPullRequestNumber(final String organizationName,
+    public GithubCommitsDTO[] getCommitsForPullRequestNumber(final String vcsOrganizationName,
                                                              final String repositoryName,
                                                              final int pullRequestNumber,
                                                              final Integer page,
@@ -117,7 +117,7 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
         final String uri =
                 api
                         + "repos/"
-                        + encodeValue(organizationName)
+                        + encodeValue(vcsOrganizationName)
                         + "/"
                         + encodeValue(repositoryName)
                         + "/pulls/"
@@ -128,13 +128,13 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
                         + size.toString();
         return get(
                 uri,
-                organizationName,
+                vcsOrganizationName,
                 GithubCommitsDTO[].class
         );
     }
 
     @Override
-    public GithubCommentsDTO[] getCommentsForPullRequestNumber(final String organizationName,
+    public GithubCommentsDTO[] getCommentsForPullRequestNumber(final String vcsOrganizationName,
                                                                final String repositoryName,
                                                                final Integer pullRequestNumber,
                                                                final Integer page,
@@ -142,7 +142,7 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
         final String uri =
                 api
                         + "repos/"
-                        + encodeValue(organizationName)
+                        + encodeValue(vcsOrganizationName)
                         + "/"
                         + encodeValue(repositoryName)
                         + "/pulls/"
@@ -153,16 +153,16 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
                         + size.toString();
         return get(
                 uri,
-                organizationName,
+                vcsOrganizationName,
                 GithubCommentsDTO[].class
         );
     }
 
     @Override
-    public GithubBranchDTO[] getBranchesForOrganizationAndRepository(final String vcsOrganizationName,
-                                                                     final String repositoryName,
-                                                                     final Integer page,
-                                                                     final Integer size) throws SymeoException {
+    public GithubBranchDTO[] getBranchesForVcsOrganizationAndRepository(final String vcsOrganizationName,
+                                                                        final String repositoryName,
+                                                                        final Integer page,
+                                                                        final Integer size) throws SymeoException {
         final String uri =
                 api
                         + "repos/"
@@ -180,12 +180,12 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
     }
 
     @Override
-    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
-                                                                                                    final String repositoryName,
-                                                                                                    final String branchName,
-                                                                                                    final Date lastCollectionDate,
-                                                                                                    final Integer page,
-                                                                                                    final Integer size) throws SymeoException {
+    public GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
+                                                                                                       final String repositoryName,
+                                                                                                       final String branchName,
+                                                                                                       final Date lastCollectionDate,
+                                                                                                       final Integer page,
+                                                                                                       final Integer size) throws SymeoException {
         String uri =
                 api
                         + "repos/"
@@ -204,11 +204,11 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
     }
 
     @Override
-    public GithubCommitsDTO[] getCommitsForOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
-                                                                              final String repositoryName,
-                                                                              final String branchName,
-                                                                              final Integer page,
-                                                                              final Integer size) throws SymeoException {
+    public GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
+                                                                                 final String repositoryName,
+                                                                                 final String branchName,
+                                                                                 final Integer page,
+                                                                                 final Integer size) throws SymeoException {
         String uri =
                 api
                         + "repos/"
@@ -223,7 +223,7 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
     }
 
     @Override
-    public GithubTagDTO[] getTagsForOrganizationAndRepository(String vcsOrganizationName, String repositoryName) throws SymeoException {
+    public GithubTagDTO[] getTagsForVcsOrganizationAndRepository(String vcsOrganizationName, String repositoryName) throws SymeoException {
         String uri =
                 api
                         + "repos/"
@@ -234,54 +234,54 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
         return get(uri, vcsOrganizationName, GithubTagDTO[].class);
     }
 
-    private <ResponseBody> ResponseBody get(String uri, String organizationName,
+    private <ResponseBody> ResponseBody get(String uri, String vcsOrganizationName,
                                             Class<ResponseBody> responseClass) throws SymeoException {
         try {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(uri))
                     .GET();
-            getGithubAuthenticationHeader(organizationName).forEach(requestBuilder::header);
+            getGithubAuthenticationHeader(vcsOrganizationName).forEach(requestBuilder::header);
             final HttpResponse<byte[]> httpResponse = this.httpClient.send(requestBuilder.build(),
                     HttpResponse.BodyHandlers.ofByteArray());
             final int statusCode = httpResponse.statusCode();
             if (statusCode == 200) {
                 return objectMapper.readValue(httpResponse.body(), responseClass);
             } else if (statusCode == 401) {
-                flushGithubAuthenticationHeader(organizationName);
-                return get(uri, organizationName, responseClass);
+                flushGithubAuthenticationHeader(vcsOrganizationName);
+                return get(uri, vcsOrganizationName, responseClass);
             }
-            throw buildUnhandledHttpStatusCodeException(uri, organizationName, statusCode);
+            throw buildUnhandledHttpStatusCodeException(uri, vcsOrganizationName, statusCode);
         } catch (IOException | InterruptedException e) {
-            throw buildErrorWhileExecutingHttpRequestException(uri, organizationName);
+            throw buildErrorWhileExecutingHttpRequestException(uri, vcsOrganizationName);
         }
     }
 
-    private void flushGithubAuthenticationHeader(final String organizationName) {
-        INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.remove(organizationName);
+    private void flushGithubAuthenticationHeader(final String vcsOrganizationName) {
+        INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.remove(vcsOrganizationName);
     }
 
-    private Map<String, String> getGithubAuthenticationHeader(String organizationName) throws SymeoException {
-        if (!INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.containsKey(organizationName)) {
-            INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.put(organizationName,
-                    getGithubInstallationTokenForOrganization(organizationName));
+    private Map<String, String> getGithubAuthenticationHeader(String vcsOrganizationName) throws SymeoException {
+        if (!INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.containsKey(vcsOrganizationName)) {
+            INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.put(vcsOrganizationName,
+                    getGithubInstallationTokenForOrganization(vcsOrganizationName));
         }
         return Map.of(AUTHORIZATION_HEADER_KEY,
-                AUTHORIZATION_HEADER_TOKEN_VALUE + INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.get(organizationName));
+                AUTHORIZATION_HEADER_TOKEN_VALUE + INSTALLATION_TOKEN_MAPPED_TO_ORGANIZATION.get(vcsOrganizationName));
     }
 
-    private String getGithubInstallationTokenForOrganization(String organizationName) throws SymeoException {
+    private String getGithubInstallationTokenForOrganization(String vcsOrganizationName) throws SymeoException {
 
         final String jwtTokenBearer = "Bearer " + githubJwtTokenProvider.generateSignedJwtToken();
         for (GithubInstallationDTO githubInstallationDTO : getGithubInstallationsDTO(jwtTokenBearer,
-                organizationName)) {
-            if (githubInstallationDTO.getAccount().getLogin().equals(organizationName)) {
-                return getInstallationToken(organizationName, jwtTokenBearer, githubInstallationDTO);
+                vcsOrganizationName)) {
+            if (githubInstallationDTO.getAccount().getLogin().equals(vcsOrganizationName)) {
+                return getInstallationToken(vcsOrganizationName, jwtTokenBearer, githubInstallationDTO);
             }
         }
-        throw buildOrgaTokenNotFoundException(organizationName);
+        throw buildOrgaTokenNotFoundException(vcsOrganizationName);
 
     }
 
-    private String getInstallationToken(String organizationName, String jwtTokenBearer,
+    private String getInstallationToken(String vcsOrganizationName, String jwtTokenBearer,
                                         GithubInstallationDTO githubInstallationDTO) throws SymeoException {
         final HttpRequest.Builder requestBuilder = HttpRequest
                 .newBuilder(URI.create(api + "app/installations/" + githubInstallationDTO.getId() +
@@ -290,18 +290,18 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
 
         Map.of(AUTHORIZATION_HEADER_KEY, jwtTokenBearer).forEach(requestBuilder::header);
         final GithubInstallationAccessTokenDTO githubInstallationAccessTokenDTO =
-                sendRequest(requestBuilder.build(), GithubInstallationAccessTokenDTO.class, organizationName);
+                sendRequest(requestBuilder.build(), GithubInstallationAccessTokenDTO.class, vcsOrganizationName);
         return githubInstallationAccessTokenDTO.getToken();
     }
 
     private GithubInstallationDTO[] getGithubInstallationsDTO(final String jwtTokenBearer,
-                                                              final String organizationName) throws SymeoException {
+                                                              final String vcsOrganizationName) throws SymeoException {
         try {
             final String uri =
                     api
                             + "app/installations";
             return sendRequest(HttpRequest.newBuilder(new URI(uri)).headers("Authorization",
-                    jwtTokenBearer).build(), GithubInstallationDTO[].class, organizationName);
+                    jwtTokenBearer).build(), GithubInstallationDTO[].class, vcsOrganizationName);
         } catch (URISyntaxException e) {
             throw buildInvalidUriException(e);
         }
@@ -309,22 +309,22 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
 
     private <ResponseBody> ResponseBody sendRequest(final HttpRequest httpRequest,
                                                     final Class<ResponseBody> responseClass,
-                                                    final String organizationName) throws SymeoException {
+                                                    final String vcsOrganizationName) throws SymeoException {
         try {
             final HttpResponse<byte[]> httpResponse = this.httpClient.send(httpRequest,
                     HttpResponse.BodyHandlers.ofByteArray());
             if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() <= 299) {
                 return objectMapper.readValue(httpResponse.body(), responseClass);
             }
-            throw buildUnhandledHttpStatusCodeException(httpRequest.uri().toString(), organizationName,
+            throw buildUnhandledHttpStatusCodeException(httpRequest.uri().toString(), vcsOrganizationName,
                     httpResponse.statusCode());
         } catch (final InterruptedException | IOException e) {
-            throw buildErrorWhileExecutingHttpRequestException(httpRequest.uri().toString(), organizationName);
+            throw buildErrorWhileExecutingHttpRequestException(httpRequest.uri().toString(), vcsOrganizationName);
         }
     }
 
-    private static SymeoException buildErrorWhileExecutingHttpRequestException(String uri, String organizationName) {
-        final String message = String.format("Error while calling %s for organization %s", uri, organizationName);
+    private static SymeoException buildErrorWhileExecutingHttpRequestException(String uri, String vcsOrganizationName) {
+        final String message = String.format("Error while calling %s for organization %s", uri, vcsOrganizationName);
         LOGGER.error(message);
         return SymeoException.builder()
                 .message(message)
@@ -332,18 +332,18 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
                 .build();
     }
 
-    private static SymeoException buildUnhandledHttpStatusCodeException(String uri, String organizationName,
+    private static SymeoException buildUnhandledHttpStatusCodeException(String uri, String vcsOrganizationName,
                                                                         int statusCode) {
         final String message = String.format("Http status %d not handle while calling uri %s for organization %s"
-                , statusCode, uri, organizationName);
+                , statusCode, uri, vcsOrganizationName);
         return SymeoException.builder()
                 .code(UNHANDLED_HTTP_STATUS_CODE)
                 .message(message)
                 .build();
     }
 
-    private static SymeoException buildOrgaTokenNotFoundException(String organizationName) {
-        final String message = String.format("Installation token not found for organization %s", organizationName);
+    private static SymeoException buildOrgaTokenNotFoundException(String vcsOrganizationName) {
+        final String message = String.format("Installation token not found for organization %s", vcsOrganizationName);
         LOGGER.error(message);
         return SymeoException.builder()
                 .code(GITHUB_ORG_TOKEN_NOT_FOUND)

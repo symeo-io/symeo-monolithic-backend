@@ -2,7 +2,6 @@ package io.symeo.monolithic.backend.infrastructure.github.adapter.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubAdapter;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.GithubHttpApiClient;
 import io.symeo.monolithic.backend.infrastructure.github.adapter.jwt.GithubJwtTokenProvider;
 import io.symeo.monolithic.backend.job.domain.github.properties.GithubProperties;
