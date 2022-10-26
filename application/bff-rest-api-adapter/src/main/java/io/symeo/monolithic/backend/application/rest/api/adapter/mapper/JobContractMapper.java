@@ -2,9 +2,9 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.bff.model.job.JobView;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.frontend.contract.api.model.JobContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.LastJobsContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.LastJobsResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.JobContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.LastJobsContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.LastJobsResponseContract;
 
 import java.math.BigDecimal;
 import java.util.List;

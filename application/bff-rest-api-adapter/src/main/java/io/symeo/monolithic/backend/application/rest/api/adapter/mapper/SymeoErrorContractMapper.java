@@ -1,8 +1,8 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.frontend.contract.api.model.SymeoErrorContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.SymeoErrorsContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.SymeoErrorContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.SymeoErrorsContract;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

@@ -4,10 +4,10 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.Curve;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.PullRequestPieceCurve;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.PullRequestPieceCurveWithAverage;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CurveDataResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CurveResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.GetCurveResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.PieceCurveDataResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.CurveDataResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.CurveResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.GetCurveResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.PieceCurveDataResponseContract;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

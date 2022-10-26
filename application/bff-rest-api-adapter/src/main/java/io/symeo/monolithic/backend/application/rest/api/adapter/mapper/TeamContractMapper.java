@@ -3,10 +3,10 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 import io.symeo.monolithic.backend.domain.bff.model.account.Team;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CreateTeamResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.TeamsResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.UpdateTeamRequestContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.CreateTeamRequestContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.CreateTeamResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.TeamsResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.UpdateTeamRequestContract;
 
 import java.util.HashMap;
 import java.util.List;

@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>symeo-frontend-api</artifactId>
+    <artifactId>symeo-bff-api</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <generated.code.dir>${project.basedir}/src/gen/java</generated.code.dir>
-        <contract.name>symeo-frontend-api.yaml</contract.name>
+        <contract.name>symeo-bff-api.yaml</contract.name>
         <contract.path>src/main/resources/${contract.name}</contract.path>
         <old-contract.path>${project.build.directory}/${contract.name}</old-contract.path>
 
@@ -113,8 +113,8 @@
                             <inputSpec>${project.basedir}/${contract.path}</inputSpec>
                             <generatorName>spring</generatorName>
                             <configHelp>false</configHelp>
-                            <apiPackage>io.symeo.monolithic.backend.frontend.contract.api</apiPackage>
-                            <modelPackage>io.symeo.monolithic.backend.frontend.contract.api.model</modelPackage>
+                            <apiPackage>io.symeo.monolithic.backend.bff.contract.api</apiPackage>
+                            <modelPackage>io.symeo.monolithic.backend.bff.contract.api.model</modelPackage>
                             <configOptions>
                                 <java8>true</java8>
                                 <library>spring-boot</library>

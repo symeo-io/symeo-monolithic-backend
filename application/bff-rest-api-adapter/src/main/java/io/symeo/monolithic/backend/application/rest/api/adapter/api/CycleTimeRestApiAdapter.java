@@ -7,10 +7,10 @@ import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.CycleTime
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.bff.port.in.CycleTimeMetricsFacadeAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.frontend.contract.api.CycleTimeApi;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimeCurveResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimePiecesResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CycleTimeResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.CycleTimeApi;
+import io.symeo.monolithic.backend.bff.contract.api.model.CycleTimeCurveResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.CycleTimePiecesResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.CycleTimeResponseContract;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

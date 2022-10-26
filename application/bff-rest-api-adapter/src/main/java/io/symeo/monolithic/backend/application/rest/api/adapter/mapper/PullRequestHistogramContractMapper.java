@@ -3,10 +3,10 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.metric.DataCompareToLimit;
 import io.symeo.monolithic.backend.domain.bff.model.metric.PullRequestHistogram;
-import io.symeo.monolithic.backend.frontend.contract.api.model.SymeoErrorContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.GetHistogramResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.HistogramDataResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.HistogramResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.SymeoErrorContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.GetHistogramResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.HistogramDataResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.HistogramResponseContract;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;

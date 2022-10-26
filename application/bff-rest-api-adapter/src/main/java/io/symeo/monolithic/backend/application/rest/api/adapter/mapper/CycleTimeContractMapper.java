@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetrics;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiecePage;
-import io.symeo.monolithic.backend.frontend.contract.api.model.*;
+import io.symeo.monolithic.backend.bff.contract.api.model.*;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;

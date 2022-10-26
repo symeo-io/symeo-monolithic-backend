@@ -4,7 +4,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.account.Onboarding;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
-import io.symeo.monolithic.backend.frontend.contract.api.model.*;
+import io.symeo.monolithic.backend.bff.contract.api.model.*;
 
 import java.util.List;
 

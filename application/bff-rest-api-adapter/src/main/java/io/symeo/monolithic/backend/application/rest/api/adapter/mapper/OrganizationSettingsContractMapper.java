@@ -4,10 +4,10 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.frontend.contract.api.model.DeliverySettingsContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.DeployDetectionSettingsContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.OrganizationSettingsContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.OrganizationSettingsResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.DeliverySettingsContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.DeployDetectionSettingsContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.OrganizationSettingsContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.OrganizationSettingsResponseContract;
 
 import java.util.List;
 import java.util.UUID;

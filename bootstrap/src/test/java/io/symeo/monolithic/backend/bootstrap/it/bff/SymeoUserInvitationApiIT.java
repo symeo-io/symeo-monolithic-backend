@@ -1,7 +1,7 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
-import io.symeo.monolithic.backend.frontend.contract.api.model.UserRequestContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.UserRequestContract;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OnboardingEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;

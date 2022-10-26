@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.symeo.monolithic.backend</groupId>
-        <artifactId>symeo-monolithic-backend</artifactId>
+        <artifactId>application</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>domain-bff</artifactId>
+    <artifactId>data-processing-rest-api-adapter</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -20,8 +20,14 @@
     <dependencies>
         <dependency>
             <groupId>io.symeo.monolithic.backend</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>data-processing-domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.symeo.monolithic.backend</groupId>
+            <artifactId>symeo-data-processing-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
 </project>

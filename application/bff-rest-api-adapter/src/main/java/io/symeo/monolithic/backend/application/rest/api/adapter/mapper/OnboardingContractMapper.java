@@ -2,9 +2,9 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.account.Onboarding;
-import io.symeo.monolithic.backend.frontend.contract.api.model.OnboardingContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.PostOnboardingResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.OnboardingContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.PostOnboardingResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.UpdateOnboardingRequestContract;
 
 import java.util.List;
 

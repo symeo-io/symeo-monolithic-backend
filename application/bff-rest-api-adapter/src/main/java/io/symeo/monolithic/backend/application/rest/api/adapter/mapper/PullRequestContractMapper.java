@@ -3,9 +3,9 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 import io.symeo.monolithic.backend.domain.bff.core.Page;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.frontend.contract.api.model.PullRequestContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.PullRequestPageContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.PullRequestsResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.PullRequestContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.PullRequestPageContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.PullRequestsResponseContract;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;

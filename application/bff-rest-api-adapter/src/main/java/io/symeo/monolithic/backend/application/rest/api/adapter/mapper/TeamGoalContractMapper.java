@@ -2,8 +2,8 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.account.TeamGoal;
-import io.symeo.monolithic.backend.frontend.contract.api.model.TeamGoalResponse;
-import io.symeo.monolithic.backend.frontend.contract.api.model.TeamGoalsResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.TeamGoalResponse;
+import io.symeo.monolithic.backend.bff.contract.api.model.TeamGoalsResponseContract;
 
 import java.util.List;
 

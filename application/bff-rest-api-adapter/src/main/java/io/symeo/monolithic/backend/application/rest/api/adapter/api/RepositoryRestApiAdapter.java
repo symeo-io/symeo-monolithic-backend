@@ -5,8 +5,8 @@ import io.symeo.monolithic.backend.application.rest.api.adapter.service.Reposito
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.bff.service.vcs.RepositoryService;
-import io.symeo.monolithic.backend.frontend.contract.api.RepositoryApi;
-import io.symeo.monolithic.backend.frontend.contract.api.model.GetRepositoriesResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.RepositoryApi;
+import io.symeo.monolithic.backend.bff.contract.api.model.GetRepositoriesResponseContract;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.AllArgsConstructor;

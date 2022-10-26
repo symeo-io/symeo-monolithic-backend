@@ -2,8 +2,8 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.frontend.contract.api.model.GetRepositoriesResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.RepositoryResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.GetRepositoriesResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.RepositoryResponseContract;
 
 import java.util.List;
 

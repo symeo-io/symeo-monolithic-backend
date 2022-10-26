@@ -13,14 +13,6 @@ import java.net.http.HttpClient;
 
 public class GithubAdapterITConfiguration {
 
-
-    @Bean
-    public GithubAdapter githubAdapter(final GithubHttpApiClient githubHttpApiClient,
-                                       final GithubProperties githubProperties,
-                                       final ObjectMapper objectMapper) {
-        return new GithubAdapter(githubHttpApiClient, githubProperties, objectMapper);
-    }
-
     @Bean
     @ConfigurationProperties(prefix = "github.app")
     public GithubProperties githubProperties() {

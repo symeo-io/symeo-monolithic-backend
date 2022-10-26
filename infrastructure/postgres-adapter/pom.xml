@@ -20,12 +20,12 @@
     <dependencies>
         <dependency>
             <groupId>io.symeo.monolithic.backend</groupId>
-            <artifactId>domain-job</artifactId>
+            <artifactId>data-processing-domain</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.symeo.monolithic.backend</groupId>
-            <artifactId>domain-bff</artifactId>
+            <artifactId>bff-domain</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

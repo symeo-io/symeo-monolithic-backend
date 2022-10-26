@@ -12,7 +12,7 @@
     <modules>
         <module>bff-rest-api-adapter</module>
         <module>github-webhook-api-adapter</module>
-        <module>job-rest-api-adapter</module>
+        <module>data-processing-rest-api-adapter</module>
     </modules>
     <artifactId>application</artifactId>
 

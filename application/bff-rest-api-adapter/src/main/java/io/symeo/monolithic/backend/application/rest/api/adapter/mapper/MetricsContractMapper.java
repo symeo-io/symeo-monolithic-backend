@@ -2,9 +2,9 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.metric.Metrics;
-import io.symeo.monolithic.backend.frontend.contract.api.model.MetricsContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.MetricsResponseContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.MetricsResponseContractMetrics;
+import io.symeo.monolithic.backend.bff.contract.api.model.MetricsContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.MetricsResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.MetricsResponseContractMetrics;
 
 import java.math.BigDecimal;
 import java.util.List;
