@@ -31,15 +31,9 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public Organization findOrganizationById(final UUID organizationId) throws SymeoException {
+    public Optional<Organization> findOrganizationById(final UUID organizationId) throws SymeoException {
         return vcsOrganizationRepository.findByOrganizationId(organizationId)
-                .map(OrganizationMapper::entityToDomain)
-                .orElseThrow(
-                        () -> SymeoException.builder()
-                                .message(String.format("Organization not found for id %s", organizationId))
-                                .code(ORGANISATION_NOT_FOUND)
-                                .build()
-                );
+                .map(OrganizationMapper::entityToDomain);
 
     }
 

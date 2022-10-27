@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Configuration
 public class GithubWebhookITConfiguration {
@@ -45,6 +46,10 @@ public class GithubWebhookITConfiguration {
         public Organization createOrganization(final Organization organization) throws SymeoException {
             organizations.add(organization);
             return organization;
+        }
+        @Override
+        public Optional<Organization> getOrganizationForApiKey(String key) throws SymeoException {
+            return Optional.of(Organization.builder().build());
         }
     }
 }

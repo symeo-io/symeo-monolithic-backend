@@ -9,6 +9,8 @@ import io.symeo.monolithic.backend.domain.bff.port.out.SymeoJobApiAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import lombok.AllArgsConstructor;
 
+import java.util.Optional;
+
 @AllArgsConstructor
 public class OrganizationService implements OrganizationFacadeAdapter {
     private final OrganizationStorageAdapter organizationStorageAdapter;
@@ -23,9 +25,13 @@ public class OrganizationService implements OrganizationFacadeAdapter {
     }
 
     @Override
-    public Organization getOrganizationForApiKey(String key) throws SymeoException {
-        final OrganizationApiKey organizationApiKey = this.organizationApiKeyStorageAdapter.findOneByKey(key);
+    public Optional<Organization> getOrganizationForApiKey(String key) throws SymeoException {
+        final Optional<OrganizationApiKey> organizationApiKey = this.organizationApiKeyStorageAdapter.findOneByKey(key);
 
-        return organizationStorageAdapter.findOrganizationById(organizationApiKey.getOrganizationId());
+        if (organizationApiKey.isPresent()) {
+            return organizationStorageAdapter.findOrganizationById(organizationApiKey.get().getOrganizationId());
+        }
+
+        return Optional.empty();
     }
 }
