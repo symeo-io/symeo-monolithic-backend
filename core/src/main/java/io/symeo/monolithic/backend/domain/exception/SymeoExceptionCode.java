@@ -49,4 +49,8 @@ public interface SymeoExceptionCode {
 
     // Symeo http client Exception Codes
     String SYMEO_HTTP_CLIENT_ERROR = "T.EXCEPTION_WHILE_SENDING_HTTP_REQUEST_TO_SYMEO_API";
+
+    // Testing
+    String FAILED_TO_PARSE_COVERAGE_REPORT = "F.FAILED_TO_PARSE_COVERAGE_REPORT";
+
 }

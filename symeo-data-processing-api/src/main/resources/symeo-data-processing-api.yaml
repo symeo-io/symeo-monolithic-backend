@@ -105,6 +105,12 @@ paths:
       operationId: collectTestingData
       description: |
         Collect testing data from ci script
+      parameters:
+        - in: header
+          name: X-API-KEY
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -189,9 +195,11 @@ components:
         coverage_report_type:
           type: string
         code_line_count:
-          type: string
+          type: integer
+        test_line_count:
+          type: integer
         test_count:
-          type: string
+          type: integer
         test_framework:
           type: string
         test_type:
