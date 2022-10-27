@@ -7,7 +7,6 @@ import lombok.Value;
 import java.util.Date;
 import java.util.Optional;
 
-import static io.symeo.monolithic.backend.domain.helper.MetricsHelper.*;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
@@ -21,8 +20,8 @@ public class CycleTimeMetrics {
     Float averageCodingTimePercentageTendency;
     Float averageReviewTime;
     Float averageReviewTimePercentageTendency;
-    Float averageDeployTime;
-    Float averageDeployTimePercentageTendency;
+    Float averageTimeToDeploy;
+    Float averageTimeToDeployPercentageTendency;
     Date currentStartDate;
     Date currentEndDate;
     Date previousStartDate;
@@ -61,8 +60,8 @@ public class CycleTimeMetrics {
                 .averageCodingTimePercentageTendency(EMPTY_PERCENTAGE)
                 .averageReviewTime(currentAverageCycleTime.getAverageReviewTime())
                 .averageReviewTimePercentageTendency(EMPTY_PERCENTAGE)
-                .averageDeployTime(currentAverageCycleTime.getAverageDeployTime())
-                .averageDeployTimePercentageTendency(EMPTY_PERCENTAGE)
+                .averageTimeToDeploy(currentAverageCycleTime.getAverageTimeToDeploy())
+                .averageTimeToDeployPercentageTendency(EMPTY_PERCENTAGE)
                 .previousStartDate(previousStartDate)
                 .previousEndDate(currentStartDate)
                 .currentStartDate(currentStartDate)
@@ -91,10 +90,10 @@ public class CycleTimeMetrics {
                         MetricsHelper.getTendencyPercentage(currentAverageCycleTime.getAverageReviewTime(),
                                 previousAverageCycleTime.getAverageReviewTime())
                 )
-                .averageDeployTime(currentAverageCycleTime.getAverageDeployTime())
-                .averageDeployTimePercentageTendency(
-                        MetricsHelper.getTendencyPercentage(currentAverageCycleTime.getAverageDeployTime(),
-                                previousAverageCycleTime.getAverageDeployTime())
+                .averageTimeToDeploy(currentAverageCycleTime.getAverageTimeToDeploy())
+                .averageTimeToDeployPercentageTendency(
+                        MetricsHelper.getTendencyPercentage(currentAverageCycleTime.getAverageTimeToDeploy(),
+                                previousAverageCycleTime.getAverageTimeToDeploy())
                 )
                 .previousStartDate(previousStartDate)
                 .previousEndDate(currentStartDate)

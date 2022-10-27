@@ -34,7 +34,7 @@ public class CycleTimePieceFactory {
                     .cycleTime(cycleTimeForPullRequestView.getValue())
                     .codingTime(cycleTimeForPullRequestView.getCodingTime())
                     .reviewTime(cycleTimeForPullRequestView.getReviewTime())
-                    .deployTime(cycleTimeForPullRequestView.getDeployTime())
+                    .timeToDeploy(cycleTimeForPullRequestView.getTimeToDeploy())
                     .build());
         }
         return cycleTimePieces;
@@ -61,7 +61,7 @@ public class CycleTimePieceFactory {
                     .cycleTime(cycleTimeForTagRegexSettings.getValue())
                     .codingTime(cycleTimeForTagRegexSettings.getCodingTime())
                     .reviewTime(cycleTimeForTagRegexSettings.getReviewTime())
-                    .deployTime(cycleTimeForTagRegexSettings.getDeployTime())
+                    .timeToDeploy(cycleTimeForTagRegexSettings.getTimeToDeploy())
                     .build());
         }
         return cycleTimePieces;

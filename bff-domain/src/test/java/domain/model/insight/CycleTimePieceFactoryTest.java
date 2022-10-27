@@ -74,13 +74,13 @@ public class CycleTimePieceFactoryTest {
                 .value(cycleTimeValue1)
                 .codingTime(codingTime1)
                 .reviewTime(reviewTime1)
-                .deployTime(timeToDeploy1)
+                .timeToDeploy(timeToDeploy1)
                 .build();
         final CycleTime cycleTime2 = CycleTime.builder()
                 .value(cycleTimeValue2)
                 .codingTime(codingTime2)
                 .reviewTime(reviewTime2)
-                .deployTime(timeToDeploy2)
+                .timeToDeploy(timeToDeploy2)
                 .build();
 
         // When
@@ -163,13 +163,13 @@ public class CycleTimePieceFactoryTest {
                 .value(cycleTimeValue1)
                 .codingTime(codingTime1)
                 .reviewTime(reviewTime1)
-                .deployTime(timeToDeploy1)
+                .timeToDeploy(timeToDeploy1)
                 .build();
         final CycleTime cycleTime2 = CycleTime.builder()
                 .value(cycleTimeValue2)
                 .codingTime(codingTime2)
                 .reviewTime(reviewTime2)
-                .deployTime(timeToDeploy2)
+                .timeToDeploy(timeToDeploy2)
                 .build();
 
         // When

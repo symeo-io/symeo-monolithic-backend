@@ -43,7 +43,7 @@ public interface CycleTimeContractMapper {
         mapAverage(cycleTimeMetrics, cycleTime);
         mapCodingTime(cycleTimeMetrics, cycleTime);
         mapReviewTime(cycleTimeMetrics, cycleTime);
-        mapDeployTime(cycleTimeMetrics, cycleTime);
+        mapTimeToDeploy(cycleTimeMetrics, cycleTime);
         cycleTime.setPreviousStartDate(dateToString(cycleTimeMetrics.getPreviousStartDate()));
         cycleTime.setPreviousEndDate(dateToString(cycleTimeMetrics.getPreviousEndDate()));
         cycleTime.setCurrentStartDate(dateToString(cycleTimeMetrics.getCurrentStartDate()));
@@ -51,11 +51,11 @@ public interface CycleTimeContractMapper {
         return cycleTime;
     }
 
-    static void mapDeployTime(CycleTimeMetrics cycleTimeMetrics, CycleTimeResponseContractCycleTime cycleTime) {
-        final MetricsContract deployTime = new MetricsContract();
-        deployTime.setValue(floatToBigDecimal(cycleTimeMetrics.getAverageDeployTime()));
-        deployTime.setTendencyPercentage(floatToBigDecimal(cycleTimeMetrics.getAverageDeployTimePercentageTendency()));
-        cycleTime.setTimeToDeploy(deployTime);
+    static void mapTimeToDeploy(CycleTimeMetrics cycleTimeMetrics, CycleTimeResponseContractCycleTime cycleTime) {
+        final MetricsContract timeToDeploy = new MetricsContract();
+        timeToDeploy.setValue(floatToBigDecimal(cycleTimeMetrics.getAverageTimeToDeploy()));
+        timeToDeploy.setTendencyPercentage(floatToBigDecimal(cycleTimeMetrics.getAverageTimeToDeployPercentageTendency()));
+        cycleTime.setTimeToDeploy(timeToDeploy);
     }
 
     private static void mapReviewTime(CycleTimeMetrics cycleTimeMetrics, CycleTimeResponseContractCycleTime cycleTime) {
@@ -103,7 +103,7 @@ public interface CycleTimeContractMapper {
             cycleTimePieceContract.author(cycleTimePiece.getAuthor());
             cycleTimePieceContract.codingTime(longToBigDecimal(cycleTimePiece.getCodingTime()));
             cycleTimePieceContract.reviewTime(longToBigDecimal(cycleTimePiece.getReviewTime()));
-            cycleTimePieceContract.timeToDeploy(longToBigDecimal(cycleTimePiece.getDeployTime()));
+            cycleTimePieceContract.timeToDeploy(longToBigDecimal(cycleTimePiece.getTimeToDeploy()));
             cycleTimePieceContract.cycleTime(longToBigDecimal(cycleTimePiece.getCycleTime()));
             cycleTimePieceContract.status(cycleTimePiece.getState());
             cycleTimePieceContract.id(cycleTimePiece.getId());
@@ -128,7 +128,7 @@ public interface CycleTimeContractMapper {
             cycleTimePieceCurveDataResponseContract.setValue(longToBigDecimal(cycleTimePieceCurvePoint.getValue()));
             cycleTimePieceCurveDataResponseContract.setCodingTime(longToBigDecimal(cycleTimePieceCurvePoint.getCodingTime()));
             cycleTimePieceCurveDataResponseContract.setReviewTime(longToBigDecimal(cycleTimePieceCurvePoint.getReviewTime()));
-            cycleTimePieceCurveDataResponseContract.setTimeToDeploy(longToBigDecimal(cycleTimePieceCurvePoint.getDeployTime()));
+            cycleTimePieceCurveDataResponseContract.setTimeToDeploy(longToBigDecimal(cycleTimePieceCurvePoint.getTimeToDeploy()));
             cycleTimePieceCurveDataResponseContract.label(cycleTimePieceCurvePoint.getLabel());
             cycleTimePieceCurveDataResponseContract.setLink(cycleTimePieceCurvePoint.getLink());
             pieceCurve.add(cycleTimePieceCurveDataResponseContract);

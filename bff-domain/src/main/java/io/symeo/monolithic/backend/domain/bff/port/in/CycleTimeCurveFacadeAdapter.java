@@ -10,6 +10,6 @@ import java.util.UUID;
 public interface CycleTimeCurveFacadeAdapter {
 
     CycleTimePieceCurveWithAverage computeCycleTimePieceCurveWithAverage(Organization organization,
-                                                                         UUID teamId, Date stringToDate, Date stringToDate1)
+                                                                         UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 }

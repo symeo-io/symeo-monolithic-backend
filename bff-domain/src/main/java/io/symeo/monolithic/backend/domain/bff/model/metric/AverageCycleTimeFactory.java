@@ -38,11 +38,11 @@ public class AverageCycleTimeFactory {
         Long cumulatedCycleTimeValue = null;
         Long cumulatedCodingTime = null;
         Long cumulatedReviewTime = null;
-        Long cumulatedDeployTime = null;
+        Long cumulatedTimeToDeploy = null;
         int numberOfCycleTime = 0;
         int numberOfCodingTime = 0;
         int numberOfReviewTime = 0;
-        int numberOfDeployTime = 0;
+        int numberOfTimeToDeploy = 0;
         for (PullRequestView pullRequestWithCommitsView : pullRequestViewsToComputeCycleTime) {
             final CycleTime cycleTime = pullRequestViewToCycleTimeFunction.apply(pullRequestWithCommitsView);
             if (nonNull(cycleTime.getCodingTime())) {
@@ -61,13 +61,13 @@ public class AverageCycleTimeFactory {
                 }
                 numberOfReviewTime++;
             }
-            if (nonNull(cycleTime.getDeployTime())) {
-                if (isNull(cumulatedDeployTime)) {
-                    cumulatedDeployTime = cycleTime.getDeployTime();
+            if (nonNull(cycleTime.getTimeToDeploy())) {
+                if (isNull(cumulatedTimeToDeploy)) {
+                    cumulatedTimeToDeploy = cycleTime.getTimeToDeploy();
                 } else {
-                    cumulatedDeployTime += cycleTime.getDeployTime();
+                    cumulatedTimeToDeploy += cycleTime.getTimeToDeploy();
                 }
-                numberOfDeployTime++;
+                numberOfTimeToDeploy++;
             }
             if (nonNull(cycleTime.getValue())) {
                 if (isNull(cumulatedCycleTimeValue)) {
@@ -82,7 +82,7 @@ public class AverageCycleTimeFactory {
                 .averageValue(averageValueWithOneDecimal(cumulatedCycleTimeValue, numberOfCycleTime))
                 .averageCodingTime(averageValueWithOneDecimal(cumulatedCodingTime, numberOfCodingTime))
                 .averageReviewTime(averageValueWithOneDecimal(cumulatedReviewTime, numberOfReviewTime))
-                .averageDeployTime(averageValueWithOneDecimal(cumulatedDeployTime, numberOfDeployTime))
+                .averageTimeToDeploy(averageValueWithOneDecimal(cumulatedTimeToDeploy, numberOfTimeToDeploy))
                 .build();
     }
 

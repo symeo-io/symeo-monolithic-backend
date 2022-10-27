@@ -22,7 +22,7 @@ public class AverageCycleTimeMetricsTest {
                         .averageValue(123.0f)
                         .averageCodingTime(98.5f)
                         .averageReviewTime(10.2f)
-                        .averageDeployTime(11.3f)
+                        .averageTimeToDeploy(11.3f)
                         .build()
         );
         final Optional<AverageCycleTime> previousCycleTime = Optional.of(
@@ -30,7 +30,7 @@ public class AverageCycleTimeMetricsTest {
                         .averageValue(145.0f)
                         .averageCodingTime(55.5f)
                         .averageReviewTime(66.2f)
-                        .averageDeployTime(2.4f)
+                        .averageTimeToDeploy(2.4f)
                         .build()
         );
         final Date previousStartDate = stringToDate("2020-01-01");
@@ -56,8 +56,8 @@ public class AverageCycleTimeMetricsTest {
         assertThat(cycleTimeMetrics.getAverageCodingTimePercentageTendency()).isEqualTo(77.5f);
         assertThat(cycleTimeMetrics.getAverageReviewTime()).isEqualTo(10.2f);
         assertThat(cycleTimeMetrics.getAverageReviewTimePercentageTendency()).isEqualTo(-84.6f);
-        assertThat(cycleTimeMetrics.getAverageDeployTime()).isEqualTo(11.3f);
-        assertThat(cycleTimeMetrics.getAverageDeployTimePercentageTendency()).isEqualTo(370.8f);
+        assertThat(cycleTimeMetrics.getAverageTimeToDeploy()).isEqualTo(11.3f);
+        assertThat(cycleTimeMetrics.getAverageTimeToDeployPercentageTendency()).isEqualTo(370.8f);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class AverageCycleTimeMetricsTest {
                         .averageValue(null)
                         .averageCodingTime(null)
                         .averageReviewTime(null)
-                        .averageDeployTime(null)
+                        .averageTimeToDeploy(null)
                         .build()
         );
         final Optional<AverageCycleTime> previousCycleTime = Optional.of(
@@ -140,7 +140,7 @@ public class AverageCycleTimeMetricsTest {
                         .averageValue(145.0f)
                         .averageCodingTime(55.5f)
                         .averageReviewTime(66.2f)
-                        .averageDeployTime(2.4f)
+                        .averageTimeToDeploy(2.4f)
                         .build()
         );
         final Date previousStartDate = stringToDate("2020-01-01");
@@ -166,7 +166,7 @@ public class AverageCycleTimeMetricsTest {
         assertThat(cycleTimeMetrics.getAverageCodingTimePercentageTendency()).isNull();
         assertThat(cycleTimeMetrics.getAverageReviewTime()).isNull();
         assertThat(cycleTimeMetrics.getAverageReviewTimePercentageTendency()).isNull();
-        assertThat(cycleTimeMetrics.getAverageDeployTime()).isNull();
-        assertThat(cycleTimeMetrics.getAverageDeployTimePercentageTendency()).isNull();
+        assertThat(cycleTimeMetrics.getAverageTimeToDeploy()).isNull();
+        assertThat(cycleTimeMetrics.getAverageTimeToDeployPercentageTendency()).isNull();
     }
 }

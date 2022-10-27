@@ -99,7 +99,7 @@ public class CycleTimeCurveServiceTest {
                         .value(faker.number().randomNumber())
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
-                        .deployTime(faker.number().randomNumber())
+                        .timeToDeploy(faker.number().randomNumber())
                         .pullRequestView(currentPullRequestViews.get(0))
                         .build();
         final CycleTime cycleTime2 =
@@ -107,7 +107,7 @@ public class CycleTimeCurveServiceTest {
                         .value(faker.number().randomNumber())
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
-                        .deployTime(faker.number().randomNumber())
+                        .timeToDeploy(faker.number().randomNumber())
                         .pullRequestView(currentPullRequestViews.get(1))
                         .build();
 
@@ -145,7 +145,7 @@ public class CycleTimeCurveServiceTest {
                         .value(cycleTime1.getValue())
                         .codingTime(cycleTime1.getCodingTime())
                         .reviewTime(cycleTime1.getReviewTime())
-                        .deployTime(cycleTime1.getDeployTime())
+                        .timeToDeploy(cycleTime1.getTimeToDeploy())
                         .label(cycleTime1.getPullRequestView().getHead())
                         .link(cycleTime1.getPullRequestView().getVcsUrl())
                         .build()
@@ -156,7 +156,7 @@ public class CycleTimeCurveServiceTest {
                         .value(cycleTime2.getValue())
                         .codingTime(cycleTime2.getCodingTime())
                         .reviewTime(cycleTime2.getReviewTime())
-                        .deployTime(cycleTime2.getDeployTime())
+                        .timeToDeploy(cycleTime2.getTimeToDeploy())
                         .label(cycleTime2.getPullRequestView().getHead())
                         .link(cycleTime2.getPullRequestView().getVcsUrl())
                         .build()
@@ -197,7 +197,7 @@ public class CycleTimeCurveServiceTest {
                         .value(faker.number().randomNumber())
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
-                        .deployTime(faker.number().randomNumber())
+                        .timeToDeploy(faker.number().randomNumber())
                         .pullRequestView(currentPullRequestViews.get(0))
                         .build();
         final CycleTime cycleTime2 =
@@ -205,7 +205,7 @@ public class CycleTimeCurveServiceTest {
                         .value(faker.number().randomNumber())
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
-                        .deployTime(faker.number().randomNumber())
+                        .timeToDeploy(faker.number().randomNumber())
                         .pullRequestView(currentPullRequestViews.get(1))
                         .build();
 
@@ -249,7 +249,7 @@ public class CycleTimeCurveServiceTest {
                         .value(cycleTime1.getValue())
                         .codingTime(cycleTime1.getCodingTime())
                         .reviewTime(cycleTime1.getReviewTime())
-                        .deployTime(cycleTime1.getDeployTime())
+                        .timeToDeploy(cycleTime1.getTimeToDeploy())
                         .label(cycleTime1.getPullRequestView().getHead())
                         .link(cycleTime1.getPullRequestView().getVcsUrl())
                         .build()

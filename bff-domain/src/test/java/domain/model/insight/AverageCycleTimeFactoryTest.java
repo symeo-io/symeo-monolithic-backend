@@ -43,7 +43,7 @@ public class AverageCycleTimeFactoryTest {
 
         // Then
         assertThat(averageCycleTime.getAverageCodingTime()).isNull();
-        assertThat(averageCycleTime.getAverageDeployTime()).isNull();
+        assertThat(averageCycleTime.getAverageTimeToDeploy()).isNull();
         assertThat(averageCycleTime.getAverageReviewTime())
                 .isEqualTo(getNumberOfMinutesBetweenDates(commit.getDate(), new Date()) * 1f);
         assertThat(averageCycleTime.getAverageValue())
@@ -74,7 +74,7 @@ public class AverageCycleTimeFactoryTest {
 
         // Then
         assertThat(averageCycleTime.getAverageCodingTime()).isEqualTo(1440f);
-        assertThat(averageCycleTime.getAverageDeployTime()).isNull();
+        assertThat(averageCycleTime.getAverageTimeToDeploy()).isNull();
         assertThat(averageCycleTime.getAverageReviewTime())
                 .isEqualTo(getNumberOfMinutesBetweenDates(commit2.getDate(), new Date()) * 1f);
         assertThat(averageCycleTime.getAverageValue())
@@ -112,7 +112,7 @@ public class AverageCycleTimeFactoryTest {
 
         // Then
         assertThat(averageCycleTime.getAverageCodingTime()).isEqualTo(1440f);
-        assertThat(averageCycleTime.getAverageDeployTime()).isNull();
+        assertThat(averageCycleTime.getAverageTimeToDeploy()).isNull();
         assertThat(averageCycleTime.getAverageReviewTime())
                 .isEqualTo(getNumberOfMinutesBetweenDates(commit2.getDate(), mergeCommit.getDate()) * 1f);
         assertThat(averageCycleTime.getAverageValue())
@@ -162,7 +162,7 @@ public class AverageCycleTimeFactoryTest {
         assertThat(averageCycleTime.getAverageCodingTime()).isEqualTo(1440f);
         assertThat(averageCycleTime.getAverageReviewTime())
                 .isEqualTo(getNumberOfMinutesBetweenDates(commit2.getDate(), mergeCommit.getDate()) * 1f);
-        assertThat(averageCycleTime.getAverageDeployTime())
+        assertThat(averageCycleTime.getAverageTimeToDeploy())
                 .isEqualTo(getNumberOfMinutesBetweenDates(mergeCommit.getDate(), mergeCommit2.getDate()) * 1f);
         assertThat(averageCycleTime.getAverageValue())
                 .isEqualTo(getNumberOfMinutesBetweenDates(commit2.getDate(), mergeCommit.getDate()) * 1f + 1440f
@@ -208,7 +208,7 @@ public class AverageCycleTimeFactoryTest {
         assertThat(averageCycleTime.getAverageCodingTime()).isEqualTo(1440f);
         assertThat(averageCycleTime.getAverageReviewTime())
                 .isEqualTo(getNumberOfMinutesBetweenDates(commit2.getDate(), mergeCommit.getDate()) * 1f);
-        assertThat(averageCycleTime.getAverageDeployTime())
+        assertThat(averageCycleTime.getAverageTimeToDeploy())
                 .isEqualTo(getNumberOfMinutesBetweenDates(mergeCommit.getDate(), mergeCommit2.getDate()) * 1f);
         assertThat(averageCycleTime.getAverageValue())
                 .isEqualTo(getNumberOfMinutesBetweenDates(commit2.getDate(), mergeCommit.getDate()) * 1f + 1440f
