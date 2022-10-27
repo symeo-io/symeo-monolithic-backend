@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
 import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurveWithAverage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetrics;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
@@ -121,7 +122,7 @@ public interface CycleTimeContractMapper {
 
     Faker FAKER = new Faker();
 
-    static CycleTimeCurveResponseContract toCurveContract(Date startDate, Date endDate) {
+    static CycleTimeCurveResponseContract toCurveContract(CycleTimePieceCurveWithAverage cycleTimePieceCurveWithAverage) {
         final CycleTimeCurveResponseContract cycleTimeCurveResponseContract = new CycleTimeCurveResponseContract();
         final CycleTimeCurveContract curves = new CycleTimeCurveContract();
         final List<CurveDataResponseContract> averageCurve = new ArrayList<>();

@@ -14,7 +14,7 @@ import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
 import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
-import io.symeo.monolithic.backend.domain.bff.service.insights.CycleTimeMetricsMetricsService;
+import io.symeo.monolithic.backend.domain.bff.service.insights.CycleTimeMetricsService;
 import io.symeo.monolithic.backend.domain.bff.service.insights.CycleTimeService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.DateHelper;
@@ -40,7 +40,7 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
-        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
+        final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
                 cycleTimeService
@@ -80,7 +80,7 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
-        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
+        final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
                 cycleTimeService
@@ -131,7 +131,7 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
-        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
+        final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
                 cycleTimeService
@@ -247,7 +247,7 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
-        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
+        final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
                 cycleTimeService
@@ -326,7 +326,7 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
-        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
+        final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
                 cycleTimeService
@@ -447,7 +447,7 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
-        final CycleTimeMetricsMetricsService cycleTimeMetricsService = new CycleTimeMetricsMetricsService(
+        final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
                 cycleTimeService
