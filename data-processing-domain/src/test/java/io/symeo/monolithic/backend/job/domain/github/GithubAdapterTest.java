@@ -106,7 +106,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
             // Then
             assertThat(repositories).hasSize(3);
             assertThat(repositories.get(0).getName()).isEqualTo(githubRepositoryStubs1[0].getName());
-            assertThat(repositories.get(0).getVcsOrganizationId()).isEqualTo(vcsOrganization.getId());
+            assertThat(repositories.get(0).getVcsOrganizationId()).isEqualTo(vcsOrganization.getVcsId());
             assertThat(repositories.get(0).getVcsOrganizationName()).isEqualTo(vcsOrganization.getName());
             assertThat(repositories.get(0).getOrganizationId()).isEqualTo(vcsOrganization.getOrganizationId());
             assertThat(repositories.get(0).getDefaultBranch()).isEqualTo(githubRepositoryStubs1[0].getAdditionalProperties().get("default_branch"));
