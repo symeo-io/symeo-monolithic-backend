@@ -83,12 +83,12 @@ public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
 
         // When
         postgresOrganizationAdapter.createOrganization(organization);
-        final Organization result = postgresOrganizationAdapter.findOrganizationById(organizationId);
+        final Optional<Organization> result = postgresOrganizationAdapter.findOrganizationById(organizationId);
 
         // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo(name);
-        assertThat(result.getId()).isEqualTo(organization.getId());
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get().getName()).isEqualTo(name);
+        assertThat(result.get().getId()).isEqualTo(organization.getId());
     }
 
     @Test

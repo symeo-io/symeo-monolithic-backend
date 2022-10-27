@@ -2,6 +2,7 @@ package domain.service;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationApiKeyStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.SymeoJobApiAdapter;
 import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationService;
@@ -25,8 +26,10 @@ public class OrganizationServiceTest {
 
         final OrganizationStorageAdapter organizationStorageAdapter =
                 mock(OrganizationStorageAdapter.class);
+        final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter =
+                mock(OrganizationApiKeyStorageAdapter.class);
         final OrganizationService organizationService =
-                new OrganizationService(organizationStorageAdapter, symeoJobApiAdapter);
+                new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter, symeoJobApiAdapter);
         final String externalId = faker.name().name();
         final String vcsOrganizationName = faker.gameOfThrones().character();
         final UUID organizationId = UUID.randomUUID();

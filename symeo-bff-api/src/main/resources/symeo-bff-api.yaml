@@ -1542,8 +1542,6 @@ paths:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
 
-
-
 components:
   securitySchemes:
     bearerAuth:

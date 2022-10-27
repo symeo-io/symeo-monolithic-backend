@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface OrganizationStorageAdapter {
-    Organization findOrganizationById(UUID organizationId) throws SymeoException;
+    Optional<Organization> findOrganizationById(UUID organizationId) throws SymeoException;
 
     Organization createOrganization(Organization organization) throws SymeoException;
 

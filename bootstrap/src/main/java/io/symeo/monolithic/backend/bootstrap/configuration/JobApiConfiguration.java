@@ -5,8 +5,10 @@ import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationFacadeAdapter;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
+import io.symeo.monolithic.backend.job.domain.port.in.CommitTestingDataFacadeAdapter;
 import io.symeo.monolithic.backend.job.domain.port.in.JobAdapter;
 import io.symeo.monolithic.backend.job.rest.api.adapter.DataProcessingRestApiAdapter;
+import io.symeo.monolithic.backend.job.rest.api.adapter.TestingRestApiAdapter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -33,5 +35,11 @@ public class JobApiConfiguration {
                                                            final ObjectMapper objectMapper,
                                                            final GithubWebhookProperties githubWebhookProperties) {
         return new GithubWebhookApiAdapter(organizationFacadeAdapter, githubWebhookProperties, objectMapper);
+    }
+
+    @Bean
+    public TestingRestApiAdapter testingRestApiAdapter(final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter,
+                                                       final OrganizationFacadeAdapter organizationFacadeAdapter) {
+        return new TestingRestApiAdapter(commitTestingDataFacadeAdapter, organizationFacadeAdapter);
     }
 }

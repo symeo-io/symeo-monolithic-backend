@@ -95,9 +95,60 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-
+  /sh/v1/testing:
+    post:
+      security:
+        - apiKeyAuth: [ ]
+      tags:
+        - Testing
+      summary: Collect testing data from ci script
+      operationId: collectTestingData
+      description: |
+        Collect testing data from ci script
+      parameters:
+        - in: header
+          name: X-API-KEY
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectTestingDataRequestContract'
+      responses:
+        "200":
+          description: 'Successfully collected testing data'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
 
 components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  responses:
+    UnauthorizedError:
+      description: Api key is missing or invalid
   schemas:
     DataProcessingSymeoErrorsContract:
       type: object
@@ -136,3 +187,26 @@ components:
           type: array
           items:
             type: string
+    CollectTestingDataRequestContract:
+      type: object
+      properties:
+        coverage_report:
+          type: string
+        coverage_report_type:
+          type: string
+        code_line_count:
+          type: integer
+        test_line_count:
+          type: integer
+        test_count:
+          type: integer
+        test_framework:
+          type: string
+        test_type:
+          type: string
+        repository_name:
+          type: string
+        branch_name:
+          type: string
+        commit_sha:
+          type: string

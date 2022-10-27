@@ -82,6 +82,16 @@ public class PostgresConfiguration {
     }
 
     @Bean
+    public PostgresCommitTestingDataAdapter postgresCommitTestingDataAdapter(final CommitTestingDataRepository commitTestingDataRepository) {
+        return new PostgresCommitTestingDataAdapter(commitTestingDataRepository);
+    }
+
+    @Bean
+    public PostgresOrganizationApiKeyAdapter postgresOrganizationApiKeyAdapter(final OrganizationApiKeyRepository organizationApiKeyRepository) {
+        return new PostgresOrganizationApiKeyAdapter(organizationApiKeyRepository);
+    }
+
+    @Bean
     public CustomPullRequestViewRepository customPullRequestViewRepository(final EntityManager entityManager) {
         return new CustomPullRequestViewRepository(entityManager);
     }

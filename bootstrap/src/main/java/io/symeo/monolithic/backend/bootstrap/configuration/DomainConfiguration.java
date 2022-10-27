@@ -15,7 +15,10 @@ import io.symeo.monolithic.backend.domain.bff.service.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.bff.service.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.bff.storage.TeamStandardInMemoryStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.job.domain.port.in.CommitTestingDataFacadeAdapter;
 import io.symeo.monolithic.backend.job.domain.port.in.JobAdapter;
+import io.symeo.monolithic.backend.job.domain.port.out.CommitTestingDataStorage;
+import io.symeo.monolithic.backend.job.domain.service.CommitTestingDataService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,8 +49,9 @@ public class DomainConfiguration {
 
     @Bean
     public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter,
+                                                               final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter,
                                                                final SymeoJobApiAdapter symeoJobApiAdapter) {
-        return new OrganizationService(organizationStorageAdapter, symeoJobApiAdapter);
+        return new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter, symeoJobApiAdapter);
     }
 
     @Bean
@@ -139,6 +143,11 @@ public class DomainConfiguration {
     @Bean
     public DeploymentService deploymentService() {
         return new DeploymentService();
+    }
+
+    @Bean
+    public CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter(final CommitTestingDataStorage commitTestingDataStorage) {
+        return new CommitTestingDataService(commitTestingDataStorage);
     }
 
     @Bean
