@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
@@ -47,4 +50,12 @@ public class CommitTestingDataEntity {
 
     @Column(name = "commit_sha")
     String commitSha;
+
+    @Column(name = "technical_creation_date", updatable = false)
+    @CreationTimestamp
+    ZonedDateTime technicalCreationDate;
+
+    @UpdateTimestamp
+    @Column(name = "technical_modification_date")
+    ZonedDateTime technicalModificationDate;
 }

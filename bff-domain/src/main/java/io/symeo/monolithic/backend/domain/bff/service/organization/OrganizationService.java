@@ -25,9 +25,6 @@ public class OrganizationService implements OrganizationFacadeAdapter {
     @Override
     public Organization getOrganizationForApiKey(String key) throws SymeoException {
         final OrganizationApiKey organizationApiKey = this.organizationApiKeyStorageAdapter.findOneByKey(key);
-        if (organizationApiKey == null) {
-            return null;
-        }
 
         return organizationStorageAdapter.findOrganizationById(organizationApiKey.getOrganizationId());
     }
