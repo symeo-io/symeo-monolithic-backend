@@ -115,6 +115,7 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION = "/job/v1/data-processing/organization";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM = "/job/v1/data-processing/team";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL = "/job/v1/data-processing/all";
+    protected static final String DATA_PROCESSING_TESTING_REST_API = "/sh/v1/testing";
 
     public static class WireMockInitializer
             implements ApplicationContextInitializer<ConfigurableApplicationContext> {
