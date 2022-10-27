@@ -12,9 +12,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@Import(value = {DomainConfiguration.class, SymeoMonolithicBackendConfiguration.class, GithubConfiguration.class,
-        JsonLocalStorageConfiguration.class, PostgresConfiguration.class, RestApiConfiguration.class,
-        WebCorsConfig.class, Auth0SecurityConfiguration.class, JobApiConfiguration.class,
+@Import(value = {BffDomainConfiguration.class, SymeoMonolithicBackendConfiguration.class, GithubConfiguration.class,
+        JsonLocalStorageConfiguration.class, PostgresConfiguration.class, BffRestApiConfiguration.class,
+        WebCorsConfig.class, Auth0SecurityConfiguration.class, DataProcessingRestApiConfiguration.class,
         WebSecurityPropertiesConfig.class, SymeoJobApiConfiguration.class})
 @Slf4j
 @EnableAsync

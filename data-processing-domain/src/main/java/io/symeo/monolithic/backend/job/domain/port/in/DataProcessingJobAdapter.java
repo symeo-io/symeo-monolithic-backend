@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import java.util.List;
 import java.util.UUID;
 
-public interface JobAdapter {
+public interface DataProcessingJobAdapter {
     void startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(UUID organizationId,
                                                                          Long vcsOrganizationId) throws SymeoException;
 

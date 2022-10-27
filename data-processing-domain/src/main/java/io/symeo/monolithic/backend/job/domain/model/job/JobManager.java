@@ -1,7 +1,7 @@
 package io.symeo.monolithic.backend.job.domain.model.job;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.job.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,14 +14,14 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class JobManager {
     private final Executor executor;
-    private final JobStorage jobStorage;
+    private final DataProcessingJobStorage dataProcessingJobStorage;
 
     public Job start(final Job job) throws SymeoException {
         LOGGER.info("Starting to create job {}", job);
-        final Job jobCreated = jobStorage.createJob(job);
+        final Job jobCreated = dataProcessingJobStorage.createJob(job);
         LOGGER.info("Job {} created : starting the job", jobCreated);
         Job jobStarted = job.toBuilder().id(jobCreated.getId()).build().started();
-        jobStorage.updateJob(jobStarted);
+        dataProcessingJobStorage.updateJob(jobStarted);
         LOGGER.info("Job {} started", jobStarted);
         executor.execute(getRunnable(jobStarted));
         return jobStarted;
@@ -36,7 +36,7 @@ public class JobManager {
 
     private void restartJob(Job failedJob) throws SymeoException {
         final Job restartedJob = failedJob.restarted();
-        jobStorage.updateJob(restartedJob);
+        dataProcessingJobStorage.updateJob(restartedJob);
         executor.execute(getRunnable(restartedJob));
     }
 
@@ -44,7 +44,7 @@ public class JobManager {
         return () -> {
             try {
                 job.run();
-                final Job jobFinished = jobStorage.updateJob(job.finished());
+                final Job jobFinished = dataProcessingJobStorage.updateJob(job.finished());
                 LOGGER.info("Job {} finished", jobFinished);
                 if (nonNull(job.getNextJob())) {
                     LOGGER.info("Launching nextJob for job {}", job);
@@ -53,7 +53,7 @@ public class JobManager {
             } catch (SymeoException symeoException) {
                 LOGGER.error("Error while running job {}", job, symeoException);
                 try {
-                    jobStorage.updateJob(job.failed(symeoException));
+                    dataProcessingJobStorage.updateJob(job.failed(symeoException));
                 } catch (SymeoException ex) {
                     LOGGER.error("Error while updating job {} to jobStorage", job, ex);
                 }

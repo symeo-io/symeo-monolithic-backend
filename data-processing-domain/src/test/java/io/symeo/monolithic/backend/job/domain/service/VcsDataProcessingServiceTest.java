@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.github.GithubAdapter;
 import io.symeo.monolithic.backend.job.domain.model.vcs.*;
-import io.symeo.monolithic.backend.job.domain.port.out.JobExpositionStorageAdapter;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -21,10 +21,10 @@ public class VcsDataProcessingServiceTest {
     @Test
     void should_collect_github_data_given_a_repository_and_a_date_range() throws SymeoException {
         // Given
-        final JobExpositionStorageAdapter jobExpositionStorageAdapter = mock(JobExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
         final GithubAdapter githubAdapter = mock(GithubAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService =
-                new VcsDataProcessingService(githubAdapter, jobExpositionStorageAdapter);
+                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter);
         final Repository repository = Repository.builder()
                 .name(faker.name().firstName())
                 .vcsOrganizationName(faker.rickAndMorty().location())
@@ -61,18 +61,18 @@ public class VcsDataProcessingServiceTest {
         vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(repository, startDate, endDate);
 
         // Then
-        verify(jobExpositionStorageAdapter, times(1)).savePullRequestDetailsWithLinkedComments(pullRequests);
-        verify(jobExpositionStorageAdapter, times(1)).saveCommits(commits);
-        verify(jobExpositionStorageAdapter, times(1)).saveTags(tags);
+        verify(dataProcessingExpositionStorageAdapter, times(1)).savePullRequestDetailsWithLinkedComments(pullRequests);
+        verify(dataProcessingExpositionStorageAdapter, times(1)).saveCommits(commits);
+        verify(dataProcessingExpositionStorageAdapter, times(1)).saveTags(tags);
     }
 
     @Test
     void should_collect_repositories_given_a_vcs_organization() throws SymeoException {
         // Given
-        final JobExpositionStorageAdapter jobExpositionStorageAdapter = mock(JobExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
         final GithubAdapter githubAdapter = mock(GithubAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService =
-                new VcsDataProcessingService(githubAdapter, jobExpositionStorageAdapter);
+                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter);
         final VcsOrganization vcsOrganization = VcsOrganization.builder()
                 .externalId(faker.pokemon().name())
                 .organizationId(UUID.randomUUID())
@@ -96,7 +96,7 @@ public class VcsDataProcessingServiceTest {
         vcsDataProcessingService.collectRepositoriesForVcsOrganization(vcsOrganization);
 
         // Then
-        verify(jobExpositionStorageAdapter, times(1)).saveRepositories(repositories);
+        verify(dataProcessingExpositionStorageAdapter, times(1)).saveRepositories(repositories);
     }
 
 }

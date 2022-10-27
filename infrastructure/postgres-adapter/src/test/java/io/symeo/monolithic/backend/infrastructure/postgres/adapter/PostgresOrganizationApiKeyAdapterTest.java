@@ -13,17 +13,19 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PostgresOrganizationApiKeyAdapterTest {
+public class PostgresOrganizationApiKeyAdapterTest extends AbstractPostgresIT {
 
     private final Faker faker = new Faker();
     @Autowired
     private OrganizationApiKeyRepository organizationApiKeyRepository;
+
     @Test
     void should_find_by_key_string() throws SymeoException {
 
         // Given
         final String key = faker.pokemon().name();
-        final PostgresOrganizationApiKeyAdapter postgresOrganizationApiKeyAdapter = new PostgresOrganizationApiKeyAdapter(organizationApiKeyRepository);
+        final PostgresOrganizationApiKeyAdapter postgresOrganizationApiKeyAdapter =
+                new PostgresOrganizationApiKeyAdapter(organizationApiKeyRepository);
         final OrganizationApiKeyEntity organizationApiKeyEntity = OrganizationApiKeyEntity.builder()
                 .id(UUID.randomUUID())
                 .organizationId(UUID.randomUUID())

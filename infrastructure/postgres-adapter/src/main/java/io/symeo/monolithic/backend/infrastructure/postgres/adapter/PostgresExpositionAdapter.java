@@ -12,7 +12,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.Organi
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import io.symeo.monolithic.backend.job.domain.model.vcs.*;
-import io.symeo.monolithic.backend.job.domain.port.out.JobExpositionStorageAdapter;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposit
 
 @AllArgsConstructor
 @Slf4j
-public class PostgresExpositionAdapter implements JobExpositionStorageAdapter, BffExpositionStorageAdapter {
+public class PostgresExpositionAdapter implements DataProcessingExpositionStorageAdapter, BffExpositionStorageAdapter {
 
     private final PullRequestRepository pullRequestRepository;
     private final RepositoryRepository repositoryRepository;
@@ -365,6 +365,7 @@ public class PostgresExpositionAdapter implements JobExpositionStorageAdapter, B
 
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<VcsOrganization> findVcsOrganizationByIdAndOrganizationId(Long vcsOrganizationId,
                                                                               UUID organizationId) throws SymeoException {
         try {
@@ -383,6 +384,7 @@ public class PostgresExpositionAdapter implements JobExpositionStorageAdapter, B
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Repository> findAllRepositoriesByIds(List<String> repositoryIds) throws SymeoException {
         try {
             return repositoryRepository.findAllByIdIn(repositoryIds).stream()

@@ -6,10 +6,11 @@ import io.symeo.monolithic.backend.job.domain.model.job.Task;
 
 import java.util.List;
 
-public interface JobStorage {
+public interface DataProcessingJobStorage {
     Job createJob(Job job) throws SymeoException;
 
     Job updateJob(Job jobStarted) throws SymeoException;
 
-    void updateJobWithTasksForJobId(Long jobId, List<Task> tasks);
+    void updateJobWithTasksForJobId(Long jobId, List<Task> tasks) throws SymeoException;
+
 }

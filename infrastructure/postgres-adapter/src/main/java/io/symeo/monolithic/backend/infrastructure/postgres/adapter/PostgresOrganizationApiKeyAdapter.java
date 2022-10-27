@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.Organi
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationApiKeyRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ public class PostgresOrganizationApiKeyAdapter implements OrganizationApiKeyStor
     private final OrganizationApiKeyRepository organizationApiKeyRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<OrganizationApiKey> findOneByKey(String key) throws SymeoException {
         try {
             return this.organizationApiKeyRepository.findByKey(key)

@@ -92,26 +92,6 @@ public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
     }
 
     @Test
-    void should_raise_an_exception_for_an_organization_not_existing() {
-        // Given
-        final UUID organizationId = UUID.randomUUID();
-
-        // When
-        SymeoException symeoException = null;
-        try {
-            postgresOrganizationAdapter.findOrganizationById(organizationId);
-        } catch (SymeoException e) {
-            symeoException = e;
-        }
-
-        // Then
-        assertThat(symeoException).isNotNull();
-        assertThat(symeoException.getMessage()).isEqualTo(String.format("Organization not found for id %s",
-                organizationId));
-        assertThat(symeoException.getCode()).isEqualTo("F.ORGANIZATION_NAME_NOT_FOUND");
-    }
-
-    @Test
     void should_save_and_find_organization_settings() throws SymeoException {
         // Given
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()

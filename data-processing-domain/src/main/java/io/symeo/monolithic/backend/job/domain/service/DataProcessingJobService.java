@@ -8,9 +8,9 @@ import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectReposito
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectVcsDataForRepositoriesAndDatesJobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.job.domain.port.in.JobAdapter;
-import io.symeo.monolithic.backend.job.domain.port.out.JobExpositionStorageAdapter;
-import io.symeo.monolithic.backend.job.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,10 +22,10 @@ import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.VC
 
 @AllArgsConstructor
 @Slf4j
-public class JobService implements JobAdapter {
+public class DataProcessingJobService implements DataProcessingJobAdapter {
 
-    private final JobExpositionStorageAdapter jobExpositionStorageAdapter;
-    private final JobStorage jobStorage;
+    private final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter;
+    private final DataProcessingJobStorage dataProcessingJobStorage;
     private final VcsDataProcessingService vcsDataProcessingService;
     private final JobManager jobManager;
 
@@ -33,7 +33,7 @@ public class JobService implements JobAdapter {
     public void startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(UUID organizationId,
                                                                                 Long vcsOrganizationId) throws SymeoException {
         final Optional<VcsOrganization> vcsOrganizationByIdAndOrganizationId =
-                jobExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId, organizationId);
+                dataProcessingExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId, organizationId);
         final VcsOrganization vcsOrganization = validateVcsOrganization(organizationId,
                 vcsOrganizationId,
                 vcsOrganizationByIdAndOrganizationId);
@@ -44,7 +44,7 @@ public class JobService implements JobAdapter {
     public void startToCollectVcsDataForOrganizationIdAndRepositoryIds(UUID organizationId,
                                                                        List<String> repositoryIds) throws SymeoException {
         final List<Repository> allRepositoriesByIds =
-                jobExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds);
+                dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds);
         validateRepositories(organizationId, repositoryIds, allRepositoriesByIds);
         jobManager.start(buildCollectVcsDataJob(organizationId, allRepositoriesByIds));
     }
@@ -92,7 +92,7 @@ public class JobService implements JobAdapter {
                 .jobRunnable(
                         CollectVcsDataForRepositoriesAndDatesJobRunnable.builder()
                                 .repositories(allRepositoriesByIds)
-                                .jobStorage(jobStorage)
+                                .dataProcessingJobStorage(dataProcessingJobStorage)
                                 .vcsDataProcessingService(vcsDataProcessingService)
                                 .build()
                 )
@@ -104,7 +104,7 @@ public class JobService implements JobAdapter {
                 .organizationId(organizationId)
                 .jobRunnable(
                         CollectRepositoriesJobRunnable.builder()
-                                .jobStorage(jobStorage)
+                                .dataProcessingJobStorage(dataProcessingJobStorage)
                                 .vcsOrganization(vcsOrganization)
                                 .vcsDataProcessingService(vcsDataProcessingService)
                                 .build()

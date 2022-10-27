@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.job.domain.model.job.AbstractTasksRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.JobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.job.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,12 +21,12 @@ public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<VcsOrg
 
     public static final String JOB_CODE = "COLLECT_REPOSITORIES_FOR_VCS_ORGANIZATION_JOB";
     private final VcsDataProcessingService vcsDataProcessingService;
-    private final JobStorage jobStorage;
+    private final DataProcessingJobStorage dataProcessingJobStorage;
     private final VcsOrganization vcsOrganization;
 
     @Override
     public void run(Long jobId) throws SymeoException {
-        executeAllTasks(this::collectRepositoriesForVcsOrganization, jobStorage, jobId);
+        executeAllTasks(this::collectRepositoriesForVcsOrganization, dataProcessingJobStorage, jobId);
     }
 
     private void collectRepositoriesForVcsOrganization(VcsOrganization vcsOrganization) throws SymeoException {

@@ -9,7 +9,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PostgresCommitTestingDataAdapterTestIT {
+import java.util.UUID;
+
+public class PostgresCommitTestingDataAdapterTestIT extends AbstractPostgresIT {
     private final Faker faker = new Faker();
     @Autowired
     private CommitTestingDataRepository commitTestingDataRepository;
@@ -29,6 +31,7 @@ public class PostgresCommitTestingDataAdapterTestIT {
                 .repositoryName(faker.ancient().hero())
                 .branchName(faker.ancient().primordial())
                 .commitSha(faker.ancient().titan())
+                .organizationId(UUID.randomUUID())
                 .build();
 
         // When

@@ -14,19 +14,16 @@ import io.symeo.monolithic.backend.domain.bff.service.organization.*;
 import io.symeo.monolithic.backend.domain.bff.service.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.bff.service.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.bff.storage.TeamStandardInMemoryStorage;
-import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.port.in.CommitTestingDataFacadeAdapter;
-import io.symeo.monolithic.backend.job.domain.port.in.JobAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.CommitTestingDataStorage;
 import io.symeo.monolithic.backend.job.domain.service.CommitTestingDataService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
-import java.util.UUID;
 
 @Configuration
-public class DomainConfiguration {
+public class BffDomainConfiguration {
 
 
     @Bean
@@ -51,7 +48,8 @@ public class DomainConfiguration {
     public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter,
                                                                final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter,
                                                                final SymeoJobApiAdapter symeoJobApiAdapter) {
-        return new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter, symeoJobApiAdapter);
+        return new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter,
+                symeoJobApiAdapter);
     }
 
     @Bean
@@ -101,9 +99,10 @@ public class DomainConfiguration {
                 cycleTimeService);
     }
 
-    @Bean CycleTimeCurveFacadeAdapter cycleTimeCurveFacadeAdapter(final OrganizationSettingsFacade organizationSettingsFacade,
-                                                                  final BffExpositionStorageAdapter bffExpositionStorageAdapter,
-                                                                  final CycleTimeFactory cycleTimeFactory) {
+    @Bean
+    CycleTimeCurveFacadeAdapter cycleTimeCurveFacadeAdapter(final OrganizationSettingsFacade organizationSettingsFacade,
+                                                            final BffExpositionStorageAdapter bffExpositionStorageAdapter,
+                                                            final CycleTimeFactory cycleTimeFactory) {
         return new CycleTimeCurveService(organizationSettingsFacade, bffExpositionStorageAdapter, cycleTimeFactory);
     }
 
@@ -130,7 +129,9 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public CycleTimeFactory cycleTimeFactory() { return new CycleTimeFactory(); }
+    public CycleTimeFactory cycleTimeFactory() {
+        return new CycleTimeFactory();
+    }
 
     @Bean
     public DeploymentMetricsFacadeAdapter deploymentMetricsFacadeAdapter(final BffExpositionStorageAdapter expositionStorageAdapter,
@@ -161,25 +162,5 @@ public class DomainConfiguration {
         };
     }
 
-    @Bean
-    public JobAdapter dataProcessingJobAdapter() {
-        return new JobAdapter() {
-            @Override
-            public void startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(UUID organizationId,
-                                                                                        String vcsOrganizationId) throws SymeoException {
 
-            }
-
-            @Override
-            public void startToCollectVcsDataForOrganizationIdAndRepositoryIds(UUID organizationId,
-                                                                               List<String> repositoryIds) throws SymeoException {
-
-            }
-
-            @Override
-            public void startAll() throws SymeoException {
-
-            }
-        };
-    }
 }

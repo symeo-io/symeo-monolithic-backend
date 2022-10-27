@@ -6,7 +6,7 @@ import io.symeo.monolithic.backend.job.domain.model.job.JobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.task.RepositoryDateRangeTask;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
-import io.symeo.monolithic.backend.job.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,11 +27,11 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
     public static final String JOB_CODE = "COLLECT_VCS_DATA_FOR_REPOSITORY_IDS_AND_DATE_RANGES_JOB";
     private final List<Repository> repositories;
     private final VcsDataProcessingService vcsDataProcessingService;
-    private final JobStorage jobStorage;
+    private final DataProcessingJobStorage dataProcessingJobStorage;
 
     @Override
     public void run(Long jobId) throws SymeoException {
-        executeAllTasks(this::collectVcsDataForTask, jobStorage, jobId);
+        executeAllTasks(this::collectVcsDataForTask, dataProcessingJobStorage, jobId);
     }
 
     private void collectVcsDataForTask(final RepositoryDateRangeTask repositoryDateRangeTask) throws SymeoException {

@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.job.domain.github.GithubAdapter;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Branch;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.job.domain.port.out.JobExpositionStorageAdapter;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +19,7 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
 public class VcsDataProcessingService {
 
     private final GithubAdapter githubAdapter;
-    private final JobExpositionStorageAdapter jobExpositionStorageAdapter;
+    private final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter;
 
     public void collectRepositoriesForVcsOrganization(VcsOrganization vcsOrganization) throws SymeoException {
         LOGGER.info("Starting to collect repositories for vcsOrganization {}", vcsOrganization);
@@ -27,7 +27,7 @@ public class VcsDataProcessingService {
                 githubAdapter.getRepositoriesForVcsOrganization(vcsOrganization);
         LOGGER.info("Saving {} repositories for vcsOrganization {}", repositoriesForVcsOrganizationName.size(),
                 vcsOrganization);
-        jobExpositionStorageAdapter.saveRepositories(repositoriesForVcsOrganizationName);
+        dataProcessingExpositionStorageAdapter.saveRepositories(repositoriesForVcsOrganizationName);
         LOGGER.info("{} repositories were successfully saved for vcsOrganization {}",
                 repositoriesForVcsOrganizationName.size(), vcsOrganization);
     }
@@ -38,18 +38,18 @@ public class VcsDataProcessingService {
                 dateToString(startDate), dateToString(endDate));
         LOGGER.info("Starting to collect pullRequests for repository {} between {} and {}", repository,
                 dateToString(startDate), dateToString(endDate));
-        jobExpositionStorageAdapter.savePullRequestDetailsWithLinkedComments(
+        dataProcessingExpositionStorageAdapter.savePullRequestDetailsWithLinkedComments(
                 githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate, endDate)
         );
         LOGGER.info("Starting to collect commits for repository {} between {} and {}", repository,
                 dateToString(startDate), dateToString(endDate));
         final List<String> branchNames = githubAdapter.getBranches(repository).stream().map(Branch::getName).toList();
-        jobExpositionStorageAdapter.saveCommits(
+        dataProcessingExpositionStorageAdapter.saveCommits(
                 githubAdapter.getCommitsForBranchesInDateRange(repository, branchNames, startDate, endDate)
         );
         LOGGER.info("Starting to collect tags for repository {} between {} and {}", repository,
                 dateToString(startDate), dateToString(endDate));
-        jobExpositionStorageAdapter.saveTags(
+        dataProcessingExpositionStorageAdapter.saveTags(
                 githubAdapter.getTags(repository)
         );
         LOGGER.info("Successfully collected vcsData for repository {} between {} and {}", repository,

@@ -9,8 +9,8 @@ import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectReposito
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectVcsDataForRepositoriesAndDatesJobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.job.domain.port.out.JobExpositionStorageAdapter;
-import io.symeo.monolithic.backend.job.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -28,13 +28,13 @@ public class JobServiceTest {
     @Test
     void should_start_to_collect_repositories_given_an_organization_id_and_a_vcs_organization_id() throws SymeoException {
         // Given
-        final JobExpositionStorageAdapter jobExpositionStorageAdapter = mock(JobExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobService jobService = new JobService(
-                jobExpositionStorageAdapter,
-                jobStorage,
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final DataProcessingJobService jobService = new DataProcessingJobService(
+                dataProcessingExpositionStorageAdapter,
+                dataProcessingJobStorage,
                 vcsDataProcessingService,
                 jobManager
         );
@@ -49,7 +49,7 @@ public class JobServiceTest {
                 .build();
 
         // When
-        when(jobExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId, organizationId))
+        when(dataProcessingExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId, organizationId))
                 .thenReturn(
                         Optional.of(vcsOrganization)
                 );
@@ -71,13 +71,13 @@ public class JobServiceTest {
     @Test
     void should_validate_vcs_organization() throws SymeoException {
         // Given
-        final JobExpositionStorageAdapter jobExpositionStorageAdapter = mock(JobExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobService jobService = new JobService(
-                jobExpositionStorageAdapter,
-                jobStorage,
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final DataProcessingJobService jobService = new DataProcessingJobService(
+                dataProcessingExpositionStorageAdapter,
+                dataProcessingJobStorage,
                 vcsDataProcessingService,
                 jobManager
         );
@@ -85,7 +85,7 @@ public class JobServiceTest {
         final Long vcsOrganizationId = faker.number().randomNumber();
 
         // When
-        when(jobExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId, organizationId))
+        when(dataProcessingExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId, organizationId))
                 .thenReturn(Optional.empty());
         SymeoException symeoException = null;
         try {
@@ -106,13 +106,13 @@ public class JobServiceTest {
     @Test
     void should_start_to_collect_vcs_data_given_an_organization_id_and_a_list_of_repositories_id() throws SymeoException {
         // Given
-        final JobExpositionStorageAdapter jobExpositionStorageAdapter = mock(JobExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobService jobService = new JobService(
-                jobExpositionStorageAdapter,
-                jobStorage,
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final DataProcessingJobService jobService = new DataProcessingJobService(
+                dataProcessingExpositionStorageAdapter,
+                dataProcessingJobStorage,
                 vcsDataProcessingService,
                 jobManager
         );
@@ -136,7 +136,7 @@ public class JobServiceTest {
         );
 
         // When
-        when(jobExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
+        when(dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
                 .thenReturn(repositories);
         jobService.startToCollectVcsDataForOrganizationIdAndRepositoryIds(organizationId, repositoryIds);
 
@@ -154,13 +154,13 @@ public class JobServiceTest {
     @Test
     void should_validate_repositories() throws SymeoException {
         // Given
-        final JobExpositionStorageAdapter jobExpositionStorageAdapter = mock(JobExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobService jobService = new JobService(
-                jobExpositionStorageAdapter,
-                jobStorage,
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final DataProcessingJobService jobService = new DataProcessingJobService(
+                dataProcessingExpositionStorageAdapter,
+                dataProcessingJobStorage,
                 vcsDataProcessingService,
                 jobManager
         );
@@ -168,7 +168,7 @@ public class JobServiceTest {
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
 
         // When
-        when(jobExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
+        when(dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
                 .thenReturn(List.of(Repository.builder()
                         .id(repositoryIds.get(0))
                         .vcsOrganizationId(faker.rickAndMorty().character())

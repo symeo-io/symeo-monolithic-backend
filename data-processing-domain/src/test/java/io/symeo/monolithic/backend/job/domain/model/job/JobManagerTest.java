@@ -2,7 +2,7 @@ package io.symeo.monolithic.backend.job.domain.model.job;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.job.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -21,8 +21,8 @@ public class JobManagerTest {
     void should_start_job() throws SymeoException {
         // Given
         final Executor executor = Runnable::run;
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobManager jobManager = new JobManager(executor, jobStorage);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final JobManager jobManager = new JobManager(executor, dataProcessingJobStorage);
         final UUID organizationId = UUID.randomUUID();
         final JobRunnable jobRunnableMock = mock(JobRunnable.class);
         final Job job = Job.builder()
@@ -38,13 +38,13 @@ public class JobManagerTest {
 
 
         // When
-        when(jobStorage.createJob(jobArgumentCaptor.capture())).thenReturn(jobCreated);
-        when(jobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
-        when(jobStorage.updateJob(jobFinished)).thenReturn(jobFinished);
+        when(dataProcessingJobStorage.createJob(jobArgumentCaptor.capture())).thenReturn(jobCreated);
+        when(dataProcessingJobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
+        when(dataProcessingJobStorage.updateJob(jobFinished)).thenReturn(jobFinished);
         jobManager.start(job);
 
         // Then
-        verify(jobStorage, times(2)).updateJob(jobArgumentCaptor.capture());
+        verify(dataProcessingJobStorage, times(2)).updateJob(jobArgumentCaptor.capture());
         verify(jobRunnableMock, times(1)).run(jobStarted.getId());
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
         assertThat(captorAllValues.get(0)).isEqualTo(job);
@@ -60,8 +60,8 @@ public class JobManagerTest {
     void should_update_job_with_errors() throws SymeoException {
         // Given
         final Executor executor = Runnable::run;
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobManager jobManager = new JobManager(executor, jobStorage);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final JobManager jobManager = new JobManager(executor, dataProcessingJobStorage);
         final UUID organizationId = UUID.randomUUID();
         final SymeoException symeoException =
                 SymeoException.getSymeoException(faker.gameOfThrones().character(),
@@ -101,13 +101,13 @@ public class JobManagerTest {
 
 
         // When
-        when(jobStorage.createJob(jobArgumentCaptor.capture())).thenReturn(jobCreated);
-        when(jobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
-        when(jobStorage.updateJob(jobFinished)).thenReturn(jobFinished);
+        when(dataProcessingJobStorage.createJob(jobArgumentCaptor.capture())).thenReturn(jobCreated);
+        when(dataProcessingJobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
+        when(dataProcessingJobStorage.updateJob(jobFinished)).thenReturn(jobFinished);
         jobManager.start(job);
 
         // Then
-        verify(jobStorage, times(2)).updateJob(jobArgumentCaptor.capture());
+        verify(dataProcessingJobStorage, times(2)).updateJob(jobArgumentCaptor.capture());
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
         assertThat(captorAllValues.get(0)).isEqualTo(job);
         assertThat(captorAllValues.get(1)).isEqualTo(jobStarted);
@@ -126,8 +126,8 @@ public class JobManagerTest {
     void should_start_job_and_next_job_given_a_job() throws SymeoException {
         // Given
         final Executor executor = Runnable::run;
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobManager jobManager = new JobManager(executor, jobStorage);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final JobManager jobManager = new JobManager(executor, dataProcessingJobStorage);
         final UUID organizationId = UUID.randomUUID();
         final JobRunnable jobRunnableMock = mock(JobRunnable.class);
         final JobRunnable nextJobRunnableMock = mock(JobRunnable.class);
@@ -160,20 +160,20 @@ public class JobManagerTest {
 
 
         // When
-        when(jobStorage.createJob(job)).thenReturn(jobCreated);
-        when(jobStorage.createJob(nextJob)).thenReturn(nextJobCreated);
-        when(jobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
-        when(jobStorage.updateJob(nextJobStarted)).thenReturn(nextJobStarted);
+        when(dataProcessingJobStorage.createJob(job)).thenReturn(jobCreated);
+        when(dataProcessingJobStorage.createJob(nextJob)).thenReturn(nextJobCreated);
+        when(dataProcessingJobStorage.updateJob(jobStarted)).thenReturn(jobStarted);
+        when(dataProcessingJobStorage.updateJob(nextJobStarted)).thenReturn(nextJobStarted);
         when(jobRunnableMock.getTasks()).thenReturn(expectedTasks);
         when(nextJobRunnableMock.getTasks()).thenReturn(nextExpectedTasks);
         final Job finished = jobStarted.finished();
         final Job nextFinished = nextJobStarted.finished();
-        when(jobStorage.updateJob(finished)).thenReturn(finished);
-        when(jobStorage.updateJob(nextFinished)).thenReturn(nextFinished);
+        when(dataProcessingJobStorage.updateJob(finished)).thenReturn(finished);
+        when(dataProcessingJobStorage.updateJob(nextFinished)).thenReturn(nextFinished);
         jobManager.start(job);
 
         // Then
-        verify(jobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
+        verify(dataProcessingJobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
         verify(jobRunnableMock, times(1)).run(jobStarted.getId());
         verify(nextJobRunnableMock, times(1)).run(nextJobStarted.getId());
         final List<Job> captorAllValues = jobArgumentCaptor.getAllValues();
@@ -193,8 +193,8 @@ public class JobManagerTest {
     void should_restart_failed_jobs() throws SymeoException {
         // Given
         final Executor executor = Runnable::run;
-        final JobStorage jobStorage = mock(JobStorage.class);
-        final JobManager jobManager = new JobManager(executor, jobStorage);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final JobManager jobManager = new JobManager(executor, dataProcessingJobStorage);
         final UUID organizationId = UUID.randomUUID();
         final UUID teamId = UUID.randomUUID();
         final JobRunnable failedJobRunnable1 = mock(JobRunnable.class);
@@ -222,7 +222,7 @@ public class JobManagerTest {
 
         // Then
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
-        verify(jobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
+        verify(dataProcessingJobStorage, times(4)).updateJob(jobArgumentCaptor.capture());
         verify(failedJobRunnable1, times(1)).run(1L);
         verify(failedJobRunnable2, times(1)).run(2L);
         assertThat(jobArgumentCaptor.getAllValues().get(0).getStatus()).isEqualTo(Job.RESTARTED);

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface JobExpositionStorageAdapter {
+public interface DataProcessingExpositionStorageAdapter {
     Optional<VcsOrganization> findVcsOrganizationByIdAndOrganizationId(Long vcsOrganizationId, UUID organizationId) throws SymeoException;
 
     void savePullRequestDetailsWithLinkedComments(List<PullRequest> pullRequests) throws SymeoException;

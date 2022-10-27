@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.job.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
 import org.junit.jupiter.api.Test;
 
@@ -29,10 +29,10 @@ public class CollectRepositoriesJobRunnableTest {
                 .name(faker.robin().quote())
                 .build();
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
-        final JobStorage jobStorage = mock(JobStorage.class);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable = CollectRepositoriesJobRunnable.builder()
                 .vcsOrganization(vcsOrganization)
-                .jobStorage(jobStorage)
+                .dataProcessingJobStorage(dataProcessingJobStorage)
                 .vcsDataProcessingService(vcsDataProcessingService)
                 .build();
 
@@ -40,7 +40,7 @@ public class CollectRepositoriesJobRunnableTest {
         collectRepositoriesJobRunnable.initializeTasks();
 
         // Then
-        verifyNoInteractions(jobStorage);
+        verifyNoInteractions(dataProcessingJobStorage);
         verifyNoInteractions(vcsDataProcessingService);
         final List<Task> tasks = collectRepositoriesJobRunnable.getTasks();
         assertThat(tasks).hasSize(1);
@@ -61,10 +61,10 @@ public class CollectRepositoriesJobRunnableTest {
                 .name(faker.robin().quote())
                 .build();
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
-        final JobStorage jobStorage = mock(JobStorage.class);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable = CollectRepositoriesJobRunnable.builder()
                 .vcsOrganization(vcsOrganization)
-                .jobStorage(jobStorage)
+                .dataProcessingJobStorage(dataProcessingJobStorage)
                 .vcsDataProcessingService(vcsDataProcessingService)
                 .build();
         final long jobId = faker.number().randomNumber();
@@ -78,7 +78,7 @@ public class CollectRepositoriesJobRunnableTest {
         assertThat(tasks).hasSize(1);
         verify(vcsDataProcessingService, times(1))
                 .collectRepositoriesForVcsOrganization(vcsOrganization);
-        verify(jobStorage, times(1))
+        verify(dataProcessingJobStorage, times(1))
                 .updateJobWithTasksForJobId(jobId, tasks);
         assertThat(tasks.get(0).getStatus()).isEqualTo("DONE");
     }

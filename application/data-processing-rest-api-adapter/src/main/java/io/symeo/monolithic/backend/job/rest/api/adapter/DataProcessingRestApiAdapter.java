@@ -6,7 +6,7 @@ import io.symeo.monolithic.backend.data.processing.contract.api.DataProcessingJo
 import io.symeo.monolithic.backend.data.processing.contract.api.model.DataProcessingSymeoErrorsContract;
 import io.symeo.monolithic.backend.data.processing.contract.api.model.PostStartDataProcessingJobContract;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.job.domain.port.in.JobAdapter;
+import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.job.rest.api.adapter.mapper.SymeoErrorContractMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
 
-    private final JobAdapter jobAdapter;
+    private final DataProcessingJobAdapter dataProcessingJobAdapter;
     private final String jobApiKey;
     private final String jobApiHeaderKey;
 
@@ -36,7 +36,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
                 LOGGER.error("Unauthorized header key {} = {}", jobApiHeaderKey, X_SYMEO_JOB_KEY_X);
                 return ResponseEntity.status(403).build();
             }
-            jobAdapter.startAll();
+            dataProcessingJobAdapter.startAll();
             return ResponseEntity.ok().build();
         } catch (SymeoException e) {
             LOGGER.error("Error while starting all data collection jobs", e);

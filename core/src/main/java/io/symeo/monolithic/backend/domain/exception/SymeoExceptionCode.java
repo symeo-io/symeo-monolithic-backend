@@ -17,6 +17,7 @@ public interface SymeoExceptionCode {
     String ORGANIZATION_SETTINGS_NOT_FOUND = "F.ORGANIZATION_SETTINGS_NOT_FOUND";
     String VCS_ORGANIZATION_NOT_FOUND = "F.VCS_ORGANIZATION_NOT_FOUND";
     String REPOSITORIES_NOT_FOUND = "F.REPOSITORIES_NOT_FOUND";
+    String POSTGRES_JSON_MAPPING_ERROR = "T.POSTGRES_JSON_MAPPING_ERROR";
 
 
     // Github Exception Codes
@@ -50,9 +51,12 @@ public interface SymeoExceptionCode {
     // Symeo http client Exception Codes
     String SYMEO_HTTP_CLIENT_ERROR = "T.EXCEPTION_WHILE_SENDING_HTTP_REQUEST_TO_SYMEO_API";
 
-    // Testing
+    // Testing Exception Codes
     String FAILED_TO_PARSE_COVERAGE_REPORT = "F.FAILED_TO_PARSE_COVERAGE_REPORT";
 
-    // Api key
+    // Api key Exception Codes
     String UNKNOWN_API_KEY = "F.UNKNOWN_API_KEY";
+
+    // Job Exception Codes
+    String INVALID_JOB_CODE = "F.INVALID_JOB_CODE";
 }

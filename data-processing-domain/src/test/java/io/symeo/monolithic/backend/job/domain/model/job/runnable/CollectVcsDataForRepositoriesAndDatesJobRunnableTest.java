@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.task.RepositoryDateRangeTask;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
-import io.symeo.monolithic.backend.job.domain.port.out.JobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
 import org.junit.jupiter.api.Test;
 
@@ -39,19 +39,19 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnableTest {
                         .build()
         );
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
-        final JobStorage jobStorage = mock(JobStorage.class);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
         final CollectVcsDataForRepositoriesAndDatesJobRunnable collectVcsDataForRepositoriesAndDatesJobRunnable =
                 CollectVcsDataForRepositoriesAndDatesJobRunnable.builder()
                         .repositories(repositories)
                         .vcsDataProcessingService(vcsDataProcessingService)
-                        .jobStorage(jobStorage)
+                        .dataProcessingJobStorage(dataProcessingJobStorage)
                         .build();
 
         // When
         collectVcsDataForRepositoriesAndDatesJobRunnable.initializeTasks();
 
         // Then
-        verifyNoInteractions(jobStorage);
+        verifyNoInteractions(dataProcessingJobStorage);
         verifyNoInteractions(vcsDataProcessingService);
         final List<Task> tasks = collectVcsDataForRepositoriesAndDatesJobRunnable.getTasks();
         assertThat(tasks).hasSize(repositories.size() * 720 / 30);
@@ -83,12 +83,12 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnableTest {
                         .build()
         );
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
-        final JobStorage jobStorage = mock(JobStorage.class);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
         final CollectVcsDataForRepositoriesAndDatesJobRunnable collectVcsDataForRepositoriesAndDatesJobRunnable =
                 CollectVcsDataForRepositoriesAndDatesJobRunnable.builder()
                         .repositories(repositories)
                         .vcsDataProcessingService(vcsDataProcessingService)
-                        .jobStorage(jobStorage)
+                        .dataProcessingJobStorage(dataProcessingJobStorage)
                         .build();
         final long jobId = faker.number().randomNumber();
 
@@ -109,7 +109,7 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnableTest {
                     .collectVcsDataForRepositoryAndDateRange(repositoryDateRangeTask.getRepository(),
                             repositoryDateRangeTask.getStartDate(), repositoryDateRangeTask.getEndDate());
         }
-        verify(jobStorage, times(numberOfTasks)).updateJobWithTasksForJobId(any(), any());
+        verify(dataProcessingJobStorage, times(numberOfTasks)).updateJobWithTasksForJobId(any(), any());
     }
 
 

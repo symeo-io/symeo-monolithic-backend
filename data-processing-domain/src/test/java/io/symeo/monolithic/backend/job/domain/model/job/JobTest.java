@@ -124,24 +124,4 @@ public class JobTest {
         assertThat(failedJob.getError()).isEqualTo(expectedSymeoException.toString());
     }
 
-    @Test
-    void should_return_job_progression_from_tasks() {
-        // Given
-        final Job job = Job.builder()
-                .organizationId(UUID.randomUUID())
-                .tasks(
-                        List.of(
-                                Task.builder().status(Task.DONE).input(1L).build(),
-                                Task.builder().status(Task.DONE).input(2L).build(),
-                                Task.builder().status(Task.TO_DO).input(3L).build()
-                        )
-                )
-                .build();
-
-        // When
-        final double progressionPercentage = job.getProgressionPercentage();
-
-        // Then
-        assertThat(progressionPercentage).isEqualTo(0.67);
-    }
 }
