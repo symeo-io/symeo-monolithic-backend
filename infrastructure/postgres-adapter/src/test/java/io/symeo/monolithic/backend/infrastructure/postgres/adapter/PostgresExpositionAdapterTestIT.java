@@ -63,6 +63,8 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
     private TagRepository tagRepository;
     @Autowired
     private CustomCommitRepository customCommitRepository;
+    @Autowired
+    private VcsOrganizationRepository vcsOrganizationRepository;
     private PostgresExpositionAdapter postgresExpositionAdapter;
 
 
@@ -82,7 +84,8 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         postgresExpositionAdapter = new PostgresExpositionAdapter(pullRequestRepository,
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
                 pullRequestFullViewRepository, customPullRequestViewRepository,
-                pullRequestWithCommitsAndCommentsRepository, commitRepository, tagRepository, customCommitRepository);
+                pullRequestWithCommitsAndCommentsRepository, commitRepository, tagRepository, customCommitRepository,
+                vcsOrganizationRepository);
     }
 
     @Test
@@ -176,7 +179,8 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         // Given
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
-                .vcsOrganization(Organization.VcsOrganization.builder().name(faker.name().name()).build())
+                .vcsOrganization(Organization.VcsOrganization.builder().vcsId(faker.pokemon().location())
+                        .name(faker.name().name()).build())
                 .build();
 
         // When
@@ -1079,4 +1083,70 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         }
     }
 
+    @Test
+    void should_find_vcs_organization_given_an_organization_id_and_a_vcs_organization_id() throws SymeoException {
+        // Given
+        final UUID organizationId = UUID.randomUUID();
+        final OrganizationEntity organizationEntity = OrganizationEntity.builder()
+                .name(faker.lordOfTheRings().character())
+                .id(organizationId)
+                .build();
+        final VcsOrganizationEntity vcsOrganizationEntity = VcsOrganizationEntity.builder()
+                .vcsId(faker.pokemon().location())
+                .organizationEntity(organizationEntity)
+                .name(faker.rickAndMorty().character())
+                .externalId(faker.ancient().god())
+                .build();
+
+        // When
+        vcsOrganizationRepository.save(vcsOrganizationEntity);
+        final Optional<VcsOrganization> emptyVcsOrganizationByIdAndOrganizationId =
+                postgresExpositionAdapter.findVcsOrganizationByIdAndOrganizationId(
+                        faker.number().randomNumber(), organizationId
+                );
+        final Optional<VcsOrganization> vcsOrganizationByIdAndOrganizationId =
+                postgresExpositionAdapter.findVcsOrganizationByIdAndOrganizationId(
+                        vcsOrganizationEntity.getId(), organizationId
+                );
+
+        // Then
+        assertThat(emptyVcsOrganizationByIdAndOrganizationId).isEmpty();
+        assertThat(vcsOrganizationByIdAndOrganizationId).isPresent();
+        final VcsOrganization vcsOrganization = vcsOrganizationByIdAndOrganizationId.get();
+        assertThat(vcsOrganization.getId()).isEqualTo(vcsOrganizationEntity.getId());
+        assertThat(vcsOrganization.getOrganizationId()).isEqualTo(vcsOrganizationEntity.getOrganizationEntity().getId());
+        assertThat(vcsOrganization.getVcsId()).isEqualTo(vcsOrganizationEntity.getVcsId());
+        assertThat(vcsOrganization.getName()).isEqualTo(vcsOrganizationEntity.getName());
+    }
+
+
+    @Test
+    void should_find_all_repositories_in_repository_ids() throws SymeoException {
+        // Given
+        final Organization organization = Organization.builder()
+                .id(UUID.randomUUID())
+                .vcsOrganization(Organization.VcsOrganization.builder()
+                        .vcsId(faker.pokemon().location())
+                        .name(faker.name().name()).build())
+                .build();
+        final Repository repo1 = buildRepository(organization);
+        final Repository repo2 = buildRepository(organization);
+        final Repository repo3 = buildRepository(organization);
+        postgresExpositionAdapter.saveRepositories(
+                List.of(
+                        repo1,
+                        repo2,
+                        repo3
+                )
+        );
+        final List<String> repositoryIds = List.of(repo1.getId(), repo3.getId());
+
+        // When
+        final List<Repository> allRepositoriesByIds =
+                postgresExpositionAdapter.findAllRepositoriesByIds(repositoryIds);
+
+        // Then
+        assertThat(allRepositoriesByIds).hasSize(repositoryIds.size());
+        assertThat(allRepositoriesByIds).contains(repo1, repo3);
+    }
 }

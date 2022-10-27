@@ -8,6 +8,7 @@ import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.pagination.Pagination;
+import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import io.symeo.monolithic.backend.job.domain.model.vcs.*;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
@@ -39,6 +41,7 @@ public class PostgresExpositionAdapter implements JobExpositionStorageAdapter, B
     private final CommitRepository commitRepository;
     private final TagRepository tagRepository;
     private final CustomCommitRepository customCommitRepository;
+    private final VcsOrganizationRepository vcsOrganizationRepository;
 
     @Override
     public void savePullRequestDetailsWithLinkedComments(List<PullRequest> pullRequests) {
@@ -147,7 +150,8 @@ public class PostgresExpositionAdapter implements JobExpositionStorageAdapter, B
                     sortingParameterToDatabaseAttribute(sortingParameter),
                     directionToPostgresSortingValue(sortingDirection));
         } catch (Exception e) {
-            final String message = String.format("Failed to find all PR details paginated and sorted with %s for teamId %s until endDate %s",sortingParameter, teamId, endDate);
+            final String message = String.format("Failed to find all PR details paginated and sorted with %s for " +
+                    "teamId %s until endDate %s", sortingParameter, teamId, endDate);
             LOGGER.error(message, e);
             throw SymeoException.builder()
                     .rootException(e)
@@ -359,8 +363,39 @@ public class PostgresExpositionAdapter implements JobExpositionStorageAdapter, B
         }
     }
 
+
     @Override
-    public VcsOrganization findVcsOrganizationById(UUID vcsOrganizationId) {
-        return null;
+    public Optional<VcsOrganization> findVcsOrganizationByIdAndOrganizationId(Long vcsOrganizationId,
+                                                                              UUID organizationId) throws SymeoException {
+        try {
+            return vcsOrganizationRepository.findByIdAndOrganizationId(vcsOrganizationId, organizationId)
+                    .map(OrganizationMapper::dataProcessingVcsEntityToDomain);
+        } catch (Exception e) {
+            final String message = String.format("Failed to find vcsOrganization of organizationId %s and " +
+                    "vcsOrganizationId %s", organizationId, vcsOrganizationId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public List<Repository> findAllRepositoriesByIds(List<String> repositoryIds) throws SymeoException {
+        try {
+            return repositoryRepository.findAllByIdIn(repositoryIds).stream()
+                    .map(RepositoryMapper::entityToDataProcessingDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read repositories for ids %s", repositoryIds);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
     }
 }

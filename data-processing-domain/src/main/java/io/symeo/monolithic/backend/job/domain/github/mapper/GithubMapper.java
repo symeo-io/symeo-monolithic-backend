@@ -24,7 +24,7 @@ public interface GithubMapper {
                 .vcsOrganizationName(githubRepositoryDTO.getOwner().getLogin())
                 .id(githubPlatformName + "-" + githubRepositoryDTO.getId().toString())
                 .defaultBranch((String) githubRepositoryDTO.getAdditionalProperties().get("default_branch"))
-                .vcsOrganizationId(vcsOrganization.getId())
+                .vcsOrganizationId(vcsOrganization.getVcsId())
                 .organizationId(vcsOrganization.getOrganizationId())
                 .vcsOrganizationName(vcsOrganization.getName())
                 .build();

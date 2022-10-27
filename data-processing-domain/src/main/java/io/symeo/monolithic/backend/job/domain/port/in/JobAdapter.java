@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface JobAdapter {
     void startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(UUID organizationId,
-                                                                         String vcsOrganizationId) throws SymeoException;
+                                                                         Long vcsOrganizationId) throws SymeoException;
 
     void startToCollectVcsDataForOrganizationIdAndRepositoryIds(UUID organizationId, List<String> repositoryIds) throws SymeoException;
 

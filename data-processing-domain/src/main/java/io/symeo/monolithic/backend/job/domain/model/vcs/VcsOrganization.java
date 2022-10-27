@@ -10,11 +10,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class VcsOrganization {
     @NonNull
-    String id;
-    @NonNull
     String externalId;
     @NonNull
     String name;
+    @NonNull
+    Long id;
     @NonNull
     String vcsId;
     @NonNull

@@ -67,9 +67,9 @@ public class GithubAdapter {
     }
 
 
-    public List<PullRequest> getPullRequestsForRepositoryAndDateRange(final Repository repository,
-                                                                      final Date startDate,
-                                                                      final Date endDate) throws SymeoException {
+    public List<PullRequest> getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(final Repository repository,
+                                                                                        final Date startDate,
+                                                                                        final Date endDate) throws SymeoException {
 
 
         final byte[] alreadyRawCollectedPullRequests = getAlreadyRawCollectedPullRequests(repository);

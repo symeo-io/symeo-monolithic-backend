@@ -24,7 +24,7 @@ public class Organization {
     @Builder
     @Value
     public static class VcsOrganization {
-        String id;
+        Long id;
         String name;
         String vcsId;
         String externalId;

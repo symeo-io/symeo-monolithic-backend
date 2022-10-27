@@ -37,9 +37,9 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
         void should_get_repositories_given_an_organization_name() throws IOException, SymeoException {
             // Given
             final VcsOrganization vcsOrganization = VcsOrganization.builder()
-                    .vcsId(faker.idNumber().valid())
                     .name(faker.rickAndMorty().character())
-                    .id(faker.idNumber().invalid())
+                    .vcsId(faker.idNumber().invalid())
+                    .id(faker.number().randomNumber())
                     .externalId(faker.pokemon().name())
                     .organizationId(UUID.randomUUID())
                     .build();
@@ -90,9 +90,9 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                     "get_repo_for_org_page_1_size_3" +
                             ".json", GithubRepositoryDTO[].class);
             final VcsOrganization vcsOrganization = VcsOrganization.builder()
-                    .vcsId(faker.idNumber().valid())
                     .name(faker.rickAndMorty().character())
-                    .id(faker.idNumber().invalid())
+                    .vcsId(faker.idNumber().invalid())
+                    .id(faker.number().randomNumber())
                     .externalId(faker.pokemon().name())
                     .organizationId(UUID.randomUUID())
                     .build();
@@ -209,7 +209,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                         .thenReturn(githubCommentsStubs1);
 
                 final List<PullRequest> pullRequestsForRepositoryAndDateRange =
-                        githubAdapter.getPullRequestsForRepositoryAndDateRange(repository
+                        githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository
                                 , stringToDate("1999-01-01"), stringToDate("2999-01-01"));
 
                 // Then
@@ -286,7 +286,8 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
 
 
                 final List<PullRequest> pullRequestsForRepositoryAndDateRange =
-                        githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate, endDate);
+                        githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository,
+                                startDate, endDate);
 
                 // Then
                 assertThat(pullRequestsForRepositoryAndDateRange)
@@ -355,7 +356,8 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                             .thenReturn(githubPullRequestDTO);
                 }
                 final List<PullRequest> pullRequestsForRepositoryAndDateRange =
-                        githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate, endDate);
+                        githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository,
+                                startDate, endDate);
 
                 // Then
                 assertThat(pullRequestsForRepositoryAndDateRange)
@@ -437,7 +439,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                         repository.getName(), 79))
                         .thenReturn(pr79);
                 final List<PullRequest> pullRequestsForRepositoryAndDateRange =
-                        githubAdapter.getPullRequestsForRepositoryAndDateRange(repository,
+                        githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository,
                                 stringToDate("1999-01-01"), stringToDate("2999-01-01"));
 
                 // Then
@@ -526,7 +528,8 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                             .thenReturn(githubPullRequestDTO);
                 }
                 final List<PullRequest> pullRequestsForRepositoryAndDateRange =
-                        githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate, endDate);
+                        githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository,
+                                startDate, endDate);
 
                 // Then
                 assertThat(pullRequestsForRepositoryAndDateRange)
@@ -590,7 +593,8 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                         PullRequest.getNameFromRepositoryId(repository.getId())))
                         .thenReturn(dtoStubsToBytes(new GithubPullRequestDTO[]{githubPullRequestStubs2[2]}));
                 final List<PullRequest> pullRequestsForRepositoryAndDateRange =
-                        githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate, endDate);
+                        githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository,
+                                startDate, endDate);
 
                 // Then
                 assertThat(pullRequestsForRepositoryAndDateRange).hasSize(githubPullRequestStubs1.length + githubPullRequestStubs2.length);
@@ -665,7 +669,8 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                             .thenReturn(githubPullRequestDTO);
                 }
                 final List<PullRequest> pullRequestsForRepositoryAndDateRange =
-                        githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate, endDate);
+                        githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository,
+                                startDate, endDate);
 
                 // Then
                 assertThat(pullRequestsForRepositoryAndDateRange).hasSize(
@@ -753,7 +758,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                     .thenReturn(githubCommentsStubs1);
 
             final List<PullRequest> pullRequestsForRepositoryAndDateRange1 =
-                    githubAdapter.getPullRequestsForRepositoryAndDateRange(repository
+                    githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository
                             , stringToDate("1999-01-01"), stringToDate("2999-01-01"));
             final List<Comment> comments1 = pullRequestsForRepositoryAndDateRange1.get(0).getComments();
 
@@ -761,7 +766,8 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                     repository.getName(), 80, 2, properties.getSize()))
                     .thenReturn(githubCommentsStubs2);
             final List<PullRequest> pullRequestsForRepositoryAndDateRange2 =
-                    githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, stringToDate("1999-01-01"),
+                    githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository,
+                            stringToDate("1999-01-01"),
                             stringToDate("2999-01-01"));
             final List<Comment> comments2 =
                     pullRequestsForRepositoryAndDateRange2.get(0).getComments();
@@ -770,7 +776,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                     repository.getName(), 80, 1, properties.getSize()))
                     .thenReturn(null);
             final List<PullRequest> nullCommentsPullRequestsForRepository =
-                    githubAdapter.getPullRequestsForRepositoryAndDateRange(repository,
+                    githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository,
                             stringToDate("1999-01-01"), stringToDate("2999-01-01"));
             final List<Comment> nullCommentsResult =
                     nullCommentsPullRequestsForRepository.get(0).getComments();
@@ -876,7 +882,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                     .thenReturn(githubCommitsStubs1);
 
             final List<PullRequest> pullRequestsForRepositoryAndDateRange1 =
-                    githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate,
+                    githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate,
                             endDate);
             final List<Commit> commits1 = pullRequestsForRepositoryAndDateRange1.get(0).getCommits();
 
@@ -884,14 +890,16 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                     repository.getName(), 80, 2, properties.getSize()))
                     .thenReturn(githubCommitsStubs2);
             final List<PullRequest> pullRequestsForRepositoryAndDateRange2 =
-                    githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate, endDate);
+                    githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate,
+                            endDate);
             final List<Commit> commits2 = pullRequestsForRepositoryAndDateRange2.get(0).getCommits();
 
             when(githubHttpApiClient.getCommitsForPullRequestNumber(repository.getVcsOrganizationName(),
                     repository.getName(), 80, 1, properties.getSize()))
                     .thenReturn(null);
             final List<PullRequest> pullRequestsForRepositoryAndDateRange3 =
-                    githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate, endDate);
+                    githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate,
+                            endDate);
             final List<Commit> commits3 = pullRequestsForRepositoryAndDateRange3.get(0).getCommits();
 
 

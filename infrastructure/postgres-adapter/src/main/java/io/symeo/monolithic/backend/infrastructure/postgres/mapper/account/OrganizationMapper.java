@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.settings.Organizatio
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
+import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 
 import java.util.UUID;
 
@@ -52,7 +53,17 @@ public interface OrganizationMapper {
     static Organization.VcsOrganization vcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
         return Organization.VcsOrganization.builder()
                 .vcsId(vcsOrganizationEntity.getVcsId())
-                .id(vcsOrganizationEntity.getId().toString())
+                .id(vcsOrganizationEntity.getId())
+                .name(vcsOrganizationEntity.getName())
+                .externalId(vcsOrganizationEntity.getExternalId())
+                .build();
+    }
+
+    static VcsOrganization dataProcessingVcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+        return VcsOrganization.builder()
+                .vcsId(vcsOrganizationEntity.getVcsId())
+                .id(vcsOrganizationEntity.getId())
+                .organizationId(vcsOrganizationEntity.getOrganizationId())
                 .name(vcsOrganizationEntity.getName())
                 .externalId(vcsOrganizationEntity.getExternalId())
                 .build();

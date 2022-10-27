@@ -6,9 +6,8 @@ import io.symeo.monolithic.backend.job.domain.model.job.JobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.task.RepositoryDateRangeTask;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
-import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.job.domain.port.out.JobStorage;
-import io.symeo.monolithic.backend.job.domain.service.VcsJobService;
+import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -26,19 +25,18 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.getDateRanges
 public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTasksRunnable<RepositoryDateRangeTask> implements JobRunnable {
 
     public static final String JOB_CODE = "COLLECT_VCS_DATA_FOR_REPOSITORY_IDS_AND_DATE_RANGES_JOB";
-    private final VcsOrganization vcsOrganization;
     private final List<Repository> repositories;
-    private final VcsJobService vcsJobService;
+    private final VcsDataProcessingService vcsDataProcessingService;
     private final JobStorage jobStorage;
 
     @Override
     public void run(Long jobId) throws SymeoException {
-        executeAllTasks(this::collectVcsDataForVcsOrganizationAndTask, jobStorage, jobId);
+        executeAllTasks(this::collectVcsDataForTask, jobStorage, jobId);
     }
 
-    private void collectVcsDataForVcsOrganizationAndTask(final RepositoryDateRangeTask repositoryDateRangeTask) {
+    private void collectVcsDataForTask(final RepositoryDateRangeTask repositoryDateRangeTask) throws SymeoException {
         LOGGER.info("Starting to collect vcs data for repositories and date range {}", repositoryDateRangeTask);
-        vcsJobService.collectVcsDataForRepositoryAndDateRange(
+        vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(
                 repositoryDateRangeTask.getRepository(),
                 repositoryDateRangeTask.getStartDate(), repositoryDateRangeTask.getEndDate()
         );
@@ -51,7 +49,7 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
     }
 
     @Override
-    public void initializeTasks() throws SymeoException {
+    public void initializeTasks() {
         final List<Task> tasks = new ArrayList<>();
         for (Repository repository : repositories) {
             for (List<Date> dateRange :
@@ -61,8 +59,8 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
                             30, // 1 month
                             TimeZone.getDefault()
                     )) {
-                final Date startDate = dateRange.get(0);
-                final Date endDate = dateRange.get(1);
+                final Date endDate = dateRange.get(0);
+                final Date startDate = dateRange.get(1);
                 tasks.add(Task.newTaskForInput(
                         RepositoryDateRangeTask.builder()
                                 .repository(repository)

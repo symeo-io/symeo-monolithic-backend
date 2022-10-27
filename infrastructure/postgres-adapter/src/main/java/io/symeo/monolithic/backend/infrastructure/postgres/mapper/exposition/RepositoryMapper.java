@@ -26,4 +26,15 @@ public interface RepositoryMapper {
                 .defaultBranch(repositoryEntity.getDefaultBranch())
                 .build();
     }
+
+    static Repository entityToDataProcessingDomain(final RepositoryEntity repositoryEntity) {
+        return Repository.builder()
+                .name(repositoryEntity.getName())
+                .id(repositoryEntity.getId())
+                .vcsOrganizationId(repositoryEntity.getVcsOrganizationId())
+                .vcsOrganizationName(repositoryEntity.getVcsOrganizationName())
+                .defaultBranch(repositoryEntity.getDefaultBranch())
+                .organizationId(repositoryEntity.getOrganizationId())
+                .build();
+    }
 }

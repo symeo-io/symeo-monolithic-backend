@@ -36,11 +36,12 @@ public class PostgresConfiguration {
                                                      final CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository,
                                                      final CommitRepository commitRepository,
                                                      final TagRepository tagRepository,
-                                                     final CustomCommitRepository customCommitRepository) {
+                                                     final CustomCommitRepository customCommitRepository,
+                                                     final VcsOrganizationRepository vcsOrganizationRepository) {
         return new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
                 pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository,
                 customPullRequestViewRepository, customPullRequestWithCommitsAndCommentsRepository, commitRepository,
-                tagRepository, customCommitRepository);
+                tagRepository, customCommitRepository, vcsOrganizationRepository);
     }
 
     @Bean
