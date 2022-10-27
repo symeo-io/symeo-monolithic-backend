@@ -14,6 +14,7 @@ import io.symeo.monolithic.backend.job.domain.port.out.GithubApiClientAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.RawStorageAdapter;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -369,7 +370,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
         public class NotEmptyRawStorage {
 
 
-            //            @Test
+            @Test
             void should_get_incremental_pull_requests_given_a_repository_and_already_collected_pull_requests() throws IOException, SymeoException {
                 // Given
                 final GithubProperties githubProperties = new GithubProperties();
@@ -452,7 +453,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
             }
 
 
-            //            @Test
+            @Test
             void should_get_pull_requests_given_already_collected_pull_requests_before_date_range_and_no_pull_requests_in_date_range() throws SymeoException
                     , IOException {
                 // Given
@@ -471,7 +472,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                         .build();
                 final Date startDate = stringToDate("2022-01-01");
                 final Date endDate = stringToDate("2022-03-01");
-                final String updateDate = "2022-04-01";
+                final String updateDate = "2022-02-01";
 
                 // When
                 final GithubPullRequestDTO[] githubPullRequestStubs1 = getStubsFromClassT("github/empty_raw_storage" +
@@ -534,7 +535,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
 
 
             @Test
-            void should_collect_pull_requests_after_first_collection_tasks_of_first_job() throws SymeoException,
+            void should_collect_pull_requests__for_second_collection_tasks_of_first_job() throws SymeoException,
                     IOException {
                 // Given
                 final GithubApiClientAdapter githubApiClientAdapter = mock(GithubApiClientAdapter.class);
@@ -563,6 +564,11 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                 when(githubApiClientAdapter.getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(repository.getVcsOrganizationName(),
                         repository.getName(), 1, 3))
                         .thenReturn(githubPullRequestStubs1);
+                for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestStubs1) {
+                    when(githubApiClientAdapter.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                            repository.getName(), githubPullRequestDTO.getNumber()))
+                            .thenReturn(githubPullRequestDTO);
+                }
                 final GithubPullRequestDTO[] githubPullRequestStubs2 = getStubsFromClassT("github/empty_raw_storage" +
                                 "/get_pull_requests_for_repo",
                         "get_pr_for_repo_page_2_size_3.json", GithubPullRequestDTO[].class);
@@ -573,7 +579,8 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                         repository.getName(), 2, 3))
                         .thenReturn(githubPullRequestStubs2);
                 for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestStubs2) {
-                    when(githubApiClientAdapter.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(), repository.getName(), githubPullRequestDTO.getNumber()))
+                    when(githubApiClientAdapter.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                            repository.getName(), githubPullRequestDTO.getNumber()))
                             .thenReturn(githubPullRequestDTO);
                 }
                 when(rawStorageAdapter.exists(repository.getOrganizationId(), "github",
@@ -581,12 +588,12 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                         .thenReturn(true);
                 when(rawStorageAdapter.read(repository.getOrganizationId(), "github",
                         PullRequest.getNameFromRepositoryId(repository.getId())))
-                        .thenReturn(dtoStubsToBytes(githubPullRequestStubs1));
+                        .thenReturn(dtoStubsToBytes(new GithubPullRequestDTO[]{githubPullRequestStubs2[2]}));
                 final List<PullRequest> pullRequestsForRepositoryAndDateRange =
                         githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate, endDate);
 
                 // Then
-                assertThat(pullRequestsForRepositoryAndDateRange).hasSize(githubPullRequestStubs1.length + githubPullRequestStubs2.length - 1);
+                assertThat(pullRequestsForRepositoryAndDateRange).hasSize(githubPullRequestStubs1.length + githubPullRequestStubs2.length);
                 verify(githubApiClientAdapter, times(2))
                         .getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(anyString(), anyString(),
                                 anyInt(), anyInt());
@@ -623,6 +630,11 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                 when(githubApiClientAdapter.getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(repository.getVcsOrganizationName(),
                         repository.getName(), 1, 3))
                         .thenReturn(githubPullRequestStubs1);
+                for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestStubs1) {
+                    when(githubApiClientAdapter.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                            repository.getName(), githubPullRequestDTO.getNumber()))
+                            .thenReturn(githubPullRequestDTO);
+                }
                 final GithubPullRequestDTO[] githubPullRequestStubs2 = getStubsFromClassT("github/empty_raw_storage" +
                                 "/get_pull_requests_for_repo",
                         "get_pr_for_repo_page_2_size_3.json", GithubPullRequestDTO[].class);
@@ -630,6 +642,11 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                 when(githubApiClientAdapter.getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(repository.getVcsOrganizationName(),
                         repository.getName(), 2, 3))
                         .thenReturn(githubPullRequestStubs2);
+                for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestStubs2) {
+                    when(githubApiClientAdapter.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                            repository.getName(), githubPullRequestDTO.getNumber()))
+                            .thenReturn(githubPullRequestDTO);
+                }
                 final GithubPullRequestDTO[] githubPullRequestStubs3 = getStubsFromClassT("github/empty_raw_storage" +
                                 "/get_pull_requests_for_repo",
                         "get_pr_for_repo_page_3_size_3.json", GithubPullRequestDTO[].class);
@@ -642,6 +659,11 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                 when(rawStorageAdapter.read(repository.getOrganizationId(), "github",
                         PullRequest.getNameFromRepositoryId(repository.getId())))
                         .thenReturn(dtoStubsToBytes(githubPullRequestDTOS.toArray()));
+                for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestStubs3) {
+                    when(githubApiClientAdapter.getPullRequestDetailsForPullRequestNumber(repository.getVcsOrganizationName(),
+                            repository.getName(), githubPullRequestDTO.getNumber()))
+                            .thenReturn(githubPullRequestDTO);
+                }
                 final List<PullRequest> pullRequestsForRepositoryAndDateRange =
                         githubAdapter.getPullRequestsForRepositoryAndDateRange(repository, startDate, endDate);
 
@@ -653,20 +675,19 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
 
 
         }
-    }
 
-
-    private static void setGithubPullRequestDates(GithubPullRequestDTO[] githubPullRequestStubs1,
-                                                  String date) throws SymeoException {
-        for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestStubs1) {
-            githubPullRequestDTO.setUpdatedAt(stringToDate(date));
-            githubPullRequestDTO.setCreatedAt(stringToDate(date));
+        private static void setGithubPullRequestDates(GithubPullRequestDTO[] githubPullRequestStubs1,
+                                                      String date) throws SymeoException {
+            for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestStubs1) {
+                githubPullRequestDTO.setUpdatedAt(stringToDate(date));
+                githubPullRequestDTO.setCreatedAt(stringToDate(date));
+            }
         }
     }
 
 
     @Nested
-    public class CommentCollection {
+    public class PullRequestCommentCollection {
         @Test
         void should_map_github_comments_dto_to_domain() throws IOException, ParseException {
             // Given
@@ -779,7 +800,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
     }
 
     @Nested
-    public class CommitCollection {
+    public class PullRequestCommitCollection {
         @Test
         void should_map_github_commits_dto_to_domain() throws IOException, ParseException {
             // Given
@@ -977,6 +998,190 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
             assertThat(tag.getCommitSha()).isEqualTo("817245d0b26d7a252327c60da4eff4469ab0d9ab");
             assertThat(tag.getVcsUrl()).isEqualTo(vcsUrl);
             assertThat(tag.getRepositoryId()).isEqualTo(repository.getId());
+        }
+    }
+
+
+    @Nested
+    public class CommitCollection {
+
+
+        @Test
+        void should_collect_commits_for_first_task_of_first_job() throws SymeoException, IOException {
+            // Given
+            final Repository repository = Repository.builder()
+                    .id(faker.idNumber().valid())
+                    .organizationId(UUID.randomUUID())
+                    .vcsOrganizationName(faker.rickAndMorty().character())
+                    .vcsOrganizationId(faker.pokemon().name())
+                    .name(faker.name().firstName())
+                    .build();
+            final String urlHost = faker.gameOfThrones().character();
+            final GithubProperties properties = new GithubProperties();
+            properties.setSize(2);
+            properties.setUrlHost(urlHost);
+            final GithubApiClientAdapter githubApiClientAdapter = mock(GithubApiClientAdapter.class);
+            final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
+            final GithubAdapter githubAdapter = new GithubAdapter(githubApiClientAdapter,
+                    rawStorageAdapter, properties, new ObjectMapper());
+            final String branch1 = faker.ancient().god();
+            final String branch2 = faker.ancient().hero();
+            final List<String> branchNames = List.of(branch1, branch2);
+            final Date startDate = stringToDate("2022-03-01");
+            final Date endDate = stringToDate("2022-05-01");
+
+            // When
+            final GithubCommitsDTO[] githubCommitsDTOS11 = getStubsFromClassT("github/get_commits_for_branch",
+                    "get_commits_for_branch_1_size_2_page_1.json",
+                    GithubCommitsDTO[].class);
+            when(githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(repository.getVcsOrganizationName(),
+                    repository.getName(), branch1, startDate, endDate, 1, properties.getSize()))
+                    .thenReturn(githubCommitsDTOS11);
+            final GithubCommitsDTO[] githubCommitsDTOS12 = getStubsFromClassT("github/get_commits_for_branch",
+                    "get_commits_for_branch_1_size_2_page_2.json",
+                    GithubCommitsDTO[].class);
+            when(githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(repository.getVcsOrganizationName(),
+                    repository.getName(), branch1, startDate, endDate, 2, properties.getSize()))
+                    .thenReturn(githubCommitsDTOS12);
+
+            final GithubCommitsDTO[] githubCommitsDTOS21 = getStubsFromClassT("github/get_commits_for_branch",
+                    "get_commits_for_branch_2_size_2_page_1.json",
+                    GithubCommitsDTO[].class);
+            when(githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(repository.getVcsOrganizationName(),
+                    repository.getName(), branch2, startDate, endDate, 1, properties.getSize()))
+                    .thenReturn(githubCommitsDTOS21);
+            final GithubCommitsDTO[] githubCommitsDTOS22 = getStubsFromClassT("github/get_commits_for_branch",
+                    "get_commits_for_branch_2_size_2_page_2.json",
+                    GithubCommitsDTO[].class);
+            when(githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(repository.getVcsOrganizationName(),
+                    repository.getName(), branch2, startDate, endDate, 2, properties.getSize()))
+                    .thenReturn(githubCommitsDTOS22);
+
+            when(rawStorageAdapter.exists(repository.getOrganizationId(), "github",
+                    Commit.getNameForRepository(repository)))
+                    .thenReturn(false);
+            final List<Commit> commitsForBranchesInDateRange = githubAdapter.getCommitsForBranchesInDateRange(
+                    repository, branchNames, startDate, endDate
+            );
+
+            // Then
+            assertThat(commitsForBranchesInDateRange).hasSize(githubCommitsDTOS11.length + githubCommitsDTOS12.length
+                    + githubCommitsDTOS21.length + githubCommitsDTOS22.length);
+            final List<GithubCommitsDTO> githubCommitsDTOS = new ArrayList<>();
+            githubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS11).toList());
+            githubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS12).toList());
+            githubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS21).toList());
+            githubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS22).toList());
+            final ArgumentCaptor<UUID> organizationIdCaptor = ArgumentCaptor.forClass(UUID.class);
+            final ArgumentCaptor<String> adapterNameCaptor = ArgumentCaptor.forClass(String.class);
+            final ArgumentCaptor<String> contentNameCaptor = ArgumentCaptor.forClass(String.class);
+            final ArgumentCaptor<byte[]> bytesCaptor = ArgumentCaptor.forClass(byte[].class);
+            verify(rawStorageAdapter, times(1))
+                    .save(organizationIdCaptor.capture(),
+                            adapterNameCaptor.capture(),
+                            contentNameCaptor.capture(),
+                            bytesCaptor.capture());
+            assertThat(organizationIdCaptor.getValue()).isEqualTo(repository.getOrganizationId());
+            assertThat(adapterNameCaptor.getValue()).isEqualTo("github");
+            assertThat(contentNameCaptor.getValue()).isEqualTo(Commit.getNameForRepository(repository));
+            final GithubCommitsDTO[] githubCommitsDTOSCaptured = objectMapper.readValue(bytesCaptor.getValue(),
+                    GithubCommitsDTO[].class);
+            for (GithubCommitsDTO githubCommitsDTO : githubCommitsDTOS) {
+                assertThat(githubCommitsDTOSCaptured).anyMatch(githubCommitsDTO::equals);
+            }
+        }
+
+        @Test
+        void should_collect_commits_for_first_tasks_of_second_job() throws SymeoException, IOException {
+            // Given
+            final Repository repository = Repository.builder()
+                    .id(faker.idNumber().valid())
+                    .organizationId(UUID.randomUUID())
+                    .vcsOrganizationName(faker.rickAndMorty().character())
+                    .vcsOrganizationId(faker.pokemon().name())
+                    .name(faker.name().firstName())
+                    .build();
+            final String urlHost = faker.gameOfThrones().character();
+            final GithubProperties properties = new GithubProperties();
+            properties.setSize(2);
+            properties.setUrlHost(urlHost);
+            final GithubApiClientAdapter githubApiClientAdapter = mock(GithubApiClientAdapter.class);
+            final RawStorageAdapter rawStorageAdapter = mock(RawStorageAdapter.class);
+            final GithubAdapter githubAdapter = new GithubAdapter(githubApiClientAdapter,
+                    rawStorageAdapter, properties, new ObjectMapper());
+            final String branch1 = faker.ancient().god();
+            final String branch2 = faker.ancient().hero();
+            final List<String> branchNames = List.of(branch1, branch2);
+            final Date startDate = stringToDate("2022-03-01");
+            final Date endDate = stringToDate("2022-05-01");
+
+            // When
+            final GithubCommitsDTO[] githubCommitsDTOS11 = getStubsFromClassT("github/get_commits_for_branch",
+                    "get_commits_for_branch_1_size_2_page_1.json",
+                    GithubCommitsDTO[].class);
+            when(githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(repository.getVcsOrganizationName(),
+                    repository.getName(), branch1, startDate, endDate, 1, properties.getSize()))
+                    .thenReturn(githubCommitsDTOS11);
+            final GithubCommitsDTO[] githubCommitsDTOS12 = getStubsFromClassT("github/get_commits_for_branch",
+                    "get_commits_for_branch_1_size_2_page_2.json",
+                    GithubCommitsDTO[].class);
+            when(githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(repository.getVcsOrganizationName(),
+                    repository.getName(), branch1, startDate, endDate, 2, properties.getSize()))
+                    .thenReturn(githubCommitsDTOS12);
+
+            final GithubCommitsDTO[] githubCommitsDTOS21 = getStubsFromClassT("github/get_commits_for_branch",
+                    "get_commits_for_branch_2_size_2_page_1.json",
+                    GithubCommitsDTO[].class);
+            when(githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(repository.getVcsOrganizationName(),
+                    repository.getName(), branch2, startDate, endDate, 1, properties.getSize()))
+                    .thenReturn(githubCommitsDTOS21);
+            final GithubCommitsDTO[] githubCommitsDTOS22 = getStubsFromClassT("github/get_commits_for_branch",
+                    "get_commits_for_branch_2_size_2_page_2.json",
+                    GithubCommitsDTO[].class);
+            when(githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(repository.getVcsOrganizationName(),
+                    repository.getName(), branch2, startDate, endDate, 2, properties.getSize()))
+                    .thenReturn(githubCommitsDTOS22);
+
+            when(rawStorageAdapter.exists(repository.getOrganizationId(), "github",
+                    Commit.getNameForRepository(repository)))
+                    .thenReturn(true);
+            final GithubCommitsDTO[] alreadyCollectedGithubCommitsDTOS = getStubsFromClassT("github" +
+                            "/get_commits_for_branch",
+                    "already_collected_commits.json",
+                    GithubCommitsDTO[].class);
+            when(rawStorageAdapter.read(repository.getOrganizationId(), "github",
+                    Commit.getNameForRepository(repository)))
+                    .thenReturn(dtoStubsToBytes(alreadyCollectedGithubCommitsDTOS));
+            final List<Commit> commitsForBranchesInDateRange = githubAdapter.getCommitsForBranchesInDateRange(
+                    repository, branchNames, startDate, endDate
+            );
+
+            // Then
+            assertThat(commitsForBranchesInDateRange).hasSize(githubCommitsDTOS11.length + githubCommitsDTOS12.length
+                    + githubCommitsDTOS21.length + githubCommitsDTOS22.length + alreadyCollectedGithubCommitsDTOS.length);
+            final List<GithubCommitsDTO> githubCommitsDTOS = new ArrayList<>();
+            githubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS11).toList());
+            githubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS12).toList());
+            githubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS21).toList());
+            githubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS22).toList());
+            githubCommitsDTOS.addAll(Arrays.stream(alreadyCollectedGithubCommitsDTOS).toList());
+            final ArgumentCaptor<UUID> organizationIdCaptor = ArgumentCaptor.forClass(UUID.class);
+            final ArgumentCaptor<String> adapterNameCaptor = ArgumentCaptor.forClass(String.class);
+            final ArgumentCaptor<String> contentNameCaptor = ArgumentCaptor.forClass(String.class);
+            final ArgumentCaptor<byte[]> bytesCaptor = ArgumentCaptor.forClass(byte[].class);
+            verify(rawStorageAdapter, times(1))
+                    .save(organizationIdCaptor.capture(),
+                            adapterNameCaptor.capture(),
+                            contentNameCaptor.capture(),
+                            bytesCaptor.capture());
+            assertThat(organizationIdCaptor.getValue()).isEqualTo(repository.getOrganizationId());
+            assertThat(adapterNameCaptor.getValue()).isEqualTo("github");
+            assertThat(contentNameCaptor.getValue()).isEqualTo(Commit.getNameForRepository(repository));
+            final GithubCommitsDTO[] githubCommitsDTOSCaptured = objectMapper.readValue(bytesCaptor.getValue(),
+                    GithubCommitsDTO[].class);
+            for (GithubCommitsDTO githubCommitsDTO : githubCommitsDTOS) {
+                assertThat(githubCommitsDTOSCaptured).anyMatch(githubCommitsDTO::equals);
+            }
         }
     }
 }

@@ -180,12 +180,13 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
     }
 
     @Override
-    public GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
-                                                                                                       final String repositoryName,
-                                                                                                       final String branchName,
-                                                                                                       final Date lastCollectionDate,
-                                                                                                       final Integer page,
-                                                                                                       final Integer size) throws SymeoException {
+    public GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(final String vcsOrganizationName,
+                                                                                            final String repositoryName,
+                                                                                            final String branchName,
+                                                                                            final Date startDate,
+                                                                                            final Date endDate,
+                                                                                            final Integer page,
+                                                                                            final Integer size) throws SymeoException {
         String uri =
                 api
                         + "repos/"
@@ -194,30 +195,13 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
                         + encodeValue(repositoryName)
                         + "/commits"
                         + String.format("?since=%s",
-                        new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(lastCollectionDate))
+                        new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(startDate))
+                        + String.format("?until=%s",
+                        new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(endDate))
                         + "&per_page="
                         + size.toString()
                         + "&page="
                         + page.toString()
-                        + String.format("&sha=%s", encodeValue(branchName));
-        return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
-    }
-
-    @Override
-    public GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
-                                                                                 final String repositoryName,
-                                                                                 final String branchName,
-                                                                                 final Integer page,
-                                                                                 final Integer size) throws SymeoException {
-        String uri =
-                api
-                        + "repos/"
-                        + encodeValue(vcsOrganizationName)
-                        + "/"
-                        + encodeValue(repositoryName)
-                        + "/commits"
-                        + String.format("?page=%s", page.toString())
-                        + String.format("&per_page=%s", size.toString())
                         + String.format("&sha=%s", encodeValue(branchName));
         return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
     }

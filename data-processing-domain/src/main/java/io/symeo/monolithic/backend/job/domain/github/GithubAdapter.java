@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.*;
 
+import static io.symeo.monolithic.backend.job.domain.github.mapper.GithubMapper.mapCommitToDomain;
 import static io.symeo.monolithic.backend.job.domain.github.mapper.GithubMapper.mapRepositoryDtoToDomain;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -87,6 +88,48 @@ public class GithubAdapter {
         }
     }
 
+    public List<Tag> getTags(final Repository repository) throws SymeoException {
+        final GithubTagDTO[] githubTagDTOS =
+                githubApiClientAdapter.getTagsForVcsOrganizationAndRepository(repository.getVcsOrganizationName(),
+                        repository.getName());
+        for (GithubTagDTO githubTagDTO : githubTagDTOS) {
+            githubTagDTO.setVcsApiUrl(
+                    properties.getUrlHost() + repository.getVcsOrganizationName() + "/" + repository.getName() +
+                            "/tree/" + githubTagDTO.getRef().replace("refs/tags/", "")
+            );
+        }
+        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Tag.getNameFromRepository(repository),
+                dtoToBytes(githubTagDTOS));
+        return Arrays.stream(githubTagDTOS)
+                .map(githubTagDTO -> GithubMapper.mapTagToDomain(githubTagDTO, repository))
+                .toList();
+    }
+
+    public List<Branch> getBranches(final Repository repository) throws SymeoException {
+
+        int page = 1;
+        GithubBranchDTO[] githubBranchDTOS =
+                this.githubApiClientAdapter.getBranchesForVcsOrganizationAndRepository(
+                        repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
+        if (isNull(githubBranchDTOS) || githubBranchDTOS.length == 0) {
+            return new ArrayList<>();
+        }
+        final List<GithubBranchDTO> githubBranchDTOList =
+                new ArrayList<>(List.of(githubBranchDTOS));
+        while (githubBranchDTOS.length == properties.getSize()) {
+            page += 1;
+            githubBranchDTOS =
+                    this.githubApiClientAdapter.getBranchesForVcsOrganizationAndRepository(
+                            repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
+            githubBranchDTOList.addAll(Arrays.stream(githubBranchDTOS).toList());
+        }
+        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Tag.getNameFromRepository(repository),
+                dtoToBytes(githubBranchDTOS));
+        return githubBranchDTOList.stream()
+                .map(GithubMapper::mapBranchToDomain)
+                .toList();
+    }
+
     private List<PullRequest> getPullRequestWithoutAlreadyCollectedPullRequests(Repository repository, Date startDate
             , Date endDate) throws SymeoException {
         int page = 1;
@@ -126,6 +169,54 @@ public class GithubAdapter {
                 .stream()
                 .map(githubPullRequestDTO -> GithubMapper.mapPullRequestDtoToDomain(githubPullRequestDTO,
                         ADAPTER_NAME, repository))
+                .toList();
+    }
+
+    public List<Commit> getCommitsForBranchesInDateRange(final Repository repository,
+                                                         final List<String> branchNames,
+                                                         final Date startDate,
+                                                         final Date endDate)
+            throws SymeoException {
+        final Set<GithubCommitsDTO> deduplicatedGithubCommitsDTOs = new HashSet<>();
+        for (String branchName : branchNames) {
+            int page = 1;
+            GithubCommitsDTO[] githubCommitsDTOS =
+                    githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(
+                            repository.getVcsOrganizationName(), repository.getName(), branchName, startDate, endDate
+                            , page,
+                            properties.getSize()
+                    );
+
+            if (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length > 0) {
+                deduplicatedGithubCommitsDTOs.addAll(Arrays.stream(githubCommitsDTOS).toList());
+            }
+
+            while (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length == properties.getSize()) {
+                page += 1;
+                githubCommitsDTOS =
+                        githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(
+                                repository.getVcsOrganizationName(), repository.getName(), branchName, startDate,
+                                endDate
+                                , page,
+                                properties.getSize()
+                        );
+                if (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length > 0) {
+                    deduplicatedGithubCommitsDTOs.addAll(Arrays.stream(githubCommitsDTOS).toList());
+                }
+            }
+        }
+        if (rawStorageAdapter.exists(repository.getOrganizationId(), this.getName(),
+                Commit.getNameForRepository(repository))) {
+            final GithubCommitsDTO[] githubCommitsDTOS =
+                    bytesToDto(rawStorageAdapter.read(repository.getOrganizationId(), this.getName(),
+                                    Commit.getNameForRepository(repository)),
+                            GithubCommitsDTO[].class);
+            deduplicatedGithubCommitsDTOs.addAll(Arrays.stream(githubCommitsDTOS).toList());
+        }
+        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Commit.getNameForRepository(repository),
+                dtoToBytes(deduplicatedGithubCommitsDTOs.toArray()));
+        return deduplicatedGithubCommitsDTOs.stream()
+                .map(githubCommitsDTO -> mapCommitToDomain(githubCommitsDTO, repository))
                 .toList();
     }
 
@@ -177,80 +268,6 @@ public class GithubAdapter {
 
     }
 
-    public List<Tag> getTags(final Repository repository) throws SymeoException {
-        final GithubTagDTO[] githubTagDTOS =
-                githubApiClientAdapter.getTagsForVcsOrganizationAndRepository(repository.getVcsOrganizationName(),
-                        repository.getName());
-        for (GithubTagDTO githubTagDTO : githubTagDTOS) {
-            githubTagDTO.setVcsApiUrl(
-                    properties.getUrlHost() + repository.getVcsOrganizationName() + "/" + repository.getName() +
-                            "/tree/" + githubTagDTO.getRef().replace("refs/tags/", "")
-            );
-        }
-        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Tag.getNameFromRepository(repository),
-                dtoToBytes(githubTagDTOS));
-        return Arrays.stream(githubTagDTOS)
-                .map(githubTagDTO -> GithubMapper.mapTagToDomain(githubTagDTO, repository))
-                .toList();
-    }
-
-    public List<Branch> getBranches(final Repository repository) throws SymeoException {
-
-        int page = 1;
-        GithubBranchDTO[] githubBranchDTOS =
-                this.githubApiClientAdapter.getBranchesForVcsOrganizationAndRepository(
-                        repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
-        if (isNull(githubBranchDTOS) || githubBranchDTOS.length == 0) {
-            return new ArrayList<>();
-        }
-        final List<GithubBranchDTO> githubBranchDTOList =
-                new ArrayList<>(List.of(githubBranchDTOS));
-        while (githubBranchDTOS.length == properties.getSize()) {
-            page += 1;
-            githubBranchDTOS =
-                    this.githubApiClientAdapter.getBranchesForVcsOrganizationAndRepository(
-                            repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
-            githubBranchDTOList.addAll(Arrays.stream(githubBranchDTOS).toList());
-        }
-        return githubBranchDTOList.stream()
-                .map(GithubMapper::mapBranchToDomain)
-                .toList();
-    }
-//    public List<Commit> getCommitsForBranchFromLastCollectionDate(final Repository repository,
-//                                                               final String branchName,
-//                                                               Date lastCollectionDate)
-//            throws SymeoException {
-//        lastCollectionDate = getLastCollectionDateFromAlreadyCollectCommits(lastCollectionDate,
-//                alreadyCollectedRawGithubCommitsDTOS);
-//        int page = 1;
-//        GithubCommitsDTO[] githubCommitsDTOS = getGithubCommitsDTOSFromLastCollectionDate(lastCollectionDate,
-//                githubHttpApiClient, vcsOrganizationName, repositoryName, branchName, page, properties);
-//        if (isNull(githubCommitsDTOS) || githubCommitsDTOS.length == 0) {
-//            return new byte[0];
-//        }
-//        final List<GithubCommitsDTO> githubCommitsDTOList =
-//                new ArrayList<>(List.of(githubCommitsDTOS));
-//        while (githubCommitsDTOS.length == properties.getSize()) {
-//            page += 1;
-//            githubCommitsDTOS = getGithubCommitsDTOSFromLastCollectionDate(lastCollectionDate, githubHttpApiClient,
-//                    vcsOrganizationName, repositoryName, branchName, page, properties);
-//            githubCommitsDTOList.addAll(Arrays.stream(githubCommitsDTOS).toList());
-//        }
-//
-//        if (nonNull(alreadyCollectedRawGithubCommitsDTOS) && alreadyCollectedRawGithubCommitsDTOS.length > 0) {
-//            final GithubCommitsDTO[] alreadyCollectedGithubCommitsDTOS =
-//                    bytesToDto(alreadyCollectedRawGithubCommitsDTOS,
-//                            GithubCommitsDTO[].class);
-//            githubCommitsDTOList.addAll(
-//                    compareAlreadyCollectedCommitsToCurrentCommitsAndReturnNotUpdatedCommits(
-//                            Arrays.asList(alreadyCollectedGithubCommitsDTOS), githubCommitsDTOList)
-//            );
-//        }
-
-//        return dtoToBytes(githubCommitsDTOList.toArray());
-
-//    }
-
     private byte[] getAlreadyRawCollectedPullRequests(Repository repository) throws SymeoException {
         byte[] alreadyRawCollectedPullRequests = null;
         if (rawStorageAdapter.exists(repository.getOrganizationId(), ADAPTER_NAME,
@@ -265,10 +282,9 @@ public class GithubAdapter {
                                                                         byte[] alreadyRawCollectedPullRequests,
                                                                         List<GithubPullRequestDTO> githubPullRequestDTOList)
             throws SymeoException {
-        List<GithubPullRequestDTO> githubDetailedPullRequests;
+        final List<GithubPullRequestDTO> githubDetailedPullRequests = new ArrayList<>();
         final GithubPullRequestDTO[] alreadyCollectedGithubPullRequestDTOS =
                 getGithubPullRequestDTOSFromBytes(alreadyRawCollectedPullRequests);
-        githubDetailedPullRequests = new ArrayList<>();
 
         for (GithubPullRequestDTO currentGithubPullRequestDTO : githubPullRequestDTOList) {
             final Optional<GithubPullRequestDTO> optionalAlreadyCollectedPR =
@@ -288,6 +304,14 @@ public class GithubAdapter {
                 githubDetailedPullRequests.add(
                         getPullRequestDetailsForPullRequestNumber(repository, currentGithubPullRequestDTO)
                 );
+            }
+        }
+
+        for (GithubPullRequestDTO alreadyCollectedGithubPullRequestDTO : alreadyCollectedGithubPullRequestDTOS) {
+            if (githubDetailedPullRequests.stream()
+                    .anyMatch(githubPullRequestDTO -> githubPullRequestDTO.getId()
+                            .equals(alreadyCollectedGithubPullRequestDTO.getId()))) {
+                githubDetailedPullRequests.add(alreadyCollectedGithubPullRequestDTO);
             }
         }
         return githubDetailedPullRequests;

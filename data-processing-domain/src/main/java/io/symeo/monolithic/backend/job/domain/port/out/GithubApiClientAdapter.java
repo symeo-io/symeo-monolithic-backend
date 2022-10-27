@@ -42,18 +42,13 @@ public interface GithubApiClientAdapter {
                                                                  final Integer page,
                                                                  final Integer size) throws SymeoException;
 
-    GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranchFromLastCollectionDate(final String vcsOrganizationName,
-                                                                                                final String repositoryName,
-                                                                                                final String branchName,
-                                                                                                final Date lastCollectionDate,
-                                                                                                final Integer page,
-                                                                                                final Integer size) throws SymeoException;
-
-    GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
-                                                                          final String repositoryName,
-                                                                          final String branchName,
-                                                                          final Integer page,
-                                                                          final Integer size) throws SymeoException;
+    GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(final String vcsOrganizationName,
+                                                                                     final String repositoryName,
+                                                                                     final String branchName,
+                                                                                     final Date startDate,
+                                                                                     final Date endDate,
+                                                                                     final Integer page,
+                                                                                     final Integer size) throws SymeoException;
 
     GithubTagDTO[] getTagsForVcsOrganizationAndRepository(String vcsOrganizationName, String repositoryName) throws SymeoException;
 }
