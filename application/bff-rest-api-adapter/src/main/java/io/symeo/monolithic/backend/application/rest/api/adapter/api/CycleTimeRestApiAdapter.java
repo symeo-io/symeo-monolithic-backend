@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tags;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
 import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.CycleTimeContractMapper;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.port.in.CycleTimeCurveFacadeAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.in.CycleTimeMetricsFacadeAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.bff.contract.api.CycleTimeApi;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.CycleTimeContractMapper.*;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.CycleTimeContractMapper.errorToContract;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
@@ -29,13 +31,14 @@ public class CycleTimeRestApiAdapter implements CycleTimeApi {
 
     private final AuthenticationService authenticationService;
     private final CycleTimeMetricsFacadeAdapter cycleTimeMetricsFacadeAdapter;
+    private final CycleTimeCurveFacadeAdapter cycleTimeCurveFacadeAdapter;
 
     @Override
     public ResponseEntity<CycleTimeResponseContract> getCycleTimeMetrics(UUID teamId, String startDate,
                                                                          String endDate) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(CycleTimeContractMapper.toContract(cycleTimeMetricsFacadeAdapter
+            return ok(toContract(cycleTimeMetricsFacadeAdapter
                     .computeCycleTimeMetricsForTeamIdFromStartDateToEndDate(authenticatedUser.getOrganization(),
                             teamId, stringToDate(startDate),
                             stringToDate(endDate))));
@@ -51,7 +54,7 @@ public class CycleTimeRestApiAdapter implements CycleTimeApi {
                                                                               String sortDir) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            return ok(CycleTimeContractMapper.toPiecesContract(cycleTimeMetricsFacadeAdapter
+            return ok(toPiecesContract(cycleTimeMetricsFacadeAdapter
                     .computeCycleTimePiecesForTeamIdFromStartDateToEndDate(authenticatedUser.getOrganization(),
                             teamId, stringToDate(startDate), stringToDate(endDate), pageIndex, pageSize, sortBy,
                             sortDir)));
@@ -65,7 +68,9 @@ public class CycleTimeRestApiAdapter implements CycleTimeApi {
     public ResponseEntity<CycleTimeCurveResponseContract> getCycleTimeCurve(UUID teamId, String startDate,
                                                                             String endDate) {
         try {
-            return ok(CycleTimeContractMapper.toCurveContract(stringToDate(startDate), stringToDate(endDate)));
+            final User authenticatedUser = authenticationService.getAuthenticatedUser();
+            return ok(toCurveContract(cycleTimeCurveFacadeAdapter.computeCycleTimePieceCurveWithAverage(
+                    authenticatedUser.getOrganization(), teamId, stringToDate(startDate), stringToDate(endDate))));
         } catch (SymeoException e) {
             throw new RuntimeException(e);
         }

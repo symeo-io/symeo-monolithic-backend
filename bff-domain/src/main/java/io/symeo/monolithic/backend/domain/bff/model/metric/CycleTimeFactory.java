@@ -15,10 +15,10 @@ public class CycleTimeFactory {
                                                                                    final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
                                                                                    final List<CommitView> allCommits) {
         final CommitHistory commitHistory = CommitHistory.initializeFromCommits(allCommits);
-        return computeCycleTimeWithDeployTimeSupplier(
+        return computeCycleTimeWithTimeToDeploySupplier(
                 pullRequestView,
                 commitHistory,
-                computeDeployTimeWithPullRequestMatchingDeliverySettingsSupplier(
+                computeTimeToDeployWithPullRequestMatchingDeliverySettingsSupplier(
                         pullRequestView,
                         pullRequestViewsMatchingDeliverySettings,
                         commitHistory
@@ -30,10 +30,10 @@ public class CycleTimeFactory {
                                                                  final List<TagView> tagsMatchedToDeploy,
                                                                  final List<CommitView> allCommits) {
         final CommitHistory commitHistory = CommitHistory.initializeFromCommits(allCommits);
-        return computeCycleTimeWithDeployTimeSupplier(
+        return computeCycleTimeWithTimeToDeploySupplier(
                 pullRequestView,
                 commitHistory,
-                computeDeployTimeForTagRegexToDeploySettingsSupplier(
+                computeTimeToDeployForTagRegexToDeploySettingsSupplier(
                         pullRequestView,
                         tagsMatchedToDeploy,
                         commitHistory
@@ -41,9 +41,9 @@ public class CycleTimeFactory {
         );
     }
 
-    private CycleTime computeCycleTimeWithDeployTimeSupplier(PullRequestView pullRequestView,
-                                                             final CommitHistory commitHistory,
-                                                             final Supplier<Long> deployTimeSupplier) {
+    private CycleTime computeCycleTimeWithTimeToDeploySupplier(PullRequestView pullRequestView,
+                                                               final CommitHistory commitHistory,
+                                                               final Supplier<Long> timeToDeploySupplier) {
 
         pullRequestView = pullRequestView.toBuilder()
                 .commits(pullRequestView.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
@@ -58,12 +58,12 @@ public class CycleTimeFactory {
         final Date mergeDate = pullRequestView.getMergeDate();
         final Long codingTime = computeCodingTime(commitsOrderByDate, commentsOrderByDate);
         final Long reviewTime = computeReviewTime(commitsOrderByDate, commentsOrderByDate, mergeDate);
-        final Long deployTime = deployTimeSupplier.get();
+        final Long timeToDeploy = timeToDeploySupplier.get();
         return CycleTime.builder()
                 .codingTime(codingTime)
                 .reviewTime(reviewTime)
-                .deployTime(deployTime)
-                .value(getCycleTimeValue(codingTime, reviewTime, deployTime))
+                .timeToDeploy(timeToDeploy)
+                .value(getCycleTimeValue(codingTime, reviewTime, timeToDeploy))
                 .pullRequestView(pullRequestView)
                 .build();
     }
@@ -119,18 +119,18 @@ public class CycleTimeFactory {
         return lastCommitBeforeFirstReview;
     }
 
-    private Long getCycleTimeValue(Long codingTime, Long reviewTime, Long deployTime) {
-        if (isNull(codingTime) && isNull(reviewTime) && isNull(deployTime)) {
+    private Long getCycleTimeValue(Long codingTime, Long reviewTime, Long timeToDeploy) {
+        if (isNull(codingTime) && isNull(reviewTime) && isNull(timeToDeploy)) {
             return null;
         }
-        return zeroIfNull(codingTime) + zeroIfNull(reviewTime) + zeroIfNull(deployTime);
+        return zeroIfNull(codingTime) + zeroIfNull(reviewTime) + zeroIfNull(timeToDeploy);
     }
 
     private Long zeroIfNull(final Long value) {
         return isNull(value) ? 0L : value;
     }
 
-    private Supplier<Long> computeDeployTimeWithPullRequestMatchingDeliverySettingsSupplier(
+    private Supplier<Long> computeTimeToDeployWithPullRequestMatchingDeliverySettingsSupplier(
             final PullRequestView pullRequestView,
             final List<PullRequestView> pullRequestViewsMatchingDeliverySettings,
             final CommitHistory commitHistory
@@ -160,9 +160,9 @@ public class CycleTimeFactory {
         };
     }
 
-    private Supplier<Long> computeDeployTimeForTagRegexToDeploySettingsSupplier(final PullRequestView pullRequestView,
-                                                                                final List<TagView> tagsMatchedToDeploy,
-                                                                                final CommitHistory commitHistory) {
+    private Supplier<Long> computeTimeToDeployForTagRegexToDeploySettingsSupplier(final PullRequestView pullRequestView,
+                                                                                  final List<TagView> tagsMatchedToDeploy,
+                                                                                  final CommitHistory commitHistory) {
         return () -> {
             if (tagsMatchedToDeploy.isEmpty()) {
                 return null;

@@ -93,8 +93,14 @@ public class DomainConfiguration {
     public CycleTimeMetricsFacadeAdapter cycleTimeFacadeAdapter(final BffExpositionStorageAdapter expositionStorageAdapter,
                                                                 final OrganizationSettingsFacade organizationSettingsFacade,
                                                                 final CycleTimeService cycleTimeService) {
-        return new CycleTimeMetricsMetricsService(expositionStorageAdapter, organizationSettingsFacade,
+        return new CycleTimeMetricsService(expositionStorageAdapter, organizationSettingsFacade,
                 cycleTimeService);
+    }
+
+    @Bean CycleTimeCurveFacadeAdapter cycleTimeCurveFacadeAdapter(final OrganizationSettingsFacade organizationSettingsFacade,
+                                                                  final BffExpositionStorageAdapter bffExpositionStorageAdapter,
+                                                                  final CycleTimeFactory cycleTimeFactory) {
+        return new CycleTimeCurveService(organizationSettingsFacade, bffExpositionStorageAdapter, cycleTimeFactory);
     }
 
     @Bean

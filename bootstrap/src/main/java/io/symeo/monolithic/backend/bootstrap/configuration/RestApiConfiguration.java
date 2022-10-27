@@ -85,8 +85,9 @@ public class RestApiConfiguration {
 
     @Bean
     public CycleTimeRestApiAdapter CycleTimeRestApiAdapter(final AuthenticationService authenticationService,
-                                                           final CycleTimeMetricsFacadeAdapter cycleTimeMetricsFacadeAdapter) {
-        return new CycleTimeRestApiAdapter(authenticationService, cycleTimeMetricsFacadeAdapter);
+                                                           final CycleTimeMetricsFacadeAdapter cycleTimeMetricsFacadeAdapter,
+                                                           final CycleTimeCurveFacadeAdapter cycleTimeCurveFacadeAdapter) {
+        return new CycleTimeRestApiAdapter(authenticationService, cycleTimeMetricsFacadeAdapter, cycleTimeCurveFacadeAdapter);
     }
 
     @Bean

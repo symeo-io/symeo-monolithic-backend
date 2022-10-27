@@ -251,7 +251,6 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.pieces_page.pieces[0].review_time").isEqualTo("1370")
                 .jsonPath("$.pieces_page.pieces[0].time_to_deploy").isEqualTo("3549")
                 .jsonPath("$.pieces_page.pieces[0].cycle_time").isEqualTo("4919")
-
                 .jsonPath("$.pieces_page.pieces[1].id").isEqualTo(pullRequestId2)
                 .jsonPath("$.pieces_page.pieces[1].status").isEqualTo("merge")
                 .jsonPath("$.pieces_page.pieces[1].title").isEqualTo(pullRequestTitle2)
@@ -267,6 +266,32 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
     }
 
     @Order(3)
+    @Test
+    void should_get_cycle_time_piece_curve_for_pull_request_merge_on_branch_regex() {
+        // Given
+        final String startDate = "2022-02-01";
+        final String endDate = "2022-04-01";
+
+        // When
+        client.get()
+                .uri(getApiURI(TEAMS_REST_API_CYCLE_TIME_CURVE, Map.of("team_id", teamId.toString(),
+                        "start_date", startDate, "end_date", endDate)))
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.curves.piece_curve[0]").exists()
+                .jsonPath("$.curves.piece_curve[1]").exists()
+                .jsonPath("$.curves.average_curve[0].value").isEqualTo(4919.0f)
+                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-03-02")
+                .jsonPath("$.curves.average_curve[1].value").isEqualTo(3548.0f)
+                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-03-04");
+
+    }
+
+
+    @Order(4)
     @Test
     void should_compute_cycle_time_pieces_for_tag_to_deploy_regex() {
         // Given
@@ -324,6 +349,30 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.pieces_page.pieces[1].review_time").isEqualTo("1939")
                 .jsonPath("$.pieces_page.pieces[1].time_to_deploy").isEqualTo(null)
                 .jsonPath("$.pieces_page.pieces[1].cycle_time").isEqualTo("3548");
+    }
+
+    @Order(5)
+    @Test
+    void should_get_cycle_time_piece_curve_for_tag_to_deploy_regex() {
+        // Given
+        final String startDate = "2022-02-01";
+        final String endDate = "2022-04-01";
+
+        // When
+        client.get()
+                .uri(getApiURI(TEAMS_REST_API_CYCLE_TIME_CURVE, Map.of("team_id", teamId.toString(),
+                        "start_date", startDate, "end_date", endDate)))
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.errors").isEmpty()
+                .jsonPath("$.curves.piece_curve[0]").exists()
+                .jsonPath("$.curves.piece_curve[1]").exists()
+                .jsonPath("$.curves.average_curve[0].value").isEqualTo(4919.0f)
+                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-03-02")
+                .jsonPath("$.curves.average_curve[1].value").isEqualTo(3548.0f)
+                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-03-04");
     }
 }
 

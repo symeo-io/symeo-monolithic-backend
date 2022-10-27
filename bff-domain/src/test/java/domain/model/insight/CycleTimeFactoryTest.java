@@ -53,7 +53,7 @@ public class CycleTimeFactoryTest {
 
             // Then
             assertThat(cycleTime.getCodingTime()).isNull();
-            assertThat(cycleTime.getDeployTime()).isNull();
+            assertThat(cycleTime.getTimeToDeploy()).isNull();
             assertThat(cycleTime.getReviewTime()).isEqualTo(
                     DateHelper.getNumberOfMinutesBetweenDates(commitDate, new Date())
             );
@@ -95,7 +95,7 @@ public class CycleTimeFactoryTest {
                     commit1.getDate(),
                     new Date()
             ));
-            assertThat(cycleTime.getDeployTime()).isNull();
+            assertThat(cycleTime.getTimeToDeploy()).isNull();
             assertThat(cycleTime.getValue()).isEqualTo(cycleTime.getCodingTime() + cycleTime.getReviewTime());
         }
 
@@ -163,7 +163,7 @@ public class CycleTimeFactoryTest {
                     .isEqualTo(
                             getNumberOfMinutesBetweenDates(commit1.getDate(),
                                     new Date()));
-            assertThat(cycleTime.getDeployTime()).isNull();
+            assertThat(cycleTime.getTimeToDeploy()).isNull();
         }
 
 
@@ -211,7 +211,7 @@ public class CycleTimeFactoryTest {
             // Then
             assertThat(cycleTime.getCodingTime()).isNull();
             assertThat(cycleTime.getReviewTime()).isEqualTo(95L);
-            assertThat(cycleTime.getDeployTime()).isNull();
+            assertThat(cycleTime.getTimeToDeploy()).isNull();
             assertThat(cycleTime.getValue()).isEqualTo(95L);
         }
 
@@ -298,7 +298,7 @@ public class CycleTimeFactoryTest {
 //            "2022-01-05 14:00:00"
             assertThat(cycleTime.getCodingTime()).isNull();
             assertThat(cycleTime.getReviewTime()).isEqualTo(0L);
-            assertThat(cycleTime.getDeployTime()).isEqualTo(1320L);
+            assertThat(cycleTime.getTimeToDeploy()).isEqualTo(1320L);
             assertThat(cycleTime.getValue()).isEqualTo(1320L);
         }
 
@@ -418,7 +418,7 @@ public class CycleTimeFactoryTest {
 //            "2022-01-05 14:00:00"
             assertThat(cycleTime.getCodingTime()).isNull();
             assertThat(cycleTime.getReviewTime()).isEqualTo(0L);
-            assertThat(cycleTime.getDeployTime()).isEqualTo(1320L);
+            assertThat(cycleTime.getTimeToDeploy()).isEqualTo(1320L);
             assertThat(cycleTime.getValue()).isEqualTo(1320L);
         }
     }

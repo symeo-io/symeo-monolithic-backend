@@ -14,7 +14,6 @@ import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationSettingsFacade
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.DateHelper;
-import io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +30,7 @@ import static java.util.Optional.empty;
 
 @Slf4j
 @AllArgsConstructor
-public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAdapter {
+public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
 
     private final BffExpositionStorageAdapter bffExpositionStorageAdapter;
     private final OrganizationSettingsFacade organizationSettingsFacade;
@@ -278,8 +277,8 @@ public class CycleTimeMetricsMetricsService implements CycleTimeMetricsFacadeAda
     }
 
     private Boolean excludePullRequest(final PullRequestView pullRequestView, final List<String> excludeBranchRegexes) {
-        return excludeBranchRegexes.isEmpty() || excludeBranchRegexes.stream().anyMatch(
-                regex -> !Pattern.compile(regex).matcher(pullRequestView.getHead()).find()
+        return excludeBranchRegexes.isEmpty() || excludeBranchRegexes.stream().noneMatch(
+                regex -> Pattern.compile(regex).matcher(pullRequestView.getHead()).find()
         );
     }
 }

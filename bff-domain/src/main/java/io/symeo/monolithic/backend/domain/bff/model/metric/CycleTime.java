@@ -13,7 +13,7 @@ public class CycleTime {
     Long value;
     Long codingTime;
     Long reviewTime;
-    Long deployTime;
+    Long timeToDeploy;
     // To display PR data on graphs
     PullRequestView pullRequestView;
 }

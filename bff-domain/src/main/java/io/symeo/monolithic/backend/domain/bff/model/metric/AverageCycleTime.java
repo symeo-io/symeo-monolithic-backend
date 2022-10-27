@@ -9,5 +9,5 @@ public class AverageCycleTime {
     Float averageValue;
     Float averageCodingTime;
     Float averageReviewTime;
-    Float averageDeployTime;
+    Float averageTimeToDeploy;
 }

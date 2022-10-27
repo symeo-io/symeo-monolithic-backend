@@ -21,5 +21,5 @@ public class CycleTimePiece {
     Long cycleTime;
     Long codingTime;
     Long reviewTime;
-    Long deployTime;
+    Long timeToDeploy;
 }
