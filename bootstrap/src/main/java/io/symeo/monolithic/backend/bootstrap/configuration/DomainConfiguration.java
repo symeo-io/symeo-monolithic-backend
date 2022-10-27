@@ -49,8 +49,9 @@ public class DomainConfiguration {
 
     @Bean
     public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter,
+                                                               final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter,
                                                                final SymeoJobApiAdapter symeoJobApiAdapter) {
-        return new OrganizationService(organizationStorageAdapter, symeoJobApiAdapter);
+        return new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter, symeoJobApiAdapter);
     }
 
     @Bean

@@ -21,6 +21,9 @@ public class CommitTestingDataEntity {
     @Column(name = "id", nullable = false)
     UUID id;
 
+    @Column(name = "organization_id", nullable = false)
+    UUID organizationId;
+
     @Column(name = "coverage")
     Float coverage;
 

@@ -3,5 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.repository.expositio
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitTestingDataEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CommitTestingDataRepository extends JpaRepository<CommitTestingDataEntity, String> {
+import java.util.UUID;
+
+public interface CommitTestingDataRepository extends JpaRepository<CommitTestingDataEntity, UUID> {
 }

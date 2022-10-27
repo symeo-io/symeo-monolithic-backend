@@ -18,8 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.ORGANIZATION_NAME_NOT_FOUND;
-import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
+import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.*;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper.*;
 
 @AllArgsConstructor
@@ -38,7 +37,7 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
                 .orElseThrow(
                         () -> SymeoException.builder()
                                 .message(String.format("Organization not found for id %s", organizationId))
-                                .code(ORGANIZATION_NAME_NOT_FOUND)
+                                .code(ORGANISATION_NOT_FOUND)
                                 .build()
                 );
 

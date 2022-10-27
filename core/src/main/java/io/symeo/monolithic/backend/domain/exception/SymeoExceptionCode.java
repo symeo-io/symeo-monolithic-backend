@@ -53,4 +53,6 @@ public interface SymeoExceptionCode {
     // Testing
     String FAILED_TO_PARSE_COVERAGE_REPORT = "F.FAILED_TO_PARSE_COVERAGE_REPORT";
 
+    // Api key
+    String UNKNOWN_API_KEY = "F.UNKNOWN_API_KEY";
 }

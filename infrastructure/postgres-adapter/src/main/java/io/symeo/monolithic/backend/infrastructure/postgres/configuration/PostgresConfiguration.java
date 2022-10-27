@@ -87,6 +87,11 @@ public class PostgresConfiguration {
     }
 
     @Bean
+    public PostgresOrganizationApiKeyAdapter postgresOrganizationApiKeyAdapter(final OrganizationApiKeyRepository organizationApiKeyRepository) {
+        return new PostgresOrganizationApiKeyAdapter(organizationApiKeyRepository);
+    }
+
+    @Bean
     public CustomPullRequestViewRepository customPullRequestViewRepository(final EntityManager entityManager) {
         return new CustomPullRequestViewRepository(entityManager);
     }

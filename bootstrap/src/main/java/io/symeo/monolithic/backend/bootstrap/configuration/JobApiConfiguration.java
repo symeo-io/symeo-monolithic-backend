@@ -38,7 +38,8 @@ public class JobApiConfiguration {
     }
 
     @Bean
-    public TestingRestApiAdapter testingRestApiAdapter(final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter) {
-        return new TestingRestApiAdapter(commitTestingDataFacadeAdapter);
+    public TestingRestApiAdapter testingRestApiAdapter(final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter,
+                                                       final OrganizationFacadeAdapter organizationFacadeAdapter) {
+        return new TestingRestApiAdapter(commitTestingDataFacadeAdapter, organizationFacadeAdapter);
     }
 }

@@ -12,6 +12,7 @@ public interface CommitTestingDataMapper {
     static CommitTestingDataEntity domainToEntity(final CommitTestingData commitTestingData) {
         return CommitTestingDataEntity.builder()
                 .id(UUID.randomUUID())
+                .organizationId(commitTestingData.getOrganizationId())
                 .coverage(commitTestingData.getCoverage())
                 .testLineCount(commitTestingData.getTestLineCount())
                 .codeLineCount(commitTestingData.getCodeLineCount())
