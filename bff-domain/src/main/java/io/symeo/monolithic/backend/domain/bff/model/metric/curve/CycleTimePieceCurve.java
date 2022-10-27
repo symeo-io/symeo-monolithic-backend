@@ -13,13 +13,14 @@ public class CycleTimePieceCurve {
     List<CyclePieceCurvePoint> data = new ArrayList<>();
 
     public void addPoint(final String startDateRange, final Long value, final Long codingTime,
-                         final Long reviewTime, final String link, final String label) {
+                         final Long reviewTime, final Long deployTime, final String link, final String label) {
         this.data.add(
                 CyclePieceCurvePoint.builder()
                         .date(startDateRange)
                         .value(value)
                         .codingTime(codingTime)
                         .reviewTime(reviewTime)
+                        .deployTime(deployTime)
                         .link(link)
                         .label(label)
                         .build()
@@ -33,6 +34,7 @@ public class CycleTimePieceCurve {
         Long value;
         Long codingTime;
         Long reviewTime;
+        Long deployTime;
         String label;
         String link;
     }

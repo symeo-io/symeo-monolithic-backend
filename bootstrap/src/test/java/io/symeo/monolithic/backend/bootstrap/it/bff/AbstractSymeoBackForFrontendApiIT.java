@@ -121,6 +121,7 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
     protected static final String JOBS_REST_API_VCS_DATA_COLLECTION_STATUS = "/api/v1/jobs/vcs-data-collection/status";
     protected static final String TEAMS_REST_API_CYCLE_TIME = "/api/v1/teams/cycle-time";
     protected static final String TEAMS_REST_API_CYCLE_TIME_PIECES = "/api/v1/teams/cycle-time/pieces";
+    protected static final String TEAMS_REST_API_CYCLE_TIME_CURVE = "/api/v1/teams/cycle-time/curve";
     protected static final String TEAMS_REST_API_DEPLOYMENT = "/api/v1/teams/deployment";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM = "/job/v1/data-processing/team";
 

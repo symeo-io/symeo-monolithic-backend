@@ -277,8 +277,8 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
     }
 
     private Boolean excludePullRequest(final PullRequestView pullRequestView, final List<String> excludeBranchRegexes) {
-        return excludeBranchRegexes.isEmpty() || excludeBranchRegexes.stream().anyMatch(
-                regex -> !Pattern.compile(regex).matcher(pullRequestView.getHead()).find()
+        return excludeBranchRegexes.isEmpty() || excludeBranchRegexes.stream().noneMatch(
+                regex -> Pattern.compile(regex).matcher(pullRequestView.getHead()).find()
         );
     }
 }

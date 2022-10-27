@@ -17,7 +17,6 @@ import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapt
 import io.symeo.monolithic.backend.domain.bff.service.insights.CycleTimeMetricsService;
 import io.symeo.monolithic.backend.domain.bff.service.insights.CycleTimeService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,8 +47,8 @@ public class CycleTimeMetricsServiceTest {
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
-        final Date startDate = DateHelper.stringToDate("2022-01-01");
-        final Date endDate = DateHelper.stringToDate("2022-02-01");
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-02-01");
 
         // When
         when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
@@ -87,8 +87,8 @@ public class CycleTimeMetricsServiceTest {
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
-        final Date startDate = DateHelper.stringToDate("2022-01-01");
-        final Date endDate = DateHelper.stringToDate("2022-02-01");
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-02-01");
 
         final int pageIndex = faker.number().randomDigit();
         final int pageSize = faker.number().randomDigit();
@@ -138,16 +138,16 @@ public class CycleTimeMetricsServiceTest {
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
-        final Date startDate = DateHelper.stringToDate("2022-01-01");
-        final Date endDate = DateHelper.stringToDate("2022-02-01");
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-02-01");
         final Date previousStartDate =
-                DateHelper.getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone());
+                getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone());
         final List<PullRequestView> currentPullRequestViews =
                 List.of(PullRequestView.builder().id(faker.animal().name()).head(faker.ancient().god()).build(),
-                        PullRequestView.builder().id(faker.animal().name()).head("main").build());
+                        PullRequestView.builder().id(faker.animal().name()).head("head-1").build());
         final List<PullRequestView> previousPullRequestViews =
                 List.of(PullRequestView.builder().id(faker.animal().name()).head(faker.ancient().god()).build(),
-                        PullRequestView.builder().id(faker.animal().name()).head("staging").build()
+                        PullRequestView.builder().id(faker.animal().name()).head("head-2").build()
                 );
         final List<CommitView> allCommits = List.of(
                 CommitView.builder().sha(faker.pokemon().name()).build(),
@@ -254,8 +254,8 @@ public class CycleTimeMetricsServiceTest {
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
-        final Date startDate = DateHelper.stringToDate("2022-01-01");
-        final Date endDate = DateHelper.stringToDate("2022-02-01");
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-02-01");
 
         final int pageIndex = faker.number().randomDigit();
         final int pageSize = faker.number().randomDigit();
@@ -279,12 +279,10 @@ public class CycleTimeMetricsServiceTest {
                 PullRequestView.builder().id(faker.animal().name()).base(faker.animal().name()).build()
         );
         final String cycleTimePieceId1 = faker.name().firstName() + "-1";
-        final String cycleTimePieceId2 = faker.name().firstName() + "-2";
 
         final List<CycleTimePiece> cycleTimePiecesForPage =
                 List.of(
-                        CycleTimePiece.builder().id(cycleTimePieceId1).build(),
-                        CycleTimePiece.builder().id(cycleTimePieceId2).build()
+                        CycleTimePiece.builder().id(cycleTimePieceId1).build()
                 );
 
         // When
@@ -303,7 +301,7 @@ public class CycleTimeMetricsServiceTest {
                 startDate, endDate))
                 .thenReturn(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
         when(cycleTimeService.buildCycleTimePiecesForPullRequestsMergedOnBranchRegexSettings(
-                pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted,
+                List.of(pullRequestViewsForTeamIdAndStartDateAndEndDateAndPaginationSorted.get(0)),
                 List.of(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)),
                 allCommitsUntilEndDate))
                 .thenReturn(cycleTimePiecesForPage);
@@ -333,10 +331,10 @@ public class CycleTimeMetricsServiceTest {
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
-        final Date startDate = DateHelper.stringToDate("2022-01-01");
-        final Date endDate = DateHelper.stringToDate("2022-02-01");
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-02-01");
         final Date previousStartDate =
-                DateHelper.getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone());
+                getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone());
         final List<PullRequestView> currentPullRequestViews =
                 List.of(PullRequestView.builder().id(faker.animal().name()).head(faker.ancient().god()).build(),
                         PullRequestView.builder().id(faker.animal().name()).head("main").build());
@@ -347,14 +345,6 @@ public class CycleTimeMetricsServiceTest {
         final List<CommitView> allCommits = List.of(
                 CommitView.builder().sha(faker.pokemon().name()).build(),
                 CommitView.builder().sha(faker.pokemon().location()).build()
-        );
-        final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(faker.animal().name()).base("staging").build(),
-                PullRequestView.builder().id(faker.animal().name()).base(faker.animal().name()).build()
-        );
-        final List<PullRequestView> previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(faker.animal().name()).base("staging").build(),
-                PullRequestView.builder().id(faker.animal().name()).base(faker.pokemon().name()).build()
         );
         final List<TagView> tags = List.of(
                 TagView.builder().name("deploy").build(),
@@ -454,8 +444,8 @@ public class CycleTimeMetricsServiceTest {
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
-        final Date startDate = DateHelper.stringToDate("2022-01-01");
-        final Date endDate = DateHelper.stringToDate("2022-02-01");
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-02-01");
 
         final int pageIndex = faker.number().randomDigit();
         final int pageSize = faker.number().randomDigit();

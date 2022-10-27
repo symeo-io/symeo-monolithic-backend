@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
-import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.bff.model.metric.curve.Curve;
+import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurve;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurveWithAverage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetrics;
@@ -8,11 +9,7 @@ import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiecePage;
 import io.symeo.monolithic.backend.bff.contract.api.model.*;
 
-import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,30 +117,27 @@ public interface CycleTimeContractMapper {
         return list;
     }
 
-    Faker FAKER = new Faker();
-
     static CycleTimeCurveResponseContract toCurveContract(CycleTimePieceCurveWithAverage cycleTimePieceCurveWithAverage) {
         final CycleTimeCurveResponseContract cycleTimeCurveResponseContract = new CycleTimeCurveResponseContract();
         final CycleTimeCurveContract curves = new CycleTimeCurveContract();
         final List<CurveDataResponseContract> averageCurve = new ArrayList<>();
         final List<CycleTimePieceCurveDataResponseContract> pieceCurve = new ArrayList<>();
-        for (int i = 0; i < FAKER.number().numberBetween(10, 50); i++) {
+        for (CycleTimePieceCurve.CyclePieceCurvePoint cycleTimePieceCurvePoint : cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData()) {
+            final CycleTimePieceCurveDataResponseContract cycleTimePieceCurveDataResponseContract = new CycleTimePieceCurveDataResponseContract();
+            cycleTimePieceCurveDataResponseContract.setDate(cycleTimePieceCurvePoint.getDate());
+            cycleTimePieceCurveDataResponseContract.setValue(longToBigDecimal(cycleTimePieceCurvePoint.getValue()));
+            cycleTimePieceCurveDataResponseContract.setCodingTime(longToBigDecimal(cycleTimePieceCurvePoint.getCodingTime()));
+            cycleTimePieceCurveDataResponseContract.setReviewTime(longToBigDecimal(cycleTimePieceCurvePoint.getReviewTime()));
+            cycleTimePieceCurveDataResponseContract.setTimeToDeploy(longToBigDecimal(cycleTimePieceCurvePoint.getDeployTime()));
+            cycleTimePieceCurveDataResponseContract.label(cycleTimePieceCurvePoint.getLabel());
+            cycleTimePieceCurveDataResponseContract.setLink(cycleTimePieceCurvePoint.getLink());
+            pieceCurve.add(cycleTimePieceCurveDataResponseContract);
+        }
+        for (Curve.CurvePoint curvePoint : cycleTimePieceCurveWithAverage.getAverageCurve().getData()) {
             final CurveDataResponseContract curveDataResponseContract = new CurveDataResponseContract();
-            curveDataResponseContract.setValue(BigDecimal.valueOf(FAKER.number().numberBetween(1, 200)));
-            final String date = dateToString(FAKER.date().between(startDate, endDate));
-            curveDataResponseContract.setDate(date);
+            curveDataResponseContract.setDate(curvePoint.getDate());
+            curveDataResponseContract.setValue(floatToBigDecimal(curvePoint.getValue()));
             averageCurve.add(curveDataResponseContract);
-
-            final CycleTimePieceCurveDataResponseContract piece =
-                    new CycleTimePieceCurveDataResponseContract();
-            piece.setDate(date);
-            piece.setCodingTime(BigDecimal.valueOf(FAKER.number().numberBetween(1, 100)));
-            piece.setReviewTime(BigDecimal.valueOf(FAKER.number().numberBetween(1, 100)));
-            piece.setTimeToDeploy(BigDecimal.valueOf(FAKER.number().numberBetween(1, 100)));
-            piece.setValue(BigDecimal.valueOf(FAKER.number().numberBetween(1, 100)));
-            piece.setLabel(FAKER.rickAndMorty().character());
-            piece.setLink("http://www.symeo.io");
-            pieceCurve.add(piece);
         }
         curves.setAverageCurve(averageCurve);
         curves.setPieceCurve(pieceCurve);

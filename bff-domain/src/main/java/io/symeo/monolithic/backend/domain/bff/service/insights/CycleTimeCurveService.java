@@ -12,7 +12,6 @@ import io.symeo.monolithic.backend.domain.bff.port.in.CycleTimeCurveFacadeAdapte
 import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -37,7 +37,7 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                                                                                 Date startDate,
                                                                                 Date endDate) throws SymeoException {
         final int range = 1;
-        final List<Date> rangeDates = DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
+        final List<Date> rangeDates = getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
                 range, organization.getTimeZone());
         final OrganizationSettings organizationSettings =
                 organizationSettingsFacade.getOrganizationSettingsForOrganization(organization);
@@ -90,7 +90,6 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                                                                                                 List<Date> rangeDates,
                                                                                                 String tagRegex,
                                                                                                 List<String> excludeBranchRegexes) throws SymeoException {
-        final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
         final List<PullRequestView> currentPullRequestViews =
                 getPullRequestViewsForTeamIdBetweenStartDateAndEndDateWithDateRanges(teamId, endDate, rangeDates, excludeBranchRegexes);
         final List<CommitView> allCommitsUntilEndDate =
@@ -123,8 +122,8 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
     }
 
     private Boolean excludePullRequest(final PullRequestView pullRequestView, final List<String> excludeBranchRegexes) {
-        return excludeBranchRegexes.isEmpty() || excludeBranchRegexes.stream().anyMatch(
-                regex -> !Pattern.compile(regex).matcher(pullRequestView.getHead()).find()
+        return excludeBranchRegexes.isEmpty() || excludeBranchRegexes.stream().noneMatch(
+                regex -> Pattern.compile(regex).matcher(pullRequestView.getHead()).find()
         );
     }
 
