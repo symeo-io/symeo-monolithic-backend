@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -18,7 +19,7 @@ import javax.persistence.*;
 public class CommitTestingDataEntity {
     @Id
     @Column(name = "id", nullable = false)
-    String id;
+    UUID id;
 
     @Column(name = "coverage")
     Float coverage;
