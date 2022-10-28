@@ -169,4 +169,41 @@ public class AverageCycleTimeMetricsTest {
         assertThat(cycleTimeMetrics.getAverageTimeToDeploy()).isNull();
         assertThat(cycleTimeMetrics.getAverageTimeToDeployPercentageTendency()).isNull();
     }
+
+    @Test
+    void should_not_compute_tendency_percentage_for_null_current_or_previous_average_time_to_deploy() throws SymeoException {
+        // Given
+        final Date previousStartDate = stringToDate("2020-01-01");
+        final Date currentStartDate = stringToDate("2020-01-02");
+        final Date currentEndDate = stringToDate("2020-01-03");
+        final Optional<AverageCycleTime> averageCycleTime1 = Optional.of(
+                AverageCycleTime.builder()
+                        .averageValue(150.0f)
+                        .averageCodingTime(50.0f)
+                        .averageReviewTime(60.0f)
+                        .averageTimeToDeploy(3.0f)
+                        .build());
+        final Optional<AverageCycleTime> averageCycleTime2 = Optional.of(
+                AverageCycleTime.builder()
+                        .averageValue(160.0f)
+                        .averageCodingTime(30.0f)
+                        .averageReviewTime(30.0f)
+                        .averageTimeToDeploy(null)
+                        .build());
+
+        // When
+        Optional<CycleTimeMetrics> optionalPreviousNullAverageTimeToDeployCycleTimeMetrics =
+                buildFromCurrentAndPreviousCycleTimes(averageCycleTime1, averageCycleTime2, previousStartDate, currentStartDate, currentEndDate);
+        Optional<CycleTimeMetrics> optionalCurrentNullAverageTimeToDeployCycleTimeMetrics =
+                buildFromCurrentAndPreviousCycleTimes(averageCycleTime2, averageCycleTime1, previousStartDate, currentStartDate, currentEndDate);
+
+        // Then
+        assertThat(optionalPreviousNullAverageTimeToDeployCycleTimeMetrics).isPresent();
+        CycleTimeMetrics previousNullAverageTimeToDeployCycleTimeMetrics = optionalPreviousNullAverageTimeToDeployCycleTimeMetrics.get();
+        assertThat(previousNullAverageTimeToDeployCycleTimeMetrics.getAverageTendencyPercentage()).isEqualTo(null);
+
+        assertThat(optionalCurrentNullAverageTimeToDeployCycleTimeMetrics).isPresent();
+        CycleTimeMetrics currentNullAverageTimeToDeployCycleTimeMetrics = optionalCurrentNullAverageTimeToDeployCycleTimeMetrics.get();
+        assertThat(currentNullAverageTimeToDeployCycleTimeMetrics.getAverageTendencyPercentage()).isEqualTo(null);
+    }
 }

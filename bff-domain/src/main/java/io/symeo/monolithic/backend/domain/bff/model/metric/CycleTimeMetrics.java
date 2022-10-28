@@ -1,12 +1,13 @@
 package io.symeo.monolithic.backend.domain.bff.model.metric;
 
-import io.symeo.monolithic.backend.domain.helper.MetricsHelper;
 import lombok.Builder;
 import lombok.Value;
 
 import java.util.Date;
 import java.util.Optional;
 
+import static io.symeo.monolithic.backend.domain.helper.MetricsHelper.*;
+import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
@@ -33,9 +34,7 @@ public class CycleTimeMetrics {
                                                                                    final Date previousStartDate,
                                                                                    final Date currentStartDate,
                                                                                    final Date currentEndDate) {
-        if (optionalPreviousCycleTime.isEmpty() && optionalCurrentCycleTime.isEmpty()) {
-            return empty();
-        } else if (optionalCurrentCycleTime.isPresent() && optionalPreviousCycleTime.isPresent()) {
+        if (optionalCurrentCycleTime.isPresent() && optionalPreviousCycleTime.isPresent()) {
             final AverageCycleTime currentAverageCycleTime = optionalCurrentCycleTime.get();
             final AverageCycleTime previousAverageCycleTime = optionalPreviousCycleTime.get();
             return getCycleTimeMetricsForCurrentAndPreviousCycleTimePresents(currentAverageCycleTime,
@@ -77,22 +76,21 @@ public class CycleTimeMetrics {
         return of(CycleTimeMetrics.builder()
                 .average(currentAverageCycleTime.getAverageValue())
                 .averageTendencyPercentage(
-                        MetricsHelper.getTendencyPercentage(currentAverageCycleTime.getAverageValue(),
-                                previousAverageCycleTime.getAverageValue())
+                        isCurrentAverageTimeToDeployAndPreviousAverageTimeToDeployPresent(currentAverageCycleTime, previousAverageCycleTime)
                 )
                 .averageCodingTime(currentAverageCycleTime.getAverageCodingTime())
                 .averageCodingTimePercentageTendency(
-                        MetricsHelper.getTendencyPercentage(currentAverageCycleTime.getAverageCodingTime(),
+                        getTendencyPercentage(currentAverageCycleTime.getAverageCodingTime(),
                                 previousAverageCycleTime.getAverageCodingTime())
                 )
                 .averageReviewTime(currentAverageCycleTime.getAverageReviewTime())
                 .averageReviewTimePercentageTendency(
-                        MetricsHelper.getTendencyPercentage(currentAverageCycleTime.getAverageReviewTime(),
+                        getTendencyPercentage(currentAverageCycleTime.getAverageReviewTime(),
                                 previousAverageCycleTime.getAverageReviewTime())
                 )
                 .averageTimeToDeploy(currentAverageCycleTime.getAverageTimeToDeploy())
                 .averageTimeToDeployPercentageTendency(
-                        MetricsHelper.getTendencyPercentage(currentAverageCycleTime.getAverageTimeToDeploy(),
+                        getTendencyPercentage(currentAverageCycleTime.getAverageTimeToDeploy(),
                                 previousAverageCycleTime.getAverageTimeToDeploy())
                 )
                 .previousStartDate(previousStartDate)
@@ -100,5 +98,11 @@ public class CycleTimeMetrics {
                 .currentStartDate(currentStartDate)
                 .currentEndDate(currentEndDate)
                 .build());
+    }
+
+    private static Float isCurrentAverageTimeToDeployAndPreviousAverageTimeToDeployPresent(AverageCycleTime currentAverageCycleTime, AverageCycleTime previousAverageCycleTime) {
+        return (isNull(currentAverageCycleTime.getAverageTimeToDeploy() )|| isNull(previousAverageCycleTime.getAverageTimeToDeploy()))
+                ? null
+                : getTendencyPercentage(currentAverageCycleTime.getAverageValue(), previousAverageCycleTime.getAverageValue());
     }
 }
