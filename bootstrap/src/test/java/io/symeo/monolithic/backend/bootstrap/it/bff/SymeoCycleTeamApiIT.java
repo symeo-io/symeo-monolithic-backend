@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
@@ -79,6 +80,7 @@ public class SymeoCycleTeamApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .id(organizationSettingsId)
                 .organizationId(organizationEntity.getId())
                 .pullRequestMergedOnBranchRegex("^main$")
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.toString())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
         final RepositoryEntity repositoryEntity = repositoryRepository.save(
@@ -216,6 +218,7 @@ public class SymeoCycleTeamApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .organizationId(organizationId)
                 .pullRequestMergedOnBranchRegex(null)
                 .tagRegex("^infrastructure-.*")
+                .deployDetectionType(DeployDetectionTypeDomainEnum.TAG.toString())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
         tagRepository.save(

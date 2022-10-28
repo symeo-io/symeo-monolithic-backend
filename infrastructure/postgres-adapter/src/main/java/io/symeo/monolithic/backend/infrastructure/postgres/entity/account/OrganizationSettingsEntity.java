@@ -30,6 +30,8 @@ public class OrganizationSettingsEntity {
     private String tagRegex;
     @Column(name = "pr_merged_on_branch_regex")
     private String pullRequestMergedOnBranchRegex;
+    @Column(name = "deploy_detection_type")
+    private String deployDetectionType;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "organization_settings_exclude_branch_regex", schema = "organization_storage",

@@ -59,4 +59,5 @@ public interface SymeoExceptionCode {
 
     // Job Exception Codes
     String INVALID_JOB_CODE = "F.INVALID_JOB_CODE";
+    String INVALID_DEPLOYEMENT_DETECTION_TYPE = "F.INVALID_DEPLOY_DETECTION_TYPE";
 }
