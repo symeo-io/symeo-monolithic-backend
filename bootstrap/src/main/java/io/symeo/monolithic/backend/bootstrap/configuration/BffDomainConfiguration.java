@@ -47,15 +47,15 @@ public class BffDomainConfiguration {
     @Bean
     public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter,
                                                                final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter,
-                                                               final SymeoJobApiAdapter symeoJobApiAdapter) {
+                                                               final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter) {
         return new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter,
-                symeoJobApiAdapter);
+                symeoDataProcessingJobApiAdapter);
     }
 
     @Bean
     public TeamFacadeAdapter teamFacadeAdapter(final TeamStorage teamStorage,
-                                               final SymeoJobApiAdapter symeoJobApiAdapter) {
-        return new TeamService(teamStorage, symeoJobApiAdapter);
+                                               final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter) {
+        return new TeamService(teamStorage, symeoDataProcessingJobApiAdapter);
     }
 
     @Bean

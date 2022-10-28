@@ -1,4 +1,4 @@
-package io.symeo.monolithic.backend.job.domain.model.job;
+package io.symeo.monolithic.backend.domain.function;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 

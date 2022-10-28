@@ -8,12 +8,12 @@ servers:
 
 
 paths:
-  /api/v1/data-processing/repositories:
+  /api/v1/data-processing/organization/repositories:
     post:
       tags:
         - DataProcessingJob
       summary: Start to collect and process data for organizationId and repositoryIds
-      operationId: startDataProcessingJobForRepositoryIds
+      operationId: startDataProcessingJobForOrganizationIdAndRepositoryIds
       description: |
         Start to collect and process data given an organizationId and repositoryIds
       parameters:
@@ -28,7 +28,101 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostStartDataProcessingJobContract'
+              $ref: '#/components/schemas/PostStartDataProcessingJobForOrganizationContract'
+      responses:
+        "200":
+          description: 'Job started successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  [ ]
+        404:
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+        500:
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+  /api/v1/data-processing/organization/vcs_organization:
+    post:
+      tags:
+        - DataProcessingJob
+      summary: Start to collect and process data for organizationId and vcsOrganizationId
+      operationId: startDataProcessingJobForOrganizationIdAndVcsOrganizationId
+      description: |
+        Start to collect and process data given an organizationId and vcsOrganizationId
+      parameters:
+        - in: header
+          name: X-SYMEO-JOB-KEY-X
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: organizationId and vcsOrganizationId
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostStartDataProcessingJobForVcsOrganizationContract'
+      responses:
+        "200":
+          description: 'Job started successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  [ ]
+        404:
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+        500:
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+  /api/v1/data-processing/organization/team/repositories:
+    post:
+      tags:
+        - DataProcessingJob
+      summary: Start to collect and process data for organizationId and teamId and repositoryIds
+      operationId: startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds
+      description: |
+        Start to collect and process data given an organizationId and teamId and repositoryIds
+      parameters:
+        - in: header
+          name: X-SYMEO-JOB-KEY-X
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: organizationId and teamId and repositoryIds
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostStartDataProcessingJobForTeamContract'
       responses:
         "200":
           description: 'Job started successfully'
@@ -174,7 +268,7 @@ components:
           example: Jobs not found
         metadata:
           type: object
-    PostStartDataProcessingJobContract:
+    PostStartDataProcessingJobForOrganizationContract:
       type: object
       required:
         - organization_id
@@ -187,6 +281,35 @@ components:
           type: array
           items:
             type: string
+    PostStartDataProcessingJobForTeamContract:
+      type: object
+      required:
+        - organization_id
+        - repository_ids
+        - team_id
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+        team_id:
+          type: string
+          format: uuid
+        repository_ids:
+          type: array
+          items:
+            type: string
+    PostStartDataProcessingJobForVcsOrganizationContract:
+      type: object
+      required:
+        - organization_id
+        - vcs_organization_id
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+        vcs_organization_id:
+          type: integer
+          format: int64
     CollectTestingDataRequestContract:
       type: object
       properties:

@@ -18,17 +18,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class JobServiceTest {
+public class DataProcessingJobServiceTest {
 
     private static final Faker faker = new Faker();
 
     @Test
     void should_start_to_collect_repositories_given_an_organization_id_and_a_vcs_organization_id() throws SymeoException {
         // Given
-        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
@@ -38,18 +40,19 @@ public class JobServiceTest {
                 vcsDataProcessingService,
                 jobManager
         );
-        final UUID organizationId = UUID.randomUUID();
+        final UUID organizationId = randomUUID();
         final Long vcsOrganizationId = faker.number().randomNumber();
         final VcsOrganization vcsOrganization = VcsOrganization.builder()
                 .externalId(faker.pokemon().name())
-                .organizationId(UUID.randomUUID())
+                .organizationId(randomUUID())
                 .id(vcsOrganizationId)
                 .vcsId(faker.howIMetYourMother().quote())
                 .name(faker.robin().quote())
                 .build();
 
         // When
-        when(dataProcessingExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId, organizationId))
+        when(dataProcessingExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId,
+                organizationId))
                 .thenReturn(
                         Optional.of(vcsOrganization)
                 );
@@ -71,7 +74,8 @@ public class JobServiceTest {
     @Test
     void should_validate_vcs_organization() throws SymeoException {
         // Given
-        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
@@ -81,11 +85,12 @@ public class JobServiceTest {
                 vcsDataProcessingService,
                 jobManager
         );
-        final UUID organizationId = UUID.randomUUID();
+        final UUID organizationId = randomUUID();
         final Long vcsOrganizationId = faker.number().randomNumber();
 
         // When
-        when(dataProcessingExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId, organizationId))
+        when(dataProcessingExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId,
+                organizationId))
                 .thenReturn(Optional.empty());
         SymeoException symeoException = null;
         try {
@@ -106,7 +111,8 @@ public class JobServiceTest {
     @Test
     void should_start_to_collect_vcs_data_given_an_organization_id_and_a_list_of_repositories_id() throws SymeoException {
         // Given
-        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
@@ -116,20 +122,20 @@ public class JobServiceTest {
                 vcsDataProcessingService,
                 jobManager
         );
-        final UUID organizationId = UUID.randomUUID();
+        final UUID organizationId = randomUUID();
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
         final List<Repository> repositories = List.of(
                 Repository.builder()
                         .name(faker.name().firstName() + "-1")
                         .vcsOrganizationName(faker.rickAndMorty().location() + "-1")
-                        .organizationId(UUID.randomUUID())
+                        .organizationId(randomUUID())
                         .vcsOrganizationId(faker.rickAndMorty().character() + "-1")
                         .id(faker.idNumber().invalid() + "-1")
                         .build(),
                 Repository.builder()
                         .name(faker.name().firstName() + "-2")
                         .vcsOrganizationName(faker.rickAndMorty().location() + "-2")
-                        .organizationId(UUID.randomUUID())
+                        .organizationId(randomUUID())
                         .vcsOrganizationId(faker.rickAndMorty().character() + "-2")
                         .id(faker.idNumber().invalid() + "-2")
                         .build()
@@ -154,7 +160,8 @@ public class JobServiceTest {
     @Test
     void should_validate_repositories() throws SymeoException {
         // Given
-        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
@@ -164,7 +171,7 @@ public class JobServiceTest {
                 vcsDataProcessingService,
                 jobManager
         );
-        final UUID organizationId = UUID.randomUUID();
+        final UUID organizationId = randomUUID();
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
 
         // When
@@ -179,6 +186,99 @@ public class JobServiceTest {
         SymeoException symeoException = null;
         try {
             jobService.startToCollectVcsDataForOrganizationIdAndRepositoryIds(organizationId, repositoryIds);
+        } catch (SymeoException e) {
+            symeoException = e;
+        }
+
+        // Then
+        assertThat(symeoException).isNotNull();
+        assertThat(symeoException.getCode()).isEqualTo(SymeoExceptionCode.REPOSITORIES_NOT_FOUND);
+        assertThat(symeoException.getMessage()).isEqualTo(String.format("Repositories %s not found for " +
+                "organizationId %s", List.of(repositoryIds.get(1)), organizationId));
+    }
+
+    @Test
+    void should_start_to_collect_vcs_data_given_an_organization_id_and_team_id_and_a_list_of_repositories_id() throws SymeoException {
+        // Given
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
+        final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
+        final JobManager jobManager = mock(JobManager.class);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final DataProcessingJobService jobService = new DataProcessingJobService(
+                dataProcessingExpositionStorageAdapter,
+                dataProcessingJobStorage,
+                vcsDataProcessingService,
+                jobManager
+        );
+        final UUID organizationId = randomUUID();
+        final UUID teamId = randomUUID();
+        final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
+        final List<Repository> repositories = List.of(
+                Repository.builder()
+                        .name(faker.name().firstName() + "-1")
+                        .vcsOrganizationName(faker.rickAndMorty().location() + "-1")
+                        .organizationId(randomUUID())
+                        .vcsOrganizationId(faker.rickAndMorty().character() + "-1")
+                        .id(faker.idNumber().invalid() + "-1")
+                        .build(),
+                Repository.builder()
+                        .name(faker.name().firstName() + "-2")
+                        .vcsOrganizationName(faker.rickAndMorty().location() + "-2")
+                        .organizationId(randomUUID())
+                        .vcsOrganizationId(faker.rickAndMorty().character() + "-2")
+                        .id(faker.idNumber().invalid() + "-2")
+                        .build()
+        );
+
+        // When
+        when(dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
+                .thenReturn(repositories);
+        jobService.startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(organizationId, teamId,
+                repositoryIds);
+
+        // Then
+        final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+        verify(jobManager, times(1))
+                .start(jobArgumentCaptor.capture());
+        final Job job = jobArgumentCaptor.getValue();
+        assertThat(job.getCode()).isEqualTo(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE);
+        assertThat(job.getStatus()).isEqualTo(Job.CREATED);
+        assertThat(job.getOrganizationId()).isEqualTo(organizationId);
+        assertThat(job.getTeamId()).isEqualTo(teamId);
+        assertThat(job.getJobRunnable()).isInstanceOf(CollectVcsDataForRepositoriesAndDatesJobRunnable.class);
+    }
+
+    @Test
+    void should_validate_repositories_given_a_team_id() throws SymeoException {
+        // Given
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
+        final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
+        final JobManager jobManager = mock(JobManager.class);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final DataProcessingJobService jobService = new DataProcessingJobService(
+                dataProcessingExpositionStorageAdapter,
+                dataProcessingJobStorage,
+                vcsDataProcessingService,
+                jobManager
+        );
+        final UUID organizationId = randomUUID();
+        final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
+
+        // When
+        when(dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
+                .thenReturn(List.of(Repository.builder()
+                        .id(repositoryIds.get(0))
+                        .vcsOrganizationId(faker.rickAndMorty().character())
+                        .organizationId(organizationId)
+                        .name(faker.name().firstName())
+                        .vcsOrganizationName(faker.rickAndMorty().location())
+                        .build()));
+        SymeoException symeoException = null;
+        try {
+            jobService.startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(organizationId,
+                    randomUUID(), repositoryIds);
         } catch (SymeoException e) {
             symeoException = e;
         }

@@ -16,7 +16,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Te
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
-import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
     @Autowired
     public OrganizationService organizationService;
     @Autowired
-    public SymeoJobApiProperties symeoJobApiProperties;
+    public SymeoDataProcessingJobApiProperties symeoDataProcessingJobApiProperties;
     private static final UUID organizationId = UUID.randomUUID();
 
     private static final String mail = faker.name().firstName() + "@" + faker.name().firstName() + ".fr";
@@ -210,11 +210,11 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
         wireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
                                 "?organization_id=%s&team_id=%s", organizationId, teams.get(0).getId()))
-                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(), equalTo(symeoDataProcessingJobApiProperties.getApiKey())));
         wireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
                                 "?organization_id=%s&team_id=%s", organizationId, teams.get(1).getId()))
-                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(), equalTo(symeoDataProcessingJobApiProperties.getApiKey())));
     }
 
     @Order(8)
@@ -349,7 +349,7 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
         wireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
                                 "?organization_id=%s&team_id=%s", teamEntity.getOrganizationId(), teamEntity.getId()))
-                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(), equalTo(symeoDataProcessingJobApiProperties.getApiKey())));
     }
 
     @Order(13)

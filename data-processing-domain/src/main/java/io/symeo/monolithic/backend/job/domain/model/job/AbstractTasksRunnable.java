@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.job.domain.model.job;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.function.SymeoConsumer;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 
 import java.util.List;

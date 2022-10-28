@@ -67,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>io.symeo.monolithic.backend</groupId>
-            <artifactId>symeo-job-api-adapter</artifactId>
+            <artifactId>symeo-data-processing-api-client-adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

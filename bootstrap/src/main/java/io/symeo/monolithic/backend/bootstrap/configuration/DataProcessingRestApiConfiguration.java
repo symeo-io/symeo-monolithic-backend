@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationFacadeAdapter;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
-import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
 import io.symeo.monolithic.backend.job.domain.model.job.JobManager;
 import io.symeo.monolithic.backend.job.domain.port.in.CommitTestingDataFacadeAdapter;
 import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
@@ -24,9 +24,9 @@ public class DataProcessingRestApiConfiguration {
 
     @Bean
     public DataProcessingRestApiAdapter dataProcessingJobApi(final DataProcessingJobAdapter dataProcessingJobAdapter,
-                                                             final SymeoJobApiProperties symeoJobApiProperties) {
-        return new DataProcessingRestApiAdapter(dataProcessingJobAdapter, symeoJobApiProperties.getApiKey(),
-                symeoJobApiProperties.getHeaderKey());
+                                                             final SymeoDataProcessingJobApiProperties symeoDataProcessingJobApiProperties) {
+        return new DataProcessingRestApiAdapter(dataProcessingJobAdapter, symeoDataProcessingJobApiProperties.getApiKey(),
+                symeoDataProcessingJobApiProperties.getHeaderKey());
     }
 
     @Bean

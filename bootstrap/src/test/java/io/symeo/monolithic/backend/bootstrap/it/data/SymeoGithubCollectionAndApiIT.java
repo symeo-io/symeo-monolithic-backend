@@ -11,7 +11,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Or
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
-import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
 import io.symeo.monolithic.backend.job.domain.port.out.RawStorageAdapter;
 import org.joda.time.DateTime;
 import org.junit.Ignore;
@@ -64,7 +64,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
     @Autowired
     public TagRepository tagRepository;
     @Autowired
-    public SymeoJobApiProperties symeoJobApiProperties;
+    public SymeoDataProcessingJobApiProperties symeoDataProcessingJobApiProperties;
     private static final UUID firstOrganizationId = UUID.randomUUID();
     private static final UUID secondOrganizationId = UUID.randomUUID();
     private static final UUID firstTeamId = UUID.randomUUID();

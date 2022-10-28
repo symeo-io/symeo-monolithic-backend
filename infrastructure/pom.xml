@@ -15,7 +15,7 @@
         <module>postgres-adapter</module>
         <module>aws-s3-adapter</module>
         <module>sendgrid-adapter</module>
-        <module>symeo-job-api-adapter</module>
+        <module>symeo-data-processing-api-client-adapter</module>
     </modules>
     <artifactId>infrastructure</artifactId>
 

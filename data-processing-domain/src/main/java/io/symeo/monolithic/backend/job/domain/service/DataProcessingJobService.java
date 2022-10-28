@@ -33,11 +33,21 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     public void startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(UUID organizationId,
                                                                                 Long vcsOrganizationId) throws SymeoException {
         final Optional<VcsOrganization> vcsOrganizationByIdAndOrganizationId =
-                dataProcessingExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId, organizationId);
+                dataProcessingExpositionStorageAdapter.findVcsOrganizationByIdAndOrganizationId(vcsOrganizationId,
+                        organizationId);
         final VcsOrganization vcsOrganization = validateVcsOrganization(organizationId,
                 vcsOrganizationId,
                 vcsOrganizationByIdAndOrganizationId);
         jobManager.start(buildCollectRepositoriesJob(organizationId, vcsOrganization));
+    }
+
+    @Override
+    public void startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(UUID organizationId, UUID teamId,
+                                                                                List<String> repositoryIds) throws SymeoException {
+        final List<Repository> allRepositoriesByIds =
+                dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds);
+        validateRepositories(organizationId, repositoryIds, allRepositoriesByIds);
+        jobManager.start(buildCollectVcsDataForTeamIdJob(organizationId, teamId, allRepositoriesByIds));
     }
 
     @Override
@@ -98,6 +108,22 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                 )
                 .build();
     }
+
+    private Job buildCollectVcsDataForTeamIdJob(final UUID organizationId, final UUID teamId,
+                                                final List<Repository> allRepositoriesByIds) {
+        return Job.builder()
+                .organizationId(organizationId)
+                .teamId(teamId)
+                .jobRunnable(
+                        CollectVcsDataForRepositoriesAndDatesJobRunnable.builder()
+                                .repositories(allRepositoriesByIds)
+                                .dataProcessingJobStorage(dataProcessingJobStorage)
+                                .vcsDataProcessingService(vcsDataProcessingService)
+                                .build()
+                )
+                .build();
+    }
+
 
     private Job buildCollectRepositoriesJob(UUID organizationId, VcsOrganization vcsOrganization) {
         return Job.builder()

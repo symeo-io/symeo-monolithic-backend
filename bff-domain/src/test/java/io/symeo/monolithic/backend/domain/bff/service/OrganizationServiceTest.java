@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationApiKeyStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
-import io.symeo.monolithic.backend.domain.bff.port.out.SymeoJobApiAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.SymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import org.junit.jupiter.api.Test;
@@ -22,14 +22,16 @@ public class OrganizationServiceTest {
     @Test
     void should_create_organization_given_a_vcs_organization_name_and_external_id() throws SymeoException {
         // Given
-        final SymeoJobApiAdapter symeoJobApiAdapter = mock(SymeoJobApiAdapter.class);
+        final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter =
+                mock(SymeoDataProcessingJobApiAdapter.class);
 
         final OrganizationStorageAdapter organizationStorageAdapter =
                 mock(OrganizationStorageAdapter.class);
         final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter =
                 mock(OrganizationApiKeyStorageAdapter.class);
         final OrganizationService organizationService =
-                new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter, symeoJobApiAdapter);
+                new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter,
+                        symeoDataProcessingJobApiAdapter);
         final String externalId = faker.name().name();
         final String vcsOrganizationName = faker.gameOfThrones().character();
         final UUID organizationId = UUID.randomUUID();
@@ -45,7 +47,6 @@ public class OrganizationServiceTest {
                 .build();
 
         // When
-        ArgumentCaptor<UUID> uuiDArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
         final Organization organization = Organization.builder()
                 .name(vcsOrganizationName)
                 .id(organizationId)
@@ -62,8 +63,13 @@ public class OrganizationServiceTest {
         final Organization result = organizationService.createOrganization(organization);
 
         // Then
+        ArgumentCaptor<UUID> uuiDArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        ArgumentCaptor<Long> longDArgumentCaptor = ArgumentCaptor.forClass(Long.class);
         assertThat(result).isEqualTo(expectedOrganization);
-        verify(symeoJobApiAdapter, times(1)).startJobForOrganizationId(uuiDArgumentCaptor.capture());
+        verify(symeoDataProcessingJobApiAdapter, times(1))
+                .startDataProcessingJobForOrganizationIdAndVcsOrganizationId(uuiDArgumentCaptor.capture(),
+                        longDArgumentCaptor.capture());
         assertThat(uuiDArgumentCaptor.getValue()).isEqualTo(organization.getId());
+        assertThat(longDArgumentCaptor.getValue()).isEqualTo(organization.getVcsOrganization().getId());
     }
 }

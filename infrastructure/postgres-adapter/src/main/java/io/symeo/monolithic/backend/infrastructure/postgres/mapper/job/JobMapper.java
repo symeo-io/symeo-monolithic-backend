@@ -35,6 +35,7 @@ public interface JobMapper {
                 .organizationId(job.getOrganizationId())
                 .error(job.getError())
                 .tasks(mapTasksToJsonString(job.getTasks()))
+                .teamId(job.getTeamId())
                 .endDate(nonNull(job.getEndDate()) ? ZonedDateTime.ofInstant(job.getEndDate().toInstant(),
                         ZoneId.systemDefault()) : null)
                 .build();
@@ -57,6 +58,7 @@ public interface JobMapper {
                 .id(jobEntity.getId())
                 .code(jobEntity.getCode())
                 .status(jobEntity.getStatus())
+                .teamId(jobEntity.getTeamId())
                 .organizationId(jobEntity.getOrganizationId())
                 .endDate(nonNull(jobEntity.getEndDate()) ? Date.from(jobEntity.getEndDate().toInstant()) : null)
                 .creationDate(isNull(jobEntity.getTechnicalCreationDate()) ? null :
@@ -71,6 +73,7 @@ public interface JobMapper {
                 .id(jobEntity.getId())
                 .code(jobEntity.getCode())
                 .status(jobEntity.getStatus())
+                .teamId(jobEntity.getTeamId())
                 .organizationId(jobEntity.getOrganizationId())
                 .endDate(nonNull(jobEntity.getEndDate()) ? Date.from(jobEntity.getEndDate().toInstant()) : null)
                 .creationDate(isNull(jobEntity.getTechnicalCreationDate()) ? null :

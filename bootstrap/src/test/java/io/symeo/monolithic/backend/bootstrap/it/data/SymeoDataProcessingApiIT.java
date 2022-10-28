@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.bootstrap.it.data;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
-import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiI
     @Autowired
     OrganizationRepository organizationRepository;
     @Autowired
-    SymeoJobApiProperties symeoJobApiProperties;
+    SymeoDataProcessingJobApiProperties symeoDataProcessingJobApiProperties;
 
     @Test
     @Order(1)
@@ -34,7 +34,7 @@ public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiI
         // When
         client.get()
                 .uri(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL)
-                .header(symeoJobApiProperties.getHeaderKey(), symeoJobApiProperties.getApiKey())
+                .header(symeoDataProcessingJobApiProperties.getHeaderKey(), symeoDataProcessingJobApiProperties.getApiKey())
                 .exchange()
                 // Then
                 .expectStatus()
@@ -43,15 +43,15 @@ public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiI
         wireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION +
                                 "?organization_id=%s", organizationEntities.get(0).getId().toString()))
-                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(), equalTo(symeoDataProcessingJobApiProperties.getApiKey())));
         wireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION +
                                 "?organization_id=%s", organizationEntities.get(1).getId().toString()))
-                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(), equalTo(symeoDataProcessingJobApiProperties.getApiKey())));
         wireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION +
                                 "?organization_id=%s", organizationEntities.get(2).getId().toString()))
-                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(), equalTo(symeoDataProcessingJobApiProperties.getApiKey())));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiI
         // When
         client.get()
                 .uri(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL)
-                .header(symeoJobApiProperties.getHeaderKey(), FAKER.ancient().god())
+                .header(symeoDataProcessingJobApiProperties.getHeaderKey(), FAKER.ancient().god())
                 .exchange()
                 // Then
                 .expectStatus()
@@ -73,7 +73,7 @@ public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiI
         // When
         client.get()
                 .uri(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION)
-                .header(symeoJobApiProperties.getHeaderKey(), FAKER.gameOfThrones().character())
+                .header(symeoDataProcessingJobApiProperties.getHeaderKey(), FAKER.gameOfThrones().character())
                 .exchange()
                 // Then
                 .expectStatus()
@@ -86,7 +86,7 @@ public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiI
         // When
         client.get()
                 .uri(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
-                .header(symeoJobApiProperties.getHeaderKey(), FAKER.pokemon().name())
+                .header(symeoDataProcessingJobApiProperties.getHeaderKey(), FAKER.pokemon().name())
                 .exchange()
                 // Then
                 .expectStatus()

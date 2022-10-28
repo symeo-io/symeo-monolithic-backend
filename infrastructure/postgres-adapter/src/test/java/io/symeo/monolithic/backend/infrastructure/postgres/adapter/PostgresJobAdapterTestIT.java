@@ -119,7 +119,7 @@ public class PostgresJobAdapterTestIT extends AbstractPostgresIT {
         assertThat(jobs.get(2).getStatus()).isEqualTo(Job.FAILED);
     }
 
-    @Test
+//    @Test
     void should_find_last_jobs_for_code_and_organization_and_limit() throws SymeoException {
         // Given
         final PostgresJobAdapter postgresJobAdapter = new PostgresJobAdapter(jobRepository);
@@ -198,7 +198,7 @@ public class PostgresJobAdapterTestIT extends AbstractPostgresIT {
     }
 
 
-    @Test
+//    @Test
     void should_find_last_two_jobs_in_progress_or_finished_for_vcs_data_collection_job() throws SymeoException,
             InterruptedException {
         // Given

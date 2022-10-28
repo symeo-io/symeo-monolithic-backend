@@ -17,6 +17,7 @@ public class JobView {
     Date endDate;
     Integer progressionPercentage;
     UUID organizationId;
+    UUID teamId;
     List<TaskView> tasks;
 
     public boolean isFinished() {

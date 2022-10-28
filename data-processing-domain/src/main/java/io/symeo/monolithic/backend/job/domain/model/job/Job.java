@@ -26,6 +26,7 @@ public class Job {
     @Builder.Default
     String status = CREATED;
     @NonNull UUID organizationId;
+    UUID teamId;
     @ToString.Exclude
     JobRunnable jobRunnable;
     Date endDate;
