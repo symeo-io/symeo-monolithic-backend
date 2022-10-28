@@ -36,8 +36,8 @@ public class IstanbulCoverageReportAdapter implements CoverageReportTypeAdapter 
 
             return (float) coveredConditionals / conditionals;
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            final String message = "Failed to par istanbul coverage report";
-            LOGGER.warn(message);
+            final String message = "Failed to parse istanbul coverage report";
+            LOGGER.error(message);
             throw SymeoException.builder()
                     .message(message)
                     .code(FAILED_TO_PARSE_COVERAGE_REPORT)
