@@ -51,7 +51,7 @@ public class JacocoCoverageReportAdapter implements CoverageReportTypeAdapter {
             return (float) coveredInstructions / (coveredInstructions + missedInstructions);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             final String message = "Failed to parse jacoco coverage report";
-            LOGGER.warn(message);
+            LOGGER.error(message);
             throw SymeoException.builder()
                     .message(message)
                     .code(FAILED_TO_PARSE_COVERAGE_REPORT)
