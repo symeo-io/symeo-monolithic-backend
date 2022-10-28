@@ -1283,6 +1283,65 @@ paths:
                     link: https://github.com/symeo-io/symeo-monolithic-backend/pull/125
                 errors:
                   [ ]
+  /api/v1/teams/testing:
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Testing
+      summary: Get Testing Metrics
+      operationId: getTestingMetrics
+      description: |
+        Get Testing Metrics
+      parameters:
+        - in: query
+          name: team_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+      responses:
+        "200":
+          description: 'Successfully retrieved testing metrics'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestingResponseContract'
+              example:
+                testing:
+                  current_start_date: 1992-08-01
+                  current_end_date: 1992-08-14
+                  previous_start_date: 1992-08-18
+                  previous-end_date: 1992-08-01
+                  coverage:
+                    value: 15
+                    tendency_percentage: 3
+                  test_count:
+                    value: 150
+                    tendency_percentage: 3
+                  test_to_code_ratio:
+                    value: 25
+                    tendency_percentage: 5
+                    code_line_count: 300
+                    test_line_count: 100
+                  test_types:
+                    unit: 100
+                    integration: 58
+                    end_to_end: 0
+                errors:
+                  [ ]
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "404":
@@ -1996,6 +2055,26 @@ components:
           type: string
         link:
           type: string
+    TestToCodeRatioMetricsContract:
+      type: object
+      properties:
+        value:
+          type: number
+        tendency_percentage:
+          type: number
+        code_line_count:
+          type: number
+        test_line_count:
+          type: number
+    TestTypesMetricsContract:
+      type: object
+      properties:
+        unit:
+          type: number
+        integration:
+          type: number
+        end_to_end:
+          type: number
     PullRequestContract:
       type: object
       properties:
@@ -2152,6 +2231,36 @@ components:
               $ref: '#/components/schemas/MetricsContract'
             last_deploy:
               $ref: '#/components/schemas/MetricWithLabelAndUrlContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'
+    TestingResponseContract:
+      type: object
+      properties:
+        deployment:
+          type: object
+          properties:
+            current_start_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            current_end_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            previous_start_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            previous_end_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+            coverage:
+              $ref: '#/components/schemas/MetricsContract'
+            test_count:
+              $ref: '#/components/schemas/MetricsContract'
+            test_to_code_ratio:
+              $ref: '#/components/schemas/TestToCodeRatioMetricsContract'
+            last_deploy:
+              $ref: '#/components/schemas/TestTypesMetricsContract'
         errors:
           type: array
           items:
