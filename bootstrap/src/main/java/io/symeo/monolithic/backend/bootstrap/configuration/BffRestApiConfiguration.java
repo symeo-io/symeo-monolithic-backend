@@ -95,4 +95,10 @@ public class BffRestApiConfiguration {
                                                              final DeploymentMetricsFacadeAdapter deploymentMetricsFacadeAdapter) {
         return new DeploymentRestApiAdapter(authenticationService, deploymentMetricsFacadeAdapter);
     }
+
+    @Bean
+    public TestingRestApiAdapter TestingRestApiAdapter(final AuthenticationService authenticationService,
+                                                             final TestingMetricsFacadeAdapter testingMetricsFacadeAdapter) {
+        return new TestingRestApiAdapter(authenticationService, testingMetricsFacadeAdapter);
+    }
 }

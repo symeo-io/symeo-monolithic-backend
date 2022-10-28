@@ -2071,9 +2071,15 @@ components:
       properties:
         unit:
           type: number
+        unit_tendency_percentage:
+          type: number
         integration:
           type: number
+        integration_tendency_percentage:
+          type: number
         end_to_end:
+          type: number
+        end_to_end_tendency_percentage:
           type: number
     PullRequestContract:
       type: object

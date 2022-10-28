@@ -14,7 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
@@ -63,6 +65,22 @@ public class PostgresTeamAdapter implements TeamStorage {
                     .rootException(e)
                     .code(POSTGRES_EXCEPTION)
                     .message("Failed to find teams by organization " + organization.toString())
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Team> findById(UUID teamId) throws SymeoException {
+        try {
+            return teamRepository.findOneById(teamId)
+                    .map(TeamMapper::entityToDomain);
+        } catch (Exception e) {
+            LOGGER.error("Failed to find team for id {}", teamId.toString(), e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message("Failed to find team by id " + teamId.toString())
                     .build();
         }
     }

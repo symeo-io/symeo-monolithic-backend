@@ -27,8 +27,11 @@ public class CommitTestingDataEntity {
     @Column(name = "organization_id", nullable = false)
     UUID organizationId;
 
-    @Column(name = "coverage")
-    Float coverage;
+    @Column(name = "total_branch_count")
+    Integer totalBranchCount;
+
+    @Column(name = "covered_branches")
+    Integer coveredBranches;
 
     @Column(name = "code_line_count")
     Integer codeLineCount;
@@ -36,11 +39,11 @@ public class CommitTestingDataEntity {
     @Column(name = "test_line_count")
     Integer testLineCount;
 
-    @Column(name = "test_count")
-    Integer testCount;
+    @Column(name = "unit_test_count")
+    Integer unitTestCount;
 
-    @Column(name = "test_type")
-    String testType;
+    @Column(name = "integration_test_count")
+    Integer integrationTestCount;
 
     @Column(name = "repository_name")
     String repositoryName;

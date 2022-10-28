@@ -27,7 +27,6 @@ public class PostgresCommitTestingDataAdapterTestIT extends AbstractPostgresIT {
         final PostgresCommitTestingDataAdapter postgresCommitTestingDataAdapter =
                 new PostgresCommitTestingDataAdapter(commitTestingDataRepository);
         CommitTestingData commitTestingData = CommitTestingData.builder()
-                .testType(faker.ancient().god())
                 .repositoryName(faker.ancient().hero())
                 .branchName(faker.ancient().primordial())
                 .commitSha(faker.ancient().titan())

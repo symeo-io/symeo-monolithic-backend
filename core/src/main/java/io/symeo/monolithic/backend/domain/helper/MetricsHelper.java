@@ -11,4 +11,8 @@ public class MetricsHelper {
         }
         return round(previousValue == 0 ? 0 : 1000 * (currentValue - previousValue) / previousValue) / 10f;
     }
+
+    public static Float getTendencyPercentage(final Integer currentValue, final Integer previousValue) {
+        return MetricsHelper.getTendencyPercentage((float) currentValue, (float) previousValue);
+    }
 }

@@ -69,8 +69,10 @@ public interface TestingContractMapper {
     static void mapTestTypes(TestingMetrics testingMetrics, TestingResponseContractTesting testing) {
         final TestTypesMetricsContract testTypes = new TestTypesMetricsContract();
         testTypes.setUnit(BigDecimal.valueOf(testingMetrics.getUnitTestCount()));
+        testTypes.setUnitTendencyPercentage(BigDecimal.valueOf(testingMetrics.getUnitTestCountTendencyPercentage()));
         testTypes.setIntegration(BigDecimal.valueOf(testingMetrics.getIntegrationTestCount()));
-        testTypes.setEndToEnd(BigDecimal.valueOf(testingMetrics.getEndToEndTestCount()));
+        testTypes.setIntegrationTendencyPercentage(BigDecimal.valueOf(testingMetrics.getIntegrationTestCountTendencyPercentage()));
+        testTypes.setEndToEndTendencyPercentage(BigDecimal.valueOf(testingMetrics.getEndToEndTestCountTendencyPercentage()));
         testing.setTestTypes(testTypes);
     }
 }

@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.job.domain.testing;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.job.domain.model.testing.CoverageData;
 import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,11 +22,11 @@ import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.FA
 @Slf4j
 public class JacocoCoverageReportAdapter implements CoverageReportTypeAdapter {
     @Override
-    public Float extractCoverageFromReport(String report) throws SymeoException {
+    public CoverageData extractCoverageFromReport(String report) throws SymeoException {
         try {
             DocumentBuilder documentBuilder = getDocumentBuilder();
 
-            String reportWithoutDoctype = this.removeDoctypeFromReport(report);
+            String reportWithoutDoctype = removeDoctypeFromReport(report);
             InputSource inputSource = new InputSource(new StringReader(reportWithoutDoctype));
 
             Document doc = documentBuilder.parse(inputSource);
@@ -44,11 +45,10 @@ public class JacocoCoverageReportAdapter implements CoverageReportTypeAdapter {
                 }
             }
 
-            if (missedInstructions == 0 && coveredInstructions == 0) {
-                return null;
-            }
-
-            return (float) coveredInstructions / (coveredInstructions + missedInstructions);
+            return CoverageData.builder()
+                    .coveredBranches(coveredInstructions)
+                    .totalBranchCount(coveredInstructions + missedInstructions)
+                    .build();
         } catch (ParserConfigurationException | SAXException | IOException e) {
             final String message = "Failed to parse jacoco coverage report";
             LOGGER.error(message);

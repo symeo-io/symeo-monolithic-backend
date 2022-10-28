@@ -9,11 +9,11 @@ import java.util.UUID;
 @Value
 public class CommitTestingData {
     UUID organizationId;
-    Float coverage;
+    CoverageData coverage;
     Integer codeLineCount;
     Integer testLineCount;
-    Integer testCount;
-    String testType;
+    Integer unitTestCount;
+    Integer integrationTestCount;
     String repositoryName;
     String branchName;
     String commitSha;

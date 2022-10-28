@@ -21,6 +21,9 @@ public class TestingMetrics {
     Integer testLineCount;
     Integer codeLineCount;
     Integer unitTestCount;
+    Float unitTestCountTendencyPercentage;
     Integer integrationTestCount;
+    Float integrationTestCountTendencyPercentage;
     Integer endToEndTestCount;
+    Float endToEndTestCountTendencyPercentage;
 }
