@@ -2238,7 +2238,7 @@ components:
     TestingResponseContract:
       type: object
       properties:
-        deployment:
+        testing:
           type: object
           properties:
             current_start_date:
@@ -2259,7 +2259,7 @@ components:
               $ref: '#/components/schemas/MetricsContract'
             test_to_code_ratio:
               $ref: '#/components/schemas/TestToCodeRatioMetricsContract'
-            last_deploy:
+            test_types:
               $ref: '#/components/schemas/TestTypesMetricsContract'
         errors:
           type: array
