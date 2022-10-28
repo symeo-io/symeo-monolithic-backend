@@ -29,7 +29,8 @@ public class TestingRestApiAdapter implements TestingApi {
     private final OrganizationFacadeAdapter organizationFacadeAdapter;
 
     @Override
-    public ResponseEntity<DataProcessingSymeoErrorsContract> collectTestingData(String X_API_KEY, CollectTestingDataRequestContract collectTestingDataRequestContract) {
+    public ResponseEntity<DataProcessingSymeoErrorsContract> collectTestingData(String X_API_KEY,
+                                                                                CollectTestingDataRequestContract collectTestingDataRequestContract) {
         final CommitTestingData commitTestingData;
         try {
             Optional<Organization> organization = this.organizationFacadeAdapter.getOrganizationForApiKey(X_API_KEY);

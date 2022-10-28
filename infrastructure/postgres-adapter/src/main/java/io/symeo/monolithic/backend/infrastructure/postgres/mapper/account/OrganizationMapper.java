@@ -59,6 +59,15 @@ public interface OrganizationMapper {
                 .build();
     }
 
+    static VcsOrganization vcsEntityToDataProcessingDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+        return VcsOrganization.builder()
+                .vcsId(vcsOrganizationEntity.getVcsId())
+                .id(vcsOrganizationEntity.getId())
+                .name(vcsOrganizationEntity.getName())
+                .externalId(vcsOrganizationEntity.getExternalId())
+                .build();
+    }
+
     static VcsOrganization dataProcessingVcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
         return VcsOrganization.builder()
                 .vcsId(vcsOrganizationEntity.getVcsId())

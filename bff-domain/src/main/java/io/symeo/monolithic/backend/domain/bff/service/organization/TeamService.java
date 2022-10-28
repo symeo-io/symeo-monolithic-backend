@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.Team;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.domain.bff.port.in.TeamFacadeAdapter;
-import io.symeo.monolithic.backend.domain.bff.port.out.SymeoDataProcessingJobApiAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.TeamStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class TeamService implements TeamFacadeAdapter {
 
     private final TeamStorage teamStorage;
-    private final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter;
+    private final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter;
 
     @Override
     public List<Team> createTeamsForNameAndRepositoriesAndUser(final Map<String, List<String>> repositoryIdsMappedToTeamName,
@@ -35,7 +35,7 @@ public class TeamService implements TeamFacadeAdapter {
         ));
         final List<Team> createdTeams = teamStorage.createTeamsForUser(teams, user);
         for (Team createdTeam : createdTeams) {
-            symeoDataProcessingJobApiAdapter.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(user.getOrganization().getId(),
+            bffSymeoDataProcessingJobApiAdapter.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(user.getOrganization().getId(),
                     createdTeam.getId(), createdTeam.getRepositories().stream().map(RepositoryView::getId).toList());
         }
         return createdTeams;
@@ -54,7 +54,7 @@ public class TeamService implements TeamFacadeAdapter {
     @Override
     public void update(Team team) throws SymeoException {
         teamStorage.update(team);
-        symeoDataProcessingJobApiAdapter.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
+        bffSymeoDataProcessingJobApiAdapter.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
                 team.getOrganizationId(), team.getId(),
                 team.getRepositories().stream().map(RepositoryView::getId).toList()
         );

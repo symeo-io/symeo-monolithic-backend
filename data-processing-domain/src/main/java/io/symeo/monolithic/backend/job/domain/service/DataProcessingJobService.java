@@ -91,11 +91,6 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         }
     }
 
-    @Override
-    public void startAll() throws SymeoException {
-
-    }
-
     private Job buildCollectVcsDataJob(UUID organizationId, List<Repository> allRepositoriesByIds) {
         return Job.builder()
                 .organizationId(organizationId)

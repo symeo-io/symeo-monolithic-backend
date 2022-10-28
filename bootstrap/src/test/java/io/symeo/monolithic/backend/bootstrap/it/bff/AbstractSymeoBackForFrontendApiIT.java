@@ -26,8 +26,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -62,6 +66,7 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
     WebTestClient client;
     @Autowired
     protected WireMockServer wireMockServer;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
     protected URI getApiURI(final String path) {
@@ -123,13 +128,18 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
     protected static final String TEAMS_REST_API_CYCLE_TIME_PIECES = "/api/v1/teams/cycle-time/pieces";
     protected static final String TEAMS_REST_API_CYCLE_TIME_CURVE = "/api/v1/teams/cycle-time/curve";
     protected static final String TEAMS_REST_API_DEPLOYMENT = "/api/v1/teams/deployment";
-    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM = "/job/v1/data-processing/team";
+    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM = "/api/v1/data-processing" +
+            "/organization/team/repositories";
 
     @Autowired
     ITAuthenticationContextProvider authenticationContextProvider;
 
     static protected final Faker faker = new Faker();
 
+    protected <T> T getStubsFromClassT(final String testResourcesDir, final String fileName, final Class<T> tClass) throws IOException {
+        final String dto1 = Files.readString(Paths.get("target/test-classes/" + testResourcesDir + "/" + fileName));
+        return objectMapper.readValue(dto1, tClass);
+    }
 
     public static class WireMockInitializer
             implements ApplicationContextInitializer<ConfigurableApplicationContext> {

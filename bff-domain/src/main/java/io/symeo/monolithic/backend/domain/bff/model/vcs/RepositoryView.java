@@ -1,12 +1,16 @@
 package io.symeo.monolithic.backend.domain.bff.model.vcs;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Value
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RepositoryView {
     String id;
     String name;

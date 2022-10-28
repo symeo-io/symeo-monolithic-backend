@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import java.util.List;
 import java.util.UUID;
 
-public interface SymeoDataProcessingJobApiAdapter {
+public interface BffSymeoDataProcessingJobApiAdapter {
 
     void startDataProcessingJobForOrganizationIdAndRepositoryIds(UUID organizationId, List<String> repositoryIds) throws SymeoException;
 

@@ -235,15 +235,6 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.curves.piece_curve[6].value").isEqualTo(37)
                 .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-01-26")
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(23)
-                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-02-01")
-                .jsonPath("$.curves.average_curve[1].value").isEqualTo(
-                        Math.round(10f * (hoursToDays(TimeUnit.HOURS.convert(now.getTime() - stringToDate("2022-01-07"
-                                ).getTime(),
-                                TimeUnit.MILLISECONDS))
-                                + hoursToDays(TimeUnit.HOURS.convert(now.getTime() - stringToDate("2022-01-20").getTime(),
-                                TimeUnit.MILLISECONDS))
-                                + 34 + 21 + 6) / 5f) / 10f
-                )
                 .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-01-20")
                 .jsonPath("$.curves.average_curve[2].value").isEqualTo(15.5);
     }
