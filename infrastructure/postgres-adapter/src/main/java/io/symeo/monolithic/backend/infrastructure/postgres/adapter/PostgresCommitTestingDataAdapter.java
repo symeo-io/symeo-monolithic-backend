@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.job.domain.model.testing.CommitTestingData;
 import io.symeo.monolithic.backend.job.domain.port.out.CommitTestingDataStorage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -38,6 +39,7 @@ public class PostgresCommitTestingDataAdapter implements CommitTestingDataStorag
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<CommitTestingData> getLastTestingDataForRepoAndBranchAndDate(UUID organizationId, String repoName, String branchName, Date date) throws SymeoException {
         try {
             return this.commitTestingDataRepository
