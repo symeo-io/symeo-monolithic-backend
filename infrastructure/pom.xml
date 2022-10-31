@@ -15,16 +15,8 @@
         <module>postgres-adapter</module>
         <module>aws-s3-adapter</module>
         <module>sendgrid-adapter</module>
-        <module>symeo-job-api-adapter</module>
+        <module>symeo-data-processing-api-client-adapter</module>
     </modules>
     <artifactId>infrastructure</artifactId>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.symeo.monolithic.backend</groupId>
-            <artifactId>domain</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
 
 </project>

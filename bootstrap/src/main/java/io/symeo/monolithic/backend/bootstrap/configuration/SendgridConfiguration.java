@@ -1,6 +1,6 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
-import io.symeo.monolithic.backend.domain.port.out.EmailDeliveryAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.EmailDeliveryAdapter;
 import io.symeo.monolithic.backend.infrastructure.sendgrid.adapter.SendgridAdapter;
 import io.symeo.monolithic.backend.infrastructure.sendgrid.adapter.client.SendgridApiClient;
 import io.symeo.monolithic.backend.infrastructure.sendgrid.adapter.properties.SendgridProperties;

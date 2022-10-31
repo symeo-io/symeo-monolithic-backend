@@ -1,7 +1,7 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition;
 
-import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.CommentView;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import lombok.AllArgsConstructor;
 
 import javax.persistence.EntityManager;
@@ -48,7 +48,7 @@ public class CustomPullRequestWithCommitsAndCommentsRepository {
 
         final List<PullRequestView> pullRequestViews = new ArrayList<>();
         PullRequestView currentPullRequestView = null;
-        final Set<Comment> currentComments = new HashSet<>();
+        final Set<CommentView> currentComments = new HashSet<>();
         final Set<String> currentCommitShas = new HashSet<>();
         for (Object[] objects : resultList) {
             final String pullRequestId = (String) objects[0];
@@ -84,11 +84,11 @@ public class CustomPullRequestWithCommitsAndCommentsRepository {
         return pullRequestViews;
     }
 
-    private static void mapResultsToCommentAndCommitSha(Set<Comment> currentComments, Set<String> currentCommitShas,
+    private static void mapResultsToCommentAndCommitSha(Set<CommentView> currentComments, Set<String> currentCommitShas,
                                                         String commentId,
                                                         Date commentCreationDate, String pullRequestCommitSha) {
         if (nonNull(commentId) && nonNull(commentCreationDate)) {
-            currentComments.add(Comment.builder()
+            currentComments.add(CommentView.builder()
                     .creationDate(commentCreationDate)
                     .id(commentId)
                     .build());

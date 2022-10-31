@@ -19,6 +19,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.symeo.monolithic.backend</groupId>
+            <artifactId>data-processing-domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
         </dependency>

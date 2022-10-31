@@ -1,7 +1,7 @@
 package io.symeo.monolithic.backend.infrastructure.json.local.storage;
 
-import io.symeo.monolithic.backend.domain.port.out.RawStorageAdapter;
 import io.symeo.monolithic.backend.infrastructure.json.local.storage.properties.JsonStorageProperties;
+import io.symeo.monolithic.backend.job.domain.port.out.RawStorageAdapter;
 
 import java.io.IOException;
 import java.nio.file.Files;

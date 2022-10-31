@@ -28,10 +28,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -74,10 +71,6 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
     ITAuthenticationContextProvider authenticationContextProvider;
     protected final static Faker FAKER = new Faker();
 
-    protected <T> T getStubsFromClassT(final String testResourcesDir, final String fileName, final Class<T> tClass) throws IOException {
-        final String dto1 = Files.readString(Paths.get("target/test-classes/" + testResourcesDir + "/" + fileName));
-        return objectMapper.readValue(dto1, tClass);
-    }
 
     protected URI getApiURI(final String path) {
         return UriComponentsBuilder.newInstance()
@@ -99,6 +92,7 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
                 .build()
                 .toUri();
     }
+
     protected URI getApiURI(final String path, final Map<String, String> params) {
         final UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance()
                 .scheme("http")
@@ -112,9 +106,14 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
     }
 
     protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
-    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION = "/job/v1/data-processing/organization";
-    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM = "/job/v1/data-processing/team";
-    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL = "/job/v1/data-processing/all";
+    protected static final String DATA_PROCESSING_JOB_REST_API_POST_START_JOB_ORGANIZATION = "/api/v1/data-processing" +
+            "/organization/vcs_organization";
+    protected static final String DATA_PROCESSING_JOB_REST_API_POST_START_JOB_TEAM = "/api/v1/data-processing" +
+            "/organization/team/repositories";
+    protected static final String DATA_PROCESSING_JOB_REST_API_POST_START_JOB_REPOSITORIES = "/api/v1/data-processing" +
+            "/organization/repositories";
+    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL = "/api/v1/data-processing/all";
+    protected static final String DATA_PROCESSING_TESTING_REST_API = "/sh/v1/testing";
 
     public static class WireMockInitializer
             implements ApplicationContextInitializer<ConfigurableApplicationContext> {

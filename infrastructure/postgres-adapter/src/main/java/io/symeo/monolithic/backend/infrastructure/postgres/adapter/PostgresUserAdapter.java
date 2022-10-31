@@ -1,9 +1,9 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.port.out.UserStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.port.out.UserStorageAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.UserEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper;

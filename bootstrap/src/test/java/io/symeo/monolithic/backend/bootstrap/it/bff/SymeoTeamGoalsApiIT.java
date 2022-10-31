@@ -1,10 +1,10 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.TeamStandard;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
-import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
-import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.frontend.contract.api.model.PatchTeamGoalsRequest;
-import io.symeo.monolithic.backend.frontend.contract.api.model.PostCreateTeamGoalsRequest;
+import io.symeo.monolithic.backend.bff.contract.api.model.PatchTeamGoalsRequest;
+import io.symeo.monolithic.backend.bff.contract.api.model.PostCreateTeamGoalsRequest;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper;

@@ -1,6 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition;
 
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import lombok.AllArgsConstructor;
 
 import javax.persistence.EntityManager;
@@ -24,22 +24,22 @@ public class CustomCommitRepository {
 
     private final EntityManager entityManager;
 
-    public List<Commit> findAllByTeamId(final UUID teamId) {
+    public List<CommitView> findAllByTeamId(final UUID teamId) {
         final Query nativeQuery = entityManager.createNativeQuery(FIND_COMMITS_BY_TEAM_ID_QUERY.replace(":teamId",
                 teamId.toString()));
         final List<Object[]> resultList = nativeQuery.getResultList();
         return mapResultListToCommitList(resultList);
     }
 
-    private static List<Commit> mapResultListToCommitList(List<Object[]> resultList) {
-        final Map<String, Commit> commitMap = new HashMap<>();
+    private static List<CommitView> mapResultListToCommitList(List<Object[]> resultList) {
+        final Map<String, CommitView> commitMap = new HashMap<>();
         for (Object[] objects : resultList) {
             final String sha = (String) objects[0];
             final String parentSha = (String) objects[5];
             if (commitMap.containsKey(sha)) {
                 commitMap.get(sha).getParentShaList().add(parentSha);
             } else {
-                final Commit commit = buildCommit(objects, sha, parentSha);
+                final CommitView commit = buildCommit(objects, sha, parentSha);
                 commitMap.put(
                         sha,
                         commit
@@ -49,12 +49,12 @@ public class CustomCommitRepository {
         return commitMap.values().stream().toList();
     }
 
-    private static Commit buildCommit(Object[] objects, String sha, String parentSha) {
+    private static CommitView buildCommit(Object[] objects, String sha, String parentSha) {
         final String authorLogin = (String) objects[1];
         final String repositoryId = (String) objects[2];
         final String message = (String) objects[3];
         final Date date = (Timestamp) objects[4];
-        return Commit.builder()
+        return CommitView.builder()
                 .author(authorLogin)
                 .repositoryId(repositoryId)
                 .message(message)

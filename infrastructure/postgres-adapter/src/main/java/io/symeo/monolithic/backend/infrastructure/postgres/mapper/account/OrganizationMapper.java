@@ -1,13 +1,13 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.account;
 
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
+import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 
 import java.util.UUID;
 
@@ -41,7 +41,7 @@ public interface OrganizationMapper {
     }
 
     static VcsOrganizationEntity vcsDomainToEntity(final Organization organization) {
-        final VcsOrganization vcsOrganization = organization.getVcsOrganization();
+        final Organization.VcsOrganization vcsOrganization = organization.getVcsOrganization();
         return VcsOrganizationEntity.builder()
                 .organizationEntity(domainToEntity(organization))
                 .vcsId(vcsOrganization.getVcsId())
@@ -50,10 +50,29 @@ public interface OrganizationMapper {
                 .build();
     }
 
-    static VcsOrganization vcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+    static Organization.VcsOrganization vcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+        return Organization.VcsOrganization.builder()
+                .vcsId(vcsOrganizationEntity.getVcsId())
+                .id(vcsOrganizationEntity.getId())
+                .name(vcsOrganizationEntity.getName())
+                .externalId(vcsOrganizationEntity.getExternalId())
+                .build();
+    }
+
+    static VcsOrganization vcsEntityToDataProcessingDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
         return VcsOrganization.builder()
                 .vcsId(vcsOrganizationEntity.getVcsId())
-                .id(vcsOrganizationEntity.getId().toString())
+                .id(vcsOrganizationEntity.getId())
+                .name(vcsOrganizationEntity.getName())
+                .externalId(vcsOrganizationEntity.getExternalId())
+                .build();
+    }
+
+    static VcsOrganization dataProcessingVcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+        return VcsOrganization.builder()
+                .vcsId(vcsOrganizationEntity.getVcsId())
+                .id(vcsOrganizationEntity.getId())
+                .organizationId(vcsOrganizationEntity.getOrganizationId())
                 .name(vcsOrganizationEntity.getName())
                 .externalId(vcsOrganizationEntity.getExternalId())
                 .build();

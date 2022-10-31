@@ -36,11 +36,12 @@ public class PostgresConfiguration {
                                                      final CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository,
                                                      final CommitRepository commitRepository,
                                                      final TagRepository tagRepository,
-                                                     final CustomCommitRepository customCommitRepository) {
+                                                     final CustomCommitRepository customCommitRepository,
+                                                     final VcsOrganizationRepository vcsOrganizationRepository) {
         return new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
                 pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository,
                 customPullRequestViewRepository, customPullRequestWithCommitsAndCommentsRepository, commitRepository,
-                tagRepository, customCommitRepository);
+                tagRepository, customCommitRepository, vcsOrganizationRepository);
     }
 
     @Bean
@@ -78,6 +79,16 @@ public class PostgresConfiguration {
     public PostgresTeamGoalAdapter postgresTeamGoalAdapter(final TeamRepository teamRepository,
                                                            final TeamGoalRepository teamGoalRepository) {
         return new PostgresTeamGoalAdapter(teamRepository, teamGoalRepository);
+    }
+
+    @Bean
+    public PostgresCommitTestingDataAdapter postgresCommitTestingDataAdapter(final CommitTestingDataRepository commitTestingDataRepository) {
+        return new PostgresCommitTestingDataAdapter(commitTestingDataRepository);
+    }
+
+    @Bean
+    public PostgresOrganizationApiKeyAdapter postgresOrganizationApiKeyAdapter(final OrganizationApiKeyRepository organizationApiKeyRepository) {
+        return new PostgresOrganizationApiKeyAdapter(organizationApiKeyRepository);
     }
 
     @Bean

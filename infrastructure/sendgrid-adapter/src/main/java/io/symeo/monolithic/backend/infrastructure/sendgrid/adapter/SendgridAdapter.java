@@ -1,9 +1,9 @@
 package io.symeo.monolithic.backend.infrastructure.sendgrid.adapter;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.port.out.EmailDeliveryAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.port.out.EmailDeliveryAdapter;
 import io.symeo.monolithic.backend.infrastructure.sendgrid.adapter.client.SendgridApiClient;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

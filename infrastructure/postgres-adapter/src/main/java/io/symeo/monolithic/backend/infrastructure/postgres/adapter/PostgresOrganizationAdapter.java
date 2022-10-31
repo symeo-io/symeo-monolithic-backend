@@ -1,14 +1,16 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
+import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationSettingsRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
+import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.job.domain.port.out.VcsOrganizationStorageAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +20,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.ORGANIZATION_NAME_NOT_FOUND;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper.*;
 
 @AllArgsConstructor
 @Slf4j
-public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
+public class PostgresOrganizationAdapter implements OrganizationStorageAdapter, VcsOrganizationStorageAdapter {
 
     private final VcsOrganizationRepository vcsOrganizationRepository;
     private final OrganizationRepository organizationRepository;
@@ -32,15 +33,9 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public Organization findOrganizationById(final UUID organizationId) throws SymeoException {
+    public Optional<Organization> findOrganizationById(final UUID organizationId) throws SymeoException {
         return vcsOrganizationRepository.findByOrganizationId(organizationId)
-                .map(OrganizationMapper::entityToDomain)
-                .orElseThrow(
-                        () -> SymeoException.builder()
-                                .message(String.format("Organization not found for id %s", organizationId))
-                                .code(ORGANIZATION_NAME_NOT_FOUND)
-                                .build()
-                );
+                .map(OrganizationMapper::entityToDomain);
 
     }
 
@@ -61,17 +56,17 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Organization> findAllOrganization() throws SymeoException {
+    public List<VcsOrganization> findAllVcsOrganization() throws SymeoException {
         try {
-            return organizationRepository.findAll().stream()
-                    .map(OrganizationMapper::entityToDomain)
+            return vcsOrganizationRepository.findAll().stream()
+                    .map(OrganizationMapper::vcsEntityToDataProcessingDomain)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            LOGGER.error("Failed to find all organizations", e);
+            LOGGER.error("Failed to find all vcsOrganizations", e);
             throw SymeoException.builder()
                     .rootException(e)
                     .code(POSTGRES_EXCEPTION)
-                    .message("Failed to create organizations")
+                    .message("Failed to find all vcsOrganizations")
                     .build();
         }
     }
@@ -106,7 +101,8 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter {
     }
 
     @Override
-    public Optional<OrganizationSettings> findOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId, UUID organizationId) {
+    public Optional<OrganizationSettings> findOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId,
+                                                                                         UUID organizationId) {
         return organizationSettingsRepository.findByIdAndOrganizationId(organizationSettingsId, organizationId).map(OrganizationMapper::settingsToDomain);
     }
 }

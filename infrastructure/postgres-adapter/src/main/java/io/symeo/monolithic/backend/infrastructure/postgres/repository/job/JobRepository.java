@@ -1,9 +1,8 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.repository.job;
 
-import io.symeo.monolithic.backend.domain.job.Job;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationAndTeamJobRunnable;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationJobRunnable;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
+import io.symeo.monolithic.backend.job.domain.model.job.Job;
+import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectVcsDataForRepositoriesAndDatesJobRunnable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -46,8 +45,8 @@ public interface JobRepository extends JpaRepository<JobEntity, Long>, JpaSpecif
 
     @Query(nativeQuery = true, value = "select * " +
             " from job_storage.job " +
-            " where code in ('" + CollectVcsDataForOrganizationJobRunnable.JOB_CODE + "', " +
-            "'" + CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE + "') " +
+            " where code in ('" + CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE + "', " +
+            "'" + CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE + "') " +
             "  and status in ('" + Job.STARTED + "', '" + Job.FINISHED + "') " +
             "  and (team_id is null or team_id = :teamId) " +
             "  and organization_id = :organizationId " +

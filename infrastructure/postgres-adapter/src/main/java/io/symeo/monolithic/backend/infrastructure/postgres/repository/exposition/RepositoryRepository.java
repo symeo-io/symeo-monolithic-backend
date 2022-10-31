@@ -14,6 +14,8 @@ public interface RepositoryRepository extends JpaRepository<RepositoryEntity, St
 
     List<RepositoryEntity> findRepositoryEntitiesByOrganizationId(UUID organizationId);
 
+    List<RepositoryEntity> findAllByIdIn(List<String> ids);
+
     @Query(nativeQuery = true,
             value = "select result.default_branch" +
                     " from (select r.default_branch, count(r.default_branch) count" +
