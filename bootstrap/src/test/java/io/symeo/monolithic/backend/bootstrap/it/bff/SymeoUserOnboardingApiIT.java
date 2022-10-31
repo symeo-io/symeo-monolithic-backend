@@ -208,7 +208,7 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.teams[1].name").isNotEmpty();
         Thread.sleep(2000);
 
-        wireMockServer.verify(1,
+        bffWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
@@ -216,7 +216,7 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                                 "\"team_id\":\"" + teams.get(0).getId() + "\",\"repository_ids\":[\"repo-1\"," +
                                 "\"repo-2\"]}"))
         );
-        wireMockServer.verify(1,
+        bffWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
@@ -355,7 +355,7 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
         assertThat(teamsAfterUpdate.get(0).getRepositoryIds()).hasSize(newRepositoryIds.size());
         teamsAfterUpdate.get(0).getRepositoryIds().forEach(repositoryId -> assertThat(newRepositoryIds.contains(repositoryId)).isTrue());
 
-        wireMockServer.verify(1,
+        bffWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))

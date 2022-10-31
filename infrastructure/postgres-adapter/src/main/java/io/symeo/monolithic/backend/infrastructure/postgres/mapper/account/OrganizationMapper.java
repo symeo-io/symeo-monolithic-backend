@@ -65,6 +65,7 @@ public interface OrganizationMapper {
                 .id(vcsOrganizationEntity.getId())
                 .name(vcsOrganizationEntity.getName())
                 .externalId(vcsOrganizationEntity.getExternalId())
+                .organizationId(vcsOrganizationEntity.getOrganizationId())
                 .build();
     }
 
@@ -75,6 +76,7 @@ public interface OrganizationMapper {
                 .organizationId(vcsOrganizationEntity.getOrganizationId())
                 .name(vcsOrganizationEntity.getName())
                 .externalId(vcsOrganizationEntity.getExternalId())
+                .organizationId(vcsOrganizationEntity.getOrganizationId())
                 .build();
     }
 

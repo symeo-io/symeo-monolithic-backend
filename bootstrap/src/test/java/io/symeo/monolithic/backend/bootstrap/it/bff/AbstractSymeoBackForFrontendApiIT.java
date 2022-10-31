@@ -65,7 +65,7 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
     @Autowired
     WebTestClient client;
     @Autowired
-    protected WireMockServer wireMockServer;
+    protected WireMockServer bffWireMockServer;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
@@ -146,22 +146,22 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
 
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            WireMockServer wireMockServer = new WireMockServer(new WireMockConfiguration().dynamicPort());
-            wireMockServer.start();
+            WireMockServer bffWireMockServer = new WireMockServer(new WireMockConfiguration().dynamicPort());
+            bffWireMockServer.start();
 
             configurableApplicationContext
                     .getBeanFactory()
-                    .registerSingleton("wireMockServer", wireMockServer);
+                    .registerSingleton("bffbffWireMockServer", bffWireMockServer);
 
             configurableApplicationContext.addApplicationListener(
                     applicationEvent -> {
                         if (applicationEvent instanceof ContextClosedEvent) {
-                            wireMockServer.stop();
+                            bffWireMockServer.stop();
                         }
                     });
 
             TestPropertyValues.of(
-                            "application.job-api.url:http://localhost:" + wireMockServer.port() + "/")
+                            "application.job-api.url:http://localhost:" + bffWireMockServer.port() + "/")
                     .applyTo(configurableApplicationContext);
         }
 

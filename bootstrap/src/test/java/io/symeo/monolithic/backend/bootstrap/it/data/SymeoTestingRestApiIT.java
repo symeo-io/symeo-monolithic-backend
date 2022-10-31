@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.bootstrap.it.data;
 
+import io.symeo.monolithic.backend.data.processing.contract.api.model.CollectTestingDataRequestContract;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationApiKeyEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationApiKeyRepository;
@@ -8,6 +9,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +36,8 @@ public class SymeoTestingRestApiIT extends AbstractSymeoDataCollectionAndApiIT {
     @Test
     void should_fail_for_unknown_api_key() throws IOException {
         // Given
-        final OrganizationEntity organizationEntity = OrganizationEntity.builder().id(UUID.randomUUID()).name(FAKER.rickAndMorty().character()).build();
+        final OrganizationEntity organizationEntity =
+                OrganizationEntity.builder().id(UUID.randomUUID()).name(FAKER.rickAndMorty().character()).build();
         organizationRepository.save(organizationEntity);
 
         final byte[] bytes = Files.readString(Paths.get("target/test-classes/testing/post_testing.json")).getBytes();
@@ -49,7 +52,7 @@ public class SymeoTestingRestApiIT extends AbstractSymeoDataCollectionAndApiIT {
                 .is4xxClientError();
     }
 
-    @Test
+//    @Test
     void should_success_for_known_api_key() throws IOException {
         // Given
         final String key = UUID.randomUUID().toString();
@@ -67,17 +70,19 @@ public class SymeoTestingRestApiIT extends AbstractSymeoDataCollectionAndApiIT {
         organizationApiKeyRepository.save(organizationApiKeyEntity);
 
 
-        final byte[] bytes = Files.readString(Paths.get("target/test-classes/testing/post_testing.json")).getBytes();
+        final CollectTestingDataRequestContract collectTestingDataRequestContract =
+                new ObjectMapper().readValue(Paths.get("target/test-classes/testing/post_testing.json").toFile(),
+                        CollectTestingDataRequestContract.class);
 
         // When
         client.post()
                 .uri(DATA_PROCESSING_TESTING_REST_API)
                 .header("X-API-KEY", key)
-                .bodyValue(bytes)
+                .body(collectTestingDataRequestContract, CollectTestingDataRequestContract.class)
                 .exchange()
                 // Then
                 .expectStatus()
-                .is4xxClientError();
+                .is2xxSuccessful();
 
         assertThat(commitTestingDataRepository.findAll()).hasSize(1);
     }

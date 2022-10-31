@@ -28,7 +28,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -63,7 +66,7 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
     protected WebTestClient client;
 
     @Autowired
-    protected WireMockServer wireMockServer;
+    protected WireMockServer symeoClientAdapterWireMockServer;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -71,6 +74,10 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
     ITAuthenticationContextProvider authenticationContextProvider;
     protected final static Faker FAKER = new Faker();
 
+    protected <T> T getStubsFromClassT(final String testResourcesDir, final String fileName, final Class<T> tClass) throws IOException {
+        final String dto1 = Files.readString(Paths.get("target/test-classes/" + testResourcesDir + "/" + fileName));
+        return objectMapper.readValue(dto1, tClass);
+    }
 
     protected URI getApiURI(final String path) {
         return UriComponentsBuilder.newInstance()
@@ -120,23 +127,23 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
 
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            WireMockServer wireMockServer = new WireMockServer(new WireMockConfiguration().dynamicPort());
-            wireMockServer.start();
+            WireMockServer symeoClientAdapterWireMockServer = new WireMockServer(new WireMockConfiguration().dynamicPort());
+            symeoClientAdapterWireMockServer.start();
 
             configurableApplicationContext
                     .getBeanFactory()
-                    .registerSingleton("wireMockServer", wireMockServer);
+                    .registerSingleton("symeoClientAdapterWireMockServer", symeoClientAdapterWireMockServer);
 
             configurableApplicationContext.addApplicationListener(
                     applicationEvent -> {
                         if (applicationEvent instanceof ContextClosedEvent) {
-                            wireMockServer.stop();
+                            symeoClientAdapterWireMockServer.stop();
                         }
                     });
 
             TestPropertyValues.of(
-                            "infrastructure.github.app.api:http://localhost:" + wireMockServer.port() + "/",
-                            "application.job-api.url:http://localhost:" + wireMockServer.port() + "/")
+                            "infrastructure.github.app.api:http://localhost:" + symeoClientAdapterWireMockServer.port() + "/",
+                            "application.job-api.url:http://localhost:" + symeoClientAdapterWireMockServer.port() + "/")
                     .applyTo(configurableApplicationContext);
         }
 

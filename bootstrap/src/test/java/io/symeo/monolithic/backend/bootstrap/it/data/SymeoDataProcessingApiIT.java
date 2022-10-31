@@ -26,21 +26,24 @@ public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiI
     @Order(1)
     void should_start_data_collection_jobs_for_all_organization_ids() {
         // Given
+        final UUID organizationId1 = UUID.randomUUID();
+        final UUID organizationId2 = UUID.randomUUID();
+        final UUID organizationId3 = UUID.randomUUID();
         final List<VcsOrganizationEntity> vcsOrganizationEntities = vcsOrganizationRepository.saveAll(List.of(
                 VcsOrganizationEntity.builder()
-                        .organizationEntity(OrganizationEntity.builder().id(UUID.randomUUID()).name(FAKER.rickAndMorty().character()).build())
+                        .organizationEntity(OrganizationEntity.builder().id(organizationId1).name(FAKER.rickAndMorty().character()).build())
                         .name(FAKER.name().firstName())
                         .vcsId(FAKER.pokemon().location())
                         .externalId(FAKER.ancient().god())
                         .build(),
                 VcsOrganizationEntity.builder()
-                        .organizationEntity(OrganizationEntity.builder().id(UUID.randomUUID()).name(FAKER.rickAndMorty().character()).build())
+                        .organizationEntity(OrganizationEntity.builder().id(organizationId2).name(FAKER.rickAndMorty().character()).build())
                         .name(FAKER.name().firstName())
                         .vcsId(FAKER.pokemon().location())
                         .externalId(FAKER.ancient().god())
                         .build(),
                 VcsOrganizationEntity.builder()
-                        .organizationEntity(OrganizationEntity.builder().id(UUID.randomUUID()).name(FAKER.rickAndMorty().character()).build())
+                        .organizationEntity(OrganizationEntity.builder().id(organizationId3).name(FAKER.rickAndMorty().character()).build())
                         .name(FAKER.name().firstName())
                         .vcsId(FAKER.pokemon().location())
                         .externalId(FAKER.ancient().god())
@@ -57,22 +60,33 @@ public class SymeoDataProcessingApiIT extends AbstractSymeoDataCollectionAndApiI
                 .expectStatus()
                 .is2xxSuccessful();
 
-        wireMockServer.verify(1,
+        symeoClientAdapterWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_POST_START_JOB_ORGANIZATION)
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
-                        .withRequestBody(equalToJson("[]"))
-        );
-        wireMockServer.verify(1,
+                        .withRequestBody(equalToJson(String.format("{\n" +
+                                "  \"organization_id\" : \"%s\",\n" +
+                                "  \"vcs_organization_id\" : %s\n" +
+                                "}", organizationId1, vcsOrganizationEntities.get(0).getId()))
+                        ));
+        symeoClientAdapterWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_POST_START_JOB_ORGANIZATION)
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
-                        .withRequestBody(equalToJson("[]")));
-        wireMockServer.verify(1,
+                        .withRequestBody(equalToJson(String.format("{\n" +
+                                "  \"organization_id\" : \"%s\",\n" +
+                                "  \"vcs_organization_id\" : %s\n" +
+                                "}", organizationId2, vcsOrganizationEntities.get(1).getId()))
+                        ));
+        symeoClientAdapterWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_POST_START_JOB_ORGANIZATION)
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
-                        .withRequestBody(equalToJson("[]")));
+                        .withRequestBody(equalToJson(String.format("{\n" +
+                                "  \"organization_id\" : \"%s\",\n" +
+                                "  \"vcs_organization_id\" : %s\n" +
+                                "}", organizationId3, vcsOrganizationEntities.get(2).getId()))
+                        ));
     }
 
     @Test
