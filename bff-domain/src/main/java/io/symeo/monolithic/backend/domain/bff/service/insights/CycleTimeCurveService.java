@@ -51,10 +51,10 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex();
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
 
-        if (!isNull(deployDetectionType) && deployDetectionType.equals(DeployDetectionTypeDomainEnum.PULL_REQUEST)) {
+        if (deployDetectionType == DeployDetectionTypeDomainEnum.PULL_REQUEST) {
             return getCycleTimePieceCurveWithAverageForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, rangeDates,
                     pullRequestMergedOnBranchRegex, excludeBranchRegexes);
-        } else if (!isNull(deployDetectionType) && deployDetectionType.equals(DeployDetectionTypeDomainEnum.TAG)) {
+        } else if (deployDetectionType == DeployDetectionTypeDomainEnum.TAG) {
             return getCycleTimePieceCurveWithAverageForDeployOnTagRegex(teamId, startDate, endDate, rangeDates,
                     tagRegex, excludeBranchRegexes);
         }

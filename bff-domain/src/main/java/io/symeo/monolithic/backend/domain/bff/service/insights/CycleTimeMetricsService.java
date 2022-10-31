@@ -56,10 +56,10 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
         final String pullRequestMergedOnBranchRegex =
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex();
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
-        if (!isNull(deployDetectionType) && deployDetectionType.equals(DeployDetectionTypeDomainEnum.PULL_REQUEST)) {
+        if (deployDetectionType == DeployDetectionTypeDomainEnum.PULL_REQUEST) {
             return getCycleTimeMetricsForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, previousStartDate,
                     pullRequestMergedOnBranchRegex, excludeBranchRegexes);
-        } else if (!isNull(deployDetectionType) && deployDetectionType.equals(DeployDetectionTypeDomainEnum.TAG)) {
+        } else if (deployDetectionType == DeployDetectionTypeDomainEnum.TAG) {
             return getCycleTimeMetricsForDeployOnTagRegex(teamId, startDate, endDate, previousStartDate, tagRegex,
                     excludeBranchRegexes);
         }
@@ -88,11 +88,11 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
         final String pullRequestMergedOnBranchRegex =
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex();
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
-        if (!isNull(deployDetectionType) && deployDetectionType.equals(DeployDetectionTypeDomainEnum.PULL_REQUEST)) {
+        if (deployDetectionType == DeployDetectionTypeDomainEnum.PULL_REQUEST) {
             return getCycleTimePiecesForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, pageIndex,
                     pageSize, sortBy, sortDir,
                     pullRequestMergedOnBranchRegex, excludeBranchRegexes);
-        } else if (!isNull(deployDetectionType) && deployDetectionType.equals(DeployDetectionTypeDomainEnum.TAG)) {
+        } else if (deployDetectionType == DeployDetectionTypeDomainEnum.TAG) {
             return getCycleTimePiecesForDeployOnTagRegex(teamId, startDate, endDate, pageIndex, pageSize, sortBy,
                     sortDir,
                     tagRegex, excludeBranchRegexes);

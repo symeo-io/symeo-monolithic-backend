@@ -48,10 +48,10 @@ public class DeploymentMetricsService implements DeploymentMetricsFacadeAdapter 
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex();
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
 
-        if (!isNull(deployDetectionType) &&  nonNull(pullRequestMergedOnBranchRegex)) {
+        if (deployDetectionType == DeployDetectionTypeDomainEnum.PULL_REQUEST) {
             return getDeploymentMetricsForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, previousStartDate,
                     pullRequestMergedOnBranchRegex);
-        } else if (!isNull(deployDetectionType) &&  nonNull(tagRegex)) {
+        } else if (deployDetectionType == DeployDetectionTypeDomainEnum.TAG) {
             return getDeploymentMetricsForDeployOnTagRegex(teamId, startDate, endDate, previousStartDate,
                     tagRegex);
         }

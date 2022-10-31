@@ -68,13 +68,9 @@ public interface OrganizationSettingsContractMapper {
                 .build();
     }
     static DeployDetectionTypeDomainEnum deployDetectionTypeContractEnumToDomainEnumMapper(final DeployDetectionTypeEnum deployDetectionTypeContractEnum) throws SymeoException {
-        return switch (deployDetectionTypeContractEnum.getValue()) {
-            case "pull_request" -> DeployDetectionTypeDomainEnum.PULL_REQUEST;
-            case "tag" -> DeployDetectionTypeDomainEnum.TAG;
-            default -> throw SymeoException.builder()
-                    .message(String.format("Invalid deployDetectionType %s", deployDetectionTypeContractEnum.getValue()))
-                    .code(SymeoExceptionCode.INVALID_DEPLOYEMENT_DETECTION_TYPE)
-                    .build();
+        return switch (deployDetectionTypeContractEnum) {
+            case PULL_REQUEST -> DeployDetectionTypeDomainEnum.PULL_REQUEST;
+            case TAG -> DeployDetectionTypeDomainEnum.TAG;
         };
     }
     static DeployDetectionTypeEnum deployDetectionTypeDomainEnumToContractEnumMapper(final DeployDetectionTypeDomainEnum deployDetectionTypeDomainEnum) {

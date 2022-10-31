@@ -1,1 +1,1 @@
-alter table organization_storage.organization_settings add deploy_detection_type VARCHAR(255) NULL;
+alter table organization_storage.organization_settings add deploy_detection_type VARCHAR(255) default 'pull_request';
