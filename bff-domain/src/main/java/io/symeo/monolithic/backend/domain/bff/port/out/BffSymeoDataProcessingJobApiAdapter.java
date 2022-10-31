@@ -7,8 +7,6 @@ import java.util.UUID;
 
 public interface BffSymeoDataProcessingJobApiAdapter {
 
-    void startDataProcessingJobForOrganizationIdAndRepositoryIds(UUID organizationId, List<String> repositoryIds) throws SymeoException;
-
     void startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(UUID organizationId, UUID teamId,
                                                                           List<String> repositoryIds) throws SymeoException;
 

@@ -60,7 +60,7 @@ public class SymeoDataProcessingJobApiClientAdapterTest {
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
 
         // When
-        symeoDataProcessingJobApiClientAdapter.startDataProcessingJobForOrganizationIdAndRepositoryIds(
+        symeoDataProcessingJobApiClientAdapter.autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(
                 organizationId,
                 repositoryIds
         );

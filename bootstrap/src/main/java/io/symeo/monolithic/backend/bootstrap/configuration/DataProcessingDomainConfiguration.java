@@ -23,10 +23,10 @@ public class DataProcessingDomainConfiguration {
     public DataProcessingJobAdapter dataProcessingJobAdapter(final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter,
                                                              final DataProcessingJobStorage dataProcessingJobStorage,
                                                              final VcsDataProcessingService vcsDataProcessingService,
-                                                             final JobManager jobManager) {
+                                                             final JobManager jobManager,
+                                                             final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter) {
         return new DataProcessingJobService(dataProcessingExpositionStorageAdapter, dataProcessingJobStorage,
-                vcsDataProcessingService,
-                jobManager);
+                vcsDataProcessingService, jobManager, autoSymeoDataProcessingJobApiAdapter);
     }
 
     @Bean

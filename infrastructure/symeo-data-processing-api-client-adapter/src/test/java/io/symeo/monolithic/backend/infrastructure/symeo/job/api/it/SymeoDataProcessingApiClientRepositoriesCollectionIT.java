@@ -67,7 +67,7 @@ public class SymeoDataProcessingApiClientRepositoriesCollectionIT extends Abstra
 
 
         // When
-        symeoDataProcessingJobApiClientAdapter.startDataProcessingJobForOrganizationIdAndRepositoryIds(
+        symeoDataProcessingJobApiClientAdapter.autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(
                 dto.getOrganizationId(), dto.getRepositoryIds()
         );
 

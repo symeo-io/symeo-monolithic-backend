@@ -3,7 +3,10 @@ package io.symeo.monolithic.backend.job.domain.model.job.runnable;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
+import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
 import org.junit.jupiter.api.Test;
@@ -30,10 +33,16 @@ public class CollectRepositoriesJobRunnableTest {
                 .build();
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable = CollectRepositoriesJobRunnable.builder()
                 .vcsOrganization(vcsOrganization)
                 .dataProcessingJobStorage(dataProcessingJobStorage)
                 .vcsDataProcessingService(vcsDataProcessingService)
+                .autoSymeoDataProcessingJobApiAdapter(autoSymeoDataProcessingJobApiAdapter)
+                .dataProcessingExpositionStorageAdapter(dataProcessingExpositionStorageAdapter)
                 .build();
 
         // When
@@ -62,14 +71,22 @@ public class CollectRepositoriesJobRunnableTest {
                 .build();
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable = CollectRepositoriesJobRunnable.builder()
                 .vcsOrganization(vcsOrganization)
                 .dataProcessingJobStorage(dataProcessingJobStorage)
                 .vcsDataProcessingService(vcsDataProcessingService)
+                .autoSymeoDataProcessingJobApiAdapter(autoSymeoDataProcessingJobApiAdapter)
+                .dataProcessingExpositionStorageAdapter(dataProcessingExpositionStorageAdapter)
                 .build();
         final long jobId = faker.number().randomNumber();
 
         // When
+        when(dataProcessingExpositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(vcsOrganization.getOrganizationId()))
+                .thenReturn(List.of());
         collectRepositoriesJobRunnable.initializeTasks();
         collectRepositoriesJobRunnable.run(jobId);
 
@@ -80,7 +97,53 @@ public class CollectRepositoriesJobRunnableTest {
                 .collectRepositoriesForVcsOrganization(vcsOrganization);
         verify(dataProcessingJobStorage, times(1))
                 .updateJobWithTasksForJobId(jobId, tasks);
+        verifyNoInteractions(autoSymeoDataProcessingJobApiAdapter);
         assertThat(tasks.get(0).getStatus()).isEqualTo("DONE");
+    }
+
+    @Test
+    void should_execute_all_tasks_and_start_job_for_repositories() throws SymeoException {
+        // Given
+        final VcsOrganization vcsOrganization = VcsOrganization.builder()
+                .externalId(faker.pokemon().name())
+                .organizationId(UUID.randomUUID())
+                .id(faker.number().randomNumber())
+                .vcsId(faker.pokemon().location())
+                .name(faker.robin().quote())
+                .build();
+        final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable = CollectRepositoriesJobRunnable.builder()
+                .vcsOrganization(vcsOrganization)
+                .dataProcessingJobStorage(dataProcessingJobStorage)
+                .vcsDataProcessingService(vcsDataProcessingService)
+                .autoSymeoDataProcessingJobApiAdapter(autoSymeoDataProcessingJobApiAdapter)
+                .dataProcessingExpositionStorageAdapter(dataProcessingExpositionStorageAdapter)
+                .build();
+        final long jobId = faker.number().randomNumber();
+        final List<Repository> repositoryList = List.of(Repository.builder()
+                .organizationId(vcsOrganization.getOrganizationId())
+                .vcsOrganizationName(vcsOrganization.getName())
+                .vcsOrganizationId(vcsOrganization.getVcsId())
+                .name(faker.rickAndMorty().character())
+                .id(faker.lordOfTheRings().character())
+                .build());
+
+        // When
+        collectRepositoriesJobRunnable.initializeTasks();
+        when(dataProcessingExpositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(vcsOrganization.getOrganizationId()))
+                .thenReturn(repositoryList);
+        collectRepositoriesJobRunnable.run(jobId);
+
+        // Then
+        verify(autoSymeoDataProcessingJobApiAdapter, times(1))
+                .autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(
+                        vcsOrganization.getOrganizationId(), repositoryList.stream().map(Repository::getId).toList()
+                );
     }
 
     @Test

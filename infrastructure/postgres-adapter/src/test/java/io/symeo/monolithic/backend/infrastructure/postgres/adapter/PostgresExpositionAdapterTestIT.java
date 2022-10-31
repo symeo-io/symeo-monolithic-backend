@@ -596,10 +596,13 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
     void should_find_repositories_given_an_organization_id() throws SymeoException {
         // Given
         final String vcsOrganizationName = faker.name().name();
+        final String vcsOrganizationId = faker.pokemon().location();
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.animal().name())
-                .vcsOrganization(Organization.VcsOrganization.builder().name(vcsOrganizationName).build())
+                .vcsOrganization(Organization.VcsOrganization.builder()
+                        .name(vcsOrganizationName)
+                        .vcsId(vcsOrganizationId).build())
                 .build();
         organizationRepository.save(OrganizationMapper.domainToEntity(organization));
         final List<RepositoryEntity> repositoryEntities = repositoryRepository.saveAll(List.of(
@@ -608,12 +611,14 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                         .name(faker.ancient().god() + "-1")
                         .defaultBranch(faker.ancient().hero())
                         .vcsOrganizationName(vcsOrganizationName)
+                        .vcsOrganizationId(vcsOrganizationId)
                         .build(),
                 RepositoryEntity.builder().id(faker.rickAndMorty().character())
                         .name(faker.ancient().god() + "-2")
                         .defaultBranch(faker.ancient().hero())
                         .organizationId(organization.getId())
                         .vcsOrganizationName(vcsOrganizationName)
+                        .vcsOrganizationId(vcsOrganizationId)
                         .build()
         ));
         teamRepository.save(
@@ -627,7 +632,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                         .build());
 
         // When
-        final List<RepositoryView> allRepositoriesForOrganizationIdAndTeamId =
+        final List<Repository> allRepositoriesForOrganizationIdAndTeamId =
                 postgresExpositionAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(organization.getId());
 
         // Then

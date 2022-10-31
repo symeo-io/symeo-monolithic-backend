@@ -17,9 +17,9 @@ public class SymeoDataProcessingJobApiClientAdapter implements BffSymeoDataProce
     private final SymeoHttpClient symeoHttpClient;
 
     @Override
-    public void startDataProcessingJobForOrganizationIdAndRepositoryIds(UUID organizationId,
-                                                                        List<String> repositoryIds) throws SymeoException {
-        symeoHttpClient.startDataProcessingJobForOrganizationIdAndRepositoryIds(domainToRepositoriesDTO(organizationId, repositoryIds));
+    public void autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(UUID organizationId,
+                                                                            List<String> repositoryIdsLinkedToATeam) throws SymeoException {
+        symeoHttpClient.startDataProcessingJobForOrganizationIdAndRepositoryIds(domainToRepositoriesDTO(organizationId, repositoryIdsLinkedToATeam));
     }
 
     @Override
@@ -39,4 +39,6 @@ public class SymeoDataProcessingJobApiClientAdapter implements BffSymeoDataProce
                                                                                 Long vcsOrganizationId) throws SymeoException {
         symeoHttpClient.startDataProcessingJobForOrganizationIdAndVcsOrganizationId(domainToVcsOrganizationDTO(organizationId, vcsOrganizationId));
     }
+
+
 }
