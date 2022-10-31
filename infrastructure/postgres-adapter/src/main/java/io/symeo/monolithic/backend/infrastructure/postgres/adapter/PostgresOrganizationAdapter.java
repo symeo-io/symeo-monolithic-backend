@@ -34,7 +34,7 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter, 
     @Override
     @Transactional(readOnly = true)
     public Optional<Organization> findOrganizationById(final UUID organizationId) throws SymeoException {
-        return vcsOrganizationRepository.findByOrganizationId(organizationId)
+        return organizationRepository.findById(organizationId)
                 .map(OrganizationMapper::entityToDomain);
 
     }

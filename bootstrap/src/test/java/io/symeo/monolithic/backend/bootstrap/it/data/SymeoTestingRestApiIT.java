@@ -6,10 +6,12 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.Organi
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationApiKeyRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CommitTestingDataRepository;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,7 +54,7 @@ public class SymeoTestingRestApiIT extends AbstractSymeoDataCollectionAndApiIT {
                 .is4xxClientError();
     }
 
-//    @Test
+    @Test
     void should_success_for_known_api_key() throws IOException {
         // Given
         final String key = UUID.randomUUID().toString();
@@ -78,7 +80,7 @@ public class SymeoTestingRestApiIT extends AbstractSymeoDataCollectionAndApiIT {
         client.post()
                 .uri(DATA_PROCESSING_TESTING_REST_API)
                 .header("X-API-KEY", key)
-                .body(collectTestingDataRequestContract, CollectTestingDataRequestContract.class)
+                .body(Mono.just(collectTestingDataRequestContract), CollectTestingDataRequestContract.class)
                 .exchange()
                 // Then
                 .expectStatus()
