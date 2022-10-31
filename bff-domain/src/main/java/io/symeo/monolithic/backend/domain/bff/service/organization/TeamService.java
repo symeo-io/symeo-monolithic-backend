@@ -53,10 +53,10 @@ public class TeamService implements TeamFacadeAdapter {
 
     @Override
     public void update(Team team) throws SymeoException {
-        teamStorage.update(team);
+        final Team teamUpdated = teamStorage.update(team);
         bffSymeoDataProcessingJobApiAdapter.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
-                team.getOrganizationId(), team.getId(),
-                team.getRepositories().stream().map(RepositoryView::getId).toList()
+                teamUpdated.getOrganizationId(), teamUpdated.getId(),
+                teamUpdated.getRepositories().stream().map(RepositoryView::getId).toList()
         );
     }
 }

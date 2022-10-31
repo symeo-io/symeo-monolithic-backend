@@ -17,6 +17,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,11 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
     private static final UUID organizationId = UUID.randomUUID();
 
     private static final String mail = faker.name().firstName() + "@" + faker.name().firstName() + ".fr";
+
+    @AfterEach
+    public void tearDown() {
+        this.bffWireMockServer.resetAll();
+    }
 
     @Order(1)
     @Test
@@ -213,16 +219,16 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
-                                "\"team_id\":\"" + teams.get(0).getId() + "\",\"repository_ids\":[\"repo-1\"," +
-                                "\"repo-2\"]}"))
+                                "\"team_id\":\"" + teams.get(0).getId() + "\",\"repository_ids\":[\"" + teams.get(0).getRepositoryIds().get(0) + "\"," +
+                                "\"" + teams.get(0).getRepositoryIds().get(1) + "\"]}"))
         );
         bffWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
-                                "\"team_id\":\"" + teams.get(1).getId() + "\",\"repository_ids\":[\"repo-3\"," +
-                                "\"repo-4\"]}"))
+                                "\"team_id\":\"" + teams.get(1).getId() + "\",\"repository_ids\":[\"" + teams.get(1).getRepositoryIds().get(0) + "\"," +
+                                "\"" + teams.get(1).getRepositoryIds().get(1) + "\"]}"))
         );
     }
 
@@ -360,8 +366,7 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
-                                "\"team_id\":\"" + teamEntity.getId() + "\",\"repository_ids\":[\"repo-3\"," +
-                                "\"repo-4\"]}"))
+                                "\"team_id\":\"" + teamsAfterUpdate.get(0).getId() + "\",\"repository_ids\":[\"" + teamsAfterUpdate.get(0).getRepositoryIds().get(0) + "\"]}"))
         );
     }
 

@@ -112,39 +112,26 @@ public class TeamServiceTest {
     }
 
     @Test
-    void should_update_team_given_a_team() throws SymeoException {
-        // Given
-        final TeamStorage teamStorage = mock(TeamStorage.class);
-        final TeamService teamService = new TeamService(teamStorage, mock(BffSymeoDataProcessingJobApiAdapter.class));
-        final Team team = Team.builder().id(UUID.randomUUID()).repositories(List.of()).build();
-
-        // When
-        teamService.update(team);
-
-        // Then
-        verify(teamStorage, times(1)).update(team);
-    }
-
-    @Test
     void should_update_team_and_start_vcs_data_collection_for_a_team_given_a_team() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter =
-                mock(BffSymeoDataProcessingJobApiAdapter.class);
-        final TeamService teamService = new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter);
-        final Team team = Team.builder()
-                .id(UUID.randomUUID())
-                .organizationId(UUID.randomUUID())
-                .repositories(List.of(RepositoryView.builder().id(faker.name().firstName()).build()))
-                .build();
+        final BffSymeoDataProcessingJobApiAdapter apiAdapter = mock(BffSymeoDataProcessingJobApiAdapter.class);
+        final TeamService teamService = new TeamService(teamStorage, apiAdapter);
+        final Team team = Team.builder().id(UUID.randomUUID()).repositories(List.of()).build();
+        final Team updatedTeam = team.toBuilder().organizationId(UUID.randomUUID()).build();
 
         // When
+        when(teamStorage.update(team))
+                .thenReturn(updatedTeam);
         teamService.update(team);
 
         // Then
-        verify(teamStorage, times(1)).update(team);
-        verify(bffSymeoDataProcessingJobApiAdapter, times(1)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
-                team.getOrganizationId(), team.getId(),
-                team.getRepositories().stream().map(RepositoryView::getId).toList());
+        verify(apiAdapter,times(1))
+                .startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
+                        updatedTeam.getOrganizationId(),
+                        updatedTeam.getId(),
+                        updatedTeam.getRepositories().stream().map(RepositoryView::getId).toList()
+                );
     }
+
 }

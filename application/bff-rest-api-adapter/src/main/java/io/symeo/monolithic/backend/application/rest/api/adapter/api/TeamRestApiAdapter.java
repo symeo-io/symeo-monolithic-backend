@@ -1,17 +1,17 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
-import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.bff.contract.api.TeamApi;
+import io.symeo.monolithic.backend.bff.contract.api.model.CreateTeamRequestContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.SymeoErrorsContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.TeamsResponseContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.UpdateTeamRequestContract;
 import io.symeo.monolithic.backend.domain.bff.model.account.Team;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.bff.port.in.TeamFacadeAdapter;
-import io.symeo.monolithic.backend.bff.contract.api.TeamApi;
-import io.symeo.monolithic.backend.bff.contract.api.model.SymeoErrorsContract;
-import io.symeo.monolithic.backend.bff.contract.api.model.CreateTeamRequestContract;
-import io.symeo.monolithic.backend.bff.contract.api.model.TeamsResponseContract;
-import io.symeo.monolithic.backend.bff.contract.api.model.UpdateTeamRequestContract;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.*;
+import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.exceptionToContracts;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.SymeoErrorContractMapper.mapSymeoExceptionToContract;
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.TeamContractMapper.*;
 import static org.springframework.http.ResponseEntity.ok;
@@ -76,11 +76,7 @@ public class TeamRestApiAdapter implements TeamApi {
     @Override
     public ResponseEntity<SymeoErrorsContract> updateTeam(UpdateTeamRequestContract updateTeamRequestContract) {
         try {
-            final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            final Team team = getTeamToPatch(updateTeamRequestContract)
-                    .toBuilder()
-                    .organizationId(authenticatedUser.getId())
-                    .build();
+            final Team team = getTeamToPatch(updateTeamRequestContract);
             teamFacadeAdapter.update(team);
             return ok().build();
         } catch (SymeoException e) {
