@@ -49,6 +49,8 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
         int coveredBranches = 0;
 
         int previousTestCount = 0;
+        int previousTestLineCount = 0;
+        int previousCodeLineCount = 0;
         int previousUnitTestCount = 0;
         int previousIntegrationTestCount = 0;
         int previousEndToEndTestCount = 0;
@@ -75,6 +77,8 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
 
             if (previousTestingData.isPresent()) {
                 previousTestCount += previousTestingData.get().getUnitTestCount() + previousTestingData.get().getIntegrationTestCount();
+                previousTestLineCount += previousTestingData.get().getTestLineCount();
+                previousCodeLineCount += previousTestingData.get().getCodeLineCount();
                 previousUnitTestCount += previousTestingData.get().getUnitTestCount();
                 previousIntegrationTestCount += previousTestingData.get().getIntegrationTestCount();
                 previousTotalBranchCount += previousTestingData.get().getCoverage().getTotalBranchCount();
@@ -90,6 +94,8 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
                 .testCountTendencyPercentage(MetricsHelper.getTendencyPercentage(testCount, previousTestCount))
                 .testLineCount(testLineCount)
                 .codeLineCount(codeLineCount)
+                .testToCodeRatio(this.computeTestToCodeRatio(testLineCount, codeLineCount))
+                .testToCodeRatioTendencyPercentage(MetricsHelper.getTendencyPercentage(this.computeTestToCodeRatio(testLineCount, codeLineCount), this.computeTestToCodeRatio(previousTestLineCount, previousCodeLineCount)))
                 .unitTestCount(unitTestCount)
                 .unitTestCountTendencyPercentage(MetricsHelper.getTendencyPercentage(unitTestCount, previousUnitTestCount))
                 .integrationTestCount(integrationTestCount)
@@ -106,5 +112,13 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
         }
 
         return (float) coveredBranches / totalBranchCount;
+    }
+
+    private Float computeTestToCodeRatio(Integer testLineCount, Integer codeLineCount) {
+        if (isNull(testLineCount) || isNull(codeLineCount) || (codeLineCount.equals(0) && testLineCount.equals(0))) {
+            return null;
+        }
+
+        return (float) testLineCount / (codeLineCount + testLineCount);
     }
 }
