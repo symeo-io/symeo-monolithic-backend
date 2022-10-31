@@ -59,4 +59,5 @@ public interface SymeoExceptionCode {
 
     // Job Exception Codes
     String INVALID_JOB_CODE = "F.INVALID_JOB_CODE";
+    String JOB_FAILED_FOR_UNKNOWN_REASON = "T.JOB_FAILED_FOR_UNKNOWN_REASON";
 }

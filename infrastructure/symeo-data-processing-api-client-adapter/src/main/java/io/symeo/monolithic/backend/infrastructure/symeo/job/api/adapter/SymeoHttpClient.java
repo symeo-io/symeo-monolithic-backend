@@ -27,7 +27,7 @@ public class SymeoHttpClient {
     public void startDataProcessingJobForOrganizationIdAndRepositoryIds(final PostStartDataProcessingJobForRepositoriesDTO postStartDataProcessingJobForRepositoriesDTO) throws SymeoException {
         try {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(
-                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "api/v1/data-processing/organization" +
+                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "job/v1/data-processing/organization" +
                                     "/repositories"
                             ))
                     .POST(HttpRequest.BodyPublishers.ofByteArray(dtoToBytes(postStartDataProcessingJobForRepositoriesDTO)))
@@ -53,7 +53,7 @@ public class SymeoHttpClient {
     public void startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(final PostStartDataProcessingJobForTeamDTO postStartDataProcessingJobForTeamDTO) throws SymeoException {
         try {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(
-                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "api/v1/data-processing/organization" +
+                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "job/v1/data-processing/organization" +
                                     "/team/repositories"
                             ))
                     .POST(HttpRequest.BodyPublishers.ofByteArray(dtoToBytes(postStartDataProcessingJobForTeamDTO)))
@@ -79,7 +79,7 @@ public class SymeoHttpClient {
     public void startDataProcessingJobForOrganizationIdAndVcsOrganizationId(final PostStartDataProcessingJobForOrganizationDTO postStartDataProcessingJobForOrganizationDTO) throws SymeoException {
         try {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(
-                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "api/v1/data-processing/organization" +
+                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "job/v1/data-processing/organization" +
                                     "/vcs_organization"
                             ))
                     .POST(HttpRequest.BodyPublishers.ofByteArray(dtoToBytes(postStartDataProcessingJobForOrganizationDTO)))

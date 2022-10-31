@@ -38,9 +38,7 @@ public class SwaggerConfiguration {
                 .securityContexts(Collections.singletonList(securityContext()))
                 .securitySchemes(List.of(apiKey()))
                 .select()
-//                .apis(RequestHandlerSelectors.basePackage("io.symeo.monolithic.backend.application.rest.api.adapter"))
-                .apis(RequestHandlerSelectors.basePackage("io.symeo.monolithic.backend.job.rest.api.adapter"))
-                .paths(PathSelectors.regex("(/api/.*|/sh/.*)"))
+                .paths(PathSelectors.regex("(/api/.*|/sh/.*|/job/.*)"))
                 .build()
                 .pathMapping("/");
     }

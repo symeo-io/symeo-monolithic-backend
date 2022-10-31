@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.job.domain.model.job;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,9 +51,19 @@ public class JobManager {
                     LOGGER.info("Launching nextJob for job {}", job);
                     this.start(job.getNextJob());
                 }
-            } catch (SymeoException symeoException) {
-                LOGGER.error("Error while running job {}", job, symeoException);
+            } catch (Exception exception) {
+                LOGGER.error("Error while running job {}", job, exception);
                 try {
+                    SymeoException symeoException;
+                    if (exception instanceof SymeoException) {
+                        symeoException = (SymeoException) exception;
+                    } else {
+                        symeoException = SymeoException.builder()
+                                .code(SymeoExceptionCode.JOB_FAILED_FOR_UNKNOWN_REASON)
+                                .message("Job failed for unknown reason")
+                                .rootException(exception)
+                                .build();
+                    }
                     dataProcessingJobStorage.updateJob(job.failed(symeoException));
                 } catch (SymeoException ex) {
                     LOGGER.error("Error while updating job {} to jobStorage", job, ex);

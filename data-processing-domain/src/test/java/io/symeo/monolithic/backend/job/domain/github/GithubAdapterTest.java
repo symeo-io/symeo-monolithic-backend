@@ -214,6 +214,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
 
                 // Then
                 assertThat(pullRequestsForRepositoryAndDateRange.size()).isEqualTo(githubPullRequestStubs1.length);
+                verify(rawStorageAdapter, times(1)).save(any(), anyString(), anyString(), any());
             }
 
             @Test
@@ -292,6 +293,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                 // Then
                 assertThat(pullRequestsForRepositoryAndDateRange)
                         .hasSize(githubPullRequestStubs1.length + githubPullRequestStubs2.length + githubPullRequestStubs3.length);
+                verify(rawStorageAdapter, times(1)).save(any(), anyString(), anyString(), any());
             }
 
             @Test
@@ -364,6 +366,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                         .hasSize(githubPullRequestStubs1.length + githubPullRequestStubs2.length);
                 verify(githubApiClientAdapter, times(3)).getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(any(),
                         any(), any(), any());
+                verify(rawStorageAdapter, times(1)).save(any(), anyString(), anyString(), any());
             }
 
         }
@@ -452,6 +455,7 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                         Stream.of(pr74, pr75, pr76, pr77, pr78, pr79).map(pr -> GithubMapper.mapPullRequestDtoToDomain(pr,
                                 githubAdapter.getName(), repository)).toList();
                 assertThat(pullRequestsForRepositoryAndDateRange).containsAll(expectedResults);
+                verify(rawStorageAdapter, times(1)).save(any(), anyString(), anyString(), any());
             }
 
 
@@ -508,7 +512,6 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                 when(rawStorageAdapter.read(repository.getOrganizationId(), githubAdapter.getName(),
                         PullRequest.getNameFromRepositoryId(repository.getId())))
                         .thenReturn(dtoStubsToBytes(rawStorageGithubPullRequestStubs));
-                setGithubPullRequestDates(githubPullRequestStubs3, updateDate);
                 for (GithubPullRequestDTO githubPullRequestDTO : githubPullRequestStubs1) {
                     when(githubApiClientAdapter.getPullRequestDetailsForPullRequestNumber(
                             repository.getVcsOrganizationName(), repository.getName(), githubPullRequestDTO.getNumber()
@@ -533,7 +536,8 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
 
                 // Then
                 assertThat(pullRequestsForRepositoryAndDateRange)
-                        .hasSize(githubPullRequestStubs1.length + githubPullRequestStubs2.length + githubPullRequestStubs3.length);
+                        .hasSize(githubPullRequestStubs1.length + githubPullRequestStubs2.length + githubPullRequestStubs3.length + rawStorageGithubPullRequestStubs.length);
+                verify(rawStorageAdapter, times(1)).save(any(), anyString(), anyString(), any());
             }
 
 
@@ -597,10 +601,11 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
                                 startDate, endDate);
 
                 // Then
-                assertThat(pullRequestsForRepositoryAndDateRange).hasSize(githubPullRequestStubs1.length + githubPullRequestStubs2.length);
+                assertThat(pullRequestsForRepositoryAndDateRange).hasSize(githubPullRequestStubs1.length + githubPullRequestStubs2.length - 1);
                 verify(githubApiClientAdapter, times(2))
                         .getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(anyString(), anyString(),
                                 anyInt(), anyInt());
+                verify(rawStorageAdapter, times(1)).save(any(), anyString(), anyString(), any());
 
             }
 
@@ -674,8 +679,9 @@ public class GithubAdapterTest extends AbstractGithubAdapterTest {
 
                 // Then
                 assertThat(pullRequestsForRepositoryAndDateRange).hasSize(
-                        githubPullRequestStubs1.length + githubPullRequestStubs2.length + githubPullRequestStubs3.length
+                        githubPullRequestStubs1.length
                 );
+                verify(rawStorageAdapter, times(1)).save(any(), anyString(), anyString(), any());
             }
 
 
