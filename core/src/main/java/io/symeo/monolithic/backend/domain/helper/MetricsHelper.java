@@ -13,6 +13,9 @@ public class MetricsHelper {
     }
 
     public static Float getTendencyPercentage(final Integer currentValue, final Integer previousValue) {
+        if (isNull(currentValue) || isNull(previousValue)) {
+            return null;
+        }
         return MetricsHelper.getTendencyPercentage((float) currentValue, (float) previousValue);
     }
 }

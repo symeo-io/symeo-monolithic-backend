@@ -54,6 +54,9 @@ public class CommitTestingDataEntity {
     @Column(name = "commit_sha")
     String commitSha;
 
+    @Column(name = "date")
+    ZonedDateTime date;
+
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp
     ZonedDateTime technicalCreationDate;

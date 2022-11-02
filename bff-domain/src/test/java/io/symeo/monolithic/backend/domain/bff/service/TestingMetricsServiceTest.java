@@ -5,6 +5,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.Team;
 import io.symeo.monolithic.backend.domain.bff.model.metric.TestingMetrics;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.TeamStorage;
 import io.symeo.monolithic.backend.domain.bff.service.insights.TestingMetricsService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
@@ -31,7 +32,8 @@ public class TestingMetricsServiceTest {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
         final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter = mock(CommitTestingDataFacadeAdapter.class);
-        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter);
+        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
+        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
 
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -40,21 +42,32 @@ public class TestingMetricsServiceTest {
 
         // When
         when(teamStorage.findById(teamId)).thenReturn(Optional.empty());
-        final Optional<TestingMetrics> optionalTestingMetrics =
+        final TestingMetrics optionalTestingMetrics =
                 testingMetricsService.computeTestingMetricsForTeamIdFromStartDateToEndDate(organization, teamId
                         , startDate, endDate);
 
         // Then
         assertThat(optionalTestingMetrics).isNotNull();
-        assertThat(optionalTestingMetrics).isEmpty();
+        assertThat(optionalTestingMetrics.getCurrentStartDate()).isEqualTo(startDate);
+        assertThat(optionalTestingMetrics.getCurrentEndDate()).isEqualTo(endDate);
+        assertThat(optionalTestingMetrics.getPreviousStartDate()).isEqualTo("2021-12-01");
+        assertThat(optionalTestingMetrics.getPreviousEndDate()).isEqualTo(startDate);
+        assertThat(optionalTestingMetrics.getTestCount()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestCountTendencyPercentage()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestLineCount()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getCodeLineCount()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestToCodeRatio()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestToCodeRatioTendencyPercentage()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getCoverage()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getCoverageTendencyPercentage()).isEqualTo(null);
     }
-
     @Test
-    void should_get_testing_metrics() throws SymeoException {
+    void should_return_empty_metrics_when_there_is_no_data() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
         final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter = mock(CommitTestingDataFacadeAdapter.class);
-        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter);
+        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
+        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
 
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -76,6 +89,69 @@ public class TestingMetricsServiceTest {
 
         // When
         when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
+        when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
+
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, endDate))
+                .thenReturn(Optional.empty());
+
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name, repo2DefaultBranch, endDate))
+                .thenReturn(Optional.empty());
+
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, startDate))
+                .thenReturn(Optional.empty());
+
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name, repo2DefaultBranch, startDate))
+                .thenReturn(Optional.empty());
+
+        final TestingMetrics optionalTestingMetrics =
+                testingMetricsService.computeTestingMetricsForTeamIdFromStartDateToEndDate(organization, teamId
+                        , startDate, endDate);
+
+        // Then
+        assertThat(optionalTestingMetrics).isNotNull();
+        assertThat(optionalTestingMetrics.getCurrentStartDate()).isEqualTo(startDate);
+        assertThat(optionalTestingMetrics.getCurrentEndDate()).isEqualTo(endDate);
+        assertThat(optionalTestingMetrics.getPreviousStartDate()).isEqualTo("2021-12-01");
+        assertThat(optionalTestingMetrics.getPreviousEndDate()).isEqualTo(startDate);
+        assertThat(optionalTestingMetrics.getTestCount()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestCountTendencyPercentage()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestLineCount()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getCodeLineCount()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestToCodeRatio()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestToCodeRatioTendencyPercentage()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getCoverage()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getCoverageTendencyPercentage()).isEqualTo(null);
+    }
+
+    @Test
+    void should_get_testing_metrics() throws SymeoException {
+        // Given
+        final TeamStorage teamStorage = mock(TeamStorage.class);
+        final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter = mock(CommitTestingDataFacadeAdapter.class);
+        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
+        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
+
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final UUID teamId = UUID.randomUUID();
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-02-01");
+
+        final String repo1Name = faker.starTrek().location();
+        final String repo2Name = faker.starTrek().location();
+        final String repo1DefaultBranch = faker.starTrek().character();
+        final String repo2DefaultBranch = faker.starTrek().character();
+
+        final Team team = Team.builder()
+                .id(teamId)
+                .repositories(List.of(
+                        RepositoryView.builder().name(repo1Name).defaultBranch(repo1DefaultBranch).build(),
+                        RepositoryView.builder().name(repo2Name).defaultBranch(repo2DefaultBranch).build()
+                ))
+                .build();
+
+        // When
+        when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
+        when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
 
         when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, endDate))
                 .thenReturn(Optional.of(CommitTestingData.builder()
@@ -125,20 +201,23 @@ public class TestingMetricsServiceTest {
                         )
                         .build()));
 
-        final Optional<TestingMetrics> optionalTestingMetrics =
+        final TestingMetrics optionalTestingMetrics =
                 testingMetricsService.computeTestingMetricsForTeamIdFromStartDateToEndDate(organization, teamId
                         , startDate, endDate);
 
         // Then
         assertThat(optionalTestingMetrics).isNotNull();
-        assertThat(optionalTestingMetrics).isPresent();
-        assertThat(optionalTestingMetrics.get().getTestCount()).isEqualTo(80);
-        assertThat(optionalTestingMetrics.get().getTestCountTendencyPercentage()).isEqualTo(100f);
-        assertThat(optionalTestingMetrics.get().getTestLineCount()).isEqualTo(300);
-        assertThat(optionalTestingMetrics.get().getCodeLineCount()).isEqualTo(900);
-        assertThat(optionalTestingMetrics.get().getTestToCodeRatio()).isEqualTo(0.25f);
-        assertThat(optionalTestingMetrics.get().getTestToCodeRatioTendencyPercentage()).isEqualTo(0f);
-        assertThat(optionalTestingMetrics.get().getCoverage()).isEqualTo(0.5f);
-        assertThat(optionalTestingMetrics.get().getCoverageTendencyPercentage()).isEqualTo(100f);
+        assertThat(optionalTestingMetrics.getCurrentStartDate()).isEqualTo(startDate);
+        assertThat(optionalTestingMetrics.getCurrentEndDate()).isEqualTo(endDate);
+        assertThat(optionalTestingMetrics.getPreviousStartDate()).isEqualTo("2021-12-01");
+        assertThat(optionalTestingMetrics.getPreviousEndDate()).isEqualTo(startDate);
+        assertThat(optionalTestingMetrics.getTestCount()).isEqualTo(80);
+        assertThat(optionalTestingMetrics.getTestCountTendencyPercentage()).isEqualTo(100f);
+        assertThat(optionalTestingMetrics.getTestLineCount()).isEqualTo(300);
+        assertThat(optionalTestingMetrics.getCodeLineCount()).isEqualTo(900);
+        assertThat(optionalTestingMetrics.getTestToCodeRatio()).isEqualTo(0.25f);
+        assertThat(optionalTestingMetrics.getTestToCodeRatioTendencyPercentage()).isEqualTo(0f);
+        assertThat(optionalTestingMetrics.getCoverage()).isEqualTo(0.5f);
+        assertThat(optionalTestingMetrics.getCoverageTendencyPercentage()).isEqualTo(100f);
     }
 }

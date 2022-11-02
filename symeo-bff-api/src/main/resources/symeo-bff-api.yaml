@@ -1338,8 +1338,11 @@ paths:
                     test_line_count: 100
                   test_types:
                     unit: 100
+                    unit_tendency_percentage: 5
                     integration: 58
+                    integration_tendency_percentage: 5
                     end_to_end: 0
+                    end_to_end_tendency_percentage: 0
                 errors:
                   [ ]
         "401":

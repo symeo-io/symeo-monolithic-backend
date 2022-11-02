@@ -4,6 +4,9 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.Com
 import io.symeo.monolithic.backend.job.domain.model.testing.CommitTestingData;
 import io.symeo.monolithic.backend.job.domain.model.testing.CoverageData;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -22,6 +25,8 @@ public interface CommitTestingDataMapper {
                 .repositoryName(commitTestingData.getRepositoryName())
                 .branchName(commitTestingData.getBranchName())
                 .commitSha(commitTestingData.getCommitSha())
+                .date(ZonedDateTime.ofInstant(commitTestingData.getDate().toInstant(),
+                        ZoneId.systemDefault()))
                 .build();
     }
     static CommitTestingData entityToDomain(final CommitTestingDataEntity commitTestingDataEntity) {
@@ -38,6 +43,7 @@ public interface CommitTestingDataMapper {
                 .repositoryName(commitTestingDataEntity.getRepositoryName())
                 .branchName(commitTestingDataEntity.getBranchName())
                 .commitSha(commitTestingDataEntity.getCommitSha())
+                .date(Date.from(commitTestingDataEntity.getDate().toInstant()))
                 .build();
     }
 }

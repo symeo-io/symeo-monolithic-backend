@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.job.domain.model.testing;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Builder
@@ -17,4 +18,5 @@ public class CommitTestingData {
     String repositoryName;
     String branchName;
     String commitSha;
+    Date date;
 }

@@ -11,6 +11,7 @@ create table exposition_storage.commit_testing_data
     repository_name             varchar(300)                              not null,
     branch_name                 varchar(300)                              not null,
     commit_sha                  varchar(300)                              not null,
+    date                        timestamp(6) with time zone default now() not null,
     technical_creation_date     timestamp(6) with time zone default now() not null,
     technical_modification_date timestamp(6) with time zone default now() not null
 );

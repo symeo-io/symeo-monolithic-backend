@@ -6,6 +6,8 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.model.testing.CommitTestingData;
 import io.symeo.monolithic.backend.job.domain.testing.CoverageReportAdapter;
 
+import java.util.Date;
+
 public interface TestingContractMapper {
     static CommitTestingData contractToDomain(CollectTestingDataRequestContract collectTestingDataRequestContract, Organization organization) throws SymeoException {
         return CommitTestingData.builder()
@@ -18,6 +20,7 @@ public interface TestingContractMapper {
                 .repositoryName(collectTestingDataRequestContract.getRepositoryName())
                 .branchName(collectTestingDataRequestContract.getBranchName())
                 .commitSha(collectTestingDataRequestContract.getCommitSha())
+                .date(new Date())
                 .build();
     }
 }

@@ -43,7 +43,7 @@ public class PostgresCommitTestingDataAdapter implements CommitTestingDataStorag
     public Optional<CommitTestingData> getLastTestingDataForRepoAndBranchAndDate(UUID organizationId, String repoName, String branchName, Date date) throws SymeoException {
         try {
             return this.commitTestingDataRepository
-                    .findByOrganizationIdAndRepositoryNameAndBranchNameAndTechnicalCreationDateBefore(organizationId, repoName, branchName, ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()))
+                    .findTopByOrganizationIdAndRepositoryNameAndBranchNameAndDateBeforeOrderByDateDesc(organizationId, repoName, branchName, ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()))
                     .map(CommitTestingDataMapper::entityToDomain);
         } catch (Exception e) {
             final String message = "Failed to fetch commit testing data";
