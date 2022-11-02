@@ -92,7 +92,7 @@ public class CycleTimeCurveServiceTest {
         );
 
         final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(pullRequestViewId1).base("staging").build(),
+                PullRequestView.builder().id(pullRequestViewId1).base("test").build(),
                 PullRequestView.builder().id(pullRequestViewId2).base(faker.animal().name()).build()
         );
         final CycleTime cycleTime1 =
@@ -101,6 +101,7 @@ public class CycleTimeCurveServiceTest {
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
                         .timeToDeploy(faker.number().randomNumber())
+                        .deployDate(stringToDate("2022-01-04 10:00:00"))
                         .pullRequestView(currentPullRequestViews.get(0))
                         .build();
         final CycleTime cycleTime2 =
@@ -109,6 +110,7 @@ public class CycleTimeCurveServiceTest {
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
                         .timeToDeploy(faker.number().randomNumber())
+                        .deployDate(stringToDate("2022-01-07 15:00:00"))
                         .pullRequestView(currentPullRequestViews.get(1))
                         .build();
 
@@ -116,7 +118,7 @@ public class CycleTimeCurveServiceTest {
         // When
         when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
                 .thenReturn(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
-                        "staging"));
+                        "test"));
         when(bffExpositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate))
                 .thenReturn(currentPullRequestViews);
         when(bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId))
@@ -124,12 +126,12 @@ public class CycleTimeCurveServiceTest {
         when(bffExpositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate))
                 .thenReturn(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
         when(cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
-                PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("head-1").startDateRange("2022-01-03").build(),
+                PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("head-1").build(),
                 List.of(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)),
                 allCommitsUntilEndDate
         )).thenReturn(cycleTime1);
         when(cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
-                PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("head-2").startDateRange("2022-01-05").build(),
+                PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("head-2").build(),
                 List.of(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)),
                 allCommitsUntilEndDate
         )).thenReturn(cycleTime2);
@@ -142,7 +144,7 @@ public class CycleTimeCurveServiceTest {
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().size()).isEqualTo(2);
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(0)).isEqualTo(
                 CycleTimePieceCurve.CyclePieceCurvePoint.builder()
-                        .date(cycleTime1.getPullRequestView().getStartDateRange())
+                        .date("2022-01-04")
                         .value(cycleTime1.getValue())
                         .codingTime(cycleTime1.getCodingTime())
                         .reviewTime(cycleTime1.getReviewTime())
@@ -153,7 +155,7 @@ public class CycleTimeCurveServiceTest {
         );
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(1)).isEqualTo(
                 CycleTimePieceCurve.CyclePieceCurvePoint.builder()
-                        .date(cycleTime2.getPullRequestView().getStartDateRange())
+                        .date("2022-01-07")
                         .value(cycleTime2.getValue())
                         .codingTime(cycleTime2.getCodingTime())
                         .reviewTime(cycleTime2.getReviewTime())
@@ -199,6 +201,7 @@ public class CycleTimeCurveServiceTest {
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
                         .timeToDeploy(faker.number().randomNumber())
+                        .deployDate(stringToDate("2022-01-08 10:00:00"))
                         .pullRequestView(currentPullRequestViews.get(0))
                         .build();
         final CycleTime cycleTime2 =
@@ -207,6 +210,7 @@ public class CycleTimeCurveServiceTest {
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
                         .timeToDeploy(faker.number().randomNumber())
+                        .deployDate(stringToDate("2022-01-07 15:00:00"))
                         .pullRequestView(currentPullRequestViews.get(1))
                         .build();
 
@@ -229,12 +233,12 @@ public class CycleTimeCurveServiceTest {
         when(bffExpositionStorageAdapter.findTagsForTeamId(teamId))
                 .thenReturn(tagsMatchingDeployTagRegex);
         when(cycleTimeFactory.computeCycleTimeForTagRegexToDeploySettings(
-                PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("test").startDateRange("2022-01-03").build(),
+                PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("test").build(),
                 List.of(tagsMatchingDeployTagRegex.get(0)),
                 allCommitsUntilEndDate
         )).thenReturn(cycleTime1);
         when(cycleTimeFactory.computeCycleTimeForTagRegexToDeploySettings(
-                PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("main").startDateRange("2022-01-05").build(),
+                PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("main").build(),
                 List.of(tagsMatchingDeployTagRegex.get(0)),
                 allCommitsUntilEndDate
         )).thenReturn(cycleTime2);
@@ -247,7 +251,7 @@ public class CycleTimeCurveServiceTest {
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().size()).isEqualTo(1);
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(0)).isEqualTo(
                 CycleTimePieceCurve.CyclePieceCurvePoint.builder()
-                        .date(cycleTime1.getPullRequestView().getStartDateRange())
+                        .date("2022-01-07")
                         .value(cycleTime1.getValue())
                         .codingTime(cycleTime1.getCodingTime())
                         .reviewTime(cycleTime1.getReviewTime())
