@@ -12,6 +12,7 @@
         <module>symeo-bff-api</module>
         <module>data-processing-domain</module>
         <module>bff-domain</module>
+        <module>coverage</module>
     </modules>
 
     <parent>
@@ -46,6 +47,7 @@
         <logback-classic.version>1.2.9</logback-classic.version>
         <logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
         <hibernate-types.version>2.19.2</hibernate-types.version>
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -202,7 +204,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <version>${jacoco-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
