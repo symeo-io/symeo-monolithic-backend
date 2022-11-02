@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeFactory;
@@ -217,6 +218,7 @@ public class CycleTimeCurveServiceTest {
                                 .deployDetectionSettings(DeployDetectionSettings.builder()
                                         .excludeBranchRegexes(List.of("^main$"))
                                         .tagRegex("^deploy$")
+                                        .deployDetectionType(DeployDetectionTypeDomainEnum.TAG)
                                         .build())
                                 .build())
                         .build());

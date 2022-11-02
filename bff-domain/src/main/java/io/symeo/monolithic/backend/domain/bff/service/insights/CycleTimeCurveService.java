@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.domain.bff.service.insights;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeFactory;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -41,15 +43,18 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                 range, organization.getTimeZone());
         final OrganizationSettings organizationSettings =
                 organizationSettingsFacade.getOrganizationSettingsForOrganization(organization);
+        final DeployDetectionTypeDomainEnum deployDetectionType =
+                organizationSettings.getDeliverySettings().getDeployDetectionSettings().getDeployDetectionType();
         final List<String> excludeBranchRegexes =
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getExcludeBranchRegexes();
         final String pullRequestMergedOnBranchRegex =
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex();
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
-        if (nonNull(pullRequestMergedOnBranchRegex)) {
+
+        if (deployDetectionType == DeployDetectionTypeDomainEnum.PULL_REQUEST) {
             return getCycleTimePieceCurveWithAverageForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, rangeDates,
                     pullRequestMergedOnBranchRegex, excludeBranchRegexes);
-        } else if (nonNull(tagRegex)) {
+        } else if (deployDetectionType == DeployDetectionTypeDomainEnum.TAG) {
             return getCycleTimePieceCurveWithAverageForDeployOnTagRegex(teamId, startDate, endDate, rangeDates,
                     tagRegex, excludeBranchRegexes);
         }

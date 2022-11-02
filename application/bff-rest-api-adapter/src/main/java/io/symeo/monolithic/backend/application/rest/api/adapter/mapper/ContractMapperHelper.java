@@ -1,5 +1,8 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
+import io.symeo.monolithic.backend.bff.contract.api.model.DeployDetectionSettingsContract;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
+
 import java.math.BigDecimal;
 
 import static java.util.Objects.isNull;

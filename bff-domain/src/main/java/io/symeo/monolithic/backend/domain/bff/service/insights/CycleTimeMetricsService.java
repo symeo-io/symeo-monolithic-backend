@@ -1,6 +1,8 @@
 package io.symeo.monolithic.backend.domain.bff.service.insights;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.model.metric.AverageCycleTime;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetrics;
@@ -24,7 +26,9 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.*;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 
@@ -41,21 +45,21 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
                                                                                              final UUID teamId,
                                                                                              final Date startDate,
                                                                                              final Date endDate) throws SymeoException {
-        final Date previousStartDate = DateHelper.getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
+        final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
                 organization.getTimeZone());
-
         final OrganizationSettings organizationSettings =
                 organizationSettingsFacade.getOrganizationSettingsForOrganization(organization);
+        final DeployDetectionTypeDomainEnum deployDetectionType =
+                organizationSettings.getDeliverySettings().getDeployDetectionSettings().getDeployDetectionType();
         final List<String> excludeBranchRegexes =
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getExcludeBranchRegexes();
         final String pullRequestMergedOnBranchRegex =
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex();
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
-
-        if (nonNull(pullRequestMergedOnBranchRegex)) {
+        if (deployDetectionType == DeployDetectionTypeDomainEnum.PULL_REQUEST) {
             return getCycleTimeMetricsForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, previousStartDate,
                     pullRequestMergedOnBranchRegex, excludeBranchRegexes);
-        } else if (nonNull(tagRegex)) {
+        } else if (deployDetectionType == DeployDetectionTypeDomainEnum.TAG) {
             return getCycleTimeMetricsForDeployOnTagRegex(teamId, startDate, endDate, previousStartDate, tagRegex,
                     excludeBranchRegexes);
         }
@@ -77,16 +81,18 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
                                                                                     final String sortDir) throws SymeoException {
         final OrganizationSettings organizationSettings =
                 organizationSettingsFacade.getOrganizationSettingsForOrganization(organization);
+        final DeployDetectionTypeDomainEnum deployDetectionType =
+                organizationSettings.getDeliverySettings().getDeployDetectionSettings().getDeployDetectionType();
         final List<String> excludeBranchRegexes =
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getExcludeBranchRegexes();
         final String pullRequestMergedOnBranchRegex =
                 organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex();
         final String tagRegex = organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex();
-        if (nonNull(pullRequestMergedOnBranchRegex)) {
+        if (deployDetectionType == DeployDetectionTypeDomainEnum.PULL_REQUEST) {
             return getCycleTimePiecesForPullRequestMergedOnBranchRegex(teamId, startDate, endDate, pageIndex,
                     pageSize, sortBy, sortDir,
                     pullRequestMergedOnBranchRegex, excludeBranchRegexes);
-        } else if (nonNull(tagRegex)) {
+        } else if (deployDetectionType == DeployDetectionTypeDomainEnum.TAG) {
             return getCycleTimePiecesForDeployOnTagRegex(teamId, startDate, endDate, pageIndex, pageSize, sortBy,
                     sortDir,
                     tagRegex, excludeBranchRegexes);
