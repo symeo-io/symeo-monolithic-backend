@@ -253,11 +253,11 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
 
     @Override
     @Transactional(readOnly = true)
-    public List<RepositoryView> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException {
+    public List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException {
         try {
             return repositoryRepository.findAllRepositoriesLinkedToTeamsForOrganizationId(organizationId)
                     .stream()
-                    .map(RepositoryMapper::entityToDomain)
+                    .map(RepositoryMapper::entityToDataProcessingDomain)
                     .toList();
         } catch (Exception e) {
             final String message = String.format("Failed to find repositories for organizationId %s",

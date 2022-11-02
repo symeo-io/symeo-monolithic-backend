@@ -73,19 +73,29 @@ public class GithubAdapter {
 
 
         final byte[] alreadyRawCollectedPullRequests = getAlreadyRawCollectedPullRequests(repository);
-
+        List<GithubPullRequestDTO> githubPullRequestDTOList;
         if (isNull(alreadyRawCollectedPullRequests)) {
-            return getPullRequestWithoutAlreadyCollectedPullRequests(repository, startDate, endDate);
+            githubPullRequestDTOList = getPullRequestWithoutAlreadyCollectedPullRequests(repository, startDate,
+                    endDate);
         } else {
             final GithubPullRequestDTO[] githubPullRequestDTOSAlreadyCollected =
                     getGithubPullRequestDTOSFromBytes(alreadyRawCollectedPullRequests);
             if (isNull(githubPullRequestDTOSAlreadyCollected) || githubPullRequestDTOSAlreadyCollected.length == 0) {
-                return getPullRequestWithoutAlreadyCollectedPullRequests(repository, startDate, endDate);
+                githubPullRequestDTOList = getPullRequestWithoutAlreadyCollectedPullRequests(repository, startDate,
+                        endDate);
             } else {
-                return getPullRequestsForRepositoryAndAlreadyCollectedPullRequests(repository,
+                githubPullRequestDTOList = getPullRequestsForRepositoryAndAlreadyCollectedPullRequests(repository,
                         alreadyRawCollectedPullRequests, startDate, endDate);
             }
         }
+        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(),
+                PullRequest.getNameFromRepositoryId(repository.getId()),
+                dtoToBytes(githubPullRequestDTOList));
+        return githubPullRequestDTOList
+                .stream()
+                .map(githubPullRequestDTO -> GithubMapper.mapPullRequestDtoToDomain(githubPullRequestDTO,
+                        ADAPTER_NAME, repository))
+                .toList();
     }
 
     public List<Tag> getTags(final Repository repository) throws SymeoException {
@@ -123,14 +133,15 @@ public class GithubAdapter {
                             repository.getVcsOrganizationName(), repository.getName(), page, properties.getSize());
             githubBranchDTOList.addAll(Arrays.stream(githubBranchDTOS).toList());
         }
-        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Tag.getNameFromRepository(repository),
-                dtoToBytes(githubBranchDTOS));
+        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Branch.getNameFromRepository(repository),
+                dtoToBytes(githubBranchDTOList));
         return githubBranchDTOList.stream()
                 .map(GithubMapper::mapBranchToDomain)
                 .toList();
     }
 
-    private List<PullRequest> getPullRequestWithoutAlreadyCollectedPullRequests(Repository repository, Date startDate
+    private List<GithubPullRequestDTO> getPullRequestWithoutAlreadyCollectedPullRequests(Repository repository,
+                                                                                         Date startDate
             , Date endDate) throws SymeoException {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
@@ -165,11 +176,7 @@ public class GithubAdapter {
                 }
             }
         }
-        return getGithubPullRequestDTOs(repository, githubPullRequestDTOList)
-                .stream()
-                .map(githubPullRequestDTO -> GithubMapper.mapPullRequestDtoToDomain(githubPullRequestDTO,
-                        ADAPTER_NAME, repository))
-                .toList();
+        return getGithubPullRequestDTOs(repository, githubPullRequestDTOList);
     }
 
     public List<Commit> getCommitsForBranchesInDateRange(final Repository repository,
@@ -220,10 +227,10 @@ public class GithubAdapter {
                 .toList();
     }
 
-    private List<PullRequest> getPullRequestsForRepositoryAndAlreadyCollectedPullRequests(final Repository repository,
-                                                                                          final byte[] alreadyRawCollectedPullRequests,
-                                                                                          final Date startDate,
-                                                                                          final Date endDate) throws SymeoException {
+    private List<GithubPullRequestDTO> getPullRequestsForRepositoryAndAlreadyCollectedPullRequests(final Repository repository,
+                                                                                                   final byte[] alreadyRawCollectedPullRequests,
+                                                                                                   final Date startDate,
+                                                                                                   final Date endDate) throws SymeoException {
         int page = 1;
         GithubPullRequestDTO[] githubPullRequestDTOS =
                 githubApiClientAdapter.getPullRequestsForRepositoryAndVcsOrganizationOrderByDescDate(
@@ -261,10 +268,7 @@ public class GithubAdapter {
         }
         return getIncrementalGithubPullRequests(repository,
                 alreadyRawCollectedPullRequests,
-                githubPullRequestDTOList).stream()
-                .map(githubPullRequestDTO -> GithubMapper.mapPullRequestDtoToDomain(githubPullRequestDTO,
-                        ADAPTER_NAME, repository))
-                .toList();
+                githubPullRequestDTOList);
 
     }
 
@@ -309,7 +313,7 @@ public class GithubAdapter {
 
         for (GithubPullRequestDTO alreadyCollectedGithubPullRequestDTO : alreadyCollectedGithubPullRequestDTOS) {
             if (githubDetailedPullRequests.stream()
-                    .anyMatch(githubPullRequestDTO -> githubPullRequestDTO.getId()
+                    .noneMatch(githubPullRequestDTO -> githubPullRequestDTO.getId()
                             .equals(alreadyCollectedGithubPullRequestDTO.getId()))) {
                 githubDetailedPullRequests.add(alreadyCollectedGithubPullRequestDTO);
             }

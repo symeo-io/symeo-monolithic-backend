@@ -66,7 +66,7 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
     protected WebTestClient client;
 
     @Autowired
-    protected WireMockServer wireMockServer;
+    protected WireMockServer symeoClientAdapterWireMockServer;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -99,6 +99,7 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
                 .build()
                 .toUri();
     }
+
     protected URI getApiURI(final String path, final Map<String, String> params) {
         final UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance()
                 .scheme("http")
@@ -112,8 +113,12 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
     }
 
     protected static final String GITHUB_WEBHOOK_API = "/github-app/webhook";
-    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ORGANIZATION = "/job/v1/data-processing/organization";
-    protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM = "/job/v1/data-processing/team";
+    protected static final String DATA_PROCESSING_JOB_REST_API_POST_START_JOB_ORGANIZATION = "/job/v1/data-processing" +
+            "/organization/vcs_organization";
+    protected static final String DATA_PROCESSING_JOB_REST_API_POST_START_JOB_TEAM = "/job/v1/data-processing" +
+            "/organization/team/repositories";
+    protected static final String DATA_PROCESSING_JOB_REST_API_POST_START_JOB_REPOSITORIES = "/job/v1/data-processing" +
+            "/organization/repositories";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL = "/job/v1/data-processing/all";
     protected static final String DATA_PROCESSING_TESTING_REST_API = "/sh/v1/testing";
 
@@ -122,23 +127,23 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
 
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            WireMockServer wireMockServer = new WireMockServer(new WireMockConfiguration().dynamicPort());
-            wireMockServer.start();
+            WireMockServer symeoClientAdapterWireMockServer = new WireMockServer(new WireMockConfiguration().dynamicPort());
+            symeoClientAdapterWireMockServer.start();
 
             configurableApplicationContext
                     .getBeanFactory()
-                    .registerSingleton("wireMockServer", wireMockServer);
+                    .registerSingleton("symeoClientAdapterWireMockServer", symeoClientAdapterWireMockServer);
 
             configurableApplicationContext.addApplicationListener(
                     applicationEvent -> {
                         if (applicationEvent instanceof ContextClosedEvent) {
-                            wireMockServer.stop();
+                            symeoClientAdapterWireMockServer.stop();
                         }
                     });
 
             TestPropertyValues.of(
-                            "infrastructure.github.app.api:http://localhost:" + wireMockServer.port() + "/",
-                            "application.job-api.url:http://localhost:" + wireMockServer.port() + "/")
+                            "infrastructure.github.app.api:http://localhost:" + symeoClientAdapterWireMockServer.port() + "/",
+                            "application.job-api.url:http://localhost:" + symeoClientAdapterWireMockServer.port() + "/")
                     .applyTo(configurableApplicationContext);
         }
 

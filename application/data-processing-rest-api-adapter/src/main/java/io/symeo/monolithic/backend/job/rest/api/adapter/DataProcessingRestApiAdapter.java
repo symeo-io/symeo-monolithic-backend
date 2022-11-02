@@ -10,6 +10,7 @@ import io.symeo.monolithic.backend.data.processing.contract.api.model.PostStartD
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.function.SymeoRunnable;
 import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
+import io.symeo.monolithic.backend.job.domain.port.in.OrganizationJobFacade;
 import io.symeo.monolithic.backend.job.rest.api.adapter.mapper.SymeoErrorContractMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.UUID;
 public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
 
     private final DataProcessingJobAdapter dataProcessingJobAdapter;
+    private final OrganizationJobFacade organizationJobFacade;
     private final String jobApiKey;
     private final String jobApiHeaderKey;
 
@@ -78,7 +80,7 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
 
     @Override
     public ResponseEntity<DataProcessingSymeoErrorsContract> startAllDataCollectionJobs(final String X_SYMEO_JOB_KEY_X) {
-        SymeoRunnable jobToStart = dataProcessingJobAdapter::startAll;
+        SymeoRunnable jobToStart = organizationJobFacade::startAll;
         final String errorMessage = "Error while starting all data collection jobs";
         return runJobAndReturnResponseEntity(X_SYMEO_JOB_KEY_X, jobToStart, errorMessage);
     }

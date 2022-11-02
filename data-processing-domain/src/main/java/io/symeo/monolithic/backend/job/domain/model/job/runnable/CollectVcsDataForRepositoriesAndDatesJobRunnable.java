@@ -10,6 +10,7 @@ import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -25,8 +26,11 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.getDateRanges
 public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTasksRunnable<RepositoryDateRangeTask> implements JobRunnable {
 
     public static final String JOB_CODE = "COLLECT_VCS_DATA_FOR_REPOSITORY_IDS_AND_DATE_RANGES_JOB";
+    @NonNull
     private final List<Repository> repositories;
+    @NonNull
     private final VcsDataProcessingService vcsDataProcessingService;
+    @NonNull
     private final DataProcessingJobStorage dataProcessingJobStorage;
 
     @Override

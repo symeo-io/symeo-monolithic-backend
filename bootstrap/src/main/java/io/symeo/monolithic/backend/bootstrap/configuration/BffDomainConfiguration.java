@@ -1,7 +1,5 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
-import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
-import io.symeo.monolithic.backend.domain.bff.model.job.JobView;
 import io.symeo.monolithic.backend.domain.bff.model.metric.AverageCycleTimeFactory;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeFactory;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePieceFactory;
@@ -11,6 +9,7 @@ import io.symeo.monolithic.backend.domain.bff.query.CurveQuery;
 import io.symeo.monolithic.backend.domain.bff.query.HistogramQuery;
 import io.symeo.monolithic.backend.domain.bff.service.insights.*;
 import io.symeo.monolithic.backend.domain.bff.service.organization.*;
+import io.symeo.monolithic.backend.domain.bff.service.service.JobService;
 import io.symeo.monolithic.backend.domain.bff.service.vcs.PullRequestService;
 import io.symeo.monolithic.backend.domain.bff.service.vcs.RepositoryService;
 import io.symeo.monolithic.backend.domain.bff.storage.TeamStandardInMemoryStorage;
@@ -19,8 +18,6 @@ import io.symeo.monolithic.backend.job.domain.port.out.CommitTestingDataStorage;
 import io.symeo.monolithic.backend.job.domain.service.CommitTestingDataService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 @Configuration
 public class BffDomainConfiguration {
@@ -47,15 +44,15 @@ public class BffDomainConfiguration {
     @Bean
     public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter,
                                                                final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter,
-                                                               final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter) {
+                                                               final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter) {
         return new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter,
-                symeoDataProcessingJobApiAdapter);
+                bffSymeoDataProcessingJobApiAdapter);
     }
 
     @Bean
     public TeamFacadeAdapter teamFacadeAdapter(final TeamStorage teamStorage,
-                                               final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter) {
-        return new TeamService(teamStorage, symeoDataProcessingJobApiAdapter);
+                                               final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter) {
+        return new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter);
     }
 
     @Bean
@@ -152,14 +149,8 @@ public class BffDomainConfiguration {
     }
 
     @Bean
-    public JobFacadeAdapter jobFacadeAdapter() {
-        return new JobFacadeAdapter() {
-            @Override
-            public List<JobView> findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(String jobCode,
-                                                                                       Organization organization) {
-                return null;
-            }
-        };
+    public JobFacadeAdapter jobFacadeAdapter(final BffJobStorage jobStorage) {
+        return new JobService(jobStorage);
     }
 
 

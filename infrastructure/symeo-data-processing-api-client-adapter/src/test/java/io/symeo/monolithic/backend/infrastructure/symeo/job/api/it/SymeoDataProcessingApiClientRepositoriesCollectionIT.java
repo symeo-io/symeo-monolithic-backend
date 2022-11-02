@@ -30,7 +30,7 @@ public class SymeoDataProcessingApiClientRepositoriesCollectionIT extends Abstra
 
     @AfterEach
     void tearDown() {
-        wireMockServer.resetAll();
+        dataProcessingWireMockServer.resetAll();
     }
 
     @Test
@@ -48,8 +48,9 @@ public class SymeoDataProcessingApiClientRepositoriesCollectionIT extends Abstra
         );
 
         // Then
-        wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl("/api/v1/data-processing/organization/vcs_organization")
+        dataProcessingWireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl("/job/v1/data-processing/organization" +
+                                "/vcs_organization")
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(binaryEqualTo(objectMapper.writeValueAsBytes(dto))));
@@ -66,13 +67,13 @@ public class SymeoDataProcessingApiClientRepositoriesCollectionIT extends Abstra
 
 
         // When
-        symeoDataProcessingJobApiClientAdapter.startDataProcessingJobForOrganizationIdAndRepositoryIds(
+        symeoDataProcessingJobApiClientAdapter.autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(
                 dto.getOrganizationId(), dto.getRepositoryIds()
         );
 
         // Then
-        wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl("/api/v1/data-processing/organization/repositories")
+        dataProcessingWireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl("/job/v1/data-processing/organization/repositories")
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(binaryEqualTo(objectMapper.writeValueAsBytes(dto))));
@@ -95,8 +96,9 @@ public class SymeoDataProcessingApiClientRepositoriesCollectionIT extends Abstra
         );
 
         // Then
-        wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl("/api/v1/data-processing/organization/team/repositories")
+        dataProcessingWireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl("/job/v1/data-processing/organization/team" +
+                                "/repositories")
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(binaryEqualTo(objectMapper.writeValueAsBytes(dto))));

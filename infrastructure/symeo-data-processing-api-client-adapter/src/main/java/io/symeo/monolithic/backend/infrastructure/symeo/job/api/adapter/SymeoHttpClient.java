@@ -23,15 +23,19 @@ public class SymeoHttpClient {
     private final HttpClient httpClient;
     private final SymeoDataProcessingJobApiProperties symeoDataProcessingJobApiProperties;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String APPLICATION_JSON = "application/json";
 
     public void startDataProcessingJobForOrganizationIdAndRepositoryIds(final PostStartDataProcessingJobForRepositoriesDTO postStartDataProcessingJobForRepositoriesDTO) throws SymeoException {
         try {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(
-                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "api/v1/data-processing/organization" +
+                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "job/v1/data-processing" +
+                                    "/organization" +
                                     "/repositories"
                             ))
                     .POST(HttpRequest.BodyPublishers.ofByteArray(dtoToBytes(postStartDataProcessingJobForRepositoriesDTO)))
-                    .headers(symeoDataProcessingJobApiProperties.getHeaderKey(), symeoDataProcessingJobApiProperties.getApiKey());
+                    .headers(symeoDataProcessingJobApiProperties.getHeaderKey(),
+                            symeoDataProcessingJobApiProperties.getApiKey(), CONTENT_TYPE, APPLICATION_JSON);
             final HttpResponse<byte[]> httpResponse;
             httpResponse = this.httpClient.send(requestBuilder.build(),
                     HttpResponse.BodyHandlers.ofByteArray());
@@ -53,11 +57,13 @@ public class SymeoHttpClient {
     public void startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(final PostStartDataProcessingJobForTeamDTO postStartDataProcessingJobForTeamDTO) throws SymeoException {
         try {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(
-                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "api/v1/data-processing/organization" +
+                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "job/v1/data-processing" +
+                                    "/organization" +
                                     "/team/repositories"
                             ))
                     .POST(HttpRequest.BodyPublishers.ofByteArray(dtoToBytes(postStartDataProcessingJobForTeamDTO)))
-                    .headers(symeoDataProcessingJobApiProperties.getHeaderKey(), symeoDataProcessingJobApiProperties.getApiKey());
+                    .headers(symeoDataProcessingJobApiProperties.getHeaderKey(),
+                            symeoDataProcessingJobApiProperties.getApiKey(), CONTENT_TYPE, APPLICATION_JSON);
             final HttpResponse<byte[]> httpResponse;
             httpResponse = this.httpClient.send(requestBuilder.build(),
                     HttpResponse.BodyHandlers.ofByteArray());
@@ -79,11 +85,16 @@ public class SymeoHttpClient {
     public void startDataProcessingJobForOrganizationIdAndVcsOrganizationId(final PostStartDataProcessingJobForOrganizationDTO postStartDataProcessingJobForOrganizationDTO) throws SymeoException {
         try {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(
-                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "api/v1/data-processing/organization" +
+                            URI.create(symeoDataProcessingJobApiProperties.getUrl() + "job/v1/data-processing" +
+                                    "/organization" +
                                     "/vcs_organization"
                             ))
                     .POST(HttpRequest.BodyPublishers.ofByteArray(dtoToBytes(postStartDataProcessingJobForOrganizationDTO)))
-                    .headers(symeoDataProcessingJobApiProperties.getHeaderKey(), symeoDataProcessingJobApiProperties.getApiKey());
+                    .headers(
+                            symeoDataProcessingJobApiProperties.getHeaderKey(),
+                            symeoDataProcessingJobApiProperties.getApiKey(),
+                            CONTENT_TYPE, APPLICATION_JSON
+                    );
             final HttpResponse<byte[]> httpResponse;
             httpResponse = this.httpClient.send(requestBuilder.build(),
                     HttpResponse.BodyHandlers.ofByteArray());

@@ -13,6 +13,4 @@ public interface DataProcessingJobAdapter {
 
     void startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(UUID organizationId, UUID teamId,
                                                                          List<String> repositoryIds) throws SymeoException;
-
-    void startAll() throws SymeoException;
 }

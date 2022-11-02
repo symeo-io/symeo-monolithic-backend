@@ -3,8 +3,11 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.Team;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.domain.bff.port.out.TeamStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.TeamMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
@@ -84,9 +87,24 @@ public class PostgresTeamAdapter implements TeamStorage {
     }
 
     @Override
-    public void update(Team team) throws SymeoException {
+    public Team update(Team team) throws SymeoException {
         try {
-            teamRepository.save(TeamMapper.domainToEntity(team));
+            final TeamEntity teamEntity =
+                    teamRepository.findById(team.getId())
+                            .orElseThrow(
+                                    () -> {
+                                        final String message = String.format("Failed to update team %s not found",
+                                                team);
+                                        LOGGER.error(message);
+                                        return SymeoException.builder()
+                                                .code(SymeoExceptionCode.TEAM_NOT_FOUND)
+                                                .message(message)
+                                                .build();
+                                    }
+                            );
+            teamEntity.setName(team.getName());
+            teamEntity.setRepositoryIds(team.getRepositories().stream().map(RepositoryView::getId).toList());
+            return TeamMapper.entityToDomain(teamRepository.save(teamEntity));
         } catch (Exception e) {
             final String message = String.format("Failed to update team %s", team);
             LOGGER.error(message, e);

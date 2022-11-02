@@ -9,6 +9,7 @@ import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectVcsDataF
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
+import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     private final DataProcessingJobStorage dataProcessingJobStorage;
     private final VcsDataProcessingService vcsDataProcessingService;
     private final JobManager jobManager;
+    private final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter;
 
     @Override
     public void startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(UUID organizationId,
@@ -91,11 +93,6 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         }
     }
 
-    @Override
-    public void startAll() throws SymeoException {
-
-    }
-
     private Job buildCollectVcsDataJob(UUID organizationId, List<Repository> allRepositoriesByIds) {
         return Job.builder()
                 .organizationId(organizationId)
@@ -133,6 +130,8 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .dataProcessingJobStorage(dataProcessingJobStorage)
                                 .vcsOrganization(vcsOrganization)
                                 .vcsDataProcessingService(vcsDataProcessingService)
+                                .dataProcessingExpositionStorageAdapter(dataProcessingExpositionStorageAdapter)
+                                .autoSymeoDataProcessingJobApiAdapter(autoSymeoDataProcessingJobApiAdapter)
                                 .build()
                 )
                 .build();

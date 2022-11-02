@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.Team;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
-import io.symeo.monolithic.backend.domain.bff.port.out.SymeoDataProcessingJobApiAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.TeamStorage;
 import io.symeo.monolithic.backend.domain.bff.service.organization.TeamService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
@@ -27,9 +27,9 @@ public class TeamServiceTest {
     void should_create_and_start_vcs_data_collection_then_return_teams() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter =
-                mock(SymeoDataProcessingJobApiAdapter.class);
-        final TeamService teamService = new TeamService(teamStorage, symeoDataProcessingJobApiAdapter);
+        final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter =
+                mock(BffSymeoDataProcessingJobApiAdapter.class);
+        final TeamService teamService = new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter);
         final Organization organization =
                 Organization.builder().id(UUID.randomUUID()).vcsOrganization(Organization.VcsOrganization.builder().build()).build();
         final String teamName1 = faker.name().firstName();
@@ -73,10 +73,10 @@ public class TeamServiceTest {
         // Then
         assertThat(userArgumentCaptor.getValue().getOnboarding().getHasConfiguredTeam()).isTrue();
         assertThat(teamsArgumentCaptor.getValue()).hasSize(2);
-        verify(symeoDataProcessingJobApiAdapter, times(2)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(any(), any(), any());
-        verify(symeoDataProcessingJobApiAdapter, times(1)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(organization.getId(),
+        verify(bffSymeoDataProcessingJobApiAdapter, times(2)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(any(), any(), any());
+        verify(bffSymeoDataProcessingJobApiAdapter, times(1)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(organization.getId(),
                 expectedTeam1.getId(), expectedTeam1.getRepositories().stream().map(RepositoryView::getId).toList());
-        verify(symeoDataProcessingJobApiAdapter, times(1)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(organization.getId(),
+        verify(bffSymeoDataProcessingJobApiAdapter, times(1)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(organization.getId(),
                 expectedTeam2.getId(), expectedTeam2.getRepositories().stream().map(RepositoryView::getId).toList());
     }
 
@@ -84,7 +84,7 @@ public class TeamServiceTest {
     void should_return_teams_for_organization() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final TeamService teamService = new TeamService(teamStorage, mock(SymeoDataProcessingJobApiAdapter.class));
+        final TeamService teamService = new TeamService(teamStorage, mock(BffSymeoDataProcessingJobApiAdapter.class));
         final Organization organization =
                 Organization.builder().id(UUID.randomUUID()).vcsOrganization(Organization.VcsOrganization.builder().build()).build();
 
@@ -101,7 +101,7 @@ public class TeamServiceTest {
     void should_delete_team_given_a_team_id() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final TeamService teamService = new TeamService(teamStorage, mock(SymeoDataProcessingJobApiAdapter.class));
+        final TeamService teamService = new TeamService(teamStorage, mock(BffSymeoDataProcessingJobApiAdapter.class));
         final UUID teamId = UUID.randomUUID();
 
         // When
@@ -112,39 +112,26 @@ public class TeamServiceTest {
     }
 
     @Test
-    void should_update_team_given_a_team() throws SymeoException {
-        // Given
-        final TeamStorage teamStorage = mock(TeamStorage.class);
-        final TeamService teamService = new TeamService(teamStorage, mock(SymeoDataProcessingJobApiAdapter.class));
-        final Team team = Team.builder().id(UUID.randomUUID()).repositories(List.of()).build();
-
-        // When
-        teamService.update(team);
-
-        // Then
-        verify(teamStorage, times(1)).update(team);
-    }
-
-    @Test
     void should_update_team_and_start_vcs_data_collection_for_a_team_given_a_team() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter =
-                mock(SymeoDataProcessingJobApiAdapter.class);
-        final TeamService teamService = new TeamService(teamStorage, symeoDataProcessingJobApiAdapter);
-        final Team team = Team.builder()
-                .id(UUID.randomUUID())
-                .organizationId(UUID.randomUUID())
-                .repositories(List.of(RepositoryView.builder().id(faker.name().firstName()).build()))
-                .build();
+        final BffSymeoDataProcessingJobApiAdapter apiAdapter = mock(BffSymeoDataProcessingJobApiAdapter.class);
+        final TeamService teamService = new TeamService(teamStorage, apiAdapter);
+        final Team team = Team.builder().id(UUID.randomUUID()).repositories(List.of()).build();
+        final Team updatedTeam = team.toBuilder().organizationId(UUID.randomUUID()).build();
 
         // When
+        when(teamStorage.update(team))
+                .thenReturn(updatedTeam);
         teamService.update(team);
 
         // Then
-        verify(teamStorage, times(1)).update(team);
-        verify(symeoDataProcessingJobApiAdapter, times(1)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
-                team.getOrganizationId(), team.getId(),
-                team.getRepositories().stream().map(RepositoryView::getId).toList());
+        verify(apiAdapter,times(1))
+                .startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
+                        updatedTeam.getOrganizationId(),
+                        updatedTeam.getId(),
+                        updatedTeam.getRepositories().stream().map(RepositoryView::getId).toList()
+                );
     }
+
 }

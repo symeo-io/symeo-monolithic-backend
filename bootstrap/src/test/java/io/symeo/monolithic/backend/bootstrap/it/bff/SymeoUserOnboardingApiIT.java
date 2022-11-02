@@ -2,13 +2,13 @@ package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
-import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
-import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationService;
-import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.bff.contract.api.model.CreateTeamRequestContract;
 import io.symeo.monolithic.backend.bff.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
 import io.symeo.monolithic.backend.bff.contract.api.model.UpdateOnboardingRequestContract;
 import io.symeo.monolithic.backend.bff.contract.api.model.UpdateTeamRequestContract;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationService;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
@@ -17,6 +17,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.ORGANISATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,6 +51,11 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
     private static final UUID organizationId = UUID.randomUUID();
 
     private static final String mail = faker.name().firstName() + "@" + faker.name().firstName() + ".fr";
+
+    @AfterEach
+    public void tearDown() {
+        this.bffWireMockServer.resetAll();
+    }
 
     @Order(1)
     @Test
@@ -207,14 +214,22 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.teams[1].name").isNotEmpty();
         Thread.sleep(2000);
 
-        wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
-                                "?organization_id=%s&team_id=%s", organizationId, teams.get(0).getId()))
-                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(), equalTo(symeoDataProcessingJobApiProperties.getApiKey())));
-        wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
-                                "?organization_id=%s&team_id=%s", organizationId, teams.get(1).getId()))
-                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(), equalTo(symeoDataProcessingJobApiProperties.getApiKey())));
+        bffWireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
+                                equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
+                        .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
+                                "\"team_id\":\"" + teams.get(0).getId() + "\",\"repository_ids\":[\"" + teams.get(0).getRepositoryIds().get(0) + "\"," +
+                                "\"" + teams.get(0).getRepositoryIds().get(1) + "\"]}"))
+        );
+        bffWireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
+                                equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
+                        .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
+                                "\"team_id\":\"" + teams.get(1).getId() + "\",\"repository_ids\":[\"" + teams.get(1).getRepositoryIds().get(0) + "\"," +
+                                "\"" + teams.get(1).getRepositoryIds().get(1) + "\"]}"))
+        );
     }
 
     @Order(8)
@@ -346,10 +361,13 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
         assertThat(teamsAfterUpdate.get(0).getRepositoryIds()).hasSize(newRepositoryIds.size());
         teamsAfterUpdate.get(0).getRepositoryIds().forEach(repositoryId -> assertThat(newRepositoryIds.contains(repositoryId)).isTrue());
 
-        wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
-                                "?organization_id=%s&team_id=%s", teamEntity.getOrganizationId(), teamEntity.getId()))
-                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(), equalTo(symeoDataProcessingJobApiProperties.getApiKey())));
+        bffWireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
+                                equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
+                        .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
+                                "\"team_id\":\"" + teamsAfterUpdate.get(0).getId() + "\",\"repository_ids\":[\"" + teamsAfterUpdate.get(0).getRepositoryIds().get(0) + "\"]}"))
+        );
     }
 
     @Order(13)

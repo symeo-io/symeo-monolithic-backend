@@ -9,6 +9,7 @@ import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectReposito
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectVcsDataForRepositoriesAndDatesJobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import org.junit.jupiter.api.Test;
@@ -34,11 +35,14 @@ public class DataProcessingJobServiceTest {
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
-        final DataProcessingJobService jobService = new DataProcessingJobService(
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final DataProcessingJobService dataProcessingJobService = new DataProcessingJobService(
                 dataProcessingExpositionStorageAdapter,
                 dataProcessingJobStorage,
                 vcsDataProcessingService,
-                jobManager
+                jobManager,
+                autoSymeoDataProcessingJobApiAdapter
         );
         final UUID organizationId = randomUUID();
         final Long vcsOrganizationId = faker.number().randomNumber();
@@ -56,7 +60,7 @@ public class DataProcessingJobServiceTest {
                 .thenReturn(
                         Optional.of(vcsOrganization)
                 );
-        jobService.startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(
+        dataProcessingJobService.startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(
                 organizationId, vcsOrganizationId
         );
 
@@ -79,11 +83,14 @@ public class DataProcessingJobServiceTest {
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
-        final DataProcessingJobService jobService = new DataProcessingJobService(
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final DataProcessingJobService dataProcessingJobService = new DataProcessingJobService(
                 dataProcessingExpositionStorageAdapter,
                 dataProcessingJobStorage,
                 vcsDataProcessingService,
-                jobManager
+                jobManager,
+                autoSymeoDataProcessingJobApiAdapter
         );
         final UUID organizationId = randomUUID();
         final Long vcsOrganizationId = faker.number().randomNumber();
@@ -94,7 +101,7 @@ public class DataProcessingJobServiceTest {
                 .thenReturn(Optional.empty());
         SymeoException symeoException = null;
         try {
-            jobService.startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(organizationId,
+            dataProcessingJobService.startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(organizationId,
                     vcsOrganizationId);
         } catch (SymeoException e) {
             symeoException = e;
@@ -116,11 +123,14 @@ public class DataProcessingJobServiceTest {
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
-        final DataProcessingJobService jobService = new DataProcessingJobService(
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final DataProcessingJobService dataProcessingJobService = new DataProcessingJobService(
                 dataProcessingExpositionStorageAdapter,
                 dataProcessingJobStorage,
                 vcsDataProcessingService,
-                jobManager
+                jobManager,
+                autoSymeoDataProcessingJobApiAdapter
         );
         final UUID organizationId = randomUUID();
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
@@ -144,7 +154,7 @@ public class DataProcessingJobServiceTest {
         // When
         when(dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
                 .thenReturn(repositories);
-        jobService.startToCollectVcsDataForOrganizationIdAndRepositoryIds(organizationId, repositoryIds);
+        dataProcessingJobService.startToCollectVcsDataForOrganizationIdAndRepositoryIds(organizationId, repositoryIds);
 
         // Then
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
@@ -165,11 +175,14 @@ public class DataProcessingJobServiceTest {
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
-        final DataProcessingJobService jobService = new DataProcessingJobService(
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final DataProcessingJobService dataProcessingJobService = new DataProcessingJobService(
                 dataProcessingExpositionStorageAdapter,
                 dataProcessingJobStorage,
                 vcsDataProcessingService,
-                jobManager
+                jobManager,
+                autoSymeoDataProcessingJobApiAdapter
         );
         final UUID organizationId = randomUUID();
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
@@ -185,7 +198,8 @@ public class DataProcessingJobServiceTest {
                         .build()));
         SymeoException symeoException = null;
         try {
-            jobService.startToCollectVcsDataForOrganizationIdAndRepositoryIds(organizationId, repositoryIds);
+            dataProcessingJobService.startToCollectVcsDataForOrganizationIdAndRepositoryIds(organizationId,
+                    repositoryIds);
         } catch (SymeoException e) {
             symeoException = e;
         }
@@ -205,11 +219,14 @@ public class DataProcessingJobServiceTest {
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
-        final DataProcessingJobService jobService = new DataProcessingJobService(
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final DataProcessingJobService dataProcessingJobService = new DataProcessingJobService(
                 dataProcessingExpositionStorageAdapter,
                 dataProcessingJobStorage,
                 vcsDataProcessingService,
-                jobManager
+                jobManager,
+                autoSymeoDataProcessingJobApiAdapter
         );
         final UUID organizationId = randomUUID();
         final UUID teamId = randomUUID();
@@ -234,7 +251,7 @@ public class DataProcessingJobServiceTest {
         // When
         when(dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
                 .thenReturn(repositories);
-        jobService.startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(organizationId, teamId,
+        dataProcessingJobService.startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(organizationId, teamId,
                 repositoryIds);
 
         // Then
@@ -257,11 +274,14 @@ public class DataProcessingJobServiceTest {
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final JobManager jobManager = mock(JobManager.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
-        final DataProcessingJobService jobService = new DataProcessingJobService(
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final DataProcessingJobService dataProcessingJobService = new DataProcessingJobService(
                 dataProcessingExpositionStorageAdapter,
                 dataProcessingJobStorage,
                 vcsDataProcessingService,
-                jobManager
+                jobManager,
+                autoSymeoDataProcessingJobApiAdapter
         );
         final UUID organizationId = randomUUID();
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
@@ -277,7 +297,7 @@ public class DataProcessingJobServiceTest {
                         .build()));
         SymeoException symeoException = null;
         try {
-            jobService.startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(organizationId,
+            dataProcessingJobService.startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(organizationId,
                     randomUUID(), repositoryIds);
         } catch (SymeoException e) {
             symeoException = e;

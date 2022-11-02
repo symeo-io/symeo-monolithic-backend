@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationApiKeyStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
-import io.symeo.monolithic.backend.domain.bff.port.out.SymeoDataProcessingJobApiAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import org.junit.jupiter.api.Test;
@@ -22,8 +22,8 @@ public class OrganizationServiceTest {
     @Test
     void should_create_organization_given_a_vcs_organization_name_and_external_id() throws SymeoException {
         // Given
-        final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter =
-                mock(SymeoDataProcessingJobApiAdapter.class);
+        final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter =
+                mock(BffSymeoDataProcessingJobApiAdapter.class);
 
         final OrganizationStorageAdapter organizationStorageAdapter =
                 mock(OrganizationStorageAdapter.class);
@@ -31,7 +31,7 @@ public class OrganizationServiceTest {
                 mock(OrganizationApiKeyStorageAdapter.class);
         final OrganizationService organizationService =
                 new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter,
-                        symeoDataProcessingJobApiAdapter);
+                        bffSymeoDataProcessingJobApiAdapter);
         final String externalId = faker.name().name();
         final String vcsOrganizationName = faker.gameOfThrones().character();
         final UUID organizationId = UUID.randomUUID();
@@ -66,7 +66,7 @@ public class OrganizationServiceTest {
         ArgumentCaptor<UUID> uuiDArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
         ArgumentCaptor<Long> longDArgumentCaptor = ArgumentCaptor.forClass(Long.class);
         assertThat(result).isEqualTo(expectedOrganization);
-        verify(symeoDataProcessingJobApiAdapter, times(1))
+        verify(bffSymeoDataProcessingJobApiAdapter, times(1))
                 .startDataProcessingJobForOrganizationIdAndVcsOrganizationId(uuiDArgumentCaptor.capture(),
                         longDArgumentCaptor.capture());
         assertThat(uuiDArgumentCaptor.getValue()).isEqualTo(organization.getId());

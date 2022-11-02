@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @ActiveProfiles({"it"})
 @AutoConfigureWebTestClient(timeout = "36000")
-@SpringBootTest(webEnvironment = DEFINED_PORT, classes = GithubAdapterITApplication.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = GithubAdapterITApplication.class)
 @ContextConfiguration(initializers = AbstractGithubAdapterIT.WireMockInitializer.class)
 @EnableConfigurationProperties
 public class AbstractGithubAdapterIT {
@@ -33,7 +33,7 @@ public class AbstractGithubAdapterIT {
     protected WebTestClient client;
 
     @Autowired
-    protected WireMockServer wireMockServer;
+    protected WireMockServer githubAdapterWireMockServer;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -45,22 +45,22 @@ public class AbstractGithubAdapterIT {
 
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            WireMockServer wireMockServer = new WireMockServer(new WireMockConfiguration().dynamicPort());
-            wireMockServer.start();
+            WireMockServer githubAdapterWireMockServer = new WireMockServer(new WireMockConfiguration().dynamicPort());
+            githubAdapterWireMockServer.start();
 
             configurableApplicationContext
                     .getBeanFactory()
-                    .registerSingleton("wireMockServer", wireMockServer);
+                    .registerSingleton("githubAdapterWireMockServer", githubAdapterWireMockServer);
 
             configurableApplicationContext.addApplicationListener(
                     applicationEvent -> {
                         if (applicationEvent instanceof ContextClosedEvent) {
-                            wireMockServer.stop();
+                            githubAdapterWireMockServer.stop();
                         }
                     });
 
             TestPropertyValues.of(
-                            "github.app.api:http://localhost:" + wireMockServer.port() + "/")
+                            "github.app.api:http://localhost:" + githubAdapterWireMockServer.port() + "/")
                     .applyTo(configurableApplicationContext);
         }
     }

@@ -5,7 +5,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.OrganizationApiKey;
 import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationFacadeAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationApiKeyStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
-import io.symeo.monolithic.backend.domain.bff.port.out.SymeoDataProcessingJobApiAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import lombok.AllArgsConstructor;
 
@@ -15,12 +15,12 @@ import java.util.Optional;
 public class OrganizationService implements OrganizationFacadeAdapter {
     private final OrganizationStorageAdapter organizationStorageAdapter;
     private final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter;
-    private final SymeoDataProcessingJobApiAdapter symeoDataProcessingJobApiAdapter;
+    private final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter;
 
     @Override
     public Organization createOrganization(Organization organization) throws SymeoException {
         final Organization createdOrganization = organizationStorageAdapter.createOrganization(organization);
-        symeoDataProcessingJobApiAdapter.startDataProcessingJobForOrganizationIdAndVcsOrganizationId(
+        bffSymeoDataProcessingJobApiAdapter.startDataProcessingJobForOrganizationIdAndVcsOrganizationId(
                 createdOrganization.getId(), createdOrganization.getVcsOrganization().getId()
         );
         return createdOrganization;

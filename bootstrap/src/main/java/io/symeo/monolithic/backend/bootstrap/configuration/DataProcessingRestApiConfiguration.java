@@ -5,13 +5,9 @@ import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationFacadeAdapter;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
-import io.symeo.monolithic.backend.job.domain.model.job.JobManager;
 import io.symeo.monolithic.backend.job.domain.port.in.CommitTestingDataFacadeAdapter;
 import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
-import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
-import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
-import io.symeo.monolithic.backend.job.domain.service.DataProcessingJobService;
-import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
+import io.symeo.monolithic.backend.job.domain.port.in.OrganizationJobFacade;
 import io.symeo.monolithic.backend.job.rest.api.adapter.DataProcessingRestApiAdapter;
 import io.symeo.monolithic.backend.job.rest.api.adapter.TestingRestApiAdapter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,8 +20,10 @@ public class DataProcessingRestApiConfiguration {
 
     @Bean
     public DataProcessingRestApiAdapter dataProcessingJobApi(final DataProcessingJobAdapter dataProcessingJobAdapter,
+                                                             final OrganizationJobFacade organizationJobFacade,
                                                              final SymeoDataProcessingJobApiProperties symeoDataProcessingJobApiProperties) {
-        return new DataProcessingRestApiAdapter(dataProcessingJobAdapter, symeoDataProcessingJobApiProperties.getApiKey(),
+        return new DataProcessingRestApiAdapter(dataProcessingJobAdapter, organizationJobFacade,
+                symeoDataProcessingJobApiProperties.getApiKey(),
                 symeoDataProcessingJobApiProperties.getHeaderKey());
     }
 
@@ -46,15 +44,5 @@ public class DataProcessingRestApiConfiguration {
     public TestingRestApiAdapter testingRestApiAdapter(final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter,
                                                        final OrganizationFacadeAdapter organizationFacadeAdapter) {
         return new TestingRestApiAdapter(commitTestingDataFacadeAdapter, organizationFacadeAdapter);
-    }
-
-    @Bean
-    public DataProcessingJobAdapter dataProcessingJobAdapter(final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter,
-                                                             final DataProcessingJobStorage dataProcessingJobStorage,
-                                                             final VcsDataProcessingService vcsDataProcessingService,
-                                                             final JobManager jobManager) {
-        return new DataProcessingJobService(dataProcessingExpositionStorageAdapter, dataProcessingJobStorage,
-                vcsDataProcessingService,
-                jobManager);
     }
 }

@@ -29,7 +29,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
 
     @AfterEach
     void tearDown() {
-        wireMockServer.resetAll();
+        githubAdapterWireMockServer.resetAll();
         githubJwtTokenProvider.setCount(0);
     }
 
@@ -42,7 +42,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
         final String vcsOrganizationName = githubInstallationDTO.getAccount().getLogin();
         githubJwtTokenProvider.setSignedJwtToken(FAKER.animal().name());
 
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/app/installations"))
                         .withHeader("Authorization",
@@ -55,7 +55,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                 "get_github_app_installations",
                 "post_github_app_installation_1.json",
                 GithubInstallationAccessTokenDTO.class);
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 post(
                         urlEqualTo("/app/installations/" + githubInstallationDTO.getId() + "/access_tokens"))
                         .withHeader("Authorization",
@@ -66,7 +66,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                         200)));
         final GithubRepositoryDTO[] getRepositoriesForOrgs1 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_1_size_3.json", GithubRepositoryDTO[].class);
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/orgs/" + vcsOrganizationName + "/repos?sort=name&per_page=" + githubProperties.getSize() + "&page=1"))
                         .withHeader("Authorization",
@@ -77,7 +77,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                         200)));
         final GithubRepositoryDTO[] getRepositoriesForOrgs2 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_2_size_3.json", GithubRepositoryDTO[].class);
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/orgs/" + vcsOrganizationName + "/repos?sort=name&per_page=" + githubProperties.getSize() + "&page=2"))
                         .withHeader("Authorization",
@@ -88,7 +88,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                         200)));
         final GithubRepositoryDTO[] getRepositoriesForOrgs3 = getStubsFromClassT("get_repositories_for_org",
                 "get_repo_for_org_page_3_size_3.json", GithubRepositoryDTO[].class);
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/orgs/" + vcsOrganizationName + "/repos?sort=name&per_page=" + githubProperties.getSize() + "&page=3"))
                         .withHeader("Authorization",
@@ -143,7 +143,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
         final String signedJwtToken1 = FAKER.gameOfThrones().character();
         final String signedJwtToken2 = FAKER.dragonBall().character();
         githubJwtTokenProvider.setSignedJwtToken(signedJwtToken1);
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/app/installations"))
                         .withHeader("Authorization",
@@ -152,7 +152,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                 jsonResponse(
                                         githubInstallationDTOS,
                                         200)));
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/app/installations"))
                         .withHeader("Authorization",
@@ -176,7 +176,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                 "post_github_app_installation_3.json",
                 GithubInstallationAccessTokenDTO.class);
 
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 post(
                         urlEqualTo("/app/installations/" + githubInstallationDTO1.getId() + "/access_tokens"))
                         .withHeader("Authorization",
@@ -185,7 +185,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                 jsonResponse(
                                         githubInstallationAccessTokenDTO1,
                                         200)));
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 post(
                         urlEqualTo("/app/installations/" + githubInstallationDTO2.getId() + "/access_tokens"))
                         .withHeader("Authorization",
@@ -194,7 +194,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                 jsonResponse(
                                         githubInstallationAccessTokenDTO2,
                                         200)));
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 post(
                         urlEqualTo("/app/installations/" + githubInstallationDTO3.getId() + "/access_tokens"))
                         .withHeader("Authorization",
@@ -203,7 +203,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                 jsonResponse(
                                         githubInstallationAccessTokenDTO2,
                                         200)));
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 post(
                         urlEqualTo("/app/installations/" + githubInstallationDTO3.getId() + "/access_tokens"))
                         .withHeader("Authorization",
@@ -222,7 +222,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                 "get_repo_for_org_page_1_size_2_org_3.json", GithubRepositoryDTO[].class);
 
 
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/orgs/" + vcsOrganizationName1 + "/repos?sort=name&per_page=" + githubProperties.getSize() + "&page=1"))
                         .withHeader("Authorization",
@@ -231,7 +231,7 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                 jsonResponse(
                                         getRepositoriesForOrg1,
                                         200)));
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/orgs/" + vcsOrganizationName2 + "/repos?sort=name&per_page=" + githubProperties.getSize() + "&page=1"))
                         .withHeader("Authorization",
@@ -240,14 +240,14 @@ public class GithubRepositoriesCollectionIT extends AbstractGithubAdapterIT {
                                 jsonResponse(
                                         getRepositoriesForOrg2,
                                         200)));
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/orgs/" + vcsOrganizationName3 + "/repos?sort=name&per_page=" + githubProperties.getSize() + "&page=1"))
                         .withHeader("Authorization",
                                 equalTo("Bearer " + githubInstallationAccessTokenDTO2.getToken()))
                         .willReturn(
                                 unauthorized()));
-        wireMockServer.stubFor(
+        githubAdapterWireMockServer.stubFor(
                 get(
                         urlEqualTo("/orgs/" + vcsOrganizationName3 + "/repos?sort=name&per_page=" + githubProperties.getSize() + "&page=1"))
                         .withHeader("Authorization",

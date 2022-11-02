@@ -1,6 +1,5 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
-import io.symeo.monolithic.backend.domain.bff.port.out.SymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiClientAdapter;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoHttpClient;
@@ -9,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.net.http.HttpClient;
 
-public class SymeoJobApiConfiguration {
+public class SymeoDataProcessingJobApiClientConfiguration {
 
     @Bean
     @ConfigurationProperties(prefix = "application.job-api")
@@ -24,7 +23,7 @@ public class SymeoJobApiConfiguration {
     }
 
     @Bean
-    public SymeoDataProcessingJobApiAdapter symeoJobApiAdapter(final SymeoHttpClient symeoHttpClient) {
+    public SymeoDataProcessingJobApiClientAdapter symeoDataProcessingJobApiAdapter(final SymeoHttpClient symeoHttpClient) {
         return new SymeoDataProcessingJobApiClientAdapter(symeoHttpClient);
     }
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder(toBuilder = true)
 public class Tag {
-    private static final String ALL = "commits";
+    private static final String ALL = "tags";
     String name;
     String commitSha;
     String repositoryId;
