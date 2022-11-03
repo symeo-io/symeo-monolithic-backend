@@ -217,7 +217,7 @@ public class TestingMetricsServiceTest {
         assertThat(optionalTestingMetrics.getCodeLineCount()).isEqualTo(900);
         assertThat(optionalTestingMetrics.getTestToCodeRatio()).isEqualTo(0.25f);
         assertThat(optionalTestingMetrics.getTestToCodeRatioTendencyPercentage()).isEqualTo(0f);
-        assertThat(optionalTestingMetrics.getCoverage()).isEqualTo(0.5f);
+        assertThat(optionalTestingMetrics.getCoverage()).isEqualTo(50f);
         assertThat(optionalTestingMetrics.getCoverageTendencyPercentage()).isEqualTo(100f);
     }
 }
