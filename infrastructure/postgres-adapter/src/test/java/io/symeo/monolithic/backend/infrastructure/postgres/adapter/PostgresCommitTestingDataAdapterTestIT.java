@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class PostgresCommitTestingDataAdapterTestIT extends AbstractPostgresIT {
@@ -31,6 +32,7 @@ public class PostgresCommitTestingDataAdapterTestIT extends AbstractPostgresIT {
                 .branchName(faker.ancient().primordial())
                 .commitSha(faker.ancient().titan())
                 .organizationId(UUID.randomUUID())
+                .date(new Date())
                 .build();
 
         // When
