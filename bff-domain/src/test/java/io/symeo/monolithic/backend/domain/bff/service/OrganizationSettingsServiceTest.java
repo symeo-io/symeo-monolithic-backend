@@ -194,7 +194,7 @@ public class OrganizationSettingsServiceTest {
     }
 
     @Test
-    void should_raise_organization_settings_not_found_exception() {
+    void should_raise_organization_settings_not_found_exception() throws SymeoException {
         // Given
         final OrganizationStorageAdapter organizationStorageAdapter =
                 mock(OrganizationStorageAdapter.class);

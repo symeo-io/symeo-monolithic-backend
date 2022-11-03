@@ -59,7 +59,7 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
 
     @Override
     public Optional<OrganizationSettings> getOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId,
-                                                                                        UUID organizationId) {
+                                                                                        UUID organizationId) throws SymeoException {
         return organizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettingsId,
                 organizationId);
     }

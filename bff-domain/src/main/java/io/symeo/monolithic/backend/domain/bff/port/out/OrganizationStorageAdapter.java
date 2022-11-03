@@ -17,5 +17,5 @@ public interface OrganizationStorageAdapter {
     Optional<OrganizationSettings> findOrganizationSettingsForOrganizationId(UUID organizationId) throws SymeoException;
 
     Optional<OrganizationSettings> findOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId,
-                                                                                  UUID organizationId);
+                                                                                  UUID organizationId) throws SymeoException;
 }
