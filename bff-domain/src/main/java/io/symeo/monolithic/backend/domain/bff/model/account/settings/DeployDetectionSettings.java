@@ -11,7 +11,8 @@ public class DeployDetectionSettings {
 
     String pullRequestMergedOnBranchRegex;
     String tagRegex;
-    DeployDetectionTypeDomainEnum deployDetectionType;
+    @Builder.Default
+    DeployDetectionTypeDomainEnum deployDetectionType = DeployDetectionTypeDomainEnum.PULL_REQUEST;
     @Builder.Default
     List<String> excludeBranchRegexes = List.of();
 }
