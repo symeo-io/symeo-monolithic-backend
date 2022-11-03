@@ -138,6 +138,9 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
 
 
     private boolean isDeployDateAfterStartDate(Date startDate, Date deployDate) {
+        if (isNull(deployDate)) {
+            return false;
+        }
         return MINUTES.between(startDate.toInstant(), deployDate.toInstant()) > 0;
     }
 }

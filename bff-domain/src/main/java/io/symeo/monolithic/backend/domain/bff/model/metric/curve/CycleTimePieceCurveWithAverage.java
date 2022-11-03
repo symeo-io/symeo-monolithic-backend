@@ -20,7 +20,7 @@ public class CycleTimePieceCurveWithAverage {
         this.cycleTimePieceCurve.addPoint(cycleTime.getStartDateRange(),
                 cycleTime.getValue(), cycleTime.getCodingTime(), cycleTime.getReviewTime(), cycleTime.getTimeToDeploy(),
                 cycleTime.getPullRequestView().getVcsUrl(), cycleTime.getPullRequestView().getHead());
-        this.averageCurve.addPoint(cycleTime.getPullRequestView().getStartDateRange(),
+        this.averageCurve.addPoint(cycleTime.getStartDateRange(),
                 cycleTime.getValue().floatValue());
     }
 
