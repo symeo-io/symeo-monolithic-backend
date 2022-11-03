@@ -26,7 +26,7 @@ public class CycleTime {
     PullRequestView pullRequestView;
     String startDateRange;
 
-    public CycleTime mapDeployDateToRangeDates(List<Date> rangeDates, Date deployDate) {
+    public CycleTime mapDeployDateToClosestRangeDate(List<Date> rangeDates, Date deployDate) {
         String startDateRange;
         if (ChronoUnit.MINUTES.between(deployDate.toInstant(), rangeDates.get(rangeDates.size() - 1).toInstant()) < 0) {
             startDateRange = dateToString(rangeDates.get(rangeDates.size() - 1));

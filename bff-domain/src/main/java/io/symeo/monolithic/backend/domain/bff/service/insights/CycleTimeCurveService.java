@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static java.time.temporal.ChronoUnit.*;
 
 @Slf4j
@@ -87,7 +86,7 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                         pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
                         allCommitsUntilEndDate))
                 .filter(cycleTime -> isDeployDateAfterStartDate(startDate, cycleTime.getDeployDate()))
-                .map(cycleTime -> cycleTime.mapDeployDateToRangeDates(rangeDates, cycleTime.getDeployDate()))
+                .map(cycleTime -> cycleTime.mapDeployDateToClosestRangeDate(rangeDates, cycleTime.getDeployDate()))
                 .toList();
         return CycleTimePieceCurveWithAverage.buildPullRequestCurve(cycleTimes);
     }
@@ -117,7 +116,7 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                         tagsMatchingDeployTagRegex,
                         allCommitsUntilEndDate))
                 .filter(cycleTime -> isDeployDateAfterStartDate(startDate, cycleTime.getDeployDate()))
-                .map(cycleTime -> cycleTime.mapDeployDateToRangeDates(rangeDates, cycleTime.getDeployDate()))
+                .map(cycleTime -> cycleTime.mapDeployDateToClosestRangeDate(rangeDates, cycleTime.getDeployDate()))
                 .toList();
         return CycleTimePieceCurveWithAverage.buildPullRequestCurve(cycleTimes);
     }
