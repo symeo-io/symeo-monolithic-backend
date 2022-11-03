@@ -22,11 +22,8 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
         final Optional<OrganizationSettings> optionalOrganizationSettings =
                 organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId());
         if (optionalOrganizationSettings.isEmpty()) {
-            final String defaultMostUsedBranch =
-                    bffExpositionStorageAdapter.findDefaultMostUsedBranchForOrganizationId(organization.getId());
             final OrganizationSettings organizationSettings =
-                    OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
-                            defaultMostUsedBranch);
+                    OrganizationSettings.initializeFromOrganizationId(organization.getId());
             organizationStorageAdapter.saveOrganizationSettings(organizationSettings);
         }
     }

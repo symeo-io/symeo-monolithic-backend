@@ -92,7 +92,7 @@ public class CycleTimeCurveServiceTest {
         );
 
         final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(pullRequestViewId1).base("test").build(),
+                PullRequestView.builder().id(pullRequestViewId1).base("main").build(),
                 PullRequestView.builder().id(pullRequestViewId2).base(faker.animal().name()).build()
         );
         final CycleTime cycleTime1 =
@@ -117,8 +117,7 @@ public class CycleTimeCurveServiceTest {
 
         // When
         when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
-                .thenReturn(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
-                        "test"));
+                .thenReturn(OrganizationSettings.initializeFromOrganizationId(organization.getId()));
         when(bffExpositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate))
                 .thenReturn(currentPullRequestViews);
         when(bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId))

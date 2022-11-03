@@ -100,8 +100,7 @@ public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
                 .build();
         organizationRepository.save(organizationEntity);
         final OrganizationSettings organizationSettings =
-                OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organizationEntity.getId(),
-                        faker.rickAndMorty().location());
+                OrganizationSettings.initializeFromOrganizationId(organizationEntity.getId());
 
         // When
         postgresOrganizationAdapter.saveOrganizationSettings(organizationSettings);

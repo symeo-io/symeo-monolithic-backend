@@ -44,9 +44,10 @@ public class BffDomainConfiguration {
     @Bean
     public OrganizationFacadeAdapter organizationFacadeAdapter(final OrganizationStorageAdapter organizationStorageAdapter,
                                                                final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter,
-                                                               final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter) {
+                                                               final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter,
+                                                               final OrganizationSettingsService organizationSettingsService) {
         return new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter,
-                bffSymeoDataProcessingJobApiAdapter);
+                bffSymeoDataProcessingJobApiAdapter, organizationSettingsService);
     }
 
     @Bean

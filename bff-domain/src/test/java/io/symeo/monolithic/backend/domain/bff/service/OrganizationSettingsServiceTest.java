@@ -46,8 +46,7 @@ public class OrganizationSettingsServiceTest {
         verify(organizationStorageAdapter, times(1))
                 .saveOrganizationSettings(
                         OrganizationSettings.
-                                initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
-                                        defaultMostUsedBranch)
+                                initializeFromOrganizationId(organization.getId())
                 );
     }
 
@@ -65,8 +64,7 @@ public class OrganizationSettingsServiceTest {
 
         // When
         when(organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))
-                .thenReturn(Optional.ofNullable(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
-                        faker.rickAndMorty().character())));
+                .thenReturn(Optional.ofNullable(OrganizationSettings.initializeFromOrganizationId(organization.getId())));
         organizationSettingsService.initializeOrganizationSettingsForOrganization(organization);
 
         // Then
@@ -86,8 +84,7 @@ public class OrganizationSettingsServiceTest {
                 .id(UUID.randomUUID())
                 .build();
         final Optional<OrganizationSettings> optionalOrganizationSettings =
-                Optional.of(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
-                        faker.rickAndMorty().character()));
+                Optional.of(OrganizationSettings.initializeFromOrganizationId(organization.getId()));
 
         // When
         when(organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId()))

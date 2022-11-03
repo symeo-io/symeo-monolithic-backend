@@ -9,7 +9,8 @@ import java.util.List;
 @Builder
 public class DeployDetectionSettings {
 
-    String pullRequestMergedOnBranchRegex;
+    @Builder.Default
+    String pullRequestMergedOnBranchRegex = "^main$";
     String tagRegex;
     @Builder.Default
     DeployDetectionTypeDomainEnum deployDetectionType = DeployDetectionTypeDomainEnum.PULL_REQUEST;

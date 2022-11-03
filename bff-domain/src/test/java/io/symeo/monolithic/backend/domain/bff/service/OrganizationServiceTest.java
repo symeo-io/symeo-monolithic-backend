@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationApiKeyStorage
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationService;
+import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,9 +30,10 @@ public class OrganizationServiceTest {
                 mock(OrganizationStorageAdapter.class);
         final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter =
                 mock(OrganizationApiKeyStorageAdapter.class);
+        final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
         final OrganizationService organizationService =
                 new OrganizationService(organizationStorageAdapter, organizationApiKeyStorageAdapter,
-                        bffSymeoDataProcessingJobApiAdapter);
+                        bffSymeoDataProcessingJobApiAdapter, organizationSettingsService);
         final String externalId = faker.name().name();
         final String vcsOrganizationName = faker.gameOfThrones().character();
         final UUID organizationId = UUID.randomUUID();

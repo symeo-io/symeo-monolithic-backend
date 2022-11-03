@@ -20,12 +20,11 @@ public class OrganizationSettingsTest {
 
         // When
         final OrganizationSettings organizationSettings =
-                OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organizationId,
-                        defaultMostUsedBranch);
+                OrganizationSettings.initializeFromOrganizationId(organizationId);
 
         // Then
         assertThat(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex())
-                .isEqualTo(String.format("^%s$", defaultMostUsedBranch));
+                .isEqualTo("^main$");
         assertThat(organizationSettings.getOrganizationId()).isEqualTo(organizationId);
     }
 }
