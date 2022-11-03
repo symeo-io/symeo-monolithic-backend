@@ -90,7 +90,7 @@ public interface OrganizationMapper {
                 .tagRegex(deployDetectionSettings.getTagRegex())
                 .pullRequestMergedOnBranchRegex(deployDetectionSettings.getPullRequestMergedOnBranchRegex())
                 .excludeBranchRegexes(deployDetectionSettings.getExcludeBranchRegexes())
-                .deployDetectionType(deployDetectionSettings.getDeployDetectionType().toString())
+                .deployDetectionType(isNull(deployDetectionSettings.getDeployDetectionType()) ? DeployDetectionTypeDomainEnum.PULL_REQUEST.value : deployDetectionSettings.getDeployDetectionType().toString())
                 .build();
     }
 
@@ -105,7 +105,7 @@ public interface OrganizationMapper {
                                                 .tagRegex(organizationSettingsEntity.getTagRegex())
                                                 .pullRequestMergedOnBranchRegex(organizationSettingsEntity.getPullRequestMergedOnBranchRegex())
                                                 .excludeBranchRegexes(organizationSettingsEntity.getExcludeBranchRegexes())
-                                                .deployDetectionType(DeployDetectionTypeDomainEnum.valueOf(organizationSettingsEntity.getDeployDetectionType()))
+                                                .deployDetectionType(DeployDetectionTypeDomainEnum.fromValue(organizationSettingsEntity.getDeployDetectionType()))
                                                 .build()
                                 )
                                 .build()
