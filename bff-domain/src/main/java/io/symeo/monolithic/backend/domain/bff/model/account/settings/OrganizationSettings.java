@@ -19,11 +19,7 @@ public class OrganizationSettings {
                 .deliverySettings(
                         DeliverySettings.builder()
                                 .deployDetectionSettings(
-                                        DeployDetectionSettings.builder()
-                                                .pullRequestMergedOnBranchRegex("^main$")
-                                                .excludeBranchRegexes(List.of("^staging$", "^main$"))
-                                                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST)
-                                                .build()
+                                        DeployDetectionSettings.builder().build()
                                 )
                                 .build()
                 )

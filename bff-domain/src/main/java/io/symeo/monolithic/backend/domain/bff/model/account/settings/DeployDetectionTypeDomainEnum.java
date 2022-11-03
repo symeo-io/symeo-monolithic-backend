@@ -22,8 +22,8 @@ public enum DeployDetectionTypeDomainEnum {
             case "pull_request" -> DeployDetectionTypeDomainEnum.PULL_REQUEST;
             case "tag" -> DeployDetectionTypeDomainEnum.TAG;
             default -> throw SymeoException.builder()
-                    .code(SymeoExceptionCode.POSTGRES_EXCEPTION)
-                    .message(String.format("Invalid deployment detection code %s in base", valueAsString))
+                    .code(SymeoExceptionCode.INVALID_DEPLOYEMENT_DETECTION_TYPE)
+                    .message(String.format("Invalid deployment detection type %s in base", valueAsString))
                     .build();
         };
     }

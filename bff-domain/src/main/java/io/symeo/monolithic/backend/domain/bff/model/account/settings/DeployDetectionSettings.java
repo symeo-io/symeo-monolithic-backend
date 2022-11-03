@@ -15,5 +15,5 @@ public class DeployDetectionSettings {
     @Builder.Default
     DeployDetectionTypeDomainEnum deployDetectionType = DeployDetectionTypeDomainEnum.PULL_REQUEST;
     @Builder.Default
-    List<String> excludeBranchRegexes = List.of();
+    List<String> excludeBranchRegexes = List.of("^staging$", "^main$");
 }
