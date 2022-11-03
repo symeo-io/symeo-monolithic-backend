@@ -58,8 +58,6 @@ public interface BffExpositionStorageAdapter {
 
     List<RepositoryView> findAllRepositoriesForOrganizationIdAndTeamId(UUID organizationId, UUID teamId) throws SymeoException;
 
-    List<RepositoryView> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException;
-
     List<PullRequestView> readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate,
                                                                                     Date endDate) throws SymeoException;
 

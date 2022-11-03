@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.account;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
@@ -89,6 +90,7 @@ public interface OrganizationMapper {
                 .tagRegex(deployDetectionSettings.getTagRegex())
                 .pullRequestMergedOnBranchRegex(deployDetectionSettings.getPullRequestMergedOnBranchRegex())
                 .excludeBranchRegexes(deployDetectionSettings.getExcludeBranchRegexes())
+                .deployDetectionType(deployDetectionSettings.getDeployDetectionType().toString())
                 .build();
     }
 
@@ -103,6 +105,7 @@ public interface OrganizationMapper {
                                                 .tagRegex(organizationSettingsEntity.getTagRegex())
                                                 .pullRequestMergedOnBranchRegex(organizationSettingsEntity.getPullRequestMergedOnBranchRegex())
                                                 .excludeBranchRegexes(organizationSettingsEntity.getExcludeBranchRegexes())
+                                                .deployDetectionType(DeployDetectionTypeDomainEnum.valueOf(organizationSettingsEntity.getDeployDetectionType()))
                                                 .build()
                                 )
                                 .build()

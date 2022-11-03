@@ -41,6 +41,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
@@ -155,8 +156,8 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                         ));
     }
 
-//    @Order(2)
-//    @Test
+    @Order(2)
+    @Test
     void should_collect_github_repositories_for_a_given_organization() throws SymeoException,
             InterruptedException, IOException {
         // Given
@@ -169,7 +170,11 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         itGithubJwtTokenProvider.setGithubTokenStub(githubTokenStub);
         final String organizationVcsId = FAKER.rickAndMorty().character();
         final Organization organization = Organization.builder()
-                .vcsOrganization(Organization.VcsOrganization.builder().name(organizationName).vcsId(organizationVcsId).build())
+                .vcsOrganization(Organization.VcsOrganization.builder()
+                        .name(organizationName)
+                        .vcsId(organizationVcsId)
+                        .externalId(FAKER.ancient().god())
+                        .build())
                 .id(firstOrganizationId)
                 .name(organizationName)
                 .build();
@@ -223,7 +228,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         // When
         client.post()
                 .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_POST_START_JOB_ORGANIZATION))
-                .body(body, PostStartDataProcessingJobForVcsOrganizationContract.class)
+                .body(Mono.just(body), PostStartDataProcessingJobForVcsOrganizationContract.class)
                 .header(symeoDataProcessingJobApiProperties.getHeaderKey(),
                         symeoDataProcessingJobApiProperties.getApiKey())
                 .exchange()
@@ -469,8 +474,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         symeoClientAdapterWireMockServer.stubFor(
                 get(
-                        urlEqualTo(String.format("/repos/%s/%s/branches?per_page=%s&page=%s", organization
-                                        .getVcsOrganization().getName(),
+                        urlEqualTo(String.format("/repos/%s/%s/branches?per_page=%s&page=%s", organizationName,
                                 githubRepositoryDTOS[0].getName(), githubProperties.getSize(), "1")))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
                         .willReturn(
@@ -482,8 +486,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         symeoClientAdapterWireMockServer.stubFor(
                 get(
-                        urlEqualTo(String.format("/repos/%s/%s/commits?page=%s&per_page=%s&sha=%s", organization
-                                        .getVcsOrganization().getName(),
+                        urlEqualTo(String.format("/repos/%s/%s/commits?page=%s&per_page=%s&sha=%s", organizationName,
                                 githubRepositoryDTOS[0].getName(), "1", githubProperties.getSize(),
                                 "add-update-organization-settings")))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
@@ -496,8 +499,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         symeoClientAdapterWireMockServer.stubFor(
                 get(
-                        urlEqualTo(String.format("/repos/%s/%s/commits?page=%s&per_page=%s&sha=%s", organization
-                                        .getVcsOrganization().getName(),
+                        urlEqualTo(String.format("/repos/%s/%s/commits?page=%s&per_page=%s&sha=%s",organizationName,
                                 githubRepositoryDTOS[0].getName(), "2", githubProperties.getSize(),
                                 "add-update-organization-settings")))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
@@ -509,8 +511,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         symeoClientAdapterWireMockServer.stubFor(
                 get(
-                        urlEqualTo(String.format("/repos/%s/%s/git/matching-refs/tags", organization
-                                        .getVcsOrganization().getName(),
+                        urlEqualTo(String.format("/repos/%s/%s/git/matching-refs/tags", organizationName,
                                 githubRepositoryDTOS[0].getName())))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
                         .willReturn(
@@ -528,7 +529,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
         client.post()
                 .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_POST_START_JOB_REPOSITORIES))
-                .body(body, PostStartDataProcessingJobForOrganizationContract.class)
+                .body(Mono.just(body), PostStartDataProcessingJobForOrganizationContract.class)
                 .header(symeoDataProcessingJobApiProperties.getHeaderKey(),
                         symeoDataProcessingJobApiProperties.getApiKey())
                 .exchange()
@@ -879,7 +880,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
         client.post()
                 .uri(getApiURI(DATA_PROCESSING_JOB_REST_API_POST_START_JOB_TEAM))
-                .body(body, PostStartDataProcessingJobForTeamContract.class)
+                .body(Mono.just(body), PostStartDataProcessingJobForTeamContract.class)
                 .header(symeoDataProcessingJobApiProperties.getHeaderKey(),
                         symeoDataProcessingJobApiProperties.getApiKey())
                 .exchange()

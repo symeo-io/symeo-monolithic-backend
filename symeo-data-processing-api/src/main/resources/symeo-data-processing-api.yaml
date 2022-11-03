@@ -8,7 +8,7 @@ servers:
 
 
 paths:
-  /api/v1/data-processing/organization/repositories:
+  /job/v1/data-processing/organization/repositories:
     post:
       tags:
         - DataProcessingJob
@@ -55,7 +55,7 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/data-processing/organization/vcs_organization:
+  /job/v1/data-processing/organization/vcs_organization:
     post:
       tags:
         - DataProcessingJob
@@ -102,7 +102,7 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/data-processing/organization/team/repositories:
+  /job/v1/data-processing/organization/team/repositories:
     post:
       tags:
         - DataProcessingJob
@@ -149,7 +149,7 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
-  /api/v1/data-processing/all:
+  /job/v1/data-processing/all:
     get:
       tags:
         - DataProcessingJob

@@ -24,6 +24,7 @@ public class OrganizationSettings {
                                                 .pullRequestMergedOnBranchRegex(String.format("^%s$",
                                                         defaultMostUsedBranch))
                                                 .excludeBranchRegexes(List.of("^staging$", "^main$"))
+                                                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST)
                                                 .build()
                                 )
                                 .build()

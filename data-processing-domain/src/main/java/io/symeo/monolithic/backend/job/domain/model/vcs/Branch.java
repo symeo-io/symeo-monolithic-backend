@@ -10,6 +10,6 @@ public class Branch {
     String name;
 
     public static String getNameFromRepository(Repository repository) {
-        return ALL + "_for_pr_number_" + repository.getId();
+        return ALL + "_for_repository_id_" + repository.getId();
     }
 }

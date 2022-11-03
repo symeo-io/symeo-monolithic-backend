@@ -196,7 +196,7 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
                         + "/commits"
                         + String.format("?since=%s",
                         new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(startDate))
-                        + String.format("?until=%s",
+                        + String.format("&until=%s",
                         new SimpleDateFormat(GITHUB_QUERY_DATE_FORMAT).format(endDate))
                         + "&per_page="
                         + size.toString()

@@ -19,4 +19,6 @@ public interface DataProcessingExpositionStorageAdapter {
     void saveTags(List<Tag> tags) throws SymeoException;
 
     List<Repository> findAllRepositoriesByIds(List<String> repositoryIds) throws SymeoException;
+
+    List<Repository> findAllRepositoriesLinkedToTeamsForOrganizationId(UUID organizationId) throws SymeoException;
 }

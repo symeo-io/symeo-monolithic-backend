@@ -1475,13 +1475,13 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["status", "creation_date", "merge_date", "id", "vcs_url", "title", "author", "vcs_repository"]
+            enum: [ "status", "creation_date", "merge_date", "id", "vcs_url", "title", "author", "vcs_repository" ]
         - in: query
           name: sort_dir
           required: true
           schema:
             type: string
-            enum: ["asc", "desc"]
+            enum: [ "asc", "desc" ]
       responses:
         "200":
           description: 'Successfully retrieved cycle time pieces'
@@ -2351,3 +2351,8 @@ components:
           type: array
           items:
             type: string
+        deploy_detection_type:
+          type: string
+          enum:
+          - pull_request
+          - tag

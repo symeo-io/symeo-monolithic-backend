@@ -18,5 +18,5 @@ public interface TeamStorage {
 
     void deleteById(UUID teamId) throws SymeoException;
 
-    void update(Team team) throws SymeoException;
+    Team update(Team team) throws SymeoException;
 }
