@@ -13,19 +13,13 @@ public class OrganizationSettings {
     UUID organizationId;
     DeliverySettings deliverySettings;
 
-    public static OrganizationSettings initializeFromOrganizationIdAndDefaultBranch(final UUID organizationId,
-                                                                                    final String defaultMostUsedBranch) {
+    public static OrganizationSettings initializeFromOrganizationId(final UUID organizationId) {
         return OrganizationSettings.builder()
                 .organizationId(organizationId)
                 .deliverySettings(
                         DeliverySettings.builder()
                                 .deployDetectionSettings(
-                                        DeployDetectionSettings.builder()
-                                                .pullRequestMergedOnBranchRegex(String.format("^%s$",
-                                                        defaultMostUsedBranch))
-                                                .excludeBranchRegexes(List.of("^staging$", "^main$"))
-                                                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST)
-                                                .build()
+                                        DeployDetectionSettings.builder().build()
                                 )
                                 .build()
                 )

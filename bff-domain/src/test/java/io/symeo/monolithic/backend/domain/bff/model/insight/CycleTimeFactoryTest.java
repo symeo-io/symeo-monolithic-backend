@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.domain.bff.model.vcs.CommentView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.List;
 
-import static io.symeo.monolithic.backend.domain.helper.DateHelper.getNumberOfMinutesBetweenDates;
-import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDateTime;
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CycleTimeFactoryTest {
@@ -130,6 +130,7 @@ public class CycleTimeFactoryTest {
             assertThat(cycleTime.getCodingTime()).isEqualTo(1830L);
             assertThat(cycleTime.getReviewTime()).isEqualTo(2552L);
             assertThat(cycleTime.getValue()).isEqualTo(4382L);
+            assertThat(cycleTime.getDeployDate()).isNull();
         }
 
         @Test
@@ -164,6 +165,7 @@ public class CycleTimeFactoryTest {
                             getNumberOfMinutesBetweenDates(commit1.getDate(),
                                     new Date()));
             assertThat(cycleTime.getTimeToDeploy()).isNull();
+            assertThat(cycleTime.getDeployDate()).isNull();
         }
 
 
@@ -188,6 +190,7 @@ public class CycleTimeFactoryTest {
 
             // Then
             assertThat(cycleTime.getReviewTime()).isEqualTo(25L);
+            assertThat(cycleTime.getDeployDate()).isNull();
         }
 
         @Test
@@ -213,11 +216,12 @@ public class CycleTimeFactoryTest {
             assertThat(cycleTime.getReviewTime()).isEqualTo(95L);
             assertThat(cycleTime.getTimeToDeploy()).isNull();
             assertThat(cycleTime.getValue()).isEqualTo(95L);
+            assertThat(cycleTime.getDeployDate()).isNull();
         }
 
 
         @Test
-        void should_compute_deploy_time_for_simple_use_case() {
+        void should_compute_deploy_time_for_simple_use_case() throws SymeoException {
             // Given
             final CycleTimeFactory cycleTimeFactory = new CycleTimeFactory();
             final CommitView commit1 = CommitView.builder().sha(faker.pokemon().name() + "-1").date(stringToDateTime(
@@ -300,6 +304,7 @@ public class CycleTimeFactoryTest {
             assertThat(cycleTime.getReviewTime()).isEqualTo(0L);
             assertThat(cycleTime.getTimeToDeploy()).isEqualTo(1320L);
             assertThat(cycleTime.getValue()).isEqualTo(1320L);
+            assertThat(cycleTime.getDeployDate()).isEqualTo(stringToDateTime("2022-01-05 14:00:00"));
         }
 
 
@@ -420,6 +425,7 @@ public class CycleTimeFactoryTest {
             assertThat(cycleTime.getReviewTime()).isEqualTo(0L);
             assertThat(cycleTime.getTimeToDeploy()).isEqualTo(1320L);
             assertThat(cycleTime.getValue()).isEqualTo(1320L);
+            assertThat(cycleTime.getDeployDate()).isEqualTo(stringToDateTime("2022-01-05 14:00:00"));
         }
     }
 

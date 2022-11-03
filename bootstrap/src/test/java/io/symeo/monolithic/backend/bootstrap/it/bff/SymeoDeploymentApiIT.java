@@ -93,7 +93,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .id(organizationSettingsId)
                 .organizationId(organizationId)
                 .pullRequestMergedOnBranchRegex("^main$")
-                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.toString())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
 
@@ -349,7 +349,7 @@ public class SymeoDeploymentApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .organizationId(organizationId)
                 .pullRequestMergedOnBranchRegex(null)
                 .tagRegex("^deploy$")
-                .deployDetectionType(DeployDetectionTypeDomainEnum.TAG.toString())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.TAG.getValue())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
         final TagEntity tagEntity1 = TagEntity.builder()

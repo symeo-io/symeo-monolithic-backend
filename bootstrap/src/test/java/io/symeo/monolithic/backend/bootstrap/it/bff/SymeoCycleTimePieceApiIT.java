@@ -112,7 +112,7 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .id(organizationSettingsId)
                 .organizationId(organizationEntity.getId())
                 .pullRequestMergedOnBranchRegex("^main$")
-                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.toString())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
         final RepositoryEntity repositoryEntity = repositoryRepository.save(
@@ -284,11 +284,8 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.curves.piece_curve[0]").exists()
-                .jsonPath("$.curves.piece_curve[1]").exists()
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(4919.0f)
-                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-03-02")
-                .jsonPath("$.curves.average_curve[1].value").isEqualTo(3548.0f)
-                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-03-04");
+                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-03-04");
 
     }
 
@@ -302,7 +299,7 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .organizationId(organizationId)
                 .pullRequestMergedOnBranchRegex(null)
                 .tagRegex("^infrastructure-.*")
-                .deployDetectionType(DeployDetectionTypeDomainEnum.TAG.toString())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.TAG.getValue())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
         tagRepository.save(
@@ -371,11 +368,8 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.curves.piece_curve[0]").exists()
-                .jsonPath("$.curves.piece_curve[1]").exists()
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(4919.0f)
-                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-03-02")
-                .jsonPath("$.curves.average_curve[1].value").isEqualTo(3548.0f)
-                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-03-04");
+                .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-03-04");
     }
 }
 

@@ -35,45 +35,6 @@ public class DeploymentMetricsServiceTest {
     private static final Faker faker = new Faker();
 
     @Test
-    void should_get_empty_deployment_metrics_for_wrong_delivery_settings() throws SymeoException {
-        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
-        final DeploymentService deploymentService = mock(DeploymentService.class);
-        final DeploymentMetricsService deploymentMetricsService = new DeploymentMetricsService(
-                bffExpositionStorageAdapter,
-                organizationSettingsFacade,
-                deploymentService
-        );
-        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
-        final UUID teamId = UUID.randomUUID();
-        final Date startDate = stringToDate("2022-01-01");
-        final Date endDate = stringToDate("2022-02-01");
-
-        // When
-        when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
-                .thenReturn(
-                        OrganizationSettings.builder()
-                                .deliverySettings(
-                                        DeliverySettings.builder()
-                                                .deployDetectionSettings(
-                                                        DeployDetectionSettings.builder().build()
-                                                ).build()
-                                )
-                                .build()
-                );
-        final Optional<DeploymentMetrics> optionalDeploymentMetrics =
-                deploymentMetricsService.computeDeploymentMetricsForTeamIdFromStartDateToEndDate(
-                        organization,
-                        teamId,
-                        startDate,
-                        endDate
-                );
-
-        // Then
-        assertThat(optionalDeploymentMetrics).isEmpty();
-    }
-
-    @Test
     void should_get_deployment_metrics_given_merged_on_branch_delivery_settings() throws SymeoException {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
@@ -94,11 +55,11 @@ public class DeploymentMetricsServiceTest {
         final String fakeDeployLink = faker.gameOfThrones().character();
 
         final List<PullRequestView> currentPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(faker.cat().name()).base("staging").mergeDate(stringToDate("2022-01-15")).build(),
+                PullRequestView.builder().id(faker.cat().name()).base("main").mergeDate(stringToDate("2022-01-15")).build(),
                 PullRequestView.builder().id(faker.dog().name()).base(faker.pokemon().name() + "-1").mergeDate(stringToDate("2022-01-22")).build()
         );
         final List<PullRequestView> previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(faker.cat().name()).base("staging").mergeDate(stringToDate("2021-12-24")).build(),
+                PullRequestView.builder().id(faker.cat().name()).base("main").mergeDate(stringToDate("2021-12-24")).build(),
                 PullRequestView.builder().id(faker.dog().name()).base(faker.pokemon().name() + "-2").mergeDate(stringToDate("2021-12-12")).build()
         );
 
@@ -123,10 +84,8 @@ public class DeploymentMetricsServiceTest {
 
         // When
         when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
-                .thenReturn(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(
-                        organization.getId(),
-                        "^staging$"
-                ));
+                .thenReturn(OrganizationSettings.initializeFromOrganizationId(
+                        organization.getId()));
 
         when(bffExpositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId, startDate,
                 endDate))

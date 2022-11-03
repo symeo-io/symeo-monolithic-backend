@@ -61,7 +61,7 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                 .organizationId(organizationEntity.getId())
                 .tagRegex(faker.name().firstName())
                 .pullRequestMergedOnBranchRegex(faker.name().lastName())
-                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.toString())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
 
@@ -96,7 +96,7 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                 .organizationId(organizationEntity.getId())
                 .tagRegex(faker.name().firstName())
                 .pullRequestMergedOnBranchRegex(faker.name().lastName())
-                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.toString())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue())
                 .build();
 
         organizationSettingsRepository.save(organizationSettingsEntityToUpdate);
@@ -124,7 +124,7 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                 organizationSettingsRepository.findById(organizationSettingsId).get();
         assertThat(updatedOrganizationSettings.getTagRegex()).isEqualTo(updateOrganizationSettingsContract.getDelivery().getDeployDetection().getTagRegex());
         assertThat(updatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(updateOrganizationSettingsContract.getDelivery().getDeployDetection().getPullRequestMergedOnBranchRegex());
-        assertThat(updatedOrganizationSettings.getDeployDetectionType()).isEqualTo(DeployDetectionTypeDomainEnum.TAG.toString());
+        assertThat(updatedOrganizationSettings.getDeployDetectionType()).isEqualTo(DeployDetectionTypeDomainEnum.TAG.getValue());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                     .organizationId(invalidOrganizationId)
                     .tagRegex(faker.name().firstName())
                     .pullRequestMergedOnBranchRegex(faker.name().lastName())
-                    .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.toString())
+                    .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue())
                     .build();
 
             organizationSettingsRepository.save(organizationSettingsEntityToUpdate);
@@ -180,7 +180,7 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                     organizationSettingsRepository.findById(organizationSettingsId).get();
             assertThat(notUpdatedOrganizationSettings.getTagRegex()).isEqualTo(organizationSettingsEntityToUpdate.getTagRegex());
             assertThat(notUpdatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(organizationSettingsEntityToUpdate.getPullRequestMergedOnBranchRegex());
-            assertThat(notUpdatedOrganizationSettings.getDeployDetectionType()).isEqualTo(DeployDetectionTypeDomainEnum.PULL_REQUEST.toString());
+            assertThat(notUpdatedOrganizationSettings.getDeployDetectionType()).isEqualTo(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue());
         }
     }
 

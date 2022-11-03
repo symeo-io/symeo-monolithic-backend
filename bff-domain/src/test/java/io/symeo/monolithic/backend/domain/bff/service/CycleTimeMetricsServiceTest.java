@@ -36,97 +36,6 @@ public class CycleTimeMetricsServiceTest {
     private static final Faker faker = new Faker();
 
     @Test
-    void should_get_empty_cycle_time_metrics_for_wrong_delivery_settings() throws SymeoException {
-        // Given
-        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
-        final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
-        final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
-                bffExpositionStorageAdapter,
-                organizationSettingsFacade,
-                cycleTimeService
-        );
-        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
-        final UUID teamId = UUID.randomUUID();
-        final Date startDate = stringToDate("2022-01-01");
-        final Date endDate = stringToDate("2022-02-01");
-
-        // When
-        when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
-                .thenReturn(
-                        OrganizationSettings.builder()
-                                .deliverySettings(
-                                        DeliverySettings.builder()
-                                                .deployDetectionSettings(
-                                                        DeployDetectionSettings.builder().build()
-                                                ).build()
-                                )
-                                .build()
-                );
-        final Optional<CycleTimeMetrics> optionalCycleTimeMetrics =
-                cycleTimeMetricsService.computeCycleTimeMetricsForTeamIdFromStartDateToEndDate(
-                        organization,
-                        teamId,
-                        startDate,
-                        endDate
-                );
-
-        // Then
-        assertThat(optionalCycleTimeMetrics).isEmpty();
-    }
-
-    @Test
-    void should_get_empty_cycle_time_piece_page_for_wrong_delivery_settings() throws SymeoException {
-        // Given
-        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
-        final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
-        final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
-                bffExpositionStorageAdapter,
-                organizationSettingsFacade,
-                cycleTimeService
-        );
-        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
-        final UUID teamId = UUID.randomUUID();
-        final Date startDate = stringToDate("2022-01-01");
-        final Date endDate = stringToDate("2022-02-01");
-
-        final int pageIndex = faker.number().randomDigit();
-        final int pageSize = faker.number().randomDigit();
-        final String sortBy = faker.gameOfThrones().character();
-        final String sortDir = faker.gameOfThrones().character();
-
-        // When
-        when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
-                .thenReturn(
-                        OrganizationSettings.builder()
-                                .deliverySettings(
-                                        DeliverySettings.builder()
-                                                .deployDetectionSettings(
-                                                        DeployDetectionSettings.builder().build()
-                                                ).build()
-                                )
-                                .build()
-                );
-        final CycleTimePiecePage cycleTimePiecePage =
-                cycleTimeMetricsService.computeCycleTimePiecesForTeamIdFromStartDateToEndDate(
-                        organization,
-                        teamId,
-                        startDate,
-                        endDate,
-                        pageIndex,
-                        pageSize,
-                        sortBy,
-                        sortDir
-                );
-
-        // Then
-        assertThat(cycleTimePiecePage.getTotalNumberOfPieces()).isEqualTo(0);
-        assertThat(cycleTimePiecePage.getTotalNumberOfPages()).isEqualTo(0);
-        assertThat(cycleTimePiecePage.getCycleTimePieces()).isNull();
-    }
-
-    @Test
     void should_get_cycle_time_metrics_given_merged_on_branch_delivery_settings() throws SymeoException {
         // Given
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
@@ -155,11 +64,11 @@ public class CycleTimeMetricsServiceTest {
                 CommitView.builder().sha(faker.pokemon().location()).build()
         );
         final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(faker.animal().name()).base("staging").build(),
+                PullRequestView.builder().id(faker.animal().name()).base("main").build(),
                 PullRequestView.builder().id(faker.animal().name()).base(faker.animal().name()).build()
         );
         final List<PullRequestView> previousPullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(faker.animal().name()).base("staging").build(),
+                PullRequestView.builder().id(faker.animal().name()).base("main").build(),
                 PullRequestView.builder().id(faker.animal().name()).base(faker.pokemon().name()).build()
         );
         final AverageCycleTime averageCycleTime1 = AverageCycleTime.builder()
@@ -178,8 +87,7 @@ public class CycleTimeMetricsServiceTest {
 
         // When
         when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
-                .thenReturn(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
-                        "^staging$"));
+                .thenReturn(OrganizationSettings.initializeFromOrganizationId(organization.getId()));
         when(bffExpositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                 endDate))
                 .thenReturn(
@@ -276,7 +184,7 @@ public class CycleTimeMetricsServiceTest {
                         CommitView.builder().sha(faker.pokemon().name() + "-2").build()
                 );
         final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(faker.animal().name()).base("staging").build(),
+                PullRequestView.builder().id(faker.animal().name()).base("main").build(),
                 PullRequestView.builder().id(faker.animal().name()).base(faker.animal().name()).build()
         );
         final String cycleTimePieceId1 = faker.name().firstName() + "-1";
@@ -288,8 +196,7 @@ public class CycleTimeMetricsServiceTest {
 
         // When
         when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
-                .thenReturn(OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
-                        "^staging$"));
+                .thenReturn(OrganizationSettings.initializeFromOrganizationId(organization.getId()));
         when(bffExpositionStorageAdapter.countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(teamId,
                 startDate, endDate))
                 .thenReturn(countOfPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination);

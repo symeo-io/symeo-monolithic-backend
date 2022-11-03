@@ -3,7 +3,6 @@ package io.symeo.monolithic.backend.application.rest.api.adapter.api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import io.symeo.monolithic.backend.application.rest.api.adapter.authentication.AuthenticationService;
-import io.symeo.monolithic.backend.application.rest.api.adapter.mapper.CycleTimeContractMapper;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.bff.port.in.CycleTimeCurveFacadeAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.in.CycleTimeMetricsFacadeAdapter;

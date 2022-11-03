@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.time.temporal.ChronoUnit.*;
 
 @Slf4j
 @AllArgsConstructor
@@ -69,7 +70,7 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                                                                                                               List<String> excludeBranchRegexes) throws SymeoException {
 
         final List<PullRequestView> currentPullRequestViews =
-                getPullRequestViewsForTeamIdBetweenStartDateAndEndDateWithDateRanges(teamId, endDate, rangeDates, excludeBranchRegexes);
+                getPullRequestViewsForTeamIdUntilEndDate(teamId, endDate, rangeDates, excludeBranchRegexes);
         final List<CommitView> allCommitsUntilEndDate =
                 bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId);
         final Pattern branchPattern = Pattern.compile(pullRequestMergedOnBranchRegex);
@@ -85,6 +86,8 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                         pullRequestView,
                         pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate,
                         allCommitsUntilEndDate))
+                .filter(cycleTime -> isDeployDateAfterStartDate(startDate, cycleTime.getDeployDate()))
+                .map(cycleTime -> cycleTime.mapDeployDateToRangeDates(rangeDates, cycleTime.getDeployDate()))
                 .toList();
         return CycleTimePieceCurveWithAverage.buildPullRequestCurve(cycleTimes);
     }
@@ -96,7 +99,7 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                                                                                                 String tagRegex,
                                                                                                 List<String> excludeBranchRegexes) throws SymeoException {
         final List<PullRequestView> currentPullRequestViews =
-                getPullRequestViewsForTeamIdBetweenStartDateAndEndDateWithDateRanges(teamId, endDate, rangeDates, excludeBranchRegexes);
+                getPullRequestViewsForTeamIdUntilEndDate(teamId, endDate, rangeDates, excludeBranchRegexes);
         final List<CommitView> allCommitsUntilEndDate =
                 bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId);
         final Pattern tagPattern = Pattern.compile(tagRegex);
@@ -113,16 +116,17 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                         pullRequestView,
                         tagsMatchingDeployTagRegex,
                         allCommitsUntilEndDate))
+                .filter(cycleTime -> isDeployDateAfterStartDate(startDate, cycleTime.getDeployDate()))
+                .map(cycleTime -> cycleTime.mapDeployDateToRangeDates(rangeDates, cycleTime.getDeployDate()))
                 .toList();
         return CycleTimePieceCurveWithAverage.buildPullRequestCurve(cycleTimes);
     }
 
-    private List<PullRequestView> getPullRequestViewsForTeamIdBetweenStartDateAndEndDateWithDateRanges(UUID teamId, Date endDate, List<Date> rangeDates, List<String> excludeBranchRegexes) throws SymeoException {
+    private List<PullRequestView> getPullRequestViewsForTeamIdUntilEndDate(UUID teamId, Date endDate, List<Date> rangeDates, List<String> excludeBranchRegexes) throws SymeoException {
         return bffExpositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                         endDate)
                 .stream()
                 .filter(pullRequestView -> excludePullRequest(pullRequestView, excludeBranchRegexes))
-                .map(pullRequestView -> pullRequestView.addStartDateRangeFromRangeDates(rangeDates))
                 .toList();
     }
 
@@ -132,4 +136,11 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
         );
     }
 
+
+    private boolean isDeployDateAfterStartDate(Date startDate, Date deployDate) {
+        if (isNull(deployDate)) {
+            return false;
+        }
+        return MINUTES.between(startDate.toInstant(), deployDate.toInstant()) > 0;
+    }
 }
