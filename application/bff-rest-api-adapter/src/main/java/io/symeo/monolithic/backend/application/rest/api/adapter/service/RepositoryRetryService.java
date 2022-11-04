@@ -5,6 +5,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.job.JobView;
 import io.symeo.monolithic.backend.domain.bff.port.in.JobFacadeAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectRepositoriesJobRunnable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +27,7 @@ public class RepositoryRetryService {
     private void retry(final Organization organization, int retry) throws SymeoException {
         try {
             final List<JobView> jobs =
-                    jobFacadeAdapter.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc("JOB_CODE", organization);
+                    jobFacadeAdapter.findAllJobsByCodeAndOrganizationOrderByUpdateDateDesc(CollectRepositoriesJobRunnable.JOB_CODE, organization);
             retry++;
             if (shouldRetry(jobs, retry)) {
                 LOGGER.info("Retrying to check job {} for retry number {} and organization {}", "JOB_CODE",

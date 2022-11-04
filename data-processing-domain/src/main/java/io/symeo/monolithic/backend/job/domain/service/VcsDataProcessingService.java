@@ -41,18 +41,15 @@ public class VcsDataProcessingService {
         dataProcessingExpositionStorageAdapter.savePullRequestDetailsWithLinkedComments(
                 githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate, endDate)
         );
-        LOGGER.info("Starting to collect commits for repository {} between {} and {}", repository,
-                dateToString(startDate), dateToString(endDate));
+    }
+
+    public void collectNonPartialData(final Repository repository) throws SymeoException {
         final List<String> branchNames = githubAdapter.getBranches(repository).stream().map(Branch::getName).toList();
         dataProcessingExpositionStorageAdapter.saveCommits(
-                githubAdapter.getCommitsForBranchesInDateRange(repository, branchNames, startDate, endDate)
+                githubAdapter.getCommitsForBranches(repository, branchNames)
         );
-        LOGGER.info("Starting to collect tags for repository {} between {} and {}", repository,
-                dateToString(startDate), dateToString(endDate));
         dataProcessingExpositionStorageAdapter.saveTags(
                 githubAdapter.getTags(repository)
         );
-        LOGGER.info("Successfully collected vcsData for repository {} between {} and {}", repository,
-                dateToString(startDate), dateToString(endDate));
     }
 }

@@ -207,6 +207,26 @@ public class GithubHttpApiClient implements GithubApiClientAdapter {
     }
 
     @Override
+    public GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranch(String vcsOrganizationName,
+                                                                                 String repositoryName,
+                                                                                 String branchName, Integer page,
+                                                                                 Integer size) throws SymeoException {
+        String uri =
+                api
+                        + "repos/"
+                        + encodeValue(vcsOrganizationName)
+                        + "/"
+                        + encodeValue(repositoryName)
+                        + "/commits"
+                        + "?per_page="
+                        + size.toString()
+                        + "&page="
+                        + page.toString()
+                        + String.format("&sha=%s", encodeValue(branchName));
+        return get(uri, vcsOrganizationName, GithubCommitsDTO[].class);
+    }
+
+    @Override
     public GithubTagDTO[] getTagsForVcsOrganizationAndRepository(String vcsOrganizationName, String repositoryName) throws SymeoException {
         String uri =
                 api

@@ -6,12 +6,13 @@ import lombok.ToString;
 import lombok.Value;
 
 import java.util.Date;
+import java.util.List;
 
 @Builder
 @Value
 @ToString
-public class RepositoryDateRangeTask {
-    Repository repository;
+public class RepositoriesDateRangeTask {
+    List<Repository> repositories;
     Date startDate;
     Date endDate;
 }

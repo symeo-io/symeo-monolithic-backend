@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.job.domain.model.job.runnable;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
-import io.symeo.monolithic.backend.job.domain.model.job.runnable.task.RepositoryDateRangeTask;
+import io.symeo.monolithic.backend.job.domain.model.job.runnable.task.RepositoriesDateRangeTask;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
@@ -54,12 +54,12 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnableTest {
         verifyNoInteractions(dataProcessingJobStorage);
         verifyNoInteractions(vcsDataProcessingService);
         final List<Task> tasks = collectVcsDataForRepositoriesAndDatesJobRunnable.getTasks();
-        assertThat(tasks).hasSize(repositories.size() * 720 / 30);
+        assertThat(tasks).hasSize(7);
         for (Task task : tasks) {
             assertThat(task.getStatus()).isEqualTo("TO_DO");
-            assertThat(task.getInput()).isInstanceOf(RepositoryDateRangeTask.class);
-            final RepositoryDateRangeTask repositoryDateRangeTask = (RepositoryDateRangeTask) task.getInput();
-            assertThat(repositoryDateRangeTask.getRepository()).isIn(repositories);
+            assertThat(task.getInput()).isInstanceOf(RepositoriesDateRangeTask.class);
+            final RepositoriesDateRangeTask repositoriesDateRangeTask = (RepositoriesDateRangeTask) task.getInput();
+            assertThat(repositoriesDateRangeTask.getRepositories()).isEqualTo(repositories);
         }
     }
 
@@ -98,16 +98,18 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnableTest {
 
         // Then
         final List<Task> tasks = collectVcsDataForRepositoriesAndDatesJobRunnable.getTasks();
-        final int numberOfTasks = repositories.size() * 720 / 30;
+        final int numberOfTasks = 7;
         assertThat(tasks).hasSize(numberOfTasks);
         for (Task task : tasks) {
             assertThat(task.getStatus()).isEqualTo("DONE");
-            assertThat(task.getInput()).isInstanceOf(RepositoryDateRangeTask.class);
-            final RepositoryDateRangeTask repositoryDateRangeTask = (RepositoryDateRangeTask) task.getInput();
-            assertThat(repositoryDateRangeTask.getRepository()).isIn(repositories);
-            verify(vcsDataProcessingService, times(1))
-                    .collectVcsDataForRepositoryAndDateRange(repositoryDateRangeTask.getRepository(),
-                            repositoryDateRangeTask.getStartDate(), repositoryDateRangeTask.getEndDate());
+            assertThat(task.getInput()).isInstanceOf(RepositoriesDateRangeTask.class);
+            final RepositoriesDateRangeTask repositoriesDateRangeTask = (RepositoriesDateRangeTask) task.getInput();
+            assertThat(repositoriesDateRangeTask.getRepositories()).isEqualTo(repositories);
+            for (Repository repository : repositoriesDateRangeTask.getRepositories()) {
+                verify(vcsDataProcessingService, times(1))
+                        .collectVcsDataForRepositoryAndDateRange(repository,
+                                repositoriesDateRangeTask.getStartDate(), repositoriesDateRangeTask.getEndDate());
+            }
         }
         verify(dataProcessingJobStorage, times(numberOfTasks)).updateJobWithTasksForJobId(any(), any());
     }
