@@ -61,6 +61,7 @@ public interface BffExpositionStorageAdapter {
     List<PullRequestView> readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate,
                                                                                     Date endDate) throws SymeoException;
 
+    List<PullRequestView> readMergedPullRequestsForTeamIdUntilEndDate(UUID teamId, Date endDate) throws SymeoException;
 
     List<TagView> findTagsForTeamId(UUID teamId) throws SymeoException;
 

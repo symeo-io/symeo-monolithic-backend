@@ -69,14 +69,13 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                                                                                                               List<String> excludeBranchRegexes) throws SymeoException {
 
         final List<PullRequestView> currentPullRequestViews =
-                getPullRequestViewsForTeamIdUntilEndDate(teamId, endDate, rangeDates, excludeBranchRegexes);
+                getPullRequestViewsForTeamIdUntilEndDate(teamId, endDate, excludeBranchRegexes);
         final List<CommitView> allCommitsUntilEndDate =
                 bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId);
         final Pattern branchPattern = Pattern.compile(pullRequestMergedOnBranchRegex);
 
         final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate =
-                bffExpositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId,
-                                startDate, endDate)
+                bffExpositionStorageAdapter.readMergedPullRequestsForTeamIdUntilEndDate(teamId, endDate)
                         .stream().filter(pullRequestView -> branchPattern.matcher(pullRequestView.getBase()).find()).toList();
 
         final List<CycleTime> cycleTimes = currentPullRequestViews
@@ -98,7 +97,7 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                                                                                                 String tagRegex,
                                                                                                 List<String> excludeBranchRegexes) throws SymeoException {
         final List<PullRequestView> currentPullRequestViews =
-                getPullRequestViewsForTeamIdUntilEndDate(teamId, endDate, rangeDates, excludeBranchRegexes);
+                getPullRequestViewsForTeamIdUntilEndDate(teamId, endDate, excludeBranchRegexes);
         final List<CommitView> allCommitsUntilEndDate =
                 bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId);
         final Pattern tagPattern = Pattern.compile(tagRegex);
@@ -121,7 +120,7 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
         return CycleTimePieceCurveWithAverage.buildPullRequestCurve(cycleTimes);
     }
 
-    private List<PullRequestView> getPullRequestViewsForTeamIdUntilEndDate(UUID teamId, Date endDate, List<Date> rangeDates, List<String> excludeBranchRegexes) throws SymeoException {
+    private List<PullRequestView> getPullRequestViewsForTeamIdUntilEndDate(UUID teamId, Date endDate, List<String> excludeBranchRegexes) throws SymeoException {
         return bffExpositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId,
                         endDate)
                 .stream()
