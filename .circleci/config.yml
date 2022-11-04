@@ -43,8 +43,8 @@ jobs:
           name: Integration Tests
           command: ./mvnw failsafe:integration-test failsafe:verify -T 12
       - run:
-          name: Cat report
-          command: tail -c 3000 coverage/target/site/jacoco-aggregate/jacoco.xml
+          name: Aggregate Jacoco coverage reports
+          command: ./mvnw jacoco:report-aggregate
       - run:
           name: Send tests data to Symeo
           command: |
