@@ -53,7 +53,7 @@ jobs:
               --coverage-report-path coverage/target/site/jacoco-aggregate/jacoco.xml \
               --coverage-report-type jacoco \
               --unit-test-file-pattern "./**/src/test/java/**/*Test.java" \
-              --integration-test-file-pattern "./**/src/test/java/**/*TestIT.java" \
+              --integration-test-file-pattern "./**/src/test/java/**/*IT.java" \
               --code-file-pattern "./**/src/main/java/**/*.java" \
               --test-framework jUnit \
               --repository-name ${CIRCLE_PROJECT_REPONAME} \
