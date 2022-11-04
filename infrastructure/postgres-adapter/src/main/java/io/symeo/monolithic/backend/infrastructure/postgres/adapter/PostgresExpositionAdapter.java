@@ -296,6 +296,25 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
 
     @Override
     @Transactional(readOnly = true)
+    public List<PullRequestView> readMergedPullRequestsForTeamIdUntilEndDate(UUID teamId, Date endDate) throws SymeoException {
+        try {
+            return pullRequestFullViewRepository.findAllMergedPullRequestsForTeamIdUntilEndDate(teamId, endDate)
+                    .stream()
+                    .map(PullRequestMapper::fullViewToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read PR for teamId %s until endDate %s", teamId, endDate);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<CommitView> readAllCommitsForTeamId(UUID teamId) throws SymeoException {
         try {
             return customCommitRepository.findAllByTeamId(teamId);

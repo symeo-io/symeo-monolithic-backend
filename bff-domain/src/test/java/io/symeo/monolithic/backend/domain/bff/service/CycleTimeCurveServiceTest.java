@@ -122,7 +122,7 @@ public class CycleTimeCurveServiceTest {
                 .thenReturn(currentPullRequestViews);
         when(bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId))
                 .thenReturn(allCommitsUntilEndDate);
-        when(bffExpositionStorageAdapter.readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate))
+        when(bffExpositionStorageAdapter.readMergedPullRequestsForTeamIdUntilEndDate(teamId, endDate))
                 .thenReturn(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
         when(cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
                 PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("head-1").build(),
