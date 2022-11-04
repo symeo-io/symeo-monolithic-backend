@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.job.domain.testing;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.job.domain.model.testing.CoverageData;
 import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,7 +21,7 @@ import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.FA
 @Slf4j
 public class IstanbulCoverageReportAdapter implements CoverageReportTypeAdapter {
     @Override
-    public Float extractCoverageFromReport(String report) throws SymeoException {
+    public CoverageData extractCoverageFromReport(String report) throws SymeoException {
         try {
             DocumentBuilder documentBuilder = getDocumentBuilder();
             InputSource inputSource = new InputSource(new StringReader(report));
@@ -34,7 +35,10 @@ public class IstanbulCoverageReportAdapter implements CoverageReportTypeAdapter 
             int conditionals = Integer.parseInt(metricsEl.getAttribute("conditionals"));
             int coveredConditionals = Integer.parseInt(metricsEl.getAttribute("coveredconditionals"));
 
-            return (float) coveredConditionals / conditionals;
+            return CoverageData.builder()
+                    .coveredBranches(coveredConditionals)
+                    .totalBranchCount(conditionals)
+                    .build();
         } catch (ParserConfigurationException | SAXException | IOException e) {
             final String message = "Failed to parse istanbul coverage report";
             LOGGER.error(message);
