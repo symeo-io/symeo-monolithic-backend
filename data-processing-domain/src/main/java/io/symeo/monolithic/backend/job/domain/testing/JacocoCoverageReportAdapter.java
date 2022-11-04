@@ -66,7 +66,7 @@ public class JacocoCoverageReportAdapter implements CoverageReportTypeAdapter {
     }
 
     private static String removeDoctypeFromReport(String report) {
-        final String regex = "^<!DOCTYPE.*>$";
+        final String regex = "<!DOCTYPE.*?>";
         final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 
         return pattern.matcher(report).replaceAll("");
