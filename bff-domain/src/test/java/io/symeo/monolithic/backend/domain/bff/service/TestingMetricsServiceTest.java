@@ -135,6 +135,7 @@ public class TestingMetricsServiceTest {
         final UUID teamId = UUID.randomUUID();
         final Date startDate = stringToDate("2022-01-01");
         final Date endDate = stringToDate("2022-02-01");
+        final Date endDateEndOfDay = stringToDate("2022-02-02");
 
         final String repo1Name = faker.starTrek().location();
         final String repo2Name = faker.starTrek().location();
@@ -153,7 +154,7 @@ public class TestingMetricsServiceTest {
         when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
         when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, endDate))
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, endDateEndOfDay))
                 .thenReturn(Optional.of(CommitTestingData.builder()
                         .unitTestCount(10)
                         .integrationTestCount(20)
@@ -165,7 +166,7 @@ public class TestingMetricsServiceTest {
                         )
                         .build()));
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name, repo2DefaultBranch, endDate))
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name, repo2DefaultBranch, endDateEndOfDay))
                 .thenReturn(Optional.of(CommitTestingData.builder()
                         .unitTestCount(20)
                         .integrationTestCount(30)
