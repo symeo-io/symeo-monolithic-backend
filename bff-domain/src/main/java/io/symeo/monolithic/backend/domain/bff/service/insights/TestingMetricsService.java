@@ -15,6 +15,7 @@ import io.symeo.monolithic.backend.job.domain.port.in.CommitTestingDataFacadeAda
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +71,7 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
 
         for (RepositoryView repository : repositories) {
             Optional<CommitTestingData> testingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
-                organization.getId(), repository.getName(), repository.getDefaultBranch(), endDate
+                organization.getId(), repository.getName(), repository.getDefaultBranch(), Date.from(endDate.toInstant().plus(1, ChronoUnit.DAYS))
             );
             Optional<CommitTestingData> previousTestingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
                 organization.getId(), repository.getName(), repository.getDefaultBranch(), startDate
