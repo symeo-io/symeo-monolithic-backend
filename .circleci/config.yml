@@ -40,6 +40,12 @@ jobs:
           name: Unit Tests
           command: ./mvnw test -T 12
       - run:
+          name: Integration Tests
+          command: ./mvnw failsafe:integration-test failsafe:verify -T 12
+      - run:
+          name: Cat report
+          command: tail -c 3000 coverage/target/site/jacoco-aggregate/jacoco.xml
+      - run:
           name: Send tests data to Symeo
           command: |
             curl -o- ${SYMEO_TESTING_SCRIPT_URL} | bash -s -- \
@@ -53,9 +59,6 @@ jobs:
               --repository-name ${CIRCLE_PROJECT_REPONAME} \
               --branch-name ${CIRCLE_BRANCH} \
               --commit-sha ${CIRCLE_SHA1}
-      - run:
-          name: Integration Tests
-          command: ./mvnw failsafe:integration-test failsafe:verify -T 12
       - slack/notify:
           event: fail
           template: basic_fail_1
