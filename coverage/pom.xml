@@ -98,6 +98,7 @@
                 <executions>
                     <execution>
                         <id>report-aggregate</id>
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>report-aggregate</goal>
                         </goals>
