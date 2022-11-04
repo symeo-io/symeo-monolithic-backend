@@ -22,11 +22,8 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
         final Optional<OrganizationSettings> optionalOrganizationSettings =
                 organizationStorageAdapter.findOrganizationSettingsForOrganizationId(organization.getId());
         if (optionalOrganizationSettings.isEmpty()) {
-            final String defaultMostUsedBranch =
-                    bffExpositionStorageAdapter.findDefaultMostUsedBranchForOrganizationId(organization.getId());
             final OrganizationSettings organizationSettings =
-                    OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organization.getId(),
-                            defaultMostUsedBranch);
+                    OrganizationSettings.initializeFromOrganizationId(organization.getId());
             organizationStorageAdapter.saveOrganizationSettings(organizationSettings);
         }
     }
@@ -62,7 +59,7 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
 
     @Override
     public Optional<OrganizationSettings> getOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId,
-                                                                                        UUID organizationId) {
+                                                                                        UUID organizationId) throws SymeoException {
         return organizationStorageAdapter.findOrganizationSettingsForIdAndOrganizationId(organizationSettingsId,
                 organizationId);
     }

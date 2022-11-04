@@ -80,7 +80,7 @@ public class SymeoCycleTeamApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .id(organizationSettingsId)
                 .organizationId(organizationEntity.getId())
                 .pullRequestMergedOnBranchRegex("^main$")
-                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.toString())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
         final RepositoryEntity repositoryEntity = repositoryRepository.save(
@@ -218,7 +218,7 @@ public class SymeoCycleTeamApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .organizationId(organizationId)
                 .pullRequestMergedOnBranchRegex(null)
                 .tagRegex("^infrastructure-.*")
-                .deployDetectionType(DeployDetectionTypeDomainEnum.TAG.toString())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.TAG.getValue())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
         tagRepository.save(

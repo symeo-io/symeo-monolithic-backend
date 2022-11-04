@@ -5,6 +5,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySet
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
@@ -90,11 +91,11 @@ public interface OrganizationMapper {
                 .tagRegex(deployDetectionSettings.getTagRegex())
                 .pullRequestMergedOnBranchRegex(deployDetectionSettings.getPullRequestMergedOnBranchRegex())
                 .excludeBranchRegexes(deployDetectionSettings.getExcludeBranchRegexes())
-                .deployDetectionType(isNull(deployDetectionSettings.getDeployDetectionType()) ? DeployDetectionTypeDomainEnum.PULL_REQUEST.value : deployDetectionSettings.getDeployDetectionType().toString())
+                .deployDetectionType(deployDetectionSettings.getDeployDetectionType().getValue())
                 .build();
     }
 
-    static OrganizationSettings settingsToDomain(final OrganizationSettingsEntity organizationSettingsEntity) {
+    static OrganizationSettings settingsToDomain(final OrganizationSettingsEntity organizationSettingsEntity) throws SymeoException {
         return OrganizationSettings.builder()
                 .id(organizationSettingsEntity.getId())
                 .organizationId(organizationSettingsEntity.getOrganizationId())
@@ -105,7 +106,7 @@ public interface OrganizationMapper {
                                                 .tagRegex(organizationSettingsEntity.getTagRegex())
                                                 .pullRequestMergedOnBranchRegex(organizationSettingsEntity.getPullRequestMergedOnBranchRegex())
                                                 .excludeBranchRegexes(organizationSettingsEntity.getExcludeBranchRegexes())
-                                                .deployDetectionType(DeployDetectionTypeDomainEnum.fromValue(organizationSettingsEntity.getDeployDetectionType()))
+                                                .deployDetectionType(DeployDetectionTypeDomainEnum.fromString(organizationSettingsEntity.getDeployDetectionType()))
                                                 .build()
                                 )
                                 .build()

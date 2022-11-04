@@ -16,10 +16,12 @@ public class OrganizationService implements OrganizationFacadeAdapter {
     private final OrganizationStorageAdapter organizationStorageAdapter;
     private final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter;
     private final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter;
+    private final OrganizationSettingsService organizationSettingsService;
 
     @Override
     public Organization createOrganization(Organization organization) throws SymeoException {
         final Organization createdOrganization = organizationStorageAdapter.createOrganization(organization);
+        organizationSettingsService.initializeOrganizationSettingsForOrganization(createdOrganization);
         bffSymeoDataProcessingJobApiAdapter.startDataProcessingJobForOrganizationIdAndVcsOrganizationId(
                 createdOrganization.getId(), createdOrganization.getVcsOrganization().getId()
         );

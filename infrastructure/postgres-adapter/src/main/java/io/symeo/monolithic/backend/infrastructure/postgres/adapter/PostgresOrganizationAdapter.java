@@ -4,6 +4,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
@@ -88,21 +89,23 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter, 
     @Override
     @Transactional(readOnly = true)
     public Optional<OrganizationSettings> findOrganizationSettingsForOrganizationId(UUID organizationId) throws SymeoException {
-        try {
-            return organizationSettingsRepository.findByOrganizationId(organizationId).map(OrganizationMapper::settingsToDomain);
-        } catch (Exception e) {
-            LOGGER.error("Failed to find organizationSettings", e);
-            throw SymeoException.builder()
-                    .rootException(e)
-                    .code(POSTGRES_EXCEPTION)
-                    .message("Failed to find organizationSettings")
-                    .build();
+
+        Optional<OrganizationSettingsEntity> optionalOrganizationSettings = organizationSettingsRepository.findByOrganizationId(organizationId);
+        if (optionalOrganizationSettings.isPresent()) {
+            return Optional.of(OrganizationMapper.settingsToDomain(optionalOrganizationSettings.get()));
+        } else {
+            return Optional.empty();
         }
     }
 
     @Override
     public Optional<OrganizationSettings> findOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId,
-                                                                                         UUID organizationId) {
-        return organizationSettingsRepository.findByIdAndOrganizationId(organizationSettingsId, organizationId).map(OrganizationMapper::settingsToDomain);
+                                                                                         UUID organizationId) throws SymeoException {
+        Optional<OrganizationSettingsEntity> optionalOrganizationSettings = organizationSettingsRepository.findByIdAndOrganizationId(organizationSettingsId, organizationId);
+        if (optionalOrganizationSettings.isPresent()){
+            return Optional.of(OrganizationMapper.settingsToDomain(optionalOrganizationSettings.get()));
+        } else{
+            return Optional.empty();
+        }
     }
 }
