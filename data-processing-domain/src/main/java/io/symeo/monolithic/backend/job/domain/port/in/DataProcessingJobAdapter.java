@@ -12,5 +12,9 @@ public interface DataProcessingJobAdapter {
     void startToCollectVcsDataForOrganizationIdAndRepositoryIds(UUID organizationId, List<String> repositoryIds) throws SymeoException;
 
     void startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(UUID organizationId, UUID teamId,
-                                                                         List<String> repositoryIds) throws SymeoException;
+                                                                         List<String> repositoryIds,
+                                                                         String deployDetectionType,
+                                                                         String pullRequestMergedOnBranchRegexes,
+                                                                         String tagRegex,
+                                                                         List<String> excludeBranchRegexes) throws SymeoException;
 }

@@ -6,10 +6,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySet
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.bff.model.metric.AverageCycleTime;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetrics;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiecePage;
+import io.symeo.monolithic.backend.domain.bff.model.metric.*;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
@@ -41,10 +38,12 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final AverageCycleTimeFactory averageCycleTimeFactory = mock(AverageCycleTimeFactory.class);
         final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
-                cycleTimeService
+                cycleTimeService,
+                averageCycleTimeFactory
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -156,10 +155,12 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final AverageCycleTimeFactory averageCycleTimeFactory = mock(AverageCycleTimeFactory.class);
         final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
-                cycleTimeService
+                cycleTimeService,
+                averageCycleTimeFactory
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -232,10 +233,12 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final AverageCycleTimeFactory averageCycleTimeFactory = mock(AverageCycleTimeFactory.class);
         final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
-                cycleTimeService
+                cycleTimeService,
+                averageCycleTimeFactory
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -346,10 +349,12 @@ public class CycleTimeMetricsServiceTest {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
         final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final CycleTimeService cycleTimeService = mock(CycleTimeService.class);
+        final AverageCycleTimeFactory averageCycleTimeFactory = mock(AverageCycleTimeFactory.class);
         final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 organizationSettingsFacade,
-                cycleTimeService
+                cycleTimeService,
+                averageCycleTimeFactory
         );
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();

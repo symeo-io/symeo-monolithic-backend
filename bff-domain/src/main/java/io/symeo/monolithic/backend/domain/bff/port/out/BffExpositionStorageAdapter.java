@@ -1,6 +1,8 @@
 package io.symeo.monolithic.backend.domain.bff.port.out;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
@@ -46,11 +48,27 @@ public interface BffExpositionStorageAdapter {
                                                                                        String sortingDirection)
             throws SymeoException;
 
+    List<CycleTimePiece> findCycleTimePiecesForTeamIdBetweenStartDateAndEndDatePaginatedAndSorted(UUID teamId,
+                                                                                                  Date startDate,
+                                                                                                  Date endDate,
+                                                                                                  Integer pageIndex,
+                                                                                                  Integer pageSize,
+                                                                                                  String sortingParameter,
+                                                                                                  String sortingDirection)
+            throws SymeoException;
+
+    List<CycleTimePiece> findCycleTimePiecesForTeamIdBetweenStartDateAndEndDat(UUID teamId, Date startDate, Date endDate)
+            throws SymeoException;
+
+
     int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 
     List<PullRequestView> readPullRequestsWithCommitsForTeamIdUntilEndDate(UUID teamId,
                                                                            Date endDate)
+            throws SymeoException;
+
+    List<CycleTime> findCycleTimesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 
     String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) throws SymeoException;

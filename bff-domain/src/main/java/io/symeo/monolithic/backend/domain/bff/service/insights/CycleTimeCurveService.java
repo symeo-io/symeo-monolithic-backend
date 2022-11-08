@@ -1,8 +1,6 @@
 package io.symeo.monolithic.backend.domain.bff.service.insights;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
-import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
-import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeFactory;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurveWithAverage;
@@ -38,6 +36,20 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                                                                                 UUID teamId,
                                                                                 Date startDate,
                                                                                 Date endDate) throws SymeoException {
+
+        final int range = 1;
+        final List<Date> rangeDates = getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
+                range, organization.getTimeZone());
+        final List<CycleTime> cycleTimesForTeamIdBetweenStartDateAndEndDate =
+                bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate)
+                        .stream()
+                        .map(cycleTime -> cycleTime.mapDeployDateToClosestRangeDate(rangeDates, cycleTime.getDeployDate()))
+                        .toList();
+        return CycleTimePieceCurveWithAverage.buildPullRequestCurve(cycleTimesForTeamIdBetweenStartDateAndEndDate);
+
+
+
+        /*
         final int range = 1;
         final List<Date> rangeDates = getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
                 range, organization.getTimeZone());
@@ -58,7 +70,7 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
             return getCycleTimePieceCurveWithAverageForDeployOnTagRegex(teamId, startDate, endDate, rangeDates,
                     tagRegex, excludeBranchRegexes);
         }
-        return CycleTimePieceCurveWithAverage.builder().build();
+        return CycleTimePieceCurveWithAverage.builder().build();*/
     }
 
     private CycleTimePieceCurveWithAverage getCycleTimePieceCurveWithAverageForPullRequestMergedOnBranchRegex(UUID teamId,

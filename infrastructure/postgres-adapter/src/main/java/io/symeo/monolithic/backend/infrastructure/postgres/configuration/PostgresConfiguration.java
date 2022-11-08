@@ -37,11 +37,12 @@ public class PostgresConfiguration {
                                                      final CommitRepository commitRepository,
                                                      final TagRepository tagRepository,
                                                      final CustomCommitRepository customCommitRepository,
-                                                     final VcsOrganizationRepository vcsOrganizationRepository) {
+                                                     final VcsOrganizationRepository vcsOrganizationRepository,
+                                                     final CustomCycleTimeRepository customCycleTimeRepository) {
         return new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
                 pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository,
                 customPullRequestViewRepository, customPullRequestWithCommitsAndCommentsRepository, commitRepository,
-                tagRepository, customCommitRepository, vcsOrganizationRepository);
+                tagRepository, customCommitRepository, vcsOrganizationRepository, customCycleTimeRepository);
     }
 
     @Bean
@@ -104,5 +105,9 @@ public class PostgresConfiguration {
     @Bean
     public CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository(final EntityManager entityManager) {
         return new CustomPullRequestWithCommitsAndCommentsRepository(entityManager);
+    }
+    @Bean
+    public CustomCycleTimeRepository customCycleTimeRepository(final EntityManager entityManager) {
+        return new CustomCycleTimeRepository(entityManager);
     }
 }

@@ -6,6 +6,7 @@ import lombok.ToString;
 import lombok.Value;
 
 import java.util.Date;
+import java.util.List;
 
 @Builder
 @Value
@@ -14,4 +15,8 @@ public class RepositoryDateRangeTask {
     Repository repository;
     Date startDate;
     Date endDate;
+    String deployDetectionType;
+    String pullRequestMergedOnBranchRegex;
+    String tagRegex;
+    List<String> excludedBranchRegexes;
 }

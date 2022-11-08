@@ -45,11 +45,17 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     @Override
     public void startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(UUID organizationId, UUID teamId,
-                                                                                List<String> repositoryIds) throws SymeoException {
+                                                                                List<String> repositoryIds,
+                                                                                String deployDetectionType,
+                                                                                String pullRequestMergedOnBranchRegexes,
+                                                                                String tagRegex,
+                                                                                List<String> excludeBranchRegexes) throws SymeoException {
         final List<Repository> allRepositoriesByIds =
                 dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds);
         validateRepositories(organizationId, repositoryIds, allRepositoriesByIds);
-        jobManager.start(buildCollectVcsDataForTeamIdJob(organizationId, teamId, allRepositoriesByIds));
+        jobManager.start(buildCollectVcsDataForTeamIdJob(
+                organizationId, teamId, allRepositoriesByIds, deployDetectionType, pullRequestMergedOnBranchRegexes, tagRegex, excludeBranchRegexes)
+        );
     }
 
     @Override
@@ -107,13 +113,21 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     }
 
     private Job buildCollectVcsDataForTeamIdJob(final UUID organizationId, final UUID teamId,
-                                                final List<Repository> allRepositoriesByIds) {
+                                                final List<Repository> allRepositoriesByIds,
+                                                String deployDetectionType,
+                                                String pullRequestMergedOnBranchRegexes,
+                                                String tagRegex,
+                                                List<String> excludeBranchRegexes) {
         return Job.builder()
                 .organizationId(organizationId)
                 .teamId(teamId)
                 .jobRunnable(
                         CollectVcsDataForRepositoriesAndDatesJobRunnable.builder()
                                 .repositories(allRepositoriesByIds)
+                                .deployDetectionType(deployDetectionType)
+                                .pullRequestMergedOnBranchRegexes(pullRequestMergedOnBranchRegexes)
+                                .tagRegex(tagRegex)
+                                .excludeBranchRegexes(excludeBranchRegexes)
                                 .dataProcessingJobStorage(dataProcessingJobStorage)
                                 .vcsDataProcessingService(vcsDataProcessingService)
                                 .build()

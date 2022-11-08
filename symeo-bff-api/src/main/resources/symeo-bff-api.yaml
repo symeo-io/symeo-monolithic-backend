@@ -1413,7 +1413,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: [ "status", "creation_date", "merge_date", "id", "vcs_url", "title", "author", "vcs_repository" ]
+            enum: [ "id", "status", "creation_date", "merge_date", "vcs_url", "title", "author", "vcs_repository", "value", "coding_time", "review_time", "time_to_deploy" ]
         - in: query
           name: sort_dir
           required: true

@@ -85,6 +85,20 @@ public interface PullRequestMapper {
                 .build();
     }
 
+    static PullRequestView entityToDomainView(final PullRequestEntity pullRequestEntity) {
+        return PullRequestView.builder()
+                .id(pullRequestEntity.getId())
+                .creationDate(Date.from(pullRequestEntity.getCreationDate().toInstant()))
+                .mergeDate(isNull(pullRequestEntity.getMergeDate()) ? null :
+                        Date.from(pullRequestEntity.getMergeDate().toInstant()))
+                .status(pullRequestEntity.getState())
+                .vcsUrl(pullRequestEntity.getVcsUrl())
+                .title(pullRequestEntity.getTitle())
+                .authorLogin(pullRequestEntity.getAuthorLogin())
+                .repository(pullRequestEntity.getVcsRepository())
+                .build();
+    }
+
     static PullRequestView fullViewToDomain(final PullRequestFullViewDTO pullRequestFullViewDTO) {
         return PullRequestView.builder()
                 .id(pullRequestFullViewDTO.getId())

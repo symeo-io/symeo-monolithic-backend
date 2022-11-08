@@ -4,10 +4,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.bff.model.metric.AverageCycleTime;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetrics;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiecePage;
+import io.symeo.monolithic.backend.domain.bff.model.metric.*;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
@@ -28,8 +25,6 @@ import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.*;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 
 @Slf4j
@@ -40,11 +35,30 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
     private final OrganizationSettingsFacade organizationSettingsFacade;
     private final CycleTimeService cycleTimeService;
 
+    private final AverageCycleTimeFactory averageCycleTimeFactory;
+
     @Override
     public Optional<CycleTimeMetrics> computeCycleTimeMetricsForTeamIdFromStartDateToEndDate(final Organization organization,
                                                                                              final UUID teamId,
                                                                                              final Date startDate,
                                                                                              final Date endDate) throws SymeoException {
+
+        final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone());
+
+        final List<CycleTime> currentCycleTimesForTeamId =
+                bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate);
+        final Optional<AverageCycleTime> currentAverageCycleTimeMetrics =
+                averageCycleTimeFactory.computeAverageCycleTimeMetricsFromCycleTimeList(currentCycleTimesForTeamId);
+
+        final List<CycleTime> previousCycleTimesForTeamId =
+                bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, previousStartDate, startDate);
+        final Optional<AverageCycleTime> previousAverageCycleTimeMetrics =
+                averageCycleTimeFactory.computeAverageCycleTimeMetricsFromCycleTimeList(previousCycleTimesForTeamId);
+
+        return CycleTimeMetrics.buildFromCurrentAndPreviousCycleTimes(currentAverageCycleTimeMetrics, previousAverageCycleTimeMetrics,
+                previousStartDate, startDate,
+                endDate);
+        /*
         final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate, endDate,
                 organization.getTimeZone());
         final OrganizationSettings organizationSettings =
@@ -67,7 +81,7 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
                         " " +
                         "and organizationSettings {}",
                 organization, teamId, organizationSettings);
-        return empty();
+        return empty();*/
     }
 
     @Override
@@ -79,6 +93,23 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
                                                                                     final Integer pageSize,
                                                                                     final String sortBy,
                                                                                     final String sortDir) throws SymeoException {
+        final List<CycleTimePiece> cycleTimePiecesForTeamIdBetweenStartDateAndEndDate =
+                bffExpositionStorageAdapter.findCycleTimePiecesForTeamIdBetweenStartDateAndEndDat(
+                        teamId, startDate, endDate
+                );
+        validatePagination(pageIndex, pageSize);
+        validateSortingInputs(sortDir, sortBy, PullRequestView.AVAILABLE_SORTING_PARAMETERS);
+        final List<CycleTimePiece> cycleTimePiecesForTeamIdBetweenStartDateAndEndDatePaginatedAndSorted =
+                bffExpositionStorageAdapter.findCycleTimePiecesForTeamIdBetweenStartDateAndEndDatePaginatedAndSorted(
+                        teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir
+                );
+
+        return CycleTimePiecePage.builder()
+                .totalNumberOfPieces(cycleTimePiecesForTeamIdBetweenStartDateAndEndDate.size())
+                .totalNumberOfPages((int) Math.ceil(1.0f * cycleTimePiecesForTeamIdBetweenStartDateAndEndDate.size() / pageSize))
+                .cycleTimePieces(cycleTimePiecesForTeamIdBetweenStartDateAndEndDatePaginatedAndSorted)
+                .build();
+        /*
         final OrganizationSettings organizationSettings =
                 organizationSettingsFacade.getOrganizationSettingsForOrganization(organization);
         final DeployDetectionTypeDomainEnum deployDetectionType =
@@ -101,6 +132,7 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
                         "and organizationSettings {}",
                 organization, teamId, organizationSettings);
         return CycleTimePiecePage.builder().build();
+         */
     }
 
     private Optional<CycleTimeMetrics> getCycleTimeMetricsForPullRequestMergedOnBranchRegex(final UUID teamId,

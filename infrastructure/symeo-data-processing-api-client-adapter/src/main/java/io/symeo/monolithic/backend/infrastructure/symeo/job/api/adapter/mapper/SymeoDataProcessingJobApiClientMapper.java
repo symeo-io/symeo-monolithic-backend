@@ -19,11 +19,19 @@ public interface SymeoDataProcessingJobApiClientMapper {
 
     static PostStartDataProcessingJobForTeamDTO domainToTeamDTO(final UUID organizationId,
                                                                 final UUID teamId,
-                                                                final List<String> repositoryIds) {
+                                                                final List<String> repositoryIds,
+                                                                String deployDetectionType,
+                                                                String pullRequestMergedOnBranchRegex,
+                                                                String tagRegex,
+                                                                List<String> excludeBranchRegexes) {
         return PostStartDataProcessingJobForTeamDTO.builder()
                 .organizationId(organizationId)
                 .teamId(teamId)
                 .repositoryIds(repositoryIds)
+                .deployDetectionType(deployDetectionType)
+                .pullRequestMergedOnBranchRegex(pullRequestMergedOnBranchRegex)
+                .tagRegex(tagRegex)
+                .excludeBranchRegexes(excludeBranchRegexes)
                 .build();
     }
 

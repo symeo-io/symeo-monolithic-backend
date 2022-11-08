@@ -12,6 +12,8 @@ import java.util.UUID;
 public class PostStartDataProcessingJobForRepositoriesDTO {
     @JsonProperty("organization_id")
     UUID organizationId;
+    @JsonProperty("deploy_detection_type")
+    String deployDetectionType;
     @JsonProperty("repository_ids")
     List<String> repositoryIds;
 }

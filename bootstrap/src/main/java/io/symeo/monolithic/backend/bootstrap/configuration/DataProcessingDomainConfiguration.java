@@ -8,6 +8,7 @@ import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJo
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import io.symeo.monolithic.backend.job.domain.port.out.VcsOrganizationStorageAdapter;
+import io.symeo.monolithic.backend.job.domain.service.CycleTimeDataService;
 import io.symeo.monolithic.backend.job.domain.service.DataProcessingJobService;
 import io.symeo.monolithic.backend.job.domain.service.OrganizationJobService;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;

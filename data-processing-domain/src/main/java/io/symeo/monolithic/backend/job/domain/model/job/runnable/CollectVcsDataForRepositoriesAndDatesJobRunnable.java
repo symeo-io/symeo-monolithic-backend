@@ -32,6 +32,14 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
     private final VcsDataProcessingService vcsDataProcessingService;
     @NonNull
     private final DataProcessingJobStorage dataProcessingJobStorage;
+    @NonNull
+    private final String deployDetectionType;
+    @NonNull
+    private final String pullRequestMergedOnBranchRegexes;
+    @NonNull
+    private final String tagRegex;
+    @NonNull
+    private final List<String> excludeBranchRegexes;
 
     @Override
     public void run(Long jobId) throws SymeoException {
@@ -42,7 +50,12 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
         LOGGER.info("Starting to collect vcs data for repositories and date range {}", repositoryDateRangeTask);
         vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(
                 repositoryDateRangeTask.getRepository(),
-                repositoryDateRangeTask.getStartDate(), repositoryDateRangeTask.getEndDate()
+                repositoryDateRangeTask.getStartDate(),
+                repositoryDateRangeTask.getEndDate(),
+                repositoryDateRangeTask.getDeployDetectionType(),
+                repositoryDateRangeTask.getPullRequestMergedOnBranchRegex(),
+                repositoryDateRangeTask.getTagRegex(),
+                repositoryDateRangeTask.getExcludedBranchRegexes()
         );
         LOGGER.info("Vcs data collection finished for repositories and date range {}", repositoryDateRangeTask);
     }
@@ -70,6 +83,10 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
                                 .repository(repository)
                                 .startDate(startDate)
                                 .endDate(endDate)
+                                .deployDetectionType(deployDetectionType)
+                                .pullRequestMergedOnBranchRegex(pullRequestMergedOnBranchRegexes)
+                                .tagRegex(tagRegex)
+                                .excludedBranchRegexes(excludeBranchRegexes)
                                 .build()
                 ));
             }

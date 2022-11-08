@@ -52,8 +52,9 @@ public class BffDomainConfiguration {
 
     @Bean
     public TeamFacadeAdapter teamFacadeAdapter(final TeamStorage teamStorage,
-                                               final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter) {
-        return new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter);
+                                               final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter,
+                                               final OrganizationSettingsService organizationSettingsService) {
+        return new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter, organizationSettingsService);
     }
 
     @Bean
@@ -92,9 +93,10 @@ public class BffDomainConfiguration {
     @Bean
     public CycleTimeMetricsFacadeAdapter cycleTimeFacadeAdapter(final BffExpositionStorageAdapter expositionStorageAdapter,
                                                                 final OrganizationSettingsFacade organizationSettingsFacade,
-                                                                final CycleTimeService cycleTimeService) {
+                                                                final CycleTimeService cycleTimeService,
+                                                                final AverageCycleTimeFactory averageCycleTimeFactory) {
         return new CycleTimeMetricsService(expositionStorageAdapter, organizationSettingsFacade,
-                cycleTimeService);
+                cycleTimeService, averageCycleTimeFactory);
     }
 
     @Bean

@@ -1,6 +1,8 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
@@ -42,6 +44,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
     private final TagRepository tagRepository;
     private final CustomCommitRepository customCommitRepository;
     private final VcsOrganizationRepository vcsOrganizationRepository;
+    private final CustomCycleTimeRepository customCycleTimeRepository;
 
     @Override
     public void savePullRequestDetailsWithLinkedComments(List<PullRequest> pullRequests) {
@@ -163,6 +166,43 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
     }
 
     @Override
+    public List<CycleTimePiece> findCycleTimePiecesForTeamIdBetweenStartDateAndEndDatePaginatedAndSorted(UUID teamId, Date startDate, Date endDate, Integer pageIndex, Integer pageSize, String sortingParameter, String sortingDirection) throws SymeoException {
+        try {
+            final Pagination pagination = buildPagination(pageIndex, pageSize);
+            return customCycleTimeRepository.findAllCycleTimePiecesForTeamIdBetweenStartDateAndEndDatePaginatedAndSorted(
+                    teamId, startDate, endDate, pagination.getStart(), pagination.getEnd(),
+                    sortingParameterToDatabaseAttribute(sortingParameter),
+                    directionToPostgresSortingValue(sortingDirection)
+            );
+        } catch (Exception e) {
+            final String message = String.format("Failed to read cycle times for teamId %s between startDate %s and endDate %s", teamId, startDate, endDate);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public List<CycleTimePiece> findCycleTimePiecesForTeamIdBetweenStartDateAndEndDat(UUID teamId, Date startDate, Date endDate) throws SymeoException {
+        try {
+            return customCycleTimeRepository.findAllCycleTimePiecesForTeamIdBetweenStartDateAndEndDate(
+                    teamId, startDate, endDate
+            );
+        } catch (Exception e) {
+            final String message = String.format("Failed to read cycle times for teamId %s between startDate %s and endDate %s", teamId, startDate, endDate);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
     public int countPullRequestViewsForTeamIdAndStartDateAndEndDateAndPagination(final UUID teamId,
                                                                                  final Date startDate,
                                                                                  final Date endDate) throws SymeoException {
@@ -189,6 +229,23 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
                     endDate);
         } catch (Exception e) {
             final String message = String.format("Failed to read PR with commits and comments for teamId %s", teamId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CycleTime> findCycleTimesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate) throws SymeoException {
+        try {
+            return customCycleTimeRepository.findAllCycleTimeByTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate);
+
+        } catch (Exception e) {
+            final String message = String.format("Failed to read cycle times for teamId %s between startDate %s and endDate %s", teamId, startDate, endDate);
             LOGGER.error(message, e);
             throw SymeoException.builder()
                     .rootException(e)

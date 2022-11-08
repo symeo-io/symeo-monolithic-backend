@@ -65,6 +65,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
     private CustomCommitRepository customCommitRepository;
     @Autowired
     private VcsOrganizationRepository vcsOrganizationRepository;
+    @Autowired CustomCycleTimeRepository customCycleTimeRepository;
     private PostgresExpositionAdapter postgresExpositionAdapter;
 
 
@@ -85,7 +86,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
                 pullRequestFullViewRepository, customPullRequestViewRepository,
                 pullRequestWithCommitsAndCommentsRepository, commitRepository, tagRepository, customCommitRepository,
-                vcsOrganizationRepository);
+                vcsOrganizationRepository, customCycleTimeRepository);
     }
 
     @Test

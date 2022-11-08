@@ -33,7 +33,8 @@ public class VcsDataProcessingService {
     }
 
     public void collectVcsDataForRepositoryAndDateRange(final Repository repository, final Date startDate,
-                                                        final Date endDate) throws SymeoException {
+                                                        final Date endDate, String deployDetectionSettings, String pullRequestMergedOnBranchRegex,
+                                                        String tagRegex, List<String> excludedBranchRegexes) throws SymeoException {
         LOGGER.info("Starting to collect vcsData for repository {} between {} and {}", repository,
                 dateToString(startDate), dateToString(endDate));
         LOGGER.info("Starting to collect pullRequests for repository {} between {} and {}", repository,
@@ -52,6 +53,14 @@ public class VcsDataProcessingService {
         dataProcessingExpositionStorageAdapter.saveTags(
                 githubAdapter.getTags(repository)
         );
+        LOGGER.info("Starting to collect cycle times for repository {} between {} and {}", repository,
+                dateToString(startDate), dateToString(endDate));
+
+        // TODO: launching task to save cycleTime
+        dataProcessingExpositionStorageAdapter.saveCycleTimes(
+
+        )
+
         LOGGER.info("Successfully collected vcsData for repository {} between {} and {}", repository,
                 dateToString(startDate), dateToString(endDate));
     }

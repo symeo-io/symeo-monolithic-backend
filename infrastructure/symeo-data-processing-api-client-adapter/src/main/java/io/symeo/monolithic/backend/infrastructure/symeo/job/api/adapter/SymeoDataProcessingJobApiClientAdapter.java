@@ -24,8 +24,13 @@ public class SymeoDataProcessingJobApiClientAdapter implements BffSymeoDataProce
 
     @Override
     public void startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(UUID organizationId, UUID teamId,
-                                                                                 List<String> repositoryIds) throws SymeoException {
-        symeoHttpClient.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(domainToTeamDTO(organizationId, teamId, repositoryIds));
+                                                                                 List<String> repositoryIds,
+                                                                                 String deployDetectionType,
+                                                                                 String pullRequestMergedOnBranchRegex,
+                                                                                 String tagRegex,
+                                                                                 List<String> excludeBranchRegexes) throws SymeoException {
+        symeoHttpClient.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
+                domainToTeamDTO(organizationId, teamId, repositoryIds, deployDetectionType, pullRequestMergedOnBranchRegex, tagRegex, excludeBranchRegexes));
     }
 
     @Override
