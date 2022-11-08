@@ -140,6 +140,12 @@ public class BffDomainConfiguration {
         return new DeploymentMetricsService(expositionStorageAdapter, organizationSettingsFacade,
                 deploymentService);
     }
+    @Bean
+    public TestingMetricsFacadeAdapter testingMetricsFacadeAdapter(final TeamStorage teamStorage,
+                                                                   final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter,
+                                                                   final BffExpositionStorageAdapter bffExpositionStorageAdapter) {
+        return new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
+    }
 
     @Bean
     public DeploymentService deploymentService() {

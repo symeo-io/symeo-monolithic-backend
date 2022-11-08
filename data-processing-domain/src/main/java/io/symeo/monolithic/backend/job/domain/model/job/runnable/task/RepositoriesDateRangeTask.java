@@ -11,8 +11,8 @@ import java.util.List;
 @Builder
 @Value
 @ToString
-public class RepositoryDateRangeTask {
-    Repository repository;
+public class RepositoriesDateRangeTask {
+    List<Repository> repositories;
     Date startDate;
     Date endDate;
     String deployDetectionType;

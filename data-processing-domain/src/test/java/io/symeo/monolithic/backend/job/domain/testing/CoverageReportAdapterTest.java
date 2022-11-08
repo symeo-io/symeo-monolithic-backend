@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.job.domain.testing;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.job.domain.model.testing.CoverageData;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -16,8 +17,10 @@ public class CoverageReportAdapterTest {
         final String reportString = Files.readString(Paths.get("target/test-classes/testing/istanbul-report.xml"));
         final String base64Report = Base64.getEncoder().encodeToString(reportString.getBytes());
 
-        Float coverage = CoverageReportAdapter.extractCoverageFromReport(base64Report, "istanbul");
+        CoverageData coverage = CoverageReportAdapter.extractCoverageFromReport(base64Report, "istanbul");
 
-        assertThat(coverage).isEqualTo((float) 0.34827587);
+        assertThat(coverage).isNotNull();
+        assertThat(coverage.getCoveredBranches()).isEqualTo(202);
+        assertThat(coverage.getTotalBranchCount()).isEqualTo(580);
     }
 }

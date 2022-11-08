@@ -1108,7 +1108,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         vcsOrganizationRepository.save(vcsOrganizationEntity);
         final Optional<VcsOrganization> emptyVcsOrganizationByIdAndOrganizationId =
                 postgresExpositionAdapter.findVcsOrganizationByIdAndOrganizationId(
-                        faker.number().randomNumber(), organizationId
+                        faker.number().randomNumber() + 100L, organizationId
                 );
         final Optional<VcsOrganization> vcsOrganizationByIdAndOrganizationId =
                 postgresExpositionAdapter.findVcsOrganizationByIdAndOrganizationId(

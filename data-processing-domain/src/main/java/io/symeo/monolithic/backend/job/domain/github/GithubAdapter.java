@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 import static io.symeo.monolithic.backend.job.domain.github.mapper.GithubMapper.mapCommitToDomain;
 import static io.symeo.monolithic.backend.job.domain.github.mapper.GithubMapper.mapRepositoryDtoToDomain;
@@ -227,6 +229,60 @@ public class GithubAdapter {
                 .toList();
     }
 
+    public List<Commit> getCommitsForBranches(final Repository repository, final List<String> branchNames) throws SymeoException {
+        final Set<GithubCommitsDTO> deduplicatedGithubCommitsDTOs = new HashSet<>();
+        try {
+            new ForkJoinPool(2).submit(() -> {
+                branchNames.parallelStream()
+                        .map(branchName -> {
+                            try {
+                                return getCommitsForBranch(repository, branchName);
+                            } catch (SymeoException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                        .forEach(deduplicatedGithubCommitsDTOs::addAll);
+            }).get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Commit.getNameForRepository(repository),
+                dtoToBytes(deduplicatedGithubCommitsDTOs.toArray()));
+        return deduplicatedGithubCommitsDTOs.stream()
+                .map(githubCommitsDTO -> mapCommitToDomain(githubCommitsDTO, repository))
+                .toList();
+    }
+
+    private List<GithubCommitsDTO> getCommitsForBranch(Repository repository, final String branchName) throws SymeoException {
+        int page = 1;
+        final List<GithubCommitsDTO> allGithubCommitsDTOS = new ArrayList<>();
+        GithubCommitsDTO[] githubCommitsDTOS =
+                githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranch(
+                        repository.getVcsOrganizationName(), repository.getName(), branchName, page,
+                        properties.getSize()
+                );
+
+        if (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length > 0) {
+            allGithubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS).toList());
+        }
+
+        while (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length == properties.getSize()) {
+            page += 1;
+            githubCommitsDTOS =
+                    githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranch(
+                            repository.getVcsOrganizationName(), repository.getName(), branchName, page,
+                            properties.getSize()
+                    );
+            if (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length > 0) {
+                allGithubCommitsDTOS.addAll(Arrays.stream(githubCommitsDTOS).toList());
+            }
+        }
+        return allGithubCommitsDTOS;
+    }
+
     private List<GithubPullRequestDTO> getPullRequestsForRepositoryAndAlreadyCollectedPullRequests(final Repository repository,
                                                                                                    final byte[] alreadyRawCollectedPullRequests,
                                                                                                    final Date startDate,
@@ -323,19 +379,24 @@ public class GithubAdapter {
 
     private List<GithubPullRequestDTO> getGithubPullRequestDTOs(Repository repository,
                                                                 List<GithubPullRequestDTO> githubPullRequestDTOList) {
-        return githubPullRequestDTOList.parallelStream()
-                .map(githubPullRequestDTO -> {
-                    try {
-                        return Optional.of(getPullRequestDetailsForPullRequestNumber(repository, githubPullRequestDTO));
-                    } catch (SymeoException ex) {
-                        LOGGER.error("Error while getting PR from github", ex);
-                    }
-                    return Optional.empty();
+        final List<GithubPullRequestDTO> githubPullRequestDTOs = new ArrayList<>();
+        new ForkJoinPool(2).submit(() -> {
+            githubPullRequestDTOList.stream()
+                    .map(githubPullRequestDTO -> {
+                        try {
+                            return Optional.of(getPullRequestDetailsForPullRequestNumber(repository,
+                                    githubPullRequestDTO));
+                        } catch (SymeoException ex) {
+                            LOGGER.error("Error while getting PR from github", ex);
+                        }
+                        return Optional.empty();
 
-                })
-                .filter(Optional::isPresent)
-                .map(o -> (GithubPullRequestDTO) o.get())
-                .toList();
+                    })
+                    .filter(Optional::isPresent)
+                    .map(o -> (GithubPullRequestDTO) o.get())
+                    .forEach(githubPullRequestDTOs::add);
+        });
+        return githubPullRequestDTOs;
     }
 
     private GithubPullRequestDTO[] getGithubPullRequestDTOSFromBytes(byte[] bytes) throws SymeoException {

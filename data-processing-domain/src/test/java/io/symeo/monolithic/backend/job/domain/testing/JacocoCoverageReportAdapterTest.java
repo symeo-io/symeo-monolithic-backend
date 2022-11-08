@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.job.domain.testing;
 
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.job.domain.model.testing.CoverageData;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -15,8 +16,10 @@ public class JacocoCoverageReportAdapterTest {
         final JacocoCoverageReportAdapter jacocoCoverageReportAdapter = new JacocoCoverageReportAdapter();
         final String reportString = Files.readString(Paths.get("target/test-classes/testing/jacoco-report.xml"));
 
-        Float coverage = jacocoCoverageReportAdapter.extractCoverageFromReport(reportString);
+        CoverageData coverage = jacocoCoverageReportAdapter.extractCoverageFromReport(reportString);
 
-        assertThat(coverage).isEqualTo((float) 0.24202128);
+        assertThat(coverage).isNotNull();
+        assertThat(coverage.getCoveredBranches()).isEqualTo(455);
+        assertThat(coverage.getTotalBranchCount()).isEqualTo(1880);
     }
 }

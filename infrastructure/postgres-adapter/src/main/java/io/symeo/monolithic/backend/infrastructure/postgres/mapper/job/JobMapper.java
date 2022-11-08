@@ -3,7 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.job;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.bff.model.job.JobView;
-import io.symeo.monolithic.backend.domain.bff.model.job.RepositoryDateRangeTaskView;
+import io.symeo.monolithic.backend.domain.bff.model.job.RepositoriesDateRangeTaskView;
 import io.symeo.monolithic.backend.domain.bff.model.job.TaskView;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
@@ -88,7 +88,7 @@ public interface JobMapper {
             case CollectRepositoriesJobRunnable.JOB_CODE:
                 return mapTasksInputToDataProcessingVcsOrganization(jobEntity);
             case CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE:
-                return mapTasksInputToDataProcessingRepositoryDateRangeTaskView(jobEntity);
+                return mapTasksInputToDataProcessingRepositoriesDateRangeTaskView(jobEntity);
             default:
                 throw SymeoException.builder()
                         .code(SymeoExceptionCode.INVALID_JOB_CODE)
@@ -102,7 +102,7 @@ public interface JobMapper {
             case CollectRepositoriesJobRunnable.JOB_CODE:
                 return mapTasksInputToBffVcsOrganization(jobEntity);
             case CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE:
-                return mapTasksInputToBffRepositoryDateRangeTaskView(jobEntity);
+                return mapTasksInputToBffRepositoriesDateRangeTaskView(jobEntity);
             default:
                 throw SymeoException.builder()
                         .code(SymeoExceptionCode.INVALID_JOB_CODE)
@@ -112,11 +112,11 @@ public interface JobMapper {
     }
 
 
-    private static List<Task> mapTasksInputToDataProcessingRepositoryDateRangeTaskView(JobEntity jobEntity) throws SymeoException {
+    private static List<Task> mapTasksInputToDataProcessingRepositoriesDateRangeTaskView(JobEntity jobEntity) throws SymeoException {
         try {
             return Stream.of(OBJECT_MAPPER.readValue(jobEntity.getTasks(), Task[].class))
                     .map(task -> task.toBuilder()
-                            .input(OBJECT_MAPPER.convertValue(task.getInput(), RepositoryDateRangeTaskView.class))
+                            .input(OBJECT_MAPPER.convertValue(task.getInput(), RepositoriesDateRangeTaskView.class))
                             .build())
                     .toList();
         } catch (JsonProcessingException e) {
@@ -128,11 +128,11 @@ public interface JobMapper {
         }
     }
 
-    private static List<TaskView> mapTasksInputToBffRepositoryDateRangeTaskView(JobEntity jobEntity) throws SymeoException {
+    private static List<TaskView> mapTasksInputToBffRepositoriesDateRangeTaskView(JobEntity jobEntity) throws SymeoException {
         try {
             return Stream.of(OBJECT_MAPPER.readValue(jobEntity.getTasks(), Task[].class))
                     .map(task -> task.toBuilder()
-                            .input(OBJECT_MAPPER.convertValue(task.getInput(), RepositoryDateRangeTaskView.class))
+                            .input(OBJECT_MAPPER.convertValue(task.getInput(), RepositoriesDateRangeTaskView.class))
                             .build())
                     .map(task ->
                             TaskView.builder()
