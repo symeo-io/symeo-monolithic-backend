@@ -16,7 +16,7 @@ public interface TagMapper {
                 .build();
     }
 
-    static TagView entityToDomain(final TagEntity tagEntity) {
+    static TagView entityToDomainView(final TagEntity tagEntity) {
         return TagView.builder()
                 .commitSha(tagEntity.getSha())
                 .name(tagEntity.getName())
@@ -24,6 +24,14 @@ public interface TagMapper {
                         .id(tagEntity.getRepositoryEntity().getId())
                         .name(tagEntity.getRepositoryEntity().getName())
                         .build())
+                .vcsUrl(tagEntity.getVcsUrl())
+                .build();
+    }
+    static Tag entityToDomain(final TagEntity tagEntity) {
+        return Tag.builder()
+                .commitSha(tagEntity.getSha())
+                .name(tagEntity.getName())
+                .repositoryId(tagEntity.getRepositoryId())
                 .vcsUrl(tagEntity.getVcsUrl())
                 .build();
     }

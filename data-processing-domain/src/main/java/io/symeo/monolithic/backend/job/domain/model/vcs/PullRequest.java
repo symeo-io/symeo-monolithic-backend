@@ -1,17 +1,18 @@
 package io.symeo.monolithic.backend.job.domain.model.vcs;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
-@Value
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder(toBuilder = true)
+@Data
+@Slf4j
 public class PullRequest {
     private static final String ALL = "pull_requests";
     public static final String OPEN = "open";
@@ -45,7 +46,8 @@ public class PullRequest {
     List<Commit> commits = List.of();
     @Builder.Default
     List<Comment> comments = List.of();
-
+    @Builder.Default
+    List<String> commitShaList = new ArrayList<>();
 
     public static String getNameFromRepositoryId(String repositoryId) {
         return ALL + "_" + repositoryId;
@@ -61,5 +63,26 @@ public class PullRequest {
         return MERGE;
     }
 
+    public List<Commit> getCommitsOrderByDate() {
+        List<Commit> commitArrayList = new ArrayList<>(this.commits);
+        commitArrayList = commitArrayList.stream()
+                .filter(commit -> {
+                    if (isNull(commit)) {
+                        LOGGER.warn("Missing commit pour PR {}", this.id);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                })
+                .collect(Collectors.toList());
+        commitArrayList.sort(Comparator.comparing(Commit::getDate));
+        return commitArrayList;
+    }
+
+    public List<Comment> getCommentsOrderByDate() {
+        final ArrayList<Comment> commentArrayList = new ArrayList<>(this.comments);
+        commentArrayList.sort(Comparator.comparing(Comment::getCreationDate));
+        return commentArrayList;
+    }
 
 }

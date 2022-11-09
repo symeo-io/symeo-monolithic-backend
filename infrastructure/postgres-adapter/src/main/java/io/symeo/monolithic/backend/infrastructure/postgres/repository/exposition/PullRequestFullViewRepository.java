@@ -1,7 +1,10 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition;
 
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.PullRequest;
+import org.springframework.beans.PropertyValues;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -77,4 +80,11 @@ public interface PullRequestFullViewRepository extends JpaRepository<PullRequest
     )
     List<PullRequestFullViewDTO> findAllMergedPullRequestsForTeamIdUntilEndDate(@Param("teamId") UUID teamId,
                                                                          @Param("endDate") Date endDate);
+    @Query(nativeQuery = true, value = "select * " +
+            " from exposition_storage.pull_request pr" +
+            " where pr.state = 'merge' " +
+            " and pr.merge_date <= :endDate " +
+            " and pr.vcs_repository_id = :repositoryId")
+    List<PullRequestEntity> findAllMergedPullRequestsForRepositoryIdUntilEndDate(@Param("repositoryId") String repositoryId,
+                                                                                 @Param("endDate") Date endDate);
 }

@@ -17,8 +17,14 @@ public interface CommentMapper {
                 .build();
     }
 
-    static CommentView entityToDomain(final CommentEntity commentEntity) {
+    static CommentView entityToDomainView(final CommentEntity commentEntity) {
         return CommentView.builder()
+                .id(commentEntity.getId())
+                .creationDate(Date.from(commentEntity.getCreationDate().toInstant()))
+                .build();
+    }
+    static Comment entityToDomain(final CommentEntity commentEntity) {
+        return Comment.builder()
                 .id(commentEntity.getId())
                 .creationDate(Date.from(commentEntity.getCreationDate().toInstant()))
                 .build();

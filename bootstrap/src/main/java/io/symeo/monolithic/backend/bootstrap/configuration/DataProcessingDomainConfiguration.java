@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.bootstrap.configuration;
 
 import io.symeo.monolithic.backend.job.domain.github.GithubAdapter;
 import io.symeo.monolithic.backend.job.domain.model.job.JobManager;
+import io.symeo.monolithic.backend.job.domain.model.vcs.CycleTimeFactory;
 import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.job.domain.port.in.OrganizationJobFacade;
 import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
@@ -32,8 +33,20 @@ public class DataProcessingDomainConfiguration {
 
     @Bean
     public VcsDataProcessingService vcsDataProcessingService(final GithubAdapter githubAdapter,
-                                                             final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter) {
-        return new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter);
+                                                             final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter,
+                                                             final CycleTimeDataService cycleTimeDataService) {
+        return new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter, cycleTimeDataService);
+    }
+
+    @Bean
+    CycleTimeDataService cycleTimeDataService(final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter,
+                                              final CycleTimeFactory cycleTimeFactory) {
+        return new CycleTimeDataService(dataProcessingExpositionStorageAdapter, cycleTimeFactory);
+    }
+
+    @Bean
+    CycleTimeFactory cycleTimeFactory() {
+        return new CycleTimeFactory();
     }
 
     @Bean

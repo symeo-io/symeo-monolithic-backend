@@ -45,11 +45,13 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
     private final CustomCommitRepository customCommitRepository;
     private final VcsOrganizationRepository vcsOrganizationRepository;
     private final CustomCycleTimeRepository customCycleTimeRepository;
+    private final CycleTimeRepository cycleTimeRepository;
 
     @Override
-    public void savePullRequestDetailsWithLinkedComments(List<PullRequest> pullRequests) {
+    public List<PullRequest> savePullRequestDetailsWithLinkedComments(List<PullRequest> pullRequests) {
         pullRequestRepository.saveAll(pullRequests.stream().map(PullRequestMapper::domainToEntity)
                 .toList());
+        return pullRequests;
     }
 
     @Override
@@ -329,6 +331,75 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
     }
 
     @Override
+    public void saveCycleTimes(List<io.symeo.monolithic.backend.job.domain.model.vcs.CycleTime> cycleTimes) throws SymeoException {
+        try {
+            LOGGER.info("Saving {} cycle times to database", cycleTimes.size());
+            cycleTimeRepository.saveAll(cycleTimes.stream().map(CycleTimeMapper::domainToEntity).toList());
+        } catch (Exception e) {
+            final String message = "Failed to save cycle times";
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .rootException(e)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Commit> readAllCommitsForRepositoryId(String repositoryId) throws SymeoException {
+        try {
+            return commitRepository.findAllForRepositoryId(repositoryId)
+                    .stream()
+                    .map(CommitMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read commits for repositoryId %s", repositoryId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public List<PullRequest> readMergedPullRequestsForRepositoryIdUntilEndDate(String repositoryId, Date endDate) throws SymeoException {
+        try {
+            return pullRequestFullViewRepository.findAllMergedPullRequestsForRepositoryIdUntilEndDate(repositoryId, endDate)
+                    .stream()
+                    .map(PullRequestMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read PR for repositoryId %s until endDate %s", repositoryId, endDate);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public List<Tag> readTagsForRepositoryId(String repositoryId) throws SymeoException {
+        try {
+            return tagRepository.findAllForRepositoryId(repositoryId).stream()
+                    .map(TagMapper::entityToDomain)
+                    .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read tags for repositoryId %s", repositoryId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<PullRequestView> readMergedPullRequestsForTeamIdBetweenStartDateAndEndDate(final UUID teamId,
                                                                                            final Date startDate,
@@ -407,7 +478,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
     public List<TagView> findTagsForTeamId(UUID teamId) throws SymeoException {
         try {
             return tagRepository.findAllForTeamId(teamId).stream()
-                    .map(TagMapper::entityToDomain)
+                    .map(TagMapper::entityToDomainView)
                     .toList();
         } catch (Exception e) {
             final String message = String.format("Failed to read tags for teamId %s", teamId);
@@ -425,7 +496,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
                                                                                  Date endDate) throws SymeoException {
         try {
             return commitRepository.findAllForShaListBetweenStartDateAndEndDate(shaList, startDate, endDate).stream()
-                    .map(CommitMapper::entityToDomain)
+                    .map(CommitMapper::entityToDomainView)
                     .toList();
         } catch (Exception e) {
             final String message = String.format("Failed to read commits for shaList %s between startDate %s and " +

@@ -57,11 +57,11 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
             vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(
                     repository,
                     repositoriesDateRangeTask.getStartDate(),
-                repositoriesDateRangeTask.getEndDate(),
-                repositoryDateRangeTask.getDeployDetectionType(),
-                repositoryDateRangeTask.getPullRequestMergedOnBranchRegex(),
-                repositoryDateRangeTask.getTagRegex(),
-                repositoryDateRangeTask.getExcludedBranchRegexes()
+                    repositoriesDateRangeTask.getEndDate(),
+                    repositoriesDateRangeTask.getDeployDetectionType(),
+                    repositoriesDateRangeTask.getPullRequestMergedOnBranchRegex(),
+                    repositoriesDateRangeTask.getTagRegex(),
+                    repositoriesDateRangeTask.getExcludedBranchRegexes()
             );
             LOGGER.info("Vcs data collection finished for repositories and date range {}", repositoriesDateRangeTask);
         }
@@ -79,8 +79,8 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
         for (List<Date> dateRange :
                 getDateRangesFromStartDateAndDateRangeNumberOfDayAndRangeNumberOfDays(
                         new Date(),
-                        365, // 2 years
-                        60, // 1 month
+                        365, // 1 years
+                        60, // 2 month
                         TimeZone.getDefault()
                 )) {
             final Date endDate = dateRange.get(0);
@@ -91,10 +91,10 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
                             .startDate(startDate)
                             .endDate(endDate)
                             .deployDetectionType(deployDetectionType)
-                                .pullRequestMergedOnBranchRegex(pullRequestMergedOnBranchRegexes)
-                                .tagRegex(tagRegex)
-                                .excludedBranchRegexes(excludeBranchRegexes)
-                                .build()
+                            .pullRequestMergedOnBranchRegex(pullRequestMergedOnBranchRegexes)
+                            .tagRegex(tagRegex)
+                            .excludedBranchRegexes(excludeBranchRegexes)
+                            .build()
             ));
         }
         tasks.sort((t1, t2) -> ((RepositoriesDateRangeTask) t2.getInput()).getStartDate()

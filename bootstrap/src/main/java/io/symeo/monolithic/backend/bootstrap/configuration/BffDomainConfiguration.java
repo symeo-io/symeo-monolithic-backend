@@ -53,8 +53,9 @@ public class BffDomainConfiguration {
     @Bean
     public TeamFacadeAdapter teamFacadeAdapter(final TeamStorage teamStorage,
                                                final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter,
-                                               final OrganizationSettingsService organizationSettingsService) {
-        return new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter, organizationSettingsService);
+                                               final OrganizationSettingsService organizationSettingsService,
+                                               final OrganizationStorageAdapter organizationStorageAdapter) {
+        return new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter, organizationSettingsService, organizationStorageAdapter);
     }
 
     @Bean

@@ -22,8 +22,19 @@ public interface CommitMapper {
                 .build();
     }
 
-    static CommitView entityToDomain(final CommitEntity commitEntity) {
+    static CommitView entityToDomainView(final CommitEntity commitEntity) {
         return CommitView.builder()
+                .sha(commitEntity.getSha())
+                .message(commitEntity.getMessage())
+                .author(commitEntity.getAuthorLogin())
+                .date(Date.from(commitEntity.getDate().toInstant()))
+                .repositoryId(commitEntity.getRepositoryId())
+                .parentShaList(commitEntity.getParentShaList())
+                .build();
+    }
+
+    static Commit entityToDomain(final CommitEntity commitEntity) {
+        return Commit.builder()
                 .sha(commitEntity.getSha())
                 .message(commitEntity.getMessage())
                 .author(commitEntity.getAuthorLogin())

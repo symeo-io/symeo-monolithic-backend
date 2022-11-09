@@ -32,4 +32,22 @@ public class CycleTimeEntity {
     Date deployDate;
     @Column(name = "pull_request_id", nullable = false, updatable = false)
     String pullRequestId;
+    @Column(name = "pull_request_author_login", nullable = false)
+    String pullRequestAuthorLogin;
+    @Column(name = "pull_request_state", nullable = false)
+    String pullRequestState;
+    @Column(name = "pull_request_vcs_repository_id", nullable = false, updatable = false)
+    String pullRequestVcsRepositoryId;
+    @Column(name = "pull_request_vcs_repository")
+    String pullRequestVcsRepository;
+    @Column(name = "pull_request_vcs_url")
+    String pullRequestVcsUrl;
+    @Column(name = "pull_request_title")
+    String pullRequestTitle;
+    @Column(name = "pull_request_creation_date")
+    Date pullRequestCreationDate;
+    @Column(name = "pull_request_merge_date")
+    Date pullRequestMergeDate;
+    @Column(name = "pull_request_head")
+    String pullRequestHead;
 }

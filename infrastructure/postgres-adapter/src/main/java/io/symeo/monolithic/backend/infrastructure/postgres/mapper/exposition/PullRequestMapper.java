@@ -82,6 +82,11 @@ public interface PullRequestMapper {
                 .base(pullRequestEntity.getBase())
                 .number(Integer.valueOf(pullRequestEntity.getCode()))
                 .mergeCommitSha(pullRequestEntity.getMergeCommitSha())
+                .commitShaList(pullRequestEntity.getCommitShaList())
+                .comments(pullRequestEntity.getComments()
+                        .stream()
+                        .map(CommentMapper::entityToDomain)
+                        .toList())
                 .build();
     }
 
@@ -129,7 +134,7 @@ public interface PullRequestMapper {
                 .mergeDate(isNull(pullRequestWithCommentsDTO.getMergeDate()) ? null :
                         Date.from(pullRequestWithCommentsDTO.getMergeDate().toInstant()))
                 .creationDate(Date.from(pullRequestWithCommentsDTO.getCreationDate().toInstant()))
-                .comments(pullRequestWithCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
+                .comments(pullRequestWithCommentsDTO.getComments().stream().map(CommentMapper::entityToDomainView).toList())
                 .vcsUrl(pullRequestWithCommentsDTO.getVcsUrl())
                 .head(pullRequestWithCommentsDTO.getHead())
                 .base(pullRequestWithCommentsDTO.getBase())
