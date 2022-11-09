@@ -42,6 +42,7 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
 
         if (team.isEmpty()) {
             return TestingMetrics.builder()
+                    .hasData(false)
                     .currentStartDate(startDate)
                     .currentEndDate(endDate)
                     .previousStartDate(previousStartDate)
@@ -69,36 +70,41 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
         Integer previousTotalBranchCount = null;
         Integer previousCoveredBranches = null;
 
-        for (RepositoryView repository : repositories) {
-            Optional<CommitTestingData> testingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
-                organization.getId(), repository.getName(), repository.getDefaultBranch(), Date.from(endDate.toInstant().plus(1, ChronoUnit.DAYS))
-            );
-            Optional<CommitTestingData> previousTestingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
-                organization.getId(), repository.getName(), repository.getDefaultBranch(), startDate
-            );
+        Boolean hasData = this.commitTestingDataFacadeAdapter.hasDataForOrganizationAndRepositories(organization.getId(), repositories.stream().map(RepositoryView::getName).toList());
 
-            if (testingData.isPresent()) {
-                testCount = valueOrZero(testCount) + testingData.get().getUnitTestCount() + testingData.get().getIntegrationTestCount();
-                testLineCount = valueOrZero(testLineCount) + testingData.get().getTestLineCount();
-                codeLineCount = valueOrZero(codeLineCount) + testingData.get().getCodeLineCount();
-                unitTestCount = valueOrZero(unitTestCount) + testingData.get().getUnitTestCount();
-                integrationTestCount = valueOrZero(integrationTestCount) + testingData.get().getIntegrationTestCount();
-                totalBranchCount = valueOrZero(totalBranchCount) + testingData.get().getCoverage().getTotalBranchCount();
-                coveredBranches = valueOrZero(coveredBranches) + testingData.get().getCoverage().getCoveredBranches();
-            }
+        if (hasData) {
+            for (RepositoryView repository : repositories) {
+                Optional<CommitTestingData> testingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
+                        organization.getId(), repository.getName(), repository.getDefaultBranch(), Date.from(endDate.toInstant().plus(1, ChronoUnit.DAYS))
+                );
+                Optional<CommitTestingData> previousTestingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
+                        organization.getId(), repository.getName(), repository.getDefaultBranch(), startDate
+                );
 
-            if (previousTestingData.isPresent()) {
-                previousTestCount = valueOrZero(previousTestCount) + previousTestingData.get().getUnitTestCount() + previousTestingData.get().getIntegrationTestCount();
-                previousTestLineCount = valueOrZero(previousTestLineCount) + previousTestingData.get().getTestLineCount();
-                previousCodeLineCount = valueOrZero(previousCodeLineCount) + previousTestingData.get().getCodeLineCount();
-                previousUnitTestCount = valueOrZero(previousUnitTestCount) + previousTestingData.get().getUnitTestCount();
-                previousIntegrationTestCount = valueOrZero(previousIntegrationTestCount) + previousTestingData.get().getIntegrationTestCount();
-                previousTotalBranchCount = valueOrZero(previousTotalBranchCount) + previousTestingData.get().getCoverage().getTotalBranchCount();
-                previousCoveredBranches = valueOrZero(previousCoveredBranches) + previousTestingData.get().getCoverage().getCoveredBranches();
+                if (testingData.isPresent()) {
+                    testCount = valueOrZero(testCount) + testingData.get().getUnitTestCount() + testingData.get().getIntegrationTestCount();
+                    testLineCount = valueOrZero(testLineCount) + testingData.get().getTestLineCount();
+                    codeLineCount = valueOrZero(codeLineCount) + testingData.get().getCodeLineCount();
+                    unitTestCount = valueOrZero(unitTestCount) + testingData.get().getUnitTestCount();
+                    integrationTestCount = valueOrZero(integrationTestCount) + testingData.get().getIntegrationTestCount();
+                    totalBranchCount = valueOrZero(totalBranchCount) + testingData.get().getCoverage().getTotalBranchCount();
+                    coveredBranches = valueOrZero(coveredBranches) + testingData.get().getCoverage().getCoveredBranches();
+                }
+
+                if (previousTestingData.isPresent()) {
+                    previousTestCount = valueOrZero(previousTestCount) + previousTestingData.get().getUnitTestCount() + previousTestingData.get().getIntegrationTestCount();
+                    previousTestLineCount = valueOrZero(previousTestLineCount) + previousTestingData.get().getTestLineCount();
+                    previousCodeLineCount = valueOrZero(previousCodeLineCount) + previousTestingData.get().getCodeLineCount();
+                    previousUnitTestCount = valueOrZero(previousUnitTestCount) + previousTestingData.get().getUnitTestCount();
+                    previousIntegrationTestCount = valueOrZero(previousIntegrationTestCount) + previousTestingData.get().getIntegrationTestCount();
+                    previousTotalBranchCount = valueOrZero(previousTotalBranchCount) + previousTestingData.get().getCoverage().getTotalBranchCount();
+                    previousCoveredBranches = valueOrZero(previousCoveredBranches) + previousTestingData.get().getCoverage().getCoveredBranches();
+                }
             }
         }
 
         return TestingMetrics.builder()
+                .hasData(hasData)
                 .currentStartDate(startDate)
                 .currentEndDate(endDate)
                 .previousStartDate(previousStartDate)
