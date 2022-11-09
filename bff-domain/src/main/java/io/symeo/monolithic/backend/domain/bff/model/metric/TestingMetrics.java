@@ -8,6 +8,7 @@ import java.util.Date;
 @Builder
 @Value
 public class TestingMetrics {
+    Boolean hasData;
     Date currentStartDate;
     Date currentEndDate;
     Date previousStartDate;

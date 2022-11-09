@@ -14,10 +14,7 @@ import io.symeo.monolithic.backend.job.domain.model.testing.CoverageData;
 import io.symeo.monolithic.backend.job.domain.port.in.CommitTestingDataFacadeAdapter;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -48,6 +45,59 @@ public class TestingMetricsServiceTest {
 
         // Then
         assertThat(optionalTestingMetrics).isNotNull();
+        assertThat(optionalTestingMetrics.getHasData()).isEqualTo(false);
+        assertThat(optionalTestingMetrics.getCurrentStartDate()).isEqualTo(startDate);
+        assertThat(optionalTestingMetrics.getCurrentEndDate()).isEqualTo(endDate);
+        assertThat(optionalTestingMetrics.getPreviousStartDate()).isEqualTo("2021-12-01");
+        assertThat(optionalTestingMetrics.getPreviousEndDate()).isEqualTo(startDate);
+        assertThat(optionalTestingMetrics.getTestCount()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestCountTendencyPercentage()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestLineCount()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getCodeLineCount()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestToCodeRatio()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getTestToCodeRatioTendencyPercentage()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getCoverage()).isEqualTo(null);
+        assertThat(optionalTestingMetrics.getCoverageTendencyPercentage()).isEqualTo(null);
+    }
+    @Test
+    void should_return_empty_metrics_when_no_data() throws SymeoException {
+        // Given
+        final TeamStorage teamStorage = mock(TeamStorage.class);
+        final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter = mock(CommitTestingDataFacadeAdapter.class);
+        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
+        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
+
+        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
+        final UUID teamId = UUID.randomUUID();
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-02-01");
+
+        final String repo1Name = faker.starTrek().location();
+        final String repo2Name = faker.starTrek().location();
+        final String repo1DefaultBranch = faker.starTrek().character();
+        final String repo2DefaultBranch = faker.starTrek().character();
+
+        final Team team = Team.builder()
+                .id(teamId)
+                .repositories(List.of(
+                        RepositoryView.builder().name(repo1Name).defaultBranch(repo1DefaultBranch).build(),
+                        RepositoryView.builder().name(repo2Name).defaultBranch(repo2DefaultBranch).build()
+                ))
+                .build();
+
+        // When
+        when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
+        when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
+        when(commitTestingDataFacadeAdapter.hasDataForOrganizationAndRepositories(organization.getId(), Arrays.asList(repo1Name, repo2Name)))
+                .thenReturn(false);
+
+        final TestingMetrics optionalTestingMetrics =
+                testingMetricsService.computeTestingMetricsForTeamIdFromStartDateToEndDate(organization, teamId
+                        , startDate, endDate);
+
+        // Then
+        assertThat(optionalTestingMetrics).isNotNull();
+        assertThat(optionalTestingMetrics.getHasData()).isEqualTo(false);
         assertThat(optionalTestingMetrics.getCurrentStartDate()).isEqualTo(startDate);
         assertThat(optionalTestingMetrics.getCurrentEndDate()).isEqualTo(endDate);
         assertThat(optionalTestingMetrics.getPreviousStartDate()).isEqualTo("2021-12-01");
@@ -91,6 +141,9 @@ public class TestingMetricsServiceTest {
         when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
         when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
 
+        when(commitTestingDataFacadeAdapter.hasDataForOrganizationAndRepositories(organization.getId(), Arrays.asList(repo1Name, repo2Name)))
+                .thenReturn(true);
+
         when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, endDate))
                 .thenReturn(Optional.empty());
 
@@ -109,6 +162,7 @@ public class TestingMetricsServiceTest {
 
         // Then
         assertThat(optionalTestingMetrics).isNotNull();
+        assertThat(optionalTestingMetrics.getHasData()).isEqualTo(true);
         assertThat(optionalTestingMetrics.getCurrentStartDate()).isEqualTo(startDate);
         assertThat(optionalTestingMetrics.getCurrentEndDate()).isEqualTo(endDate);
         assertThat(optionalTestingMetrics.getPreviousStartDate()).isEqualTo("2021-12-01");
@@ -153,6 +207,9 @@ public class TestingMetricsServiceTest {
         // When
         when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
         when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
+
+        when(commitTestingDataFacadeAdapter.hasDataForOrganizationAndRepositories(organization.getId(), Arrays.asList(repo1Name, repo2Name)))
+                .thenReturn(true);
 
         when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, endDateEndOfDay))
                 .thenReturn(Optional.of(CommitTestingData.builder()
@@ -208,6 +265,7 @@ public class TestingMetricsServiceTest {
 
         // Then
         assertThat(optionalTestingMetrics).isNotNull();
+        assertThat(optionalTestingMetrics.getHasData()).isEqualTo(true);
         assertThat(optionalTestingMetrics.getCurrentStartDate()).isEqualTo(startDate);
         assertThat(optionalTestingMetrics.getCurrentEndDate()).isEqualTo(endDate);
         assertThat(optionalTestingMetrics.getPreviousStartDate()).isEqualTo("2021-12-01");

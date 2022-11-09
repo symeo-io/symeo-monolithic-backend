@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.job.domain.port.out.CommitTestingDataStorage;
 import lombok.AllArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,5 +23,10 @@ public class CommitTestingDataService implements CommitTestingDataFacadeAdapter 
     @Override
     public Optional<CommitTestingData> getLastTestingDataForRepoAndBranchAndDate(UUID organizationId, String repoName, String branchName, Date date) throws SymeoException {
         return this.commitTestingDataStorage.getLastTestingDataForRepoAndBranchAndDate(organizationId, repoName, branchName, date);
+    }
+
+    @Override
+    public Boolean hasDataForOrganizationAndRepositories(UUID organizationId, List<String> repoNames) throws SymeoException {
+        return this.commitTestingDataStorage.hasDataForOrganizationAndRepositories(organizationId, repoNames);
     }
 }

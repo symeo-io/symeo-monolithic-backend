@@ -33,6 +33,7 @@ public interface TestingContractMapper {
         mapTestCount(testingMetrics, testing);
         mapTestToCodeRatio(testingMetrics, testing);
         mapTestTypes(testingMetrics, testing);
+        testing.setHasData(testingMetrics.getHasData());
         testing.setPreviousStartDate(dateToString(testingMetrics.getPreviousStartDate()));
         testing.setPreviousEndDate(dateToString(testingMetrics.getPreviousEndDate()));
         testing.setCurrentStartDate(dateToString(testingMetrics.getCurrentStartDate()));
