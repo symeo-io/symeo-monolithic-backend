@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 import io.symeo.monolithic.backend.domain.bff.model.account.OrganizationApiKey;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationApiKeyStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationApiKeyEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationApiKeyMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationApiKeyRepository;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,6 @@ public class PostgresOrganizationApiKeyAdapter implements OrganizationApiKeyStor
     }
 
     @Override
-    @Transactional(readOnly = true)
     public void save(OrganizationApiKey apiKey) throws SymeoException {
         try {
             this.organizationApiKeyRepository.save(domainToEntity(apiKey));
@@ -72,12 +72,11 @@ public class PostgresOrganizationApiKeyAdapter implements OrganizationApiKeyStor
     }
 
     @Override
-    @Transactional(readOnly = true)
     public void deleteForOrganizationId(UUID apiKeyId, UUID organizationId) throws SymeoException {
         try {
             this.organizationApiKeyRepository.deleteByIdAndOrganizationId(apiKeyId, organizationId);
         } catch (Exception e) {
-            final String message = "Failed to fetch api keys";
+            final String message = "Failed to delete api keys";
             LOGGER.error(message);
             throw SymeoException.builder()
                     .rootException(e)
