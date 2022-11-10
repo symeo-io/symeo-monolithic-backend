@@ -2479,6 +2479,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
         name:
           type: string
         value:
@@ -2493,6 +2494,10 @@ components:
       properties:
         api_key:
           $ref: '#/components/schemas/ApiKeyContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'
     GetApiKeysResponseContract:
       type: object
       properties:
@@ -2500,3 +2505,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApiKeyContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'

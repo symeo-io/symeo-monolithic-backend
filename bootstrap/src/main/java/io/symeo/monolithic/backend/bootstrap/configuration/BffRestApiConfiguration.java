@@ -101,4 +101,10 @@ public class BffRestApiConfiguration {
                                                              final TestingMetricsFacadeAdapter testingMetricsFacadeAdapter) {
         return new TestingRestApiAdapter(authenticationService, testingMetricsFacadeAdapter);
     }
+
+    @Bean
+    public ApiKeysRestApiAdapter ApiKeysRestApiAdapter(final AuthenticationService authenticationService,
+                                                             final OrganizationApiKeyFacadeAdapter organizationApiKeyFacadeAdapter) {
+        return new ApiKeysRestApiAdapter(authenticationService, organizationApiKeyFacadeAdapter);
+    }
 }
