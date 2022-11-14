@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class CycleTimeDataService {
 
     private final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter;
-    private final CycleTimeFactory cycleTimeFactory;
+    private final CycleTimeDataFactory cycleTimeFactory;
     public List<CycleTime> computeCycleTimesForRepository(Repository repository, List<PullRequest> pullRequests,
                                                                  String deployDetectionType,
                                                                  String pullRequestMergedOnBranchRegex,

@@ -23,8 +23,9 @@ public class VcsDataProcessingServiceTest {
         // Given
         final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
         final GithubAdapter githubAdapter = mock(GithubAdapter.class);
+        final CycleTimeDataService cycleTimeDataService = mock(CycleTimeDataService.class);
         final VcsDataProcessingService vcsDataProcessingService =
-                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter);
+                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter, cycleTimeDataService);
         final Repository repository = Repository.builder()
                 .name(faker.name().firstName())
                 .vcsOrganizationName(faker.rickAndMorty().location())
@@ -50,6 +51,17 @@ public class VcsDataProcessingServiceTest {
                 Commit.builder().sha(faker.harryPotter().book()).build()
         );
 
+        final String deployDetectionType = faker.rickAndMorty().character();
+        final String pullRequestMergedOnBranchRegex = faker.name().name();
+        final String tagRegex = faker.gameOfThrones().character();
+        final List<String> excludedBranchRegex = List.of("main", "staging");
+
+        final List<CycleTime> cycleTimes = List.of(
+                CycleTime.builder()
+                        .id(faker.cat().name())
+                        .build()
+        );
+
         // When
         when(githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate, endDate))
                 .thenReturn(pullRequests);
@@ -58,12 +70,17 @@ public class VcsDataProcessingServiceTest {
         when(githubAdapter.getCommitsForBranchesInDateRange(repository,
                 branches.stream().map(Branch::getName).toList(), startDate, endDate))
                 .thenReturn(commits);
-        vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(repository, startDate, endDate);
+        when(cycleTimeDataService.computeCycleTimesForRepository(repository, pullRequests, deployDetectionType,
+                pullRequestMergedOnBranchRegex,tagRegex, excludedBranchRegex, endDate))
+                .thenReturn(cycleTimes);
+        vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(repository, startDate, endDate,
+                deployDetectionType, pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex);
 
         // Then
         verify(dataProcessingExpositionStorageAdapter, times(1)).savePullRequestDetailsWithLinkedComments(pullRequests);
         verify(dataProcessingExpositionStorageAdapter, times(1)).saveCommits(commits);
         verify(dataProcessingExpositionStorageAdapter, times(1)).saveTags(tags);
+        verify(dataProcessingExpositionStorageAdapter, times(1)).saveCycleTimes(cycleTimes);
     }
 
     @Test
@@ -71,8 +88,9 @@ public class VcsDataProcessingServiceTest {
         // Given
         final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
         final GithubAdapter githubAdapter = mock(GithubAdapter.class);
+        final CycleTimeDataService cycleTimeDataService = mock(CycleTimeDataService.class);
         final VcsDataProcessingService vcsDataProcessingService =
-                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter);
+                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter, cycleTimeDataService);
         final VcsOrganization vcsOrganization = VcsOrganization.builder()
                 .externalId(faker.pokemon().name())
                 .organizationId(UUID.randomUUID())

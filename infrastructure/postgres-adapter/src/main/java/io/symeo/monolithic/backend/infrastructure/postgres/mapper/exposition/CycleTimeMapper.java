@@ -1,11 +1,7 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CycleTimeEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.job.domain.model.vcs.CycleTime;
-import io.symeo.monolithic.backend.job.domain.model.vcs.CycleTimeFactory;
-
-import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper.*;
 
 public interface CycleTimeMapper {
     static CycleTimeEntity domainToEntity(CycleTime cycleTime) {

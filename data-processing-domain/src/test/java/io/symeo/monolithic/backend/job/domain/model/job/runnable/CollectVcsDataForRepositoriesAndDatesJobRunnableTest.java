@@ -82,11 +82,21 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnableTest {
                         .id(faker.idNumber().invalid() + "-2")
                         .build()
         );
+
+        final String deployDetectionType = faker.rickAndMorty().character();
+        final String pullRequestMergedOnBranchRegex = faker.name().name();
+        final String tagRegex = faker.gameOfThrones().character();
+        final List<String> excludedBranchRegex = List.of("main", "staging");
+
         final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
         final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
         final CollectVcsDataForRepositoriesAndDatesJobRunnable collectVcsDataForRepositoriesAndDatesJobRunnable =
                 CollectVcsDataForRepositoriesAndDatesJobRunnable.builder()
                         .repositories(repositories)
+                        .deployDetectionType(deployDetectionType)
+                        .pullRequestMergedOnBranchRegexes(pullRequestMergedOnBranchRegex)
+                        .tagRegex(tagRegex)
+                        .excludeBranchRegexes(excludedBranchRegex)
                         .vcsDataProcessingService(vcsDataProcessingService)
                         .dataProcessingJobStorage(dataProcessingJobStorage)
                         .build();
@@ -108,7 +118,9 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnableTest {
             for (Repository repository : repositoriesDateRangeTask.getRepositories()) {
                 verify(vcsDataProcessingService, times(1))
                         .collectVcsDataForRepositoryAndDateRange(repository,
-                                repositoriesDateRangeTask.getStartDate(), repositoriesDateRangeTask.getEndDate());
+                                repositoriesDateRangeTask.getStartDate(), repositoriesDateRangeTask.getEndDate(),
+                                repositoriesDateRangeTask.getDeployDetectionType(), repositoriesDateRangeTask.getPullRequestMergedOnBranchRegex(),
+                                repositoriesDateRangeTask.getTagRegex(), repositoriesDateRangeTask.getExcludedBranchRegexes());
             }
         }
         verify(dataProcessingJobStorage, times(numberOfTasks)).updateJobWithTasksForJobId(any(), any());

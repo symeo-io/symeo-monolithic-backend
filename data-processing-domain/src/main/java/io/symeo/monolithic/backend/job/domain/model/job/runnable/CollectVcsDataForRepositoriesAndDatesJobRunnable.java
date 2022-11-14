@@ -58,10 +58,10 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
                     repository,
                     repositoriesDateRangeTask.getStartDate(),
                     repositoriesDateRangeTask.getEndDate(),
-                    repositoriesDateRangeTask.getDeployDetectionType(),
-                    repositoriesDateRangeTask.getPullRequestMergedOnBranchRegex(),
-                    repositoriesDateRangeTask.getTagRegex(),
-                    repositoriesDateRangeTask.getExcludedBranchRegexes()
+                    deployDetectionType,
+                    pullRequestMergedOnBranchRegexes,
+                    tagRegex,
+                    excludeBranchRegexes
             );
             LOGGER.info("Vcs data collection finished for repositories and date range {}", repositoriesDateRangeTask);
         }
@@ -90,10 +90,6 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
                             .repositories(repositories)
                             .startDate(startDate)
                             .endDate(endDate)
-                            .deployDetectionType(deployDetectionType)
-                            .pullRequestMergedOnBranchRegex(pullRequestMergedOnBranchRegexes)
-                            .tagRegex(tagRegex)
-                            .excludedBranchRegexes(excludeBranchRegexes)
                             .build()
             ));
         }

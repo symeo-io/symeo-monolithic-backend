@@ -17,6 +17,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Or
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.*;
 import io.symeo.monolithic.backend.job.domain.model.vcs.*;
+import io.symeo.monolithic.backend.job.domain.service.CycleTimeDataService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,10 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
     private CustomCommitRepository customCommitRepository;
     @Autowired
     private VcsOrganizationRepository vcsOrganizationRepository;
-    @Autowired CustomCycleTimeRepository customCycleTimeRepository;
+    @Autowired
+    private CustomCycleTimeRepository customCycleTimeRepository;
+    @Autowired
+    private CycleTimeRepository cycleTimeRepository;
     private PostgresExpositionAdapter postgresExpositionAdapter;
 
 
@@ -86,7 +90,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
                 repositoryRepository, pullRequestTimeToMergeRepository, pullRequestSizeRepository,
                 pullRequestFullViewRepository, customPullRequestViewRepository,
                 pullRequestWithCommitsAndCommentsRepository, commitRepository, tagRepository, customCommitRepository,
-                vcsOrganizationRepository, customCycleTimeRepository);
+                vcsOrganizationRepository, customCycleTimeRepository, cycleTimeRepository);
     }
 
     @Test

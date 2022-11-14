@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import static java.util.Objects.isNull;
 
-public class CycleTimeFactory {
+public class CycleTimeDataFactory {
     public CycleTime computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(PullRequest pullRequest,
                                                                                    List<PullRequest> pullRequestsMergedOnMatchedBranches,
                                                                                    List<Commit> commitsForRepository) {

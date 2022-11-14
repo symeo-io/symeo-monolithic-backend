@@ -29,11 +29,20 @@ public class SymeoDataProcessingJobApiClientAdapterTest {
         final UUID teamId = UUID.randomUUID();
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
 
+        final String deployDetectionType = faker.rickAndMorty().character();
+        final String pullRequestMergedOnBranchRegex = faker.name().name();
+        final String tagRegex = faker.gameOfThrones().character();
+        final List<String> excludedBranchRegex = List.of("main", "staging");
+
         // When
         symeoDataProcessingJobApiClientAdapter.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
                 organizationId,
                 teamId,
-                repositoryIds
+                repositoryIds,
+                deployDetectionType,
+                pullRequestMergedOnBranchRegex,
+                tagRegex,
+                excludedBranchRegex
         );
 
         // Then

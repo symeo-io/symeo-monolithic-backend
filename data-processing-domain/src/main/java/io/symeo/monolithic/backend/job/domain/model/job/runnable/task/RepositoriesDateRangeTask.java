@@ -15,8 +15,4 @@ public class RepositoriesDateRangeTask {
     List<Repository> repositories;
     Date startDate;
     Date endDate;
-    String deployDetectionType;
-    String pullRequestMergedOnBranchRegex;
-    String tagRegex;
-    List<String> excludedBranchRegexes;
 }
