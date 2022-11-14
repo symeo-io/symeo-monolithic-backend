@@ -380,22 +380,28 @@ public class GithubAdapter {
     private List<GithubPullRequestDTO> getGithubPullRequestDTOs(Repository repository,
                                                                 List<GithubPullRequestDTO> githubPullRequestDTOList) {
         final List<GithubPullRequestDTO> githubPullRequestDTOs = new ArrayList<>();
-        new ForkJoinPool(2).submit(() -> {
-            githubPullRequestDTOList.stream()
-                    .map(githubPullRequestDTO -> {
-                        try {
-                            return Optional.of(getPullRequestDetailsForPullRequestNumber(repository,
-                                    githubPullRequestDTO));
-                        } catch (SymeoException ex) {
-                            LOGGER.error("Error while getting PR from github", ex);
-                        }
-                        return Optional.empty();
+        try {
+            new ForkJoinPool(2).submit(() -> {
+                githubPullRequestDTOList.parallelStream()
+                        .map(githubPullRequestDTO -> {
+                            try {
+                                return Optional.of(getPullRequestDetailsForPullRequestNumber(repository,
+                                        githubPullRequestDTO));
+                            } catch (SymeoException ex) {
+                                LOGGER.error("Error while getting PR from github", ex);
+                            }
+                            return Optional.empty();
 
-                    })
-                    .filter(Optional::isPresent)
-                    .map(o -> (GithubPullRequestDTO) o.get())
-                    .forEach(githubPullRequestDTOs::add);
-        });
+                        })
+                        .filter(Optional::isPresent)
+                        .map(o -> (GithubPullRequestDTO) o.get())
+                        .forEach(githubPullRequestDTOs::add);
+            }).get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
         return githubPullRequestDTOs;
     }
 
