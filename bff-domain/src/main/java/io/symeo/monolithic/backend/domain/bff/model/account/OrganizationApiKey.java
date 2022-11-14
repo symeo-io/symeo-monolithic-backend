@@ -24,7 +24,7 @@ public class OrganizationApiKey {
     }
 
     public String getHiddenKey() {
-        return "************" + this.key.substring(this.key.length() - 5, this.key.length() - 1);
+        return "************" + this.key.substring(this.key.length() - 4);
     }
 
     private static String generateRandomApiKey() {

@@ -137,10 +137,10 @@ public class SymeoApiKeysApiIT extends AbstractSymeoBackForFrontendApiIT {
             .jsonPath("$.api_keys").isNotEmpty()
             .jsonPath("$.api_keys.length()").isEqualTo(2)
             .jsonPath("$.api_keys[0].id").isEqualTo(apiKey1.getId().toString())
-            .jsonPath("$.api_keys[0].value").isEqualTo("************" + apiKey1.getKey().substring(apiKey1.getKey().length() - 5, apiKey1.getKey().length() - 1))
+            .jsonPath("$.api_keys[0].value").isEqualTo("************" + apiKey1.getKey().substring(apiKey1.getKey().length() - 4))
             .jsonPath("$.api_keys[0].name").isEqualTo(apiKey1.getName())
             .jsonPath("$.api_keys[1].id").isEqualTo(apiKey2.getId().toString())
-            .jsonPath("$.api_keys[1].value").isEqualTo("************" + apiKey2.getKey().substring(apiKey2.getKey().length() - 5, apiKey2.getKey().length() - 1))
+            .jsonPath("$.api_keys[1].value").isEqualTo("************" + apiKey2.getKey().substring(apiKey2.getKey().length() - 4))
             .jsonPath("$.api_keys[1].name").isEqualTo(apiKey2.getName());
     }
 
