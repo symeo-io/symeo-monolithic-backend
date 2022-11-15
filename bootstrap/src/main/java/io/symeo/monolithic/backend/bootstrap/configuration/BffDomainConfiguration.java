@@ -94,11 +94,8 @@ public class BffDomainConfiguration {
 
     @Bean
     public CycleTimeMetricsFacadeAdapter cycleTimeFacadeAdapter(final BffExpositionStorageAdapter expositionStorageAdapter,
-                                                                final OrganizationSettingsFacade organizationSettingsFacade,
-                                                                final CycleTimeService cycleTimeService,
                                                                 final AverageCycleTimeFactory averageCycleTimeFactory) {
-        return new CycleTimeMetricsService(expositionStorageAdapter, organizationSettingsFacade,
-                cycleTimeService, averageCycleTimeFactory);
+        return new CycleTimeMetricsService(expositionStorageAdapter, averageCycleTimeFactory);
     }
 
     @Bean
