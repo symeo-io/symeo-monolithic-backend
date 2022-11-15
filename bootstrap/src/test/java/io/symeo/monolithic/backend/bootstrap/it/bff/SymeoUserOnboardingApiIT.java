@@ -224,9 +224,10 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                         .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
                                 "\"team_id\":\"" + teams.get(0).getId() + "\",\"repository_ids\":[\"" + teams.get(0).getRepositoryIds().get(0) + "\"," +
                                 "\"" + teams.get(0).getRepositoryIds().get(1) + "\"]," +
-                                "\"deploy_detection_type\"" + "\""+defaultDeployDetectionSettings.getDeployDetectionType().value+"\""+
-                                "\"tag_regex\": null",
-                                "\"exclude_branch_regexes\": "
+                                "\"deploy_detection_type\":" + "\"" + defaultDeployDetectionSettings.getDeployDetectionType().value + "\"," +
+                                "\"tag_regex\": null," +
+                                "\"exclude_branch_regexes\": [\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(0) + "\",\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(1) + "\"]," +
+                                "\"pull_request_merged_on_branch_regex\":" + "\"" + defaultDeployDetectionSettings.getPullRequestMergedOnBranchRegex() + "\"" +
                                 "}"))
         );
         bffWireMockServer.verify(1,
@@ -235,7 +236,12 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
                                 "\"team_id\":\"" + teams.get(1).getId() + "\",\"repository_ids\":[\"" + teams.get(1).getRepositoryIds().get(0) + "\"," +
-                                "\"" + teams.get(1).getRepositoryIds().get(1) + "\"]}"))
+                                "\"" + teams.get(1).getRepositoryIds().get(1) + "\"]," +
+                                "\"deploy_detection_type\":" + "\"" + defaultDeployDetectionSettings.getDeployDetectionType().value + "\"," +
+                                "\"tag_regex\": null," +
+                                "\"exclude_branch_regexes\": [\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(0) + "\",\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(1) + "\"]," +
+                                "\"pull_request_merged_on_branch_regex\":" + "\"" + defaultDeployDetectionSettings.getPullRequestMergedOnBranchRegex() + "\"" +
+                                "}"))
         );
     }
 
@@ -367,13 +373,18 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
         assertThat(teamsAfterUpdate.get(0).getName()).isEqualTo(newName);
         assertThat(teamsAfterUpdate.get(0).getRepositoryIds()).hasSize(newRepositoryIds.size());
         teamsAfterUpdate.get(0).getRepositoryIds().forEach(repositoryId -> assertThat(newRepositoryIds.contains(repositoryId)).isTrue());
-
+        final DeployDetectionSettings defaultDeployDetectionSettings = DeployDetectionSettings.builder().build();
         bffWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
-                                "\"team_id\":\"" + teamsAfterUpdate.get(0).getId() + "\",\"repository_ids\":[\"" + teamsAfterUpdate.get(0).getRepositoryIds().get(0) + "\"]}"))
+                                "\"team_id\":\"" + teamsAfterUpdate.get(0).getId() + "\",\"repository_ids\":[\"" + teamsAfterUpdate.get(0).getRepositoryIds().get(0) + "\"]," +
+                                "\"deploy_detection_type\":" + "\"" + defaultDeployDetectionSettings.getDeployDetectionType().value + "\"," +
+                                "\"tag_regex\": null," +
+                                "\"exclude_branch_regexes\": [\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(0) + "\",\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(1) + "\"]," +
+                                "\"pull_request_merged_on_branch_regex\":" + "\"" + defaultDeployDetectionSettings.getPullRequestMergedOnBranchRegex() + "\"" +
+                                "}"))
         );
     }
 
