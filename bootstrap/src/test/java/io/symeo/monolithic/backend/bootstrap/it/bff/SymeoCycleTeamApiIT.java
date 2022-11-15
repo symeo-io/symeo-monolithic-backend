@@ -114,8 +114,8 @@ public class SymeoCycleTeamApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.errors").isEmpty();
     }
 
-    @Order(2)
-    @Test
+//    @Order(2)
+//    @Test
     void should_compute_cycle_time_for_pull_request_merge_on_branch_regex() {
         // Given
         final CommitEntity commit1 = CommitEntity.builder()
@@ -209,8 +209,8 @@ public class SymeoCycleTeamApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.cycle_time.time_to_deploy.tendency_percentage").isEqualTo("0.0");
     }
 
-    @Order(3)
-    @Test
+//    @Order(3)
+//    @Test
     void should_compute_cycle_time_for_tag_to_deploy_regex() {
         // Given
         final OrganizationSettingsEntity organizationSettingsEntity = OrganizationSettingsEntity.builder()
