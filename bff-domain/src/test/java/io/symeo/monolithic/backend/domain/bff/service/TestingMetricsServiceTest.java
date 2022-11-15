@@ -64,9 +64,9 @@ public class TestingMetricsServiceTest {
     void should_return_empty_metrics_when_no_data() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter = mock(CommitTestingDataFacadeAdapter.class);
+        final BffCommitTestingDataStorage bffCommitTestingDataStorage = mock(BffCommitTestingDataStorage.class);
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
+        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, bffCommitTestingDataStorage, bffExpositionStorageAdapter);
 
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -89,7 +89,7 @@ public class TestingMetricsServiceTest {
         // When
         when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
         when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
-        when(commitTestingDataFacadeAdapter.hasDataForOrganizationAndRepositories(organization.getId(), Arrays.asList(repo1Name, repo2Name)))
+        when(bffCommitTestingDataStorage.hasDataForOrganizationAndRepositories(organization.getId(), Arrays.asList(repo1Name, repo2Name)))
                 .thenReturn(false);
 
         final TestingMetrics optionalTestingMetrics =
@@ -145,6 +145,8 @@ public class TestingMetricsServiceTest {
         when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
         when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
 
+        when(commitTestingDataFacadeAdapter.hasDataForOrganizationAndRepositories(organization.getId(), Arrays.asList(repo1Name, repo2Name)))
+                .thenReturn(true);
         when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name
                 , repo1DefaultBranch, endDate))
                 .thenReturn(Optional.empty());
@@ -215,6 +217,8 @@ public class TestingMetricsServiceTest {
         when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
         when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
 
+        when(commitTestingDataFacadeAdapter.hasDataForOrganizationAndRepositories(organization.getId(), Arrays.asList(repo1Name, repo2Name)))
+                .thenReturn(true);
         when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name
                 , repo1DefaultBranch, endDate))
                 .thenReturn(Optional.of(CommitTestingDataView.builder()

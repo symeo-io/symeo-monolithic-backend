@@ -70,32 +70,36 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
         Integer previousTotalBranchCount = null;
         Integer previousCoveredBranches = null;
 
-        for (RepositoryView repository : repositories) {
-            Optional<CommitTestingDataView> testingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
-                organization.getId(), repository.getName(), repository.getDefaultBranch(), endDate
-            );
-            Optional<CommitTestingDataView> previousTestingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
-                organization.getId(), repository.getName(), repository.getDefaultBranch(), startDate
-            );
+        Boolean hasData = this.commitTestingDataFacadeAdapter.hasDataForOrganizationAndRepositories(organization.getId(), repositories.stream().map(RepositoryView::getName).toList());
 
-            if (testingData.isPresent()) {
-                testCount = valueOrZero(testCount) + testingData.get().getUnitTestCount() + testingData.get().getIntegrationTestCount();
-                testLineCount = valueOrZero(testLineCount) + testingData.get().getTestLineCount();
-                codeLineCount = valueOrZero(codeLineCount) + testingData.get().getCodeLineCount();
-                unitTestCount = valueOrZero(unitTestCount) + testingData.get().getUnitTestCount();
-                integrationTestCount = valueOrZero(integrationTestCount) + testingData.get().getIntegrationTestCount();
-                totalBranchCount = valueOrZero(totalBranchCount) + testingData.get().getTotalBranchCount();
-                coveredBranches = valueOrZero(coveredBranches) + testingData.get().getCoveredBranches();
-            }
+        if (hasData) {
+            for (RepositoryView repository : repositories) {
+                Optional<CommitTestingDataView> testingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
+                        organization.getId(), repository.getName(), repository.getDefaultBranch(), endDate
+                );
+                Optional<CommitTestingDataView> previousTestingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
+                        organization.getId(), repository.getName(), repository.getDefaultBranch(), startDate
+                );
 
-            if (previousTestingData.isPresent()) {
-                previousTestCount = valueOrZero(previousTestCount) + previousTestingData.get().getUnitTestCount() + previousTestingData.get().getIntegrationTestCount();
-                previousTestLineCount = valueOrZero(previousTestLineCount) + previousTestingData.get().getTestLineCount();
-                previousCodeLineCount = valueOrZero(previousCodeLineCount) + previousTestingData.get().getCodeLineCount();
-                previousUnitTestCount = valueOrZero(previousUnitTestCount) + previousTestingData.get().getUnitTestCount();
-                previousIntegrationTestCount = valueOrZero(previousIntegrationTestCount) + previousTestingData.get().getIntegrationTestCount();
-                previousTotalBranchCount = valueOrZero(previousTotalBranchCount) + previousTestingData.get().getTotalBranchCount();
-                previousCoveredBranches = valueOrZero(previousCoveredBranches) + previousTestingData.get().getCoveredBranches();
+                if (testingData.isPresent()) {
+                    testCount = valueOrZero(testCount) + testingData.get().getUnitTestCount() + testingData.get().getIntegrationTestCount();
+                    testLineCount = valueOrZero(testLineCount) + testingData.get().getTestLineCount();
+                    codeLineCount = valueOrZero(codeLineCount) + testingData.get().getCodeLineCount();
+                    unitTestCount = valueOrZero(unitTestCount) + testingData.get().getUnitTestCount();
+                    integrationTestCount = valueOrZero(integrationTestCount) + testingData.get().getIntegrationTestCount();
+                    totalBranchCount = valueOrZero(totalBranchCount) + testingData.get().getTotalBranchCount();
+                    coveredBranches = valueOrZero(coveredBranches) + testingData.get().getCoveredBranches();
+                }
+
+                if (previousTestingData.isPresent()) {
+                    previousTestCount = valueOrZero(previousTestCount) + previousTestingData.get().getUnitTestCount() + previousTestingData.get().getIntegrationTestCount();
+                    previousTestLineCount = valueOrZero(previousTestLineCount) + previousTestingData.get().getTestLineCount();
+                    previousCodeLineCount = valueOrZero(previousCodeLineCount) + previousTestingData.get().getCodeLineCount();
+                    previousUnitTestCount = valueOrZero(previousUnitTestCount) + previousTestingData.get().getUnitTestCount();
+                    previousIntegrationTestCount = valueOrZero(previousIntegrationTestCount) + previousTestingData.get().getIntegrationTestCount();
+                    previousTotalBranchCount = valueOrZero(previousTotalBranchCount) + previousTestingData.get().getTotalBranchCount();
+                    previousCoveredBranches = valueOrZero(previousCoveredBranches) + previousTestingData.get().getCoveredBranches();
+                }
             }
         }
 
