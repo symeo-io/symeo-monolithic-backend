@@ -10,6 +10,7 @@ import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.job.JobView;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffJobStorage;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
+import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.dto.GithubWebhookEventDTO;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
@@ -93,6 +94,8 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
     public TagRepository tagRepository;
     @Autowired
     public SymeoDataProcessingJobApiProperties symeoDataProcessingJobApiProperties;
+    @Autowired
+    public OrganizationSettingsService organizationSettingsService;
     private static final UUID firstOrganizationId = UUID.randomUUID();
     private static final UUID secondOrganizationId = UUID.randomUUID();
     private static final UUID firstTeamId = UUID.randomUUID();
@@ -149,9 +152,9 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(equalToJson(String.format("{\n" +
-                                "  \"organization_id\" : \"%s\",\n" +
-                                "  \"vcs_organization_id\" : %s\n" +
-                                "}", vcsOrganizationEntities.get(0).getOrganizationId(),
+                                        "  \"organization_id\" : \"%s\",\n" +
+                                        "  \"vcs_organization_id\" : %s\n" +
+                                        "}", vcsOrganizationEntities.get(0).getOrganizationId(),
                                 vcsOrganizationEntities.get(0).getId()))
                         ));
     }
@@ -179,6 +182,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                 .name(organizationName)
                 .build();
         final Organization organizationSaved = organizationStorageAdapter.createOrganization(organization);
+        organizationSettingsService.initializeOrganizationSettingsForOrganization(organizationSaved);
 
         symeoClientAdapterWireMockServer.stubFor(
                 get(
@@ -253,7 +257,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
 
     }
 
-//    @Order(3)
+    //    @Order(3)
 //    @Test
     void should_collect_github_vcs_data_for_a_given_organization_and_reposity_ids() throws IOException, SymeoException,
             InterruptedException {
@@ -499,7 +503,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
         );
         symeoClientAdapterWireMockServer.stubFor(
                 get(
-                        urlEqualTo(String.format("/repos/%s/%s/commits?page=%s&per_page=%s&sha=%s",organizationName,
+                        urlEqualTo(String.format("/repos/%s/%s/commits?page=%s&per_page=%s&sha=%s", organizationName,
                                 githubRepositoryDTOS[0].getName(), "2", githubProperties.getSize(),
                                 "add-update-organization-settings")))
                         .withHeader("Authorization", equalTo("Bearer " + githubInstallationAccessTokenDTO.getToken()))
@@ -573,7 +577,7 @@ public class SymeoGithubCollectionAndApiIT extends AbstractSymeoDataCollectionAn
                 ("32228d8700be8974161d0541ad04d0ea1932ddc2");
     }
 
-//    @Order(4)
+    //    @Order(4)
 //    @Test
     void should_collect_github_vcs_data_for_a_given_organization_and_team() throws IOException, SymeoException,
             InterruptedException {

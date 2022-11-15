@@ -11,8 +11,6 @@ import java.util.UUID;
 public class PostStartDataProcessingJobForOrganizationDTO {
     @JsonProperty("organization_id")
     UUID organizationId;
-    @JsonProperty("deploy_detection_type")
-    String deployDetectionType;
     @JsonProperty("vcs_organization_id")
     Long vcsOrganizationId;
 }
