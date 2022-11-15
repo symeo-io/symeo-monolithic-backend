@@ -67,11 +67,19 @@ public class SymeoDataProcessingJobApiClientAdapterTest {
                 );
         final UUID organizationId = UUID.randomUUID();
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
+        final String deployDetectionType = faker.name().name();
+        final String pullRequestMergedOnBranchRegex = faker.rickAndMorty().character();
+        final String tagRegex = faker.pokemon().name();
+        final List<String> excludeBranchRegexes = List.of(faker.gameOfThrones().quote());
 
         // When
         symeoDataProcessingJobApiClientAdapter.autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(
                 organizationId,
-                repositoryIds
+                repositoryIds,
+                deployDetectionType,
+                pullRequestMergedOnBranchRegex,
+                tagRegex,
+                excludeBranchRegexes
         );
 
         // Then
@@ -82,6 +90,10 @@ public class SymeoDataProcessingJobApiClientAdapterTest {
         final PostStartDataProcessingJobForRepositoriesDTO value = argumentCaptor.getValue();
         assertThat(value.getRepositoryIds()).isEqualTo(repositoryIds);
         assertThat(value.getOrganizationId()).isEqualTo(organizationId);
+        assertThat(value.getTagRegex()).isEqualTo(tagRegex);
+        assertThat(value.getPullRequestMergedOnBranchRegex()).isEqualTo(pullRequestMergedOnBranchRegex);
+        assertThat(value.getDeployDetectionType()).isEqualTo(deployDetectionType);
+        assertThat(value.getExcludeBranchRegexes()).isEqualTo(excludeBranchRegexes);
     }
 
     @Test

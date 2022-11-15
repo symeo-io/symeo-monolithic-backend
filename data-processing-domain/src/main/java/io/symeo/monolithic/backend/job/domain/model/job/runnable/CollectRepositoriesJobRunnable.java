@@ -4,6 +4,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.model.job.AbstractTasksRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.JobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
+import io.symeo.monolithic.backend.job.domain.model.organization.OrganizationSettingsView;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
@@ -35,6 +36,8 @@ public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<VcsOrg
     private final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter;
     @NonNull
     private final VcsOrganization vcsOrganization;
+    @NonNull
+    private final VcsOrganizationStorageAdapter vcsOrganizationStorageAdapter;
 
     @Override
     public void run(Long jobId) throws SymeoException {
@@ -45,12 +48,17 @@ public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<VcsOrg
         LOGGER.info("Starting to collect repositories for vcsOrganization {}", vcsOrganization);
         vcsDataProcessingService.collectRepositoriesForVcsOrganization(vcsOrganization);
         LOGGER.info("Repositories Collection finished for vcsOrganization {}", vcsOrganization);
+        final OrganizationSettingsView organizationSettingsView =
+                vcsOrganizationStorageAdapter.findOrganizationSettingsViewForOrganizationId(vcsOrganization.getOrganizationId());
         final List<Repository> repositoriesLinkedToATeam =
                 dataProcessingExpositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(vcsOrganization.getOrganizationId());
         if (repositoriesLinkedToATeam.size() > 0) {
             autoSymeoDataProcessingJobApiAdapter.autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(
                     vcsOrganization.getOrganizationId(),
-                    repositoriesLinkedToATeam.stream().map(Repository::getId).toList()
+                    repositoriesLinkedToATeam.stream().map(Repository::getId).toList(),
+                    organizationSettingsView.getDeployDetectionType(),
+                    organizationSettingsView.getPullRequestMergedOnBranchRegex(),
+                    organizationSettingsView.getTagRegex(), organizationSettingsView.getExcludeBranchRegexes()
             );
         }
     }

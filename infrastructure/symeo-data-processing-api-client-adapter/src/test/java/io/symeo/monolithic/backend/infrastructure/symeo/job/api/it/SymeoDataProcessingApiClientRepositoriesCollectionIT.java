@@ -63,12 +63,18 @@ public class SymeoDataProcessingApiClientRepositoriesCollectionIT extends Abstra
                 PostStartDataProcessingJobForRepositoriesDTO.builder()
                         .organizationId(UUID.randomUUID())
                         .repositoryIds(List.of(faker.name().firstName(), faker.ancient().hero()))
+                        .deployDetectionType(faker.name().name())
+                        .excludeBranchRegexes(List.of(faker.gameOfThrones().quote()))
+                        .pullRequestMergedOnBranchRegex(faker.rickAndMorty().character())
+                        .tagRegex(faker.pokemon().name())
                         .build();
 
 
         // When
         symeoDataProcessingJobApiClientAdapter.autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(
-                dto.getOrganizationId(), dto.getRepositoryIds()
+                dto.getOrganizationId(), dto.getRepositoryIds(), dto.getDeployDetectionType(),
+                dto.getPullRequestMergedOnBranchRegex(),
+                dto.getTagRegex(), dto.getExcludeBranchRegexes()
         );
 
         // Then
@@ -101,7 +107,8 @@ public class SymeoDataProcessingApiClientRepositoriesCollectionIT extends Abstra
 
         // When
         symeoDataProcessingJobApiClientAdapter.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
-                dto.getOrganizationId(), dto.getTeamId(), dto.getRepositoryIds(), dto.getDeployDetectionType(), dto.getPullRequestMergedOnBranchRegex(),
+                dto.getOrganizationId(), dto.getTeamId(), dto.getRepositoryIds(), dto.getDeployDetectionType(),
+                dto.getPullRequestMergedOnBranchRegex(),
                 dto.getTagRegex(), dto.getExcludeBranchRegexes()
         );
 

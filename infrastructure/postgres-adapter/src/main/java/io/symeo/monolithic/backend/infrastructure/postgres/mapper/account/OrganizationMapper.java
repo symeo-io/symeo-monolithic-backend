@@ -9,6 +9,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
+import io.symeo.monolithic.backend.job.domain.model.organization.OrganizationSettingsView;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 
 import java.util.UUID;
@@ -111,6 +112,15 @@ public interface OrganizationMapper {
                                 )
                                 .build()
                 )
+                .build();
+    }
+
+    static OrganizationSettingsView settingsToView(OrganizationSettingsEntity organizationSettingsEntity) {
+        return OrganizationSettingsView.builder()
+                .tagRegex(organizationSettingsEntity.getTagRegex())
+                .pullRequestMergedOnBranchRegex(organizationSettingsEntity.getPullRequestMergedOnBranchRegex())
+                .excludeBranchRegexes(organizationSettingsEntity.getExcludeBranchRegexes())
+                .deployDetectionType(organizationSettingsEntity.getDeployDetectionType())
                 .build();
     }
 }
