@@ -8,7 +8,11 @@ import java.util.UUID;
 public interface BffSymeoDataProcessingJobApiAdapter {
 
     void startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(UUID organizationId, UUID teamId,
-                                                                          List<String> repositoryIds) throws SymeoException;
+                                                                          List<String> repositoryIds,
+                                                                          String deployDetectionType,
+                                                                          String pullRequestMergedOnBranchRegex,
+                                                                          String tagRegex,
+                                                                          List<String> excludeBranchRegexes) throws SymeoException;
 
     void startDataProcessingJobForOrganizationIdAndVcsOrganizationId(UUID organizationId, Long vcsOrganizationId) throws SymeoException;
 

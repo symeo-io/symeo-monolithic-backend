@@ -3,11 +3,13 @@ package io.symeo.monolithic.backend.job.domain.model.job.runnable;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
+import io.symeo.monolithic.backend.job.domain.model.organization.OrganizationSettingsView;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.VcsOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
 import org.junit.jupiter.api.Test;
 
@@ -37,8 +39,10 @@ public class CollectRepositoriesJobRunnableTest {
                 mock(DataProcessingExpositionStorageAdapter.class);
         final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
                 mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final VcsOrganizationStorageAdapter vcsOrganizationStorageAdapter = mock(VcsOrganizationStorageAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable = CollectRepositoriesJobRunnable.builder()
                 .vcsOrganization(vcsOrganization)
+                .vcsOrganizationStorageAdapter(vcsOrganizationStorageAdapter)
                 .dataProcessingJobStorage(dataProcessingJobStorage)
                 .vcsDataProcessingService(vcsDataProcessingService)
                 .autoSymeoDataProcessingJobApiAdapter(autoSymeoDataProcessingJobApiAdapter)
@@ -75,8 +79,10 @@ public class CollectRepositoriesJobRunnableTest {
                 mock(DataProcessingExpositionStorageAdapter.class);
         final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
                 mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final VcsOrganizationStorageAdapter vcsOrganizationStorageAdapter = mock(VcsOrganizationStorageAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable = CollectRepositoriesJobRunnable.builder()
                 .vcsOrganization(vcsOrganization)
+                .vcsOrganizationStorageAdapter(vcsOrganizationStorageAdapter)
                 .dataProcessingJobStorage(dataProcessingJobStorage)
                 .vcsDataProcessingService(vcsDataProcessingService)
                 .autoSymeoDataProcessingJobApiAdapter(autoSymeoDataProcessingJobApiAdapter)
@@ -117,8 +123,10 @@ public class CollectRepositoriesJobRunnableTest {
                 mock(DataProcessingExpositionStorageAdapter.class);
         final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
                 mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final VcsOrganizationStorageAdapter vcsOrganizationStorageAdapter = mock(VcsOrganizationStorageAdapter.class);
         final CollectRepositoriesJobRunnable collectRepositoriesJobRunnable = CollectRepositoriesJobRunnable.builder()
                 .vcsOrganization(vcsOrganization)
+                .vcsOrganizationStorageAdapter(vcsOrganizationStorageAdapter)
                 .dataProcessingJobStorage(dataProcessingJobStorage)
                 .vcsDataProcessingService(vcsDataProcessingService)
                 .autoSymeoDataProcessingJobApiAdapter(autoSymeoDataProcessingJobApiAdapter)
@@ -132,17 +140,28 @@ public class CollectRepositoriesJobRunnableTest {
                 .name(faker.rickAndMorty().character())
                 .id(faker.lordOfTheRings().character())
                 .build());
+        final OrganizationSettingsView organizationSettingsView = OrganizationSettingsView.builder()
+                .deployDetectionType(faker.rickAndMorty().character())
+                .excludeBranchRegexes(List.of())
+                .tagRegex(faker.gameOfThrones().character())
+                .deployDetectionType(faker.name().firstName())
+                .build();
 
         // When
         collectRepositoriesJobRunnable.initializeTasks();
         when(dataProcessingExpositionStorageAdapter.findAllRepositoriesLinkedToTeamsForOrganizationId(vcsOrganization.getOrganizationId()))
                 .thenReturn(repositoryList);
+        when(vcsOrganizationStorageAdapter.findOrganizationSettingsViewForOrganizationId(vcsOrganization.getOrganizationId()))
+                .thenReturn(organizationSettingsView);
         collectRepositoriesJobRunnable.run(jobId);
 
         // Then
         verify(autoSymeoDataProcessingJobApiAdapter, times(1))
                 .autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(
-                        vcsOrganization.getOrganizationId(), repositoryList.stream().map(Repository::getId).toList()
+                        vcsOrganization.getOrganizationId(), repositoryList.stream().map(Repository::getId).toList(),
+                        organizationSettingsView.getDeployDetectionType(),
+                        organizationSettingsView.getPullRequestMergedOnBranchRegex(),
+                        organizationSettingsView.getTagRegex(), organizationSettingsView.getExcludeBranchRegexes()
                 );
     }
 

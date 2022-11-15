@@ -31,13 +31,10 @@ public class CycleTimeCurveServiceTest {
     private static final Faker faker = new Faker();
 
     @Test
-    void should_get_empty_cycle_time_curve_data_for_wrong_delivery_settings() throws SymeoException {
+    void should_get_empty_cycle_time_curve_data_for_no_cycle_times_found() throws SymeoException {
         // Given
-        final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final CycleTimeFactory cycleTimeFactory = mock(CycleTimeFactory.class);
-        final CycleTimeCurveService cycleTimeCurveService = new CycleTimeCurveService(organizationSettingsFacade,
-                bffExpositionStorageAdapter, cycleTimeFactory);
+        final CycleTimeCurveService cycleTimeCurveService = new CycleTimeCurveService(bffExpositionStorageAdapter);
 
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -45,16 +42,9 @@ public class CycleTimeCurveServiceTest {
         final Date endDate = stringToDate("2022-02-01");
 
         // When
-        when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
+        when(bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate))
                 .thenReturn(
-                        OrganizationSettings.builder()
-                                .deliverySettings(
-                                        DeliverySettings.builder()
-                                                .deployDetectionSettings(
-                                                        DeployDetectionSettings.builder().build()
-                                                ).build()
-                                )
-                                .build()
+                        List.of()
                 );
 
         final CycleTimePieceCurveWithAverage cycleTimePieceCurveWithAverage =
@@ -66,15 +56,10 @@ public class CycleTimeCurveServiceTest {
     }
 
     @Test
-    void should_get_cycle_time_curve_data_for_pull_request_merged_on_branch_delivery_settings() throws SymeoException {
+    void should_get_cycle_time_curve_data() throws SymeoException {
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
-        final CycleTimeFactory cycleTimeFactory = mock(CycleTimeFactory.class);
-        final CycleTimeCurveService cycleTimeCurveService = new CycleTimeCurveService(
-                organizationSettingsFacade,
-                bffExpositionStorageAdapter,
-                cycleTimeFactory
-        );
+        final CycleTimeCurveService cycleTimeCurveService = new CycleTimeCurveService(bffExpositionStorageAdapter);
+
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
         final Date startDate = stringToDate("2022-01-01");
@@ -83,18 +68,10 @@ public class CycleTimeCurveServiceTest {
         final String pullRequestViewId1 = faker.harryPotter().character() + "-1";
         final String pullRequestViewId2 = faker.harryPotter().character() + "-2";
 
-        final List<PullRequestView> currentPullRequestViews =
+        final List<PullRequestView> currentPullRequests =
                 List.of(PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("head-1").build(),
                         PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("head-2").build());
-        final List<CommitView> allCommitsUntilEndDate = List.of(
-                CommitView.builder().sha(faker.pokemon().name()).build(),
-                CommitView.builder().sha(faker.pokemon().location()).build()
-        );
 
-        final List<PullRequestView> pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate = List.of(
-                PullRequestView.builder().id(pullRequestViewId1).base("main").build(),
-                PullRequestView.builder().id(pullRequestViewId2).base(faker.animal().name()).build()
-        );
         final CycleTime cycleTime1 =
                 CycleTime.builder()
                         .value(faker.number().randomNumber())
@@ -102,7 +79,7 @@ public class CycleTimeCurveServiceTest {
                         .reviewTime(faker.number().randomNumber())
                         .timeToDeploy(faker.number().randomNumber())
                         .deployDate(stringToDate("2022-01-04 10:00:00"))
-                        .pullRequestView(currentPullRequestViews.get(0))
+                        .pullRequestView(currentPullRequests.get(0))
                         .build();
         final CycleTime cycleTime2 =
                 CycleTime.builder()
@@ -110,33 +87,19 @@ public class CycleTimeCurveServiceTest {
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
                         .timeToDeploy(faker.number().randomNumber())
-                        .deployDate(stringToDate("2022-01-07 15:00:00"))
-                        .pullRequestView(currentPullRequestViews.get(1))
+                        .deployDate(stringToDate("2022-01-06 15:00:00"))
+                        .pullRequestView(currentPullRequests.get(1))
                         .build();
 
 
         // When
-        when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
-                .thenReturn(OrganizationSettings.initializeFromOrganizationId(organization.getId()));
-        when(bffExpositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate))
-                .thenReturn(currentPullRequestViews);
-        when(bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId))
-                .thenReturn(allCommitsUntilEndDate);
-        when(bffExpositionStorageAdapter.readMergedPullRequestsForTeamIdUntilEndDate(teamId, endDate))
-                .thenReturn(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate);
-        when(cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
-                PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("head-1").build(),
-                List.of(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)),
-                allCommitsUntilEndDate
-        )).thenReturn(cycleTime1);
-        when(cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
-                PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("head-2").build(),
-                List.of(pullRequestViewsMergedOnMatchedBranchesBetweenStartDateAndEndDate.get(0)),
-                allCommitsUntilEndDate
-        )).thenReturn(cycleTime2);
-        final CycleTimePieceCurveWithAverage cycleTimePieceCurveWithAverage = cycleTimeCurveService.computeCycleTimePieceCurveWithAverage(
-                organization, teamId, startDate, endDate
-        );
+        when(bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate))
+                .thenReturn(List.of(
+                        cycleTime1,
+                        cycleTime2
+                ));
+        final CycleTimePieceCurveWithAverage cycleTimePieceCurveWithAverage =
+                cycleTimeCurveService.computeCycleTimePieceCurveWithAverage(organization, teamId, startDate, endDate);
 
         // Then
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData()).isNotEmpty();
@@ -154,109 +117,13 @@ public class CycleTimeCurveServiceTest {
         );
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(1)).isEqualTo(
                 CycleTimePieceCurve.CyclePieceCurvePoint.builder()
-                        .date("2022-01-07")
+                        .date("2022-01-06")
                         .value(cycleTime2.getValue())
                         .codingTime(cycleTime2.getCodingTime())
                         .reviewTime(cycleTime2.getReviewTime())
                         .timeToDeploy(cycleTime2.getTimeToDeploy())
                         .label(cycleTime2.getPullRequestView().getHead())
                         .link(cycleTime2.getPullRequestView().getVcsUrl())
-                        .build()
-        );
-    }
-
-    @Test
-    void should_get_cycle_time_curve_data_for_tag_regex_delivery_settings() throws SymeoException {
-        final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final OrganizationSettingsFacade organizationSettingsFacade = mock(OrganizationSettingsFacade.class);
-        final CycleTimeFactory cycleTimeFactory = mock(CycleTimeFactory.class);
-        final CycleTimeCurveService cycleTimeCurveService = new CycleTimeCurveService(
-                organizationSettingsFacade,
-                bffExpositionStorageAdapter,
-                cycleTimeFactory
-        );
-        final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
-        final UUID teamId = UUID.randomUUID();
-        final Date startDate = stringToDate("2022-01-01");
-        final Date endDate = stringToDate("2022-01-07");
-
-        final String pullRequestViewId1 = faker.harryPotter().character() + "-1";
-        final String pullRequestViewId2 = faker.harryPotter().character() + "-2";
-
-        final List<PullRequestView> currentPullRequestViews =
-                List.of(PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("test").build(),
-                        PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("main").build());
-        final List<CommitView> allCommitsUntilEndDate = List.of(
-                CommitView.builder().sha(faker.pokemon().name()).build(),
-                CommitView.builder().sha(faker.pokemon().location()).build()
-        );
-        final List<TagView> tagsMatchingDeployTagRegex = List.of(
-                TagView.builder().name("deploy").build(),
-                TagView.builder().name(faker.funnyName().name()).build()
-        );
-        final CycleTime cycleTime1 =
-                CycleTime.builder()
-                        .value(faker.number().randomNumber())
-                        .codingTime(faker.number().randomNumber())
-                        .reviewTime(faker.number().randomNumber())
-                        .timeToDeploy(faker.number().randomNumber())
-                        .deployDate(stringToDate("2022-01-08 10:00:00"))
-                        .pullRequestView(currentPullRequestViews.get(0))
-                        .build();
-        final CycleTime cycleTime2 =
-                CycleTime.builder()
-                        .value(faker.number().randomNumber())
-                        .codingTime(faker.number().randomNumber())
-                        .reviewTime(faker.number().randomNumber())
-                        .timeToDeploy(faker.number().randomNumber())
-                        .deployDate(stringToDate("2022-01-07 15:00:00"))
-                        .pullRequestView(currentPullRequestViews.get(1))
-                        .build();
-
-
-        // When
-        when(organizationSettingsFacade.getOrganizationSettingsForOrganization(organization))
-                .thenReturn(OrganizationSettings.builder()
-                        .deliverySettings(DeliverySettings.builder()
-                                .deployDetectionSettings(DeployDetectionSettings.builder()
-                                        .excludeBranchRegexes(List.of("^main$"))
-                                        .tagRegex("^deploy$")
-                                        .deployDetectionType(DeployDetectionTypeDomainEnum.TAG)
-                                        .build())
-                                .build())
-                        .build());
-        when(bffExpositionStorageAdapter.readPullRequestsWithCommitsForTeamIdUntilEndDate(teamId, endDate))
-                .thenReturn(currentPullRequestViews);
-        when(bffExpositionStorageAdapter.readAllCommitsForTeamId(teamId))
-                .thenReturn(allCommitsUntilEndDate);
-        when(bffExpositionStorageAdapter.findTagsForTeamId(teamId))
-                .thenReturn(tagsMatchingDeployTagRegex);
-        when(cycleTimeFactory.computeCycleTimeForTagRegexToDeploySettings(
-                PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("test").build(),
-                List.of(tagsMatchingDeployTagRegex.get(0)),
-                allCommitsUntilEndDate
-        )).thenReturn(cycleTime1);
-        when(cycleTimeFactory.computeCycleTimeForTagRegexToDeploySettings(
-                PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("main").build(),
-                List.of(tagsMatchingDeployTagRegex.get(0)),
-                allCommitsUntilEndDate
-        )).thenReturn(cycleTime2);
-        final CycleTimePieceCurveWithAverage cycleTimePieceCurveWithAverage = cycleTimeCurveService.computeCycleTimePieceCurveWithAverage(
-                organization, teamId, startDate, endDate
-        );
-
-        // Then
-        assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData()).isNotEmpty();
-        assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().size()).isEqualTo(1);
-        assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(0)).isEqualTo(
-                CycleTimePieceCurve.CyclePieceCurvePoint.builder()
-                        .date("2022-01-07")
-                        .value(cycleTime1.getValue())
-                        .codingTime(cycleTime1.getCodingTime())
-                        .reviewTime(cycleTime1.getReviewTime())
-                        .timeToDeploy(cycleTime1.getTimeToDeploy())
-                        .label(cycleTime1.getPullRequestView().getHead())
-                        .link(cycleTime1.getPullRequestView().getVcsUrl())
                         .build()
         );
     }

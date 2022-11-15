@@ -1,7 +1,10 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition;
 
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.PullRequest;
+import org.springframework.beans.PropertyValues;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

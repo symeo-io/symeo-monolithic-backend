@@ -3,10 +3,7 @@ package io.symeo.monolithic.backend.job.rest.api.adapter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import io.symeo.monolithic.backend.data.processing.contract.api.DataProcessingJobApi;
-import io.symeo.monolithic.backend.data.processing.contract.api.model.DataProcessingSymeoErrorsContract;
-import io.symeo.monolithic.backend.data.processing.contract.api.model.PostStartDataProcessingJobForOrganizationContract;
-import io.symeo.monolithic.backend.data.processing.contract.api.model.PostStartDataProcessingJobForTeamContract;
-import io.symeo.monolithic.backend.data.processing.contract.api.model.PostStartDataProcessingJobForVcsOrganizationContract;
+import io.symeo.monolithic.backend.data.processing.contract.api.model.*;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.function.SymeoRunnable;
 import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
@@ -36,10 +33,18 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
                                                                                                                      final PostStartDataProcessingJobForOrganizationContract postStartDataProcessingJobForOrganizationContract) {
         final UUID organizationId = postStartDataProcessingJobForOrganizationContract.getOrganizationId();
         final List<String> repositoryIds = postStartDataProcessingJobForOrganizationContract.getRepositoryIds();
+        final String deployDetectionType = postStartDataProcessingJobForOrganizationContract.getDeployDetectionType();
+        final String pullRequestMergedOnBranchRegex = postStartDataProcessingJobForOrganizationContract.getPullRequestMergedOnBranchRegex();
+        final String tagRegex = postStartDataProcessingJobForOrganizationContract.getTagRegex();
+        final List<String> excludeBranchRegexes = postStartDataProcessingJobForOrganizationContract.getExcludeBranchRegexes();
         SymeoRunnable jobToStart =
                 () -> dataProcessingJobAdapter.startToCollectVcsDataForOrganizationIdAndRepositoryIds(
                         organizationId,
-                        repositoryIds
+                        repositoryIds,
+                        deployDetectionType,
+                        pullRequestMergedOnBranchRegex,
+                        tagRegex,
+                        excludeBranchRegexes
                 );
         final String errorMessage = String.format("Error while starting data processing jobs for organizationId %s " +
                 "and repositoryIds %s", organizationId, repositoryIds);
@@ -52,11 +57,19 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
         final UUID organizationId = postStartDataProcessingJobForTeamContract.getOrganizationId();
         final UUID teamId = postStartDataProcessingJobForTeamContract.getTeamId();
         final List<String> repositoryIds = postStartDataProcessingJobForTeamContract.getRepositoryIds();
+        final String deployDetectionType = postStartDataProcessingJobForTeamContract.getDeployDetectionType();
+        final String pullRequestMergedOnBranchRegex = postStartDataProcessingJobForTeamContract.getPullRequestMergedOnBranchRegex();
+        final String tagRegex = postStartDataProcessingJobForTeamContract.getTagRegex();
+        final List<String> excludeBranchRegexes = postStartDataProcessingJobForTeamContract.getExcludeBranchRegexes();
         SymeoRunnable jobToStart =
                 () -> dataProcessingJobAdapter.startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(
                         organizationId,
                         teamId,
-                        repositoryIds
+                        repositoryIds,
+                        deployDetectionType,
+                        pullRequestMergedOnBranchRegex,
+                        tagRegex,
+                        excludeBranchRegexes
                 );
         final String errorMessage = String.format("Error while starting data processing jobs for organizationId %s " +
                 "and teamId %s and repositoryIds %s", organizationId, teamId, repositoryIds);

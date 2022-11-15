@@ -4,9 +4,15 @@ import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.Team;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffSymeoDataProcessingJobApiAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.TeamStorage;
+import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationSettingsService;
 import io.symeo.monolithic.backend.domain.bff.service.organization.TeamService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import org.junit.jupiter.api.Test;
@@ -14,6 +20,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,11 +34,21 @@ public class TeamServiceTest {
     void should_create_and_start_vcs_data_collection_then_return_teams() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
+        final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
+        final OrganizationStorageAdapter organizationStorageAdapter = mock(OrganizationStorageAdapter.class);
         final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter =
                 mock(BffSymeoDataProcessingJobApiAdapter.class);
-        final TeamService teamService = new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter);
+        final TeamService teamService = new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter,
+                organizationSettingsService, organizationStorageAdapter);
         final Organization organization =
                 Organization.builder().id(UUID.randomUUID()).vcsOrganization(Organization.VcsOrganization.builder().build()).build();
+        final DeployDetectionSettings deployDetectionSettings = DeployDetectionSettings
+                .builder()
+                .tagRegex(faker.pokemon().name())
+                .excludeBranchRegexes(List.of(faker.gameOfThrones().quote()))
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST)
+                .pullRequestMergedOnBranchRegex(faker.rickAndMorty().character())
+                .build();
         final String teamName1 = faker.name().firstName();
         final String teamName2 = faker.name().lastName();
         final List<String> repositoryIds1 = List.of("1L", "2L", "3L");
@@ -61,6 +78,14 @@ public class TeamServiceTest {
 
         when(teamStorage.createTeamsForUser(teamsArgumentCaptor.capture(), userArgumentCaptor.capture()))
                 .thenReturn(List.of(expectedTeam1, expectedTeam2));
+        when(organizationSettingsService.getOrganizationSettingsForOrganization(organization))
+                .thenReturn(OrganizationSettings.builder()
+                        .deliverySettings(
+                                DeliverySettings.builder()
+                                        .deployDetectionSettings(deployDetectionSettings)
+                                        .build()
+                        )
+                        .build());
         teamService.createTeamsForNameAndRepositoriesAndUser(repositoryIdsMappedToTeamName,
                 User.builder()
                         .organizations(
@@ -73,18 +98,28 @@ public class TeamServiceTest {
         // Then
         assertThat(userArgumentCaptor.getValue().getOnboarding().getHasConfiguredTeam()).isTrue();
         assertThat(teamsArgumentCaptor.getValue()).hasSize(2);
-        verify(bffSymeoDataProcessingJobApiAdapter, times(2)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(any(), any(), any());
+        verify(bffSymeoDataProcessingJobApiAdapter, times(2)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(any(), any(), any(), any(), any(), any(), any());
         verify(bffSymeoDataProcessingJobApiAdapter, times(1)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(organization.getId(),
-                expectedTeam1.getId(), expectedTeam1.getRepositories().stream().map(RepositoryView::getId).toList());
+                expectedTeam1.getId(), expectedTeam1.getRepositories().stream().map(RepositoryView::getId).toList(),
+                deployDetectionSettings.getDeployDetectionType().getValue(),
+                deployDetectionSettings.getPullRequestMergedOnBranchRegex(),
+                deployDetectionSettings.getTagRegex(), deployDetectionSettings.getExcludeBranchRegexes());
         verify(bffSymeoDataProcessingJobApiAdapter, times(1)).startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(organization.getId(),
-                expectedTeam2.getId(), expectedTeam2.getRepositories().stream().map(RepositoryView::getId).toList());
+                expectedTeam2.getId(), expectedTeam2.getRepositories().stream().map(RepositoryView::getId).toList(),
+                deployDetectionSettings.getDeployDetectionType().getValue(),
+                deployDetectionSettings.getPullRequestMergedOnBranchRegex(),
+                deployDetectionSettings.getTagRegex(), deployDetectionSettings.getExcludeBranchRegexes());
     }
 
     @Test
     void should_return_teams_for_organization() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final TeamService teamService = new TeamService(teamStorage, mock(BffSymeoDataProcessingJobApiAdapter.class));
+        final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
+        final OrganizationStorageAdapter organizationStorageAdapter = mock(OrganizationStorageAdapter.class);
+        final TeamService teamService = new TeamService(teamStorage, mock(BffSymeoDataProcessingJobApiAdapter.class),
+                organizationSettingsService,
+                organizationStorageAdapter);
         final Organization organization =
                 Organization.builder().id(UUID.randomUUID()).vcsOrganization(Organization.VcsOrganization.builder().build()).build();
 
@@ -101,7 +136,11 @@ public class TeamServiceTest {
     void should_delete_team_given_a_team_id() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final TeamService teamService = new TeamService(teamStorage, mock(BffSymeoDataProcessingJobApiAdapter.class));
+        final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
+        final OrganizationStorageAdapter organizationStorageAdapter = mock(OrganizationStorageAdapter.class);
+        final TeamService teamService = new TeamService(teamStorage, mock(BffSymeoDataProcessingJobApiAdapter.class),
+                organizationSettingsService,
+                organizationStorageAdapter);
         final UUID teamId = UUID.randomUUID();
 
         // When
@@ -116,21 +155,52 @@ public class TeamServiceTest {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
         final BffSymeoDataProcessingJobApiAdapter apiAdapter = mock(BffSymeoDataProcessingJobApiAdapter.class);
-        final TeamService teamService = new TeamService(teamStorage, apiAdapter);
+        final OrganizationSettingsService organizationSettingsService = mock(OrganizationSettingsService.class);
+        final OrganizationStorageAdapter organizationStorageAdapter = mock(OrganizationStorageAdapter.class);
+        final TeamService teamService = new TeamService(teamStorage, apiAdapter, organizationSettingsService,
+                organizationStorageAdapter);
         final Team team = Team.builder().id(UUID.randomUUID()).repositories(List.of()).build();
         final Team updatedTeam = team.toBuilder().organizationId(UUID.randomUUID()).build();
+        final Organization organization = Organization.builder().id(updatedTeam.getOrganizationId()).build();
 
         // When
+        when(organizationStorageAdapter.findOrganizationById(organization.getId()))
+                .thenReturn(Optional.of(organization));
+        final DeployDetectionSettings deployDetectionSettings = DeployDetectionSettings
+                .builder()
+                .tagRegex(faker.pokemon().name())
+                .excludeBranchRegexes(List.of(faker.gameOfThrones().quote()))
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST)
+                .pullRequestMergedOnBranchRegex(faker.rickAndMorty().character())
+                .build();
+        when(organizationSettingsService.getOrganizationSettingsForOrganization(organization))
+                .thenReturn(
+                        OrganizationSettings.builder()
+                                .id(UUID.randomUUID())
+                                .organizationId(organization.getId())
+                                .deliverySettings(
+                                        DeliverySettings.builder()
+                                                .deployDetectionSettings(
+                                                        deployDetectionSettings
+                                                )
+                                                .build()
+                                )
+                                .build()
+                );
         when(teamStorage.update(team))
                 .thenReturn(updatedTeam);
         teamService.update(team);
 
         // Then
-        verify(apiAdapter,times(1))
+        verify(apiAdapter, times(1))
                 .startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
                         updatedTeam.getOrganizationId(),
                         updatedTeam.getId(),
-                        updatedTeam.getRepositories().stream().map(RepositoryView::getId).toList()
+                        updatedTeam.getRepositories().stream().map(RepositoryView::getId).toList(),
+                        deployDetectionSettings.getDeployDetectionType().getValue(),
+                        deployDetectionSettings.getPullRequestMergedOnBranchRegex(),
+                        deployDetectionSettings.getTagRegex(),
+                        deployDetectionSettings.getExcludeBranchRegexes()
                 );
     }
 

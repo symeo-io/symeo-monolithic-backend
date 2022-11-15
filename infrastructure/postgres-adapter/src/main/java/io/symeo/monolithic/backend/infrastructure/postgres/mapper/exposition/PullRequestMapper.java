@@ -82,6 +82,25 @@ public interface PullRequestMapper {
                 .base(pullRequestEntity.getBase())
                 .number(Integer.valueOf(pullRequestEntity.getCode()))
                 .mergeCommitSha(pullRequestEntity.getMergeCommitSha())
+                .commitShaList(pullRequestEntity.getCommitShaList())
+                .comments(pullRequestEntity.getComments()
+                        .stream()
+                        .map(CommentMapper::entityToDomain)
+                        .toList())
+                .build();
+    }
+
+    static PullRequestView entityToDomainView(final PullRequestEntity pullRequestEntity) {
+        return PullRequestView.builder()
+                .id(pullRequestEntity.getId())
+                .creationDate(Date.from(pullRequestEntity.getCreationDate().toInstant()))
+                .mergeDate(isNull(pullRequestEntity.getMergeDate()) ? null :
+                        Date.from(pullRequestEntity.getMergeDate().toInstant()))
+                .status(pullRequestEntity.getState())
+                .vcsUrl(pullRequestEntity.getVcsUrl())
+                .title(pullRequestEntity.getTitle())
+                .authorLogin(pullRequestEntity.getAuthorLogin())
+                .repository(pullRequestEntity.getVcsRepository())
                 .build();
     }
 
@@ -115,7 +134,7 @@ public interface PullRequestMapper {
                 .mergeDate(isNull(pullRequestWithCommentsDTO.getMergeDate()) ? null :
                         Date.from(pullRequestWithCommentsDTO.getMergeDate().toInstant()))
                 .creationDate(Date.from(pullRequestWithCommentsDTO.getCreationDate().toInstant()))
-                .comments(pullRequestWithCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
+                .comments(pullRequestWithCommentsDTO.getComments().stream().map(CommentMapper::entityToDomainView).toList())
                 .vcsUrl(pullRequestWithCommentsDTO.getVcsUrl())
                 .head(pullRequestWithCommentsDTO.getHead())
                 .base(pullRequestWithCommentsDTO.getBase())

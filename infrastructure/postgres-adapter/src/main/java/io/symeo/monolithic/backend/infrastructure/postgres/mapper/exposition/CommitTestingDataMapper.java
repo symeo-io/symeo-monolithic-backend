@@ -1,8 +1,8 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
+import io.symeo.monolithic.backend.domain.bff.model.metric.CommitTestingDataView;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitTestingDataEntity;
 import io.symeo.monolithic.backend.job.domain.model.testing.CommitTestingData;
-import io.symeo.monolithic.backend.job.domain.model.testing.CoverageData;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,8 +16,10 @@ public interface CommitTestingDataMapper {
         return CommitTestingDataEntity.builder()
                 .id(UUID.randomUUID())
                 .organizationId(commitTestingData.getOrganizationId())
-                .coveredBranches(isNull(commitTestingData.getCoverage()) ? null : commitTestingData.getCoverage().getCoveredBranches())
-                .totalBranchCount(isNull(commitTestingData.getCoverage()) ? null : commitTestingData.getCoverage().getTotalBranchCount())
+                .coveredBranches(isNull(commitTestingData.getCoverage()) ? null :
+                        commitTestingData.getCoverage().getCoveredBranches())
+                .totalBranchCount(isNull(commitTestingData.getCoverage()) ? null :
+                        commitTestingData.getCoverage().getTotalBranchCount())
                 .testLineCount(commitTestingData.getTestLineCount())
                 .codeLineCount(commitTestingData.getCodeLineCount())
                 .unitTestCount(commitTestingData.getUnitTestCount())
@@ -29,13 +31,12 @@ public interface CommitTestingDataMapper {
                         ZoneId.systemDefault()))
                 .build();
     }
-    static CommitTestingData entityToDomain(final CommitTestingDataEntity commitTestingDataEntity) {
-        return CommitTestingData.builder()
+
+    static CommitTestingDataView entityToDomain(final CommitTestingDataEntity commitTestingDataEntity) {
+        return CommitTestingDataView.builder()
                 .organizationId(commitTestingDataEntity.getOrganizationId())
-                .coverage(CoverageData.builder()
-                        .coveredBranches(commitTestingDataEntity.getCoveredBranches())
-                        .totalBranchCount(commitTestingDataEntity.getTotalBranchCount())
-                        .build())
+                .coveredBranches(commitTestingDataEntity.getCoveredBranches())
+                .totalBranchCount(commitTestingDataEntity.getTotalBranchCount())
                 .testLineCount(commitTestingDataEntity.getTestLineCount())
                 .codeLineCount(commitTestingDataEntity.getCodeLineCount())
                 .unitTestCount(commitTestingDataEntity.getUnitTestCount())

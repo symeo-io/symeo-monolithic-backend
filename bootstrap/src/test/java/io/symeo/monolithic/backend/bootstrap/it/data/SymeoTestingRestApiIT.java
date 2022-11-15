@@ -54,7 +54,7 @@ public class SymeoTestingRestApiIT extends AbstractSymeoDataCollectionAndApiIT {
                 .is4xxClientError();
     }
 
-//    @Test
+    @Test
     void should_success_for_known_api_key() throws IOException {
         // Given
         final String key = UUID.randomUUID().toString();

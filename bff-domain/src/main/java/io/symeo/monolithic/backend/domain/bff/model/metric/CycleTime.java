@@ -1,22 +1,27 @@
 package io.symeo.monolithic.backend.domain.bff.model.metric;
 
 import io.symeo.monolithic.backend.domain.bff.model.vcs.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
-
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder(toBuilder = true)
 @Data
 @Slf4j
 public class CycleTime {
 
+    String id;
     Long value;
     Long codingTime;
     Long reviewTime;

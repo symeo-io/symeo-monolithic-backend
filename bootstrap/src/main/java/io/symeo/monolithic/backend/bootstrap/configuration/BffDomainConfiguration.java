@@ -52,8 +52,11 @@ public class BffDomainConfiguration {
 
     @Bean
     public TeamFacadeAdapter teamFacadeAdapter(final TeamStorage teamStorage,
-                                               final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter) {
-        return new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter);
+                                               final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter,
+                                               final OrganizationSettingsService organizationSettingsService,
+                                               final OrganizationStorageAdapter organizationStorageAdapter) {
+        return new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter, organizationSettingsService,
+                organizationStorageAdapter);
     }
 
     @Bean
@@ -91,17 +94,13 @@ public class BffDomainConfiguration {
 
     @Bean
     public CycleTimeMetricsFacadeAdapter cycleTimeFacadeAdapter(final BffExpositionStorageAdapter expositionStorageAdapter,
-                                                                final OrganizationSettingsFacade organizationSettingsFacade,
-                                                                final CycleTimeService cycleTimeService) {
-        return new CycleTimeMetricsService(expositionStorageAdapter, organizationSettingsFacade,
-                cycleTimeService);
+                                                                final AverageCycleTimeFactory averageCycleTimeFactory) {
+        return new CycleTimeMetricsService(expositionStorageAdapter, averageCycleTimeFactory);
     }
 
     @Bean
-    CycleTimeCurveFacadeAdapter cycleTimeCurveFacadeAdapter(final OrganizationSettingsFacade organizationSettingsFacade,
-                                                            final BffExpositionStorageAdapter bffExpositionStorageAdapter,
-                                                            final CycleTimeFactory cycleTimeFactory) {
-        return new CycleTimeCurveService(organizationSettingsFacade, bffExpositionStorageAdapter, cycleTimeFactory);
+    CycleTimeCurveFacadeAdapter cycleTimeCurveFacadeAdapter(final BffExpositionStorageAdapter bffExpositionStorageAdapter) {
+        return new CycleTimeCurveService(bffExpositionStorageAdapter);
     }
 
     @Bean
@@ -138,11 +137,12 @@ public class BffDomainConfiguration {
         return new DeploymentMetricsService(expositionStorageAdapter, organizationSettingsFacade,
                 deploymentService);
     }
+
     @Bean
     public TestingMetricsFacadeAdapter testingMetricsFacadeAdapter(final TeamStorage teamStorage,
-                                                                   final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter,
+                                                                   final BffCommitTestingDataStorage commitTestingDataStorage,
                                                                    final BffExpositionStorageAdapter bffExpositionStorageAdapter) {
-        return new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
+        return new TestingMetricsService(teamStorage, commitTestingDataStorage, bffExpositionStorageAdapter);
     }
     @Bean
     public OrganizationApiKeyFacadeAdapter organizationApiKeyFacadeAdapter(final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter) {

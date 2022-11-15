@@ -52,6 +52,7 @@ public interface GithubMapper {
                 .head(githubPullRequestDTO.getHead().getRef())
                 .base(githubPullRequestDTO.getBase().getRef())
                 .mergeCommitSha(githubPullRequestDTO.getMergeCommitSha())
+                .organizationId(repository.getOrganizationId())
                 .vcsOrganizationId(repository.getVcsOrganizationId())
                 .commits(isNull(githubPullRequestDTO.getGithubCommitsDTOS()) ? List.of() :
                         Arrays.stream(githubPullRequestDTO.getGithubCommitsDTOS())

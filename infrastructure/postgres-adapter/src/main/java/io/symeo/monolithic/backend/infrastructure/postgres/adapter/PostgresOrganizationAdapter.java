@@ -4,12 +4,14 @@ import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationSettingsRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
+import io.symeo.monolithic.backend.job.domain.model.organization.OrganizationSettingsView;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.job.domain.port.out.VcsOrganizationStorageAdapter;
 import lombok.AllArgsConstructor;
@@ -90,7 +92,8 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter, 
     @Transactional(readOnly = true)
     public Optional<OrganizationSettings> findOrganizationSettingsForOrganizationId(UUID organizationId) throws SymeoException {
 
-        Optional<OrganizationSettingsEntity> optionalOrganizationSettings = organizationSettingsRepository.findByOrganizationId(organizationId);
+        Optional<OrganizationSettingsEntity> optionalOrganizationSettings =
+                organizationSettingsRepository.findByOrganizationId(organizationId);
         if (optionalOrganizationSettings.isPresent()) {
             return Optional.of(OrganizationMapper.settingsToDomain(optionalOrganizationSettings.get()));
         } else {
@@ -101,11 +104,26 @@ public class PostgresOrganizationAdapter implements OrganizationStorageAdapter, 
     @Override
     public Optional<OrganizationSettings> findOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId,
                                                                                          UUID organizationId) throws SymeoException {
-        Optional<OrganizationSettingsEntity> optionalOrganizationSettings = organizationSettingsRepository.findByIdAndOrganizationId(organizationSettingsId, organizationId);
-        if (optionalOrganizationSettings.isPresent()){
+        Optional<OrganizationSettingsEntity> optionalOrganizationSettings =
+                organizationSettingsRepository.findByIdAndOrganizationId(organizationSettingsId, organizationId);
+        if (optionalOrganizationSettings.isPresent()) {
             return Optional.of(OrganizationMapper.settingsToDomain(optionalOrganizationSettings.get()));
-        } else{
+        } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public OrganizationSettingsView findOrganizationSettingsViewForOrganizationId(UUID organizationId) throws SymeoException {
+        return organizationSettingsRepository.findByOrganizationId(organizationId)
+                .map(OrganizationMapper::settingsToView)
+                .orElseThrow(
+                        () -> SymeoException.builder()
+                                .code(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND)
+                                .message(String.format("OrganizationSettings not found for organizationId %s",
+                                        organizationId))
+                                .build()
+                );
+
     }
 }

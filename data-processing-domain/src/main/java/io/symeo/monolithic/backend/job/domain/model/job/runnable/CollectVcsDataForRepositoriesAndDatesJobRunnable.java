@@ -4,7 +4,7 @@ import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.model.job.AbstractTasksRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.JobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
-import io.symeo.monolithic.backend.job.domain.model.job.runnable.task.RepositoryDateRangeTask;
+import io.symeo.monolithic.backend.job.domain.model.job.runnable.task.RepositoriesDateRangeTask;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
@@ -23,7 +23,7 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.getDateRanges
 @AllArgsConstructor
 @Builder
 @Slf4j
-public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTasksRunnable<RepositoryDateRangeTask> implements JobRunnable {
+public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTasksRunnable<RepositoriesDateRangeTask> implements JobRunnable {
 
     public static final String JOB_CODE = "COLLECT_VCS_DATA_FOR_REPOSITORY_IDS_AND_DATE_RANGES_JOB";
     @NonNull
@@ -32,19 +32,38 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
     private final VcsDataProcessingService vcsDataProcessingService;
     @NonNull
     private final DataProcessingJobStorage dataProcessingJobStorage;
+    @NonNull
+    private final String deployDetectionType;
+    private final String pullRequestMergedOnBranchRegexes;
+    private final String tagRegex;
+    @NonNull
+    private final List<String> excludeBranchRegexes;
+    @Builder.Default
+    private Boolean hasCollectedNotPartialData = false;
 
     @Override
     public void run(Long jobId) throws SymeoException {
         executeAllTasks(this::collectVcsDataForTask, dataProcessingJobStorage, jobId);
     }
 
-    private void collectVcsDataForTask(final RepositoryDateRangeTask repositoryDateRangeTask) throws SymeoException {
-        LOGGER.info("Starting to collect vcs data for repositories and date range {}", repositoryDateRangeTask);
-        vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(
-                repositoryDateRangeTask.getRepository(),
-                repositoryDateRangeTask.getStartDate(), repositoryDateRangeTask.getEndDate()
-        );
-        LOGGER.info("Vcs data collection finished for repositories and date range {}", repositoryDateRangeTask);
+    private void collectVcsDataForTask(final RepositoriesDateRangeTask repositoriesDateRangeTask) throws SymeoException {
+        for (Repository repository : repositoriesDateRangeTask.getRepositories()) {
+            if (!hasCollectedNotPartialData) {
+                vcsDataProcessingService.collectNonPartialData(repository);
+            }
+            LOGGER.info("Starting to collect vcs data for repositories and date range {}", repository);
+            vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(
+                    repository,
+                    repositoriesDateRangeTask.getStartDate(),
+                    repositoriesDateRangeTask.getEndDate(),
+                    deployDetectionType,
+                    pullRequestMergedOnBranchRegexes,
+                    tagRegex,
+                    excludeBranchRegexes
+            );
+            LOGGER.info("Vcs data collection finished for repositories and date range {}", repositoriesDateRangeTask);
+        }
+        hasCollectedNotPartialData = true;
     }
 
     @Override
@@ -55,25 +74,27 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
     @Override
     public void initializeTasks() {
         final List<Task> tasks = new ArrayList<>();
-        for (Repository repository : repositories) {
-            for (List<Date> dateRange :
-                    getDateRangesFromStartDateAndDateRangeNumberOfDayAndRangeNumberOfDays(
-                            new Date(),
-                            720, // 2 years
-                            30, // 1 month
-                            TimeZone.getDefault()
-                    )) {
-                final Date endDate = dateRange.get(0);
-                final Date startDate = dateRange.get(1);
-                tasks.add(Task.newTaskForInput(
-                        RepositoryDateRangeTask.builder()
-                                .repository(repository)
-                                .startDate(startDate)
-                                .endDate(endDate)
-                                .build()
-                ));
-            }
+        for (List<Date> dateRange :
+                getDateRangesFromStartDateAndDateRangeNumberOfDayAndRangeNumberOfDays(
+                        new Date(),
+                        365, // 1 years
+                        60, // 2 month
+                        TimeZone.getDefault()
+                )) {
+            final Date endDate = dateRange.get(0);
+            final Date startDate = dateRange.get(1);
+            tasks.add(Task.newTaskForInput(
+                    RepositoriesDateRangeTask.builder()
+                            .repositories(repositories)
+                            .startDate(startDate)
+                            .endDate(endDate)
+                            .build()
+            ));
         }
+        tasks.sort((t1, t2) -> ((RepositoriesDateRangeTask) t2.getInput()).getStartDate()
+                .compareTo(
+                        ((RepositoriesDateRangeTask) t1.getInput()).getStartDate()
+                ));
         this.setTasks(tasks);
     }
 

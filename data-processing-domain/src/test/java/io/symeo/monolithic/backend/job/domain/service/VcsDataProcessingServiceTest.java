@@ -21,10 +21,13 @@ public class VcsDataProcessingServiceTest {
     @Test
     void should_collect_github_data_given_a_repository_and_a_date_range() throws SymeoException {
         // Given
-        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
         final GithubAdapter githubAdapter = mock(GithubAdapter.class);
+        final CycleTimeDataService cycleTimeDataService = mock(CycleTimeDataService.class);
         final VcsDataProcessingService vcsDataProcessingService =
-                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter);
+                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter,
+                        cycleTimeDataService);
         final Repository repository = Repository.builder()
                 .name(faker.name().firstName())
                 .vcsOrganizationName(faker.rickAndMorty().location())
@@ -37,7 +40,57 @@ public class VcsDataProcessingServiceTest {
         final List<PullRequest> pullRequests = List.of(
                 PullRequest.builder()
                         .number(faker.number().numberBetween(0, 100))
-                        .build());
+                        .lastUpdateDate(stringToDate("2022-01-02"))
+                        .build(),
+                PullRequest.builder()
+                        .number(faker.number().numberBetween(0, 100) + 1)
+                        .lastUpdateDate(stringToDate("2021-01-02"))
+                        .build()
+
+        );
+        final String deployDetectionType = faker.rickAndMorty().character();
+        final String pullRequestMergedOnBranchRegex = faker.name().name();
+        final String tagRegex = faker.gameOfThrones().character();
+        final List<String> excludedBranchRegex = List.of("main", "staging");
+
+        final List<CycleTime> cycleTimes = List.of(
+                CycleTime.builder()
+                        .id(faker.cat().name())
+                        .build()
+        );
+
+        // When
+        when(githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate, endDate))
+                .thenReturn(pullRequests);
+        when(dataProcessingExpositionStorageAdapter.savePullRequestDetailsWithLinkedComments(pullRequests.subList(0, 1)))
+                .thenReturn(pullRequests.subList(0, 1));
+        when(cycleTimeDataService.computeCycleTimesForRepository(repository, pullRequests.subList(0, 1), deployDetectionType,
+                pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex, endDate))
+                .thenReturn(cycleTimes);
+        vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(repository, startDate, endDate,
+                deployDetectionType, pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex);
+
+        // Then
+        verify(dataProcessingExpositionStorageAdapter, times(1)).saveCycleTimes(cycleTimes);
+    }
+
+    @Test
+    void should_collect_github_non_partial_data() throws SymeoException {
+        // Given
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
+        final GithubAdapter githubAdapter = mock(GithubAdapter.class);
+        final CycleTimeDataService cycleTimeDataService = mock(CycleTimeDataService.class);
+        final VcsDataProcessingService vcsDataProcessingService =
+                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter,
+                        cycleTimeDataService);
+        final Repository repository = Repository.builder()
+                .name(faker.name().firstName())
+                .vcsOrganizationName(faker.rickAndMorty().location())
+                .organizationId(UUID.randomUUID())
+                .vcsOrganizationId(faker.rickAndMorty().character())
+                .id(faker.idNumber().invalid())
+                .build();
         final List<Tag> tags = List.of(Tag.builder().repositoryId(faker.idNumber().valid()).build());
         final Branch branch1 = Branch.builder().name(faker.ancient().god()).build();
         final Branch branch2 = Branch.builder().name(faker.ancient().hero()).build();
@@ -51,28 +104,29 @@ public class VcsDataProcessingServiceTest {
         );
 
         // When
-        when(githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate, endDate))
-                .thenReturn(pullRequests);
         when(githubAdapter.getTags(repository)).thenReturn(tags);
         when(githubAdapter.getBranches(repository)).thenReturn(branches);
-        when(githubAdapter.getCommitsForBranchesInDateRange(repository,
-                branches.stream().map(Branch::getName).toList(), startDate, endDate))
+        when(githubAdapter.getCommitsForBranches(repository,
+                branches.stream().map(Branch::getName).toList()))
                 .thenReturn(commits);
-        vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(repository, startDate, endDate);
+        vcsDataProcessingService.collectNonPartialData(repository);
 
         // Then
-        verify(dataProcessingExpositionStorageAdapter, times(1)).savePullRequestDetailsWithLinkedComments(pullRequests);
         verify(dataProcessingExpositionStorageAdapter, times(1)).saveCommits(commits);
         verify(dataProcessingExpositionStorageAdapter, times(1)).saveTags(tags);
     }
 
+
     @Test
     void should_collect_repositories_given_a_vcs_organization() throws SymeoException {
         // Given
-        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
         final GithubAdapter githubAdapter = mock(GithubAdapter.class);
+        final CycleTimeDataService cycleTimeDataService = mock(CycleTimeDataService.class);
         final VcsDataProcessingService vcsDataProcessingService =
-                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter);
+                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter,
+                        cycleTimeDataService);
         final VcsOrganization vcsOrganization = VcsOrganization.builder()
                 .externalId(faker.pokemon().name())
                 .organizationId(UUID.randomUUID())

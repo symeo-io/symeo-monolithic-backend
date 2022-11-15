@@ -63,12 +63,18 @@ public class SymeoDataProcessingApiClientRepositoriesCollectionIT extends Abstra
                 PostStartDataProcessingJobForRepositoriesDTO.builder()
                         .organizationId(UUID.randomUUID())
                         .repositoryIds(List.of(faker.name().firstName(), faker.ancient().hero()))
+                        .deployDetectionType(faker.name().name())
+                        .excludeBranchRegexes(List.of(faker.gameOfThrones().quote()))
+                        .pullRequestMergedOnBranchRegex(faker.rickAndMorty().character())
+                        .tagRegex(faker.pokemon().name())
                         .build();
 
 
         // When
         symeoDataProcessingJobApiClientAdapter.autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(
-                dto.getOrganizationId(), dto.getRepositoryIds()
+                dto.getOrganizationId(), dto.getRepositoryIds(), dto.getDeployDetectionType(),
+                dto.getPullRequestMergedOnBranchRegex(),
+                dto.getTagRegex(), dto.getExcludeBranchRegexes()
         );
 
         // Then
@@ -82,17 +88,28 @@ public class SymeoDataProcessingApiClientRepositoriesCollectionIT extends Abstra
     @Test
     void should_start_data_processing_job_given_an_organization_id_and_a_team_id_and_some_repository_ids() throws JsonProcessingException, SymeoException {
         // Given
+        final String deployDetectionType = faker.rickAndMorty().character();
+        final String pullRequestMergedOnBranchRegex = faker.name().name();
+        final String tagRegex = faker.gameOfThrones().character();
+        final List<String> excludedBranchRegex = List.of("main", "staging");
+
         final PostStartDataProcessingJobForTeamDTO dto =
                 PostStartDataProcessingJobForTeamDTO.builder()
                         .organizationId(UUID.randomUUID())
                         .teamId(UUID.randomUUID())
                         .repositoryIds(List.of(faker.name().firstName(), faker.ancient().hero()))
+                        .deployDetectionType(deployDetectionType)
+                        .pullRequestMergedOnBranchRegex(pullRequestMergedOnBranchRegex)
+                        .tagRegex(tagRegex)
+                        .excludeBranchRegexes(excludedBranchRegex)
                         .build();
 
 
         // When
         symeoDataProcessingJobApiClientAdapter.startDataProcessingJobForOrganizationIdAndTeamIdAndRepositoryIds(
-                dto.getOrganizationId(), dto.getTeamId(), dto.getRepositoryIds()
+                dto.getOrganizationId(), dto.getTeamId(), dto.getRepositoryIds(), dto.getDeployDetectionType(),
+                dto.getPullRequestMergedOnBranchRegex(),
+                dto.getTagRegex(), dto.getExcludeBranchRegexes()
         );
 
         // Then

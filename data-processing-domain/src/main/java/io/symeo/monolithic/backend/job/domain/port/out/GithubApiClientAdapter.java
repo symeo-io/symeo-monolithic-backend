@@ -50,6 +50,14 @@ public interface GithubApiClientAdapter {
                                                                                      final Integer page,
                                                                                      final Integer size) throws SymeoException;
 
+    GithubCommitsDTO[] getCommitsForVcsOrganizationAndRepositoryAndBranch(final String vcsOrganizationName,
+                                                                                     final String repositoryName,
+                                                                                     final String branchName,
+                                                                                     final Integer page,
+                                                                                     final Integer size) throws SymeoException;
+
+
+
     GithubTagDTO[] getTagsForVcsOrganizationAndRepository(String vcsOrganizationName, String repositoryName) throws SymeoException;
 }
 

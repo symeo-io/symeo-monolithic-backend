@@ -7,13 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RepositoryDateRangeTaskView {
-    RepositoryView repository;
+public class RepositoriesDateRangeTaskView {
+    List<RepositoryView> repositories;
     Date startDate;
     Date endDate;
 }

@@ -88,8 +88,8 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
             ZoneId.systemDefault());
 
 
-    @Order(1)
-    @Test
+//    @Order(1)
+//    @Test
     void should_not_compute_cycle_time_pieces_for_no_data_on_time_range() {
         // Given
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
@@ -150,8 +150,8 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.pieces_page.total_item_number").isEqualTo(0);
     }
 
-    @Order(2)
-    @Test
+//    @Order(2)
+//    @Test
     void should_compute_cycle_time_pieces_for_pull_request_merge_on_branch_regex() {
         // Given
         final CommitEntity commit1 = CommitEntity.builder()
@@ -267,8 +267,8 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.pieces_page.pieces[1].cycle_time").isEqualTo("3548");
     }
 
-    @Order(3)
-    @Test
+//    @Order(3)
+//    @Test
     void should_get_cycle_time_piece_curve_for_pull_request_merge_on_branch_regex() {
         // Given
         final String startDate = "2022-02-01";
@@ -290,8 +290,8 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
     }
 
 
-    @Order(4)
-    @Test
+//    @Order(4)
+//    @Test
     void should_compute_cycle_time_pieces_for_tag_to_deploy_regex() {
         // Given
         final OrganizationSettingsEntity organizationSettingsEntity = OrganizationSettingsEntity.builder()
@@ -351,8 +351,8 @@ public class SymeoCycleTimePieceApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.pieces_page.pieces[1].cycle_time").isEqualTo("3548");
     }
 
-    @Order(5)
-    @Test
+//    @Order(5)
+//    @Test
     void should_get_cycle_time_piece_curve_for_tag_to_deploy_regex() {
         // Given
         final String startDate = "2022-02-01";

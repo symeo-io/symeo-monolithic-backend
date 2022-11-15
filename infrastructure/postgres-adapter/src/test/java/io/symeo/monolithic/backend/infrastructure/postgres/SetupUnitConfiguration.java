@@ -1,6 +1,7 @@
 package io.symeo.monolithic.backend.infrastructure.postgres;
 
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomCommitRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomCycleTimeRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomPullRequestViewRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CustomPullRequestWithCommitsAndCommentsRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,5 +41,10 @@ public class SetupUnitConfiguration {
     @Bean
     public CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository(final EntityManager entityManager) {
         return new CustomPullRequestWithCommitsAndCommentsRepository(entityManager);
+    }
+
+    @Bean
+    public CustomCycleTimeRepository customCycleTimeRepository(final EntityManager entityManager) {
+        return new CustomCycleTimeRepository(entityManager);
     }
 }

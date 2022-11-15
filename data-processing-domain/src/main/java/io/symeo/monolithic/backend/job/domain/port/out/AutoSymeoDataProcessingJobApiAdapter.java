@@ -10,6 +10,10 @@ public interface AutoSymeoDataProcessingJobApiAdapter {
     void autoStartDataProcessingJobForOrganizationIdAndVcsOrganizationId(UUID organizationId, Long vcsOrganizationId) throws SymeoException;
 
     void autoStartDataProcessingJobForOrganizationIdAndRepositoryIds(UUID organizationId,
-                                                                     List<String> repositoryIdsLinkedToATeam) throws SymeoException;
+                                                                     List<String> repositoryIdsLinkedToATeam,
+                                                                     String deployDetectionType,
+                                                                     String pullRequestMergedOnBranchRegex,
+                                                                     String tagRegex,
+                                                                     List<String> excludeBranchRegexes) throws SymeoException;
 
 }

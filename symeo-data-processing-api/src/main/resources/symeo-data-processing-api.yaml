@@ -273,11 +273,25 @@ components:
       required:
         - organization_id
         - repository_ids
+        - deploy_detection_type
+        - pull_request_merged_on_branch_regex
+        - tag_regex
+        - exclude_branch_regexes
       properties:
         organization_id:
           type: string
           format: uuid
         repository_ids:
+          type: array
+          items:
+            type: string
+        deploy_detection_type:
+          type: string
+        pull_request_merged_on_branch_regex:
+          type: string
+        tag_regex:
+          type: string
+        exclude_branch_regexes:
           type: array
           items:
             type: string
@@ -287,6 +301,10 @@ components:
         - organization_id
         - repository_ids
         - team_id
+        - deploy_detection_type
+        - pull_request_merged_on_branch_regex
+        - tag_regex
+        - exclude_branch_regexes
       properties:
         organization_id:
           type: string
@@ -295,6 +313,16 @@ components:
           type: string
           format: uuid
         repository_ids:
+          type: array
+          items:
+            type: string
+        deploy_detection_type:
+          type: string
+        pull_request_merged_on_branch_regex:
+          type: string
+        tag_regex:
+          type: string
+        exclude_branch_regexes:
           type: array
           items:
             type: string
