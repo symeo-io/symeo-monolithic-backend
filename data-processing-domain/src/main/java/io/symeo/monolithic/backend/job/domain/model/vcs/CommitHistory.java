@@ -41,7 +41,10 @@ public class CommitHistory {
             if (commit.getSha().equals(pastCommit.getSha())) {
                 return true;
             } else if (!commit.getParentShaList().isEmpty()) {
-                return isCommitPresentInCommitHistory(pastCommit, commit);
+                final boolean isPresentInHistory = isCommitPresentInCommitHistory(pastCommit, commit);
+                if (isPresentInHistory){
+                    return true;
+                }
             }
         }
         return false;

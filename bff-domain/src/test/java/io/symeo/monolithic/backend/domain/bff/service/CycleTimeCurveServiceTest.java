@@ -2,18 +2,10 @@ package io.symeo.monolithic.backend.domain.bff.service;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
-import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
-import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
-import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
-import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeFactory;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurve;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurveWithAverage;
-import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
-import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
-import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.service.insights.CycleTimeCurveService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
