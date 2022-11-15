@@ -26,16 +26,19 @@ public class DataProcessingDomainConfiguration {
                                                              final DataProcessingJobStorage dataProcessingJobStorage,
                                                              final VcsDataProcessingService vcsDataProcessingService,
                                                              final JobManager jobManager,
-                                                             final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter) {
+                                                             final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter,
+                                                             final VcsOrganizationStorageAdapter vcsOrganizationStorageAdapter) {
         return new DataProcessingJobService(dataProcessingExpositionStorageAdapter, dataProcessingJobStorage,
-                vcsDataProcessingService, jobManager, autoSymeoDataProcessingJobApiAdapter);
+                vcsDataProcessingService, jobManager, autoSymeoDataProcessingJobApiAdapter,
+                vcsOrganizationStorageAdapter);
     }
 
     @Bean
     public VcsDataProcessingService vcsDataProcessingService(final GithubAdapter githubAdapter,
                                                              final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter,
                                                              final CycleTimeDataService cycleTimeDataService) {
-        return new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter, cycleTimeDataService);
+        return new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter,
+                cycleTimeDataService);
     }
 
     @Bean

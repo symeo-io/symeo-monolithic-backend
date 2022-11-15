@@ -18,9 +18,4 @@ public class CommitTestingDataService implements CommitTestingDataFacadeAdapter 
     public void save(CommitTestingData commitTestingData) throws SymeoException {
         this.commitTestingDataStorage.save(commitTestingData);
     }
-
-    @Override
-    public Optional<CommitTestingData> getLastTestingDataForRepoAndBranchAndDate(UUID organizationId, String repoName, String branchName, Date date) throws SymeoException {
-        return this.commitTestingDataStorage.getLastTestingDataForRepoAndBranchAndDate(organizationId, repoName, branchName, date);
-    }
 }

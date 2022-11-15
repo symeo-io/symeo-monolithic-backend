@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.bff.contract.api.model.LinkOrganizationToCurr
 import io.symeo.monolithic.backend.bff.contract.api.model.UpdateOnboardingRequestContract;
 import io.symeo.monolithic.backend.bff.contract.api.model.UpdateTeamRequestContract;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
 import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
@@ -214,13 +215,19 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.teams[1].name").isNotEmpty();
         Thread.sleep(2000);
 
+        final DeployDetectionSettings defaultDeployDetectionSettings = DeployDetectionSettings.builder().build();
+
         bffWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
                         .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
                                 equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
                         .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
                                 "\"team_id\":\"" + teams.get(0).getId() + "\",\"repository_ids\":[\"" + teams.get(0).getRepositoryIds().get(0) + "\"," +
-                                "\"" + teams.get(0).getRepositoryIds().get(1) + "\"]}"))
+                                "\"" + teams.get(0).getRepositoryIds().get(1) + "\"]," +
+                                "\"deploy_detection_type\"" + "\""+defaultDeployDetectionSettings.getDeployDetectionType().value+"\""+
+                                "\"tag_regex\": null",
+                                "\"exclude_branch_regexes\": "
+                                "}"))
         );
         bffWireMockServer.verify(1,
                 RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)

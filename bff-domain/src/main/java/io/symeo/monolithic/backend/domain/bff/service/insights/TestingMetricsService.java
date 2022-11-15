@@ -2,16 +2,16 @@ package io.symeo.monolithic.backend.domain.bff.service.insights;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.Team;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CommitTestingDataView;
 import io.symeo.monolithic.backend.domain.bff.model.metric.TestingMetrics;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.domain.bff.port.in.TestingMetricsFacadeAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffCommitTestingDataStorage;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.TeamStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import io.symeo.monolithic.backend.domain.helper.MetricsHelper;
-import io.symeo.monolithic.backend.job.domain.model.testing.CommitTestingData;
-import io.symeo.monolithic.backend.job.domain.port.in.CommitTestingDataFacadeAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +28,7 @@ import static java.util.Objects.isNull;
 public class TestingMetricsService implements TestingMetricsFacadeAdapter {
 
     private final TeamStorage teamStorage;
-    private final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter;
+    private final BffCommitTestingDataStorage commitTestingDataFacadeAdapter;
     private final BffExpositionStorageAdapter bffExpositionStorageAdapter;
     @Override
     public TestingMetrics computeTestingMetricsForTeamIdFromStartDateToEndDate(Organization organization,
@@ -69,10 +69,10 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
         Integer previousCoveredBranches = null;
 
         for (RepositoryView repository : repositories) {
-            Optional<CommitTestingData> testingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
+            Optional<CommitTestingDataView> testingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
                 organization.getId(), repository.getName(), repository.getDefaultBranch(), endDate
             );
-            Optional<CommitTestingData> previousTestingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
+            Optional<CommitTestingDataView> previousTestingData = this.commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(
                 organization.getId(), repository.getName(), repository.getDefaultBranch(), startDate
             );
 
@@ -82,8 +82,8 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
                 codeLineCount = valueOrZero(codeLineCount) + testingData.get().getCodeLineCount();
                 unitTestCount = valueOrZero(unitTestCount) + testingData.get().getUnitTestCount();
                 integrationTestCount = valueOrZero(integrationTestCount) + testingData.get().getIntegrationTestCount();
-                totalBranchCount = valueOrZero(totalBranchCount) + testingData.get().getCoverage().getTotalBranchCount();
-                coveredBranches = valueOrZero(coveredBranches) + testingData.get().getCoverage().getCoveredBranches();
+                totalBranchCount = valueOrZero(totalBranchCount) + testingData.get().getTotalBranchCount();
+                coveredBranches = valueOrZero(coveredBranches) + testingData.get().getCoveredBranches();
             }
 
             if (previousTestingData.isPresent()) {
@@ -92,8 +92,8 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
                 previousCodeLineCount = valueOrZero(previousCodeLineCount) + previousTestingData.get().getCodeLineCount();
                 previousUnitTestCount = valueOrZero(previousUnitTestCount) + previousTestingData.get().getUnitTestCount();
                 previousIntegrationTestCount = valueOrZero(previousIntegrationTestCount) + previousTestingData.get().getIntegrationTestCount();
-                previousTotalBranchCount = valueOrZero(previousTotalBranchCount) + previousTestingData.get().getCoverage().getTotalBranchCount();
-                previousCoveredBranches = valueOrZero(previousCoveredBranches) + previousTestingData.get().getCoverage().getCoveredBranches();
+                previousTotalBranchCount = valueOrZero(previousTotalBranchCount) + previousTestingData.get().getTotalBranchCount();
+                previousCoveredBranches = valueOrZero(previousCoveredBranches) + previousTestingData.get().getCoveredBranches();
             }
         }
 

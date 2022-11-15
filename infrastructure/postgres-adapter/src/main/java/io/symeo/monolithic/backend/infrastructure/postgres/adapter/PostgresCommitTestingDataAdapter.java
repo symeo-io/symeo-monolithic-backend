@@ -1,5 +1,7 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
+import io.symeo.monolithic.backend.domain.bff.model.metric.CommitTestingDataView;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffCommitTestingDataStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.CommitTestingDataMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CommitTestingDataRepository;
@@ -20,7 +22,7 @@ import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposit
 
 @AllArgsConstructor
 @Slf4j
-public class PostgresCommitTestingDataAdapter implements CommitTestingDataStorage {
+public class PostgresCommitTestingDataAdapter implements CommitTestingDataStorage, BffCommitTestingDataStorage {
     private final CommitTestingDataRepository commitTestingDataRepository;
 
     @Override
@@ -40,10 +42,13 @@ public class PostgresCommitTestingDataAdapter implements CommitTestingDataStorag
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<CommitTestingData> getLastTestingDataForRepoAndBranchAndDate(UUID organizationId, String repoName, String branchName, Date date) throws SymeoException {
+    public Optional<CommitTestingDataView> getLastTestingDataForRepoAndBranchAndDate(UUID organizationId,
+                                                                                     String repoName,
+                                                                                     String branchName, Date date) throws SymeoException {
         try {
             return this.commitTestingDataRepository
-                    .findTopByOrganizationIdAndRepositoryNameAndBranchNameAndDateBeforeOrderByDateDesc(organizationId, repoName, branchName, ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()))
+                    .findTopByOrganizationIdAndRepositoryNameAndBranchNameAndDateBeforeOrderByDateDesc(organizationId
+                            , repoName, branchName, ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()))
                     .map(CommitTestingDataMapper::entityToDomain);
         } catch (Exception e) {
             final String message = "Failed to fetch commit testing data";

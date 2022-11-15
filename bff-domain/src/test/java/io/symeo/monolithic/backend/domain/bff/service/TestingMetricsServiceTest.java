@@ -3,15 +3,14 @@ package io.symeo.monolithic.backend.domain.bff.service;
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.Team;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CommitTestingDataView;
 import io.symeo.monolithic.backend.domain.bff.model.metric.TestingMetrics;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffCommitTestingDataStorage;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.TeamStorage;
 import io.symeo.monolithic.backend.domain.bff.service.insights.TestingMetricsService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.job.domain.model.testing.CommitTestingData;
-import io.symeo.monolithic.backend.job.domain.model.testing.CoverageData;
-import io.symeo.monolithic.backend.job.domain.port.in.CommitTestingDataFacadeAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -31,9 +30,11 @@ public class TestingMetricsServiceTest {
     void should_return_empty_metrics_for_not_found_team() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter = mock(CommitTestingDataFacadeAdapter.class);
+        final BffCommitTestingDataStorage commitTestingDataFacadeAdapter =
+                mock(BffCommitTestingDataStorage.class);
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
+        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage,
+                commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
 
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -61,13 +62,16 @@ public class TestingMetricsServiceTest {
         assertThat(optionalTestingMetrics.getCoverage()).isEqualTo(null);
         assertThat(optionalTestingMetrics.getCoverageTendencyPercentage()).isEqualTo(null);
     }
+
     @Test
     void should_return_empty_metrics_when_there_is_no_data() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter = mock(CommitTestingDataFacadeAdapter.class);
+        final BffCommitTestingDataStorage commitTestingDataFacadeAdapter =
+                mock(BffCommitTestingDataStorage.class);
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
+        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage,
+                commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
 
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -91,16 +95,20 @@ public class TestingMetricsServiceTest {
         when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
         when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, endDate))
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name
+                , repo1DefaultBranch, endDate))
                 .thenReturn(Optional.empty());
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name, repo2DefaultBranch, endDate))
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name
+                , repo2DefaultBranch, endDate))
                 .thenReturn(Optional.empty());
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, startDate))
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name
+                , repo1DefaultBranch, startDate))
                 .thenReturn(Optional.empty());
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name, repo2DefaultBranch, startDate))
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name
+                , repo2DefaultBranch, startDate))
                 .thenReturn(Optional.empty());
 
         final TestingMetrics optionalTestingMetrics =
@@ -127,9 +135,11 @@ public class TestingMetricsServiceTest {
     void should_get_testing_metrics() throws SymeoException {
         // Given
         final TeamStorage teamStorage = mock(TeamStorage.class);
-        final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter = mock(CommitTestingDataFacadeAdapter.class);
+        final BffCommitTestingDataStorage commitTestingDataFacadeAdapter =
+                mock(BffCommitTestingDataStorage.class);
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
+        final TestingMetricsService testingMetricsService = new TestingMetricsService(teamStorage,
+                commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
 
         final Organization organization = Organization.builder().id(UUID.randomUUID()).build();
         final UUID teamId = UUID.randomUUID();
@@ -153,52 +163,48 @@ public class TestingMetricsServiceTest {
         when(teamStorage.findById(teamId)).thenReturn(Optional.of(team));
         when(bffExpositionStorageAdapter.findAllRepositoriesForOrganizationIdAndTeamId(organization.getId(), teamId)).thenReturn(team.getRepositories());
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, endDate))
-                .thenReturn(Optional.of(CommitTestingData.builder()
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name
+                , repo1DefaultBranch, endDate))
+                .thenReturn(Optional.of(CommitTestingDataView.builder()
                         .unitTestCount(10)
                         .integrationTestCount(20)
                         .testLineCount(100)
                         .codeLineCount(300)
-                        .coverage(CoverageData.builder()
-                                .totalBranchCount(100)
-                                .coveredBranches(50).build()
-                        )
+                        .totalBranchCount(100)
+                        .coveredBranches(50)
                         .build()));
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name, repo2DefaultBranch, endDate))
-                .thenReturn(Optional.of(CommitTestingData.builder()
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name
+                , repo2DefaultBranch, endDate))
+                .thenReturn(Optional.of(CommitTestingDataView.builder()
                         .unitTestCount(20)
                         .integrationTestCount(30)
                         .testLineCount(200)
                         .codeLineCount(600)
-                        .coverage(CoverageData.builder()
-                                .totalBranchCount(200)
-                                .coveredBranches(100).build()
-                        )
+                        .totalBranchCount(200)
+                        .coveredBranches(100)
                         .build()));
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name, repo1DefaultBranch, startDate))
-                .thenReturn(Optional.of(CommitTestingData.builder()
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo1Name
+                , repo1DefaultBranch, startDate))
+                .thenReturn(Optional.of(CommitTestingDataView.builder()
                         .unitTestCount(5)
                         .integrationTestCount(10)
                         .testLineCount(50)
                         .codeLineCount(150)
-                        .coverage(CoverageData.builder()
-                                .totalBranchCount(100)
-                                .coveredBranches(25).build()
-                        )
+                        .totalBranchCount(100)
+                        .coveredBranches(25)
                         .build()));
 
-        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name, repo2DefaultBranch, startDate))
-                .thenReturn(Optional.of(CommitTestingData.builder()
+        when(commitTestingDataFacadeAdapter.getLastTestingDataForRepoAndBranchAndDate(organization.getId(), repo2Name
+                , repo2DefaultBranch, startDate))
+                .thenReturn(Optional.of(CommitTestingDataView.builder()
                         .unitTestCount(10)
                         .integrationTestCount(15)
                         .testLineCount(100)
                         .codeLineCount(300)
-                        .coverage(CoverageData.builder()
-                                .totalBranchCount(200)
-                                .coveredBranches(50).build()
-                        )
+                        .totalBranchCount(200)
+                        .coveredBranches(50)
                         .build()));
 
         final TestingMetrics optionalTestingMetrics =

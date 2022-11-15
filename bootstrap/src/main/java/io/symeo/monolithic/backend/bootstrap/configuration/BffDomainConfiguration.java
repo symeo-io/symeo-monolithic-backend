@@ -55,7 +55,8 @@ public class BffDomainConfiguration {
                                                final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter,
                                                final OrganizationSettingsService organizationSettingsService,
                                                final OrganizationStorageAdapter organizationStorageAdapter) {
-        return new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter, organizationSettingsService, organizationStorageAdapter);
+        return new TeamService(teamStorage, bffSymeoDataProcessingJobApiAdapter, organizationSettingsService,
+                organizationStorageAdapter);
     }
 
     @Bean
@@ -141,11 +142,12 @@ public class BffDomainConfiguration {
         return new DeploymentMetricsService(expositionStorageAdapter, organizationSettingsFacade,
                 deploymentService);
     }
+
     @Bean
     public TestingMetricsFacadeAdapter testingMetricsFacadeAdapter(final TeamStorage teamStorage,
-                                                                   final CommitTestingDataFacadeAdapter commitTestingDataFacadeAdapter,
+                                                                   final BffCommitTestingDataStorage commitTestingDataStorage,
                                                                    final BffExpositionStorageAdapter bffExpositionStorageAdapter) {
-        return new TestingMetricsService(teamStorage, commitTestingDataFacadeAdapter, bffExpositionStorageAdapter);
+        return new TestingMetricsService(teamStorage, commitTestingDataStorage, bffExpositionStorageAdapter);
     }
 
     @Bean

@@ -9,6 +9,4 @@ import java.util.UUID;
 
 public interface CommitTestingDataFacadeAdapter {
     void save(CommitTestingData commitTestingData) throws SymeoException;
-
-    Optional<CommitTestingData> getLastTestingDataForRepoAndBranchAndDate(UUID organizationId, String repoName, String branchName, Date date) throws SymeoException;
 }
