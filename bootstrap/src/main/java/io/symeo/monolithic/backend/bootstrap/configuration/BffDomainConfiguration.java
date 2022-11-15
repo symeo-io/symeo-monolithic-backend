@@ -102,10 +102,8 @@ public class BffDomainConfiguration {
     }
 
     @Bean
-    CycleTimeCurveFacadeAdapter cycleTimeCurveFacadeAdapter(final OrganizationSettingsFacade organizationSettingsFacade,
-                                                            final BffExpositionStorageAdapter bffExpositionStorageAdapter,
-                                                            final CycleTimeFactory cycleTimeFactory) {
-        return new CycleTimeCurveService(organizationSettingsFacade, bffExpositionStorageAdapter, cycleTimeFactory);
+    CycleTimeCurveFacadeAdapter cycleTimeCurveFacadeAdapter(final BffExpositionStorageAdapter bffExpositionStorageAdapter) {
+        return new CycleTimeCurveService(bffExpositionStorageAdapter);
     }
 
     @Bean
