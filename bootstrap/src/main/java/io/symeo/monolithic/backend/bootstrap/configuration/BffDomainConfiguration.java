@@ -144,6 +144,10 @@ public class BffDomainConfiguration {
                                                                    final BffExpositionStorageAdapter bffExpositionStorageAdapter) {
         return new TestingMetricsService(teamStorage, commitTestingDataStorage, bffExpositionStorageAdapter);
     }
+    @Bean
+    public OrganizationApiKeyFacadeAdapter organizationApiKeyFacadeAdapter(final OrganizationApiKeyStorageAdapter organizationApiKeyStorageAdapter) {
+        return new OrganizationApiKeyService(organizationApiKeyStorageAdapter);
+    }
 
     @Bean
     public DeploymentService deploymentService() {

@@ -1603,6 +1603,122 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+  /api/v1/organization/api-keys:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - ApiKeys
+      summary: Create a new api key for Organization
+      operationId: createNewApiKeyForOrganization
+      description: |
+        Create a new api key for Organization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKeyRequestContract'
+      responses:
+        "200":
+          description: 'Api key successfully created for organization'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateApiKeyResponseContract'
+              example:
+                api_key:
+                  id: 818e351a-0421-11ed-b939-0242ac120002
+                  name: apiKey
+                  value: 818e351a-0421-11ed-b939-0242ac120002
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+    get:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - ApiKeys
+      summary: Get api keys for Organization
+      operationId: getApiKeysForOrganization
+      description: |
+        Get api keys for Organization
+      responses:
+        "200":
+          description: 'Api keys successfully fetched'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetApiKeysResponseContract'
+              example:
+                api_keys:
+                  - id: 818e351a-0421-11ed-b939-0242ac120002
+                    name: apiKey
+                    value: 818e351a-0421-11ed-b939-0242ac120002
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - ApiKeys
+      summary: Delete api key for Organization
+      operationId: deleteApiKeyForOrganization
+      description: |
+        Delete api key for Organization
+      parameters:
+        - in: query
+          name: api_key_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: 'Successfully delete api key'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  [ ]
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
+
 
 components:
   securitySchemes:
@@ -2250,6 +2366,8 @@ components:
         testing:
           type: object
           properties:
+            has_data:
+              type: boolean
             current_start_date:
               type: string
               pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
@@ -2356,3 +2474,38 @@ components:
           enum:
           - pull_request
           - tag
+    ApiKeyContract:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        value:
+          type: string
+    CreateApiKeyRequestContract:
+      type: object
+      properties:
+        name:
+          type: string
+    CreateApiKeyResponseContract:
+      type: object
+      properties:
+        api_key:
+          $ref: '#/components/schemas/ApiKeyContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'
+    GetApiKeysResponseContract:
+      type: object
+      properties:
+        api_keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiKeyContract'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymeoErrorContract'

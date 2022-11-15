@@ -15,6 +15,7 @@ import io.symeo.monolithic.backend.domain.helper.MetricsHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,7 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
 
         if (team.isEmpty()) {
             return TestingMetrics.builder()
+                    .hasData(false)
                     .currentStartDate(startDate)
                     .currentEndDate(endDate)
                     .previousStartDate(previousStartDate)
@@ -98,6 +100,7 @@ public class TestingMetricsService implements TestingMetricsFacadeAdapter {
         }
 
         return TestingMetrics.builder()
+                .hasData(hasData)
                 .currentStartDate(startDate)
                 .currentEndDate(endDate)
                 .previousStartDate(previousStartDate)

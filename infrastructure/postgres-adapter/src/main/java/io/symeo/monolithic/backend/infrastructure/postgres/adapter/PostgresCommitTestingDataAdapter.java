@@ -3,6 +3,7 @@ package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CommitTestingDataView;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffCommitTestingDataStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
+import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommitTestingDataEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.CommitTestingDataMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.CommitTestingDataRepository;
 import io.symeo.monolithic.backend.job.domain.model.testing.CommitTestingData;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,6 +52,24 @@ public class PostgresCommitTestingDataAdapter implements CommitTestingDataStorag
                     .findTopByOrganizationIdAndRepositoryNameAndBranchNameAndDateBeforeOrderByDateDesc(organizationId
                             , repoName, branchName, ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()))
                     .map(CommitTestingDataMapper::entityToDomain);
+        } catch (Exception e) {
+            final String message = "Failed to fetch commit testing data";
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .rootException(e)
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Boolean hasDataForOrganizationAndRepositories(UUID organizationId, List<String> repoNames) throws SymeoException {
+        try {
+            long count = this.commitTestingDataRepository
+                    .countByOrganizationIdAndRepositoryNameIsIn(organizationId, repoNames);
+            return count > 0;
         } catch (Exception e) {
             final String message = "Failed to fetch commit testing data";
             LOGGER.error(message, e);

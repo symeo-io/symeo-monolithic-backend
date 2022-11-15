@@ -41,7 +41,21 @@ jobs:
           command: ./mvnw test -T 12
       - run:
           name: Integration Tests
-          command: ./mvnw failsafe:integration-test failsafe:verify -T 12
+          command: ./mvnw integration-test -T 12
+      - run:
+          name: Send tests data to Symeo
+          command: |
+            curl -o- ${SYMEO_TESTING_SCRIPT_URL} | bash -s -- \
+              --api-key ${SYMEO_ORG_API_KEY} \
+              --coverage-report-path coverage/target/site/jacoco-aggregate/jacoco.xml \
+              --coverage-report-type jacoco \
+              --unit-test-file-pattern "./**/src/test/java/**/*Test.java" \
+              --integration-test-file-pattern "./**/src/test/java/**/*IT.java" \
+              --code-file-pattern "./**/src/main/java/**/*.java" \
+              --test-framework jUnit \
+              --repository-name ${CIRCLE_PROJECT_REPONAME} \
+              --branch-name ${CIRCLE_BRANCH} \
+              --commit-sha ${CIRCLE_SHA1}
       - slack/notify:
           event: fail
           template: basic_fail_1
