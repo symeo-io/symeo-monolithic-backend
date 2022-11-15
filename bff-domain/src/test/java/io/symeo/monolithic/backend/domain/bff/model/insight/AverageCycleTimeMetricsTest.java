@@ -120,8 +120,24 @@ public class AverageCycleTimeMetricsTest {
                         currentEndDate);
 
         // Then
-        assertThat(optionalCycleTimeMetrics1).isEmpty();
-        assertThat(optionalCycleTimeMetrics2).isEmpty();
+        assertThat(optionalCycleTimeMetrics1).isPresent();
+        assertThat(optionalCycleTimeMetrics1).isEqualTo(
+                Optional.of(CycleTimeMetrics.builder()
+                        .currentStartDate(currentStartDate)
+                        .currentEndDate(currentEndDate)
+                        .previousStartDate(previousStartDate)
+                        .previousEndDate(currentStartDate)
+                        .build()
+                ));
+        assertThat(optionalCycleTimeMetrics2).isPresent();
+        assertThat(optionalCycleTimeMetrics2).isEqualTo(
+                Optional.of(CycleTimeMetrics.builder()
+                        .currentStartDate(currentStartDate)
+                        .currentEndDate(currentEndDate)
+                        .previousStartDate(previousStartDate)
+                        .previousEndDate(currentStartDate)
+                        .build()
+                ));
     }
 
     @Test
