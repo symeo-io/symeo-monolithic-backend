@@ -1,9 +1,6 @@
 package io.symeo.monolithic.backend.domain.bff.service.insights;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
-import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
-import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
-import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.model.metric.*;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
@@ -12,7 +9,6 @@ import io.symeo.monolithic.backend.domain.bff.port.in.CycleTimeMetricsFacadeAdap
 import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.helper.DateHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +21,6 @@ import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.*;
-import static java.util.Optional.empty;
 
 @Slf4j
 @AllArgsConstructor
@@ -94,7 +89,7 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
                                                                                     final String sortBy,
                                                                                     final String sortDir) throws SymeoException {
         final List<CycleTimePiece> cycleTimePiecesForTeamIdBetweenStartDateAndEndDate =
-                bffExpositionStorageAdapter.findCycleTimePiecesForTeamIdBetweenStartDateAndEndDat(
+                bffExpositionStorageAdapter.findCycleTimePiecesForTeamIdBetweenStartDateAndEndDate(
                         teamId, startDate, endDate
                 );
         validatePagination(pageIndex, pageSize);

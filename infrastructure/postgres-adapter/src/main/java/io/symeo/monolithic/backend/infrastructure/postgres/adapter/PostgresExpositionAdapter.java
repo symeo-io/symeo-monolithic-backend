@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.buildPagination;
@@ -188,7 +189,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
     }
 
     @Override
-    public List<CycleTimePiece> findCycleTimePiecesForTeamIdBetweenStartDateAndEndDat(UUID teamId, Date startDate, Date endDate) throws SymeoException {
+    public List<CycleTimePiece> findCycleTimePiecesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate) throws SymeoException {
         try {
             return customCycleTimeRepository.findAllCycleTimePiecesForTeamIdBetweenStartDateAndEndDate(
                     teamId, startDate, endDate
@@ -353,7 +354,8 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
             return commitRepository.findAllForRepositoryId(repositoryId)
                     .stream()
                     .map(CommitMapper::entityToDomain)
-                    .toList();
+                    .collect(Collectors.toSet())
+                    .stream().toList();
         } catch (Exception e) {
             final String message = String.format("Failed to read commits for repositoryId %s", repositoryId);
             LOGGER.error(message, e);
@@ -368,7 +370,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
     @Override
     public List<PullRequest> readMergedPullRequestsForRepositoryIdUntilEndDate(String repositoryId, Date endDate) throws SymeoException {
         try {
-            return pullRequestFullViewRepository.findAllMergedPullRequestsForRepositoryIdUntilEndDate(repositoryId, endDate)
+            return pullRequestRepository.findAllMergedPullRequestsForRepositoryIdUntilEndDate(repositoryId, endDate)
                     .stream()
                     .map(PullRequestMapper::entityToDomain)
                     .toList();

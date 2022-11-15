@@ -9,6 +9,7 @@ import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.VcsOrganizationStorageAdapter;
 import io.symeo.monolithic.backend.job.domain.service.VcsDataProcessingService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

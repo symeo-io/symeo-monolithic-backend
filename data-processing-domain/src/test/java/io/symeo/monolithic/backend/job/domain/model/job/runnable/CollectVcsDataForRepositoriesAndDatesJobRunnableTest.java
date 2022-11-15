@@ -119,8 +119,7 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnableTest {
                 verify(vcsDataProcessingService, times(1))
                         .collectVcsDataForRepositoryAndDateRange(repository,
                                 repositoriesDateRangeTask.getStartDate(), repositoriesDateRangeTask.getEndDate(),
-                                repositoriesDateRangeTask.getDeployDetectionType(), repositoriesDateRangeTask.getPullRequestMergedOnBranchRegex(),
-                                repositoriesDateRangeTask.getTagRegex(), repositoriesDateRangeTask.getExcludedBranchRegexes());
+                                deployDetectionType, pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex);
             }
         }
         verify(dataProcessingJobStorage, times(numberOfTasks)).updateJobWithTasksForJobId(any(), any());

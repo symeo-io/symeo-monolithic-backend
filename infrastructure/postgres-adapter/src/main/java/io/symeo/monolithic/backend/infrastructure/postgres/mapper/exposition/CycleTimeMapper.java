@@ -3,10 +3,12 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CycleTimeEntity;
 import io.symeo.monolithic.backend.job.domain.model.vcs.CycleTime;
 
+import static java.util.Objects.isNull;
+
 public interface CycleTimeMapper {
     static CycleTimeEntity domainToEntity(CycleTime cycleTime) {
         return CycleTimeEntity.builder()
-                .id(cycleTime.getId())
+                .id(cycleTime.getPullRequest().getId())
                 .value(cycleTime.getValue())
                 .codingTime(cycleTime.getCodingTime())
                 .reviewTime(cycleTime.getReviewTime())

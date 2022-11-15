@@ -13,7 +13,8 @@ import java.util.UUID;
 public interface CommitRepository extends JpaRepository<CommitEntity, String> {
 
     @Query(nativeQuery = true, value = "select * from exposition_storage.commit c" +
-    " where c.repository_id = :repositoryId")
+            " left join exposition_storage.commit_to_parent_sha ctps on ctps.sha = c.sha " +
+            " where c.repository_id = :repositoryId")
     List<CommitEntity> findAllForRepositoryId(@Param("repositoryId") String repositoryId);
 
     @Query(nativeQuery = true, value = "select * from exposition_storage.commit c" +
@@ -26,6 +27,6 @@ public interface CommitRepository extends JpaRepository<CommitEntity, String> {
     @Query(nativeQuery = true,
             value = "SELECT * FROM exposition_storage.commit as c WHERE c.sha IN (:shaList) AND c.date <= :endDate AND c.date > :startDate")
     List<CommitEntity> findAllForShaListBetweenStartDateAndEndDate(@Param("shaList") List<String> shaList,
-                                                             @Param("startDate") Date startDate,
-                                                             @Param("endDate") Date endDate);
+                                                                   @Param("startDate") Date startDate,
+                                                                   @Param("endDate") Date endDate);
 }

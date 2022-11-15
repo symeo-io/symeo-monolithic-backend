@@ -134,6 +134,11 @@ public class DataProcessingJobServiceTest {
         );
         final UUID organizationId = randomUUID();
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
+        final String deployDetectionType = faker.rickAndMorty().character();
+        final String pullRequestMergedOnBranchRegex = faker.name().name();
+        final String tagRegex = faker.gameOfThrones().character();
+        final List<String> excludedBranchRegex = List.of("main", "staging");
+
         final List<Repository> repositories = List.of(
                 Repository.builder()
                         .name(faker.name().firstName() + "-1")
@@ -154,7 +159,8 @@ public class DataProcessingJobServiceTest {
         // When
         when(dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
                 .thenReturn(repositories);
-        dataProcessingJobService.startToCollectVcsDataForOrganizationIdAndRepositoryIds(organizationId, repositoryIds);
+        dataProcessingJobService.startToCollectVcsDataForOrganizationIdAndRepositoryIds(organizationId, repositoryIds, deployDetectionType,
+                pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex);
 
         // Then
         final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
@@ -186,6 +192,10 @@ public class DataProcessingJobServiceTest {
         );
         final UUID organizationId = randomUUID();
         final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
+        final String deployDetectionType = faker.rickAndMorty().character();
+        final String pullRequestMergedOnBranchRegex = faker.name().name();
+        final String tagRegex = faker.gameOfThrones().character();
+        final List<String> excludedBranchRegex = List.of("main", "staging");
 
         // When
         when(dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
@@ -199,7 +209,7 @@ public class DataProcessingJobServiceTest {
         SymeoException symeoException = null;
         try {
             dataProcessingJobService.startToCollectVcsDataForOrganizationIdAndRepositoryIds(organizationId,
-                    repositoryIds);
+                    repositoryIds, deployDetectionType, pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex);
         } catch (SymeoException e) {
             symeoException = e;
         }

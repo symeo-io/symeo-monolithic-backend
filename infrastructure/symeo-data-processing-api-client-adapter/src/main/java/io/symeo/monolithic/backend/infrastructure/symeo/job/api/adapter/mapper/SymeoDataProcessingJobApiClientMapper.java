@@ -20,10 +20,10 @@ public interface SymeoDataProcessingJobApiClientMapper {
     static PostStartDataProcessingJobForTeamDTO domainToTeamDTO(final UUID organizationId,
                                                                 final UUID teamId,
                                                                 final List<String> repositoryIds,
-                                                                String deployDetectionType,
-                                                                String pullRequestMergedOnBranchRegex,
-                                                                String tagRegex,
-                                                                List<String> excludeBranchRegexes) {
+                                                                final String deployDetectionType,
+                                                                final String pullRequestMergedOnBranchRegex,
+                                                                final String tagRegex,
+                                                                final List<String> excludeBranchRegexes) {
         return PostStartDataProcessingJobForTeamDTO.builder()
                 .organizationId(organizationId)
                 .teamId(teamId)
@@ -36,10 +36,18 @@ public interface SymeoDataProcessingJobApiClientMapper {
     }
 
     static PostStartDataProcessingJobForRepositoriesDTO domainToRepositoriesDTO(final UUID organizationId,
-                                                                                final List<String> repositoryIds) {
+                                                                                final List<String> repositoryIds,
+                                                                                final String deployDetectionType,
+                                                                                final String pullRequestMergedOnBranchRegex,
+                                                                                final String tagRegex,
+                                                                                final List<String> excludeBranchRegexes) {
         return PostStartDataProcessingJobForRepositoriesDTO.builder()
                 .organizationId(organizationId)
                 .repositoryIds(repositoryIds)
+                .deployDetectionType(deployDetectionType)
+                .pullRequestMergedOnBranchRegex(pullRequestMergedOnBranchRegex)
+                .tagRegex(tagRegex)
+                .excludeBranchRegexes(excludeBranchRegexes)
                 .build();
     }
 

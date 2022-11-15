@@ -11,6 +11,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.util.Objects.isNull;
+
 @AllArgsConstructor
 public class CustomCycleTimeRepository {
 
@@ -59,10 +61,10 @@ public class CustomCycleTimeRepository {
 
     private CycleTime mapResultToCycleTime(Object[] object, PullRequestView pullRequestView) {
         final String cycleTimeId = (String) object[0];
-        final Long cycleTimeValue = ((BigInteger) object[1]).longValue();
-        final Long codingTime = ((BigInteger) object[2]).longValue();
-        final Long reviewTime = ((BigInteger) object[3]).longValue();
-        final Long timeToDeploy = ((BigInteger) object[4]).longValue();
+        final Long cycleTimeValue = isNull(object[1]) ? null : ((BigInteger) object[1]).longValue();
+        final Long codingTime = isNull(object[2]) ? null : ((BigInteger) object[2]).longValue();
+        final Long reviewTime = isNull(object[3]) ? null : ((BigInteger) object[3]).longValue();
+        final Long timeToDeploy = isNull(object[4]) ? null : ((BigInteger) object[4]).longValue();
         final Date deployDate = (Timestamp) object[5];
         return CycleTime.builder()
                 .id(cycleTimeId)
@@ -167,10 +169,10 @@ public class CustomCycleTimeRepository {
 
     private CycleTimePiece mapResultToCyleTimePiece(Object[] object) {
         final String cycleTimeId = (String) object[0];
-        final Long cycleTimeValue = ((BigInteger) object[1]).longValue();
-        final Long codingTime = ((BigInteger) object[2]).longValue();
-        final Long reviewTime = ((BigInteger) object[3]).longValue();
-        final Long timeToDeploy = ((BigInteger) object[4]).longValue();
+        final Long cycleTimeValue = isNull(object[1]) ? null : ((BigInteger) object[1]).longValue();
+        final Long codingTime = isNull(object[2]) ? null : ((BigInteger) object[2]).longValue();
+        final Long reviewTime = isNull(object[3]) ? null : ((BigInteger) object[3]).longValue();
+        final Long timeToDeploy = isNull(object[4]) ? null : ((BigInteger) object[4]).longValue();
         final Date deployDate = (Timestamp) object[5];
         final String pullRequestId = (String) object[6];
         final String authorLogin = (String) object[7];

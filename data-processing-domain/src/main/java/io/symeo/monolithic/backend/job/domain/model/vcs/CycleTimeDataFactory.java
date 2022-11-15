@@ -9,9 +9,9 @@ import java.util.function.Supplier;
 import static java.util.Objects.isNull;
 
 public class CycleTimeDataFactory {
-    public CycleTime computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(PullRequest pullRequest,
-                                                                                   List<PullRequest> pullRequestsMergedOnMatchedBranches,
-                                                                                   List<Commit> commitsForRepository) {
+    public CycleTime computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(final PullRequest pullRequest,
+                                                                                   final List<PullRequest> pullRequestsMergedOnMatchedBranches,
+                                                                                   final List<Commit> commitsForRepository) {
         final CommitHistory commitHistory = CommitHistory.initializeFromCommits(commitsForRepository);
         final Date deployDate = computeDeployDateWithPullRequestMatchingDeliverySettings(pullRequest,
                 pullRequestsMergedOnMatchedBranches,
@@ -19,7 +19,6 @@ public class CycleTimeDataFactory {
 
         return computeCycleTimeWithTimeToDeploySupplier(
                 pullRequest,
-                commitHistory,
                 deployDate,
                 computeTimeToDeployGivenDeployDate(
                         pullRequest,
@@ -29,7 +28,7 @@ public class CycleTimeDataFactory {
         );
     }
 
-    public CycleTime computeCycleTimeForTagRegexToDeploySettings(PullRequest pullRequest,
+    public CycleTime computeCycleTimeForTagRegexToDeploySettings(final PullRequest pullRequest,
                                                                  final List<Tag> tagsMatchedToDeploy,
                                                                  final List<Commit> allCommits) {
         final CommitHistory commitHistory = CommitHistory.initializeFromCommits(allCommits);
@@ -38,7 +37,6 @@ public class CycleTimeDataFactory {
 
         return computeCycleTimeWithTimeToDeploySupplier(
                 pullRequest,
-                commitHistory,
                 deployDate,
                 computeTimeToDeployGivenDeployDate(
                         pullRequest,
@@ -50,13 +48,9 @@ public class CycleTimeDataFactory {
 
 
     private CycleTime computeCycleTimeWithTimeToDeploySupplier(PullRequest pullRequest,
-                                                               final CommitHistory commitHistory,
                                                                final Date deployDate,
                                                                final Supplier<Long> timeToDeploySupplier) {
 
-        pullRequest = pullRequest.toBuilder()
-                .commits(pullRequest.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
-                .build();
         final List<Comment> commentsOrderByDate = pullRequest.getCommentsOrderByDate();
         final List<Commit> commitsOrderByDate = pullRequest.getCommitsOrderByDate();
         if (commitsOrderByDate.size() == 0) {
@@ -140,19 +134,19 @@ public class CycleTimeDataFactory {
         return isNull(value) ? 0L : value;
     }
 
-    private Date computeDeployDateWithPullRequestMatchingDeliverySettings(final PullRequest pullRequestView,
-                                                                          final List<PullRequest> pullRequestViewsMatchingDeliverySettings,
+    private Date computeDeployDateWithPullRequestMatchingDeliverySettings(final PullRequest pullRequest,
+                                                                          final List<PullRequest> pullRequestMatchingDeliverySettings,
                                                                           final CommitHistory commitHistory) {
-        if (pullRequestViewsMatchingDeliverySettings.isEmpty()) {
+        if (pullRequestMatchingDeliverySettings.isEmpty()) {
             return null;
         }
 
         Date firstMergeDateForCommitOnBranch = null;
-        for (PullRequest pullRequestViewsMatchingDeliverySetting :
-                pullRequestViewsMatchingDeliverySettings) {
-            if (commitHistory.isCommitPresentOnMergeCommitHistory(pullRequestView.getMergeCommitSha(),
-                    pullRequestViewsMatchingDeliverySetting.getMergeCommitSha())) {
-                final Date mergeDate = pullRequestViewsMatchingDeliverySetting.getMergeDate();
+        for (PullRequest pullRequestMatchingDeliverySetting :
+                pullRequestMatchingDeliverySettings) {
+            if (commitHistory.isCommitPresentOnMergeCommitHistory(pullRequest.getMergeCommitSha(),
+                    pullRequestMatchingDeliverySetting.getMergeCommitSha())) {
+                final Date mergeDate = pullRequestMatchingDeliverySetting.getMergeDate();
                 if (isNull(firstMergeDateForCommitOnBranch)) {
                     firstMergeDateForCommitOnBranch = mergeDate;
                 } else if (mergeDate.before(firstMergeDateForCommitOnBranch)) {
@@ -189,11 +183,11 @@ public class CycleTimeDataFactory {
     }
 
 
-    private Supplier<Long> computeTimeToDeployGivenDeployDate(final PullRequest pullRequestView,
+    private Supplier<Long> computeTimeToDeployGivenDeployDate(final PullRequest pullRequest,
                                                               final CommitHistory commitHistory,
                                                               final Date deployDate) {
         return () -> {
-            final Commit mergeCommit = commitHistory.getCommitFromSha(pullRequestView.getMergeCommitSha());
+            final Commit mergeCommit = commitHistory.getCommitFromSha(pullRequest.getMergeCommitSha());
             return isNull(deployDate) ? null :
                     DateHelper.getNumberOfMinutesBetweenDates(mergeCommit.getDate(),
                             deployDate);

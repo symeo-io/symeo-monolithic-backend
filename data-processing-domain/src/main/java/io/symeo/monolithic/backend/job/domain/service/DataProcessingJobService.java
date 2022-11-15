@@ -44,12 +44,12 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     }
 
     @Override
-    public void startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(UUID organizationId, UUID teamId,
-                                                                                List<String> repositoryIds,
-                                                                                String deployDetectionType,
-                                                                                String pullRequestMergedOnBranchRegexes,
-                                                                                String tagRegex,
-                                                                                List<String> excludeBranchRegexes) throws SymeoException {
+    public void startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(final UUID organizationId, final UUID teamId,
+                                                                                final List<String> repositoryIds,
+                                                                                final String deployDetectionType,
+                                                                                final String pullRequestMergedOnBranchRegexes,
+                                                                                final String tagRegex,
+                                                                                final List<String> excludeBranchRegexes) throws SymeoException {
         final List<Repository> allRepositoriesByIds =
                 dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds);
         validateRepositories(organizationId, repositoryIds, allRepositoriesByIds);
@@ -59,12 +59,17 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     }
 
     @Override
-    public void startToCollectVcsDataForOrganizationIdAndRepositoryIds(UUID organizationId,
-                                                                       List<String> repositoryIds) throws SymeoException {
+    public void startToCollectVcsDataForOrganizationIdAndRepositoryIds(final UUID organizationId,
+                                                                       final List<String> repositoryIds,
+                                                                       final String deployDetectionType,
+                                                                       final String pullRequestMergedOnBranchRegexes,
+                                                                       final String tagRegex,
+                                                                       final List<String> excludeBranchRegexes) throws SymeoException {
         final List<Repository> allRepositoriesByIds =
                 dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds);
         validateRepositories(organizationId, repositoryIds, allRepositoriesByIds);
-        jobManager.start(buildCollectVcsDataJob(organizationId, allRepositoriesByIds));
+        jobManager.start(buildCollectVcsDataJob(organizationId, allRepositoriesByIds, deployDetectionType, pullRequestMergedOnBranchRegexes,
+                tagRegex, excludeBranchRegexes));
     }
 
     private static VcsOrganization validateVcsOrganization(UUID organizationId, Long vcsOrganizationId,
@@ -99,7 +104,11 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         }
     }
 
-    private Job buildCollectVcsDataJob(UUID organizationId, List<Repository> allRepositoriesByIds) {
+    private Job buildCollectVcsDataJob(final UUID organizationId, final List<Repository> allRepositoriesByIds,
+                                       final String deployDetectionType,
+                                       final String pullRequestMergedOnBranchRegexes,
+                                       final String tagRegex,
+                                       final List<String> excludeBranchRegexes) {
         return Job.builder()
                 .organizationId(organizationId)
                 .jobRunnable(
@@ -107,6 +116,10 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .repositories(allRepositoriesByIds)
                                 .dataProcessingJobStorage(dataProcessingJobStorage)
                                 .vcsDataProcessingService(vcsDataProcessingService)
+                                .deployDetectionType(deployDetectionType)
+                                .pullRequestMergedOnBranchRegexes(pullRequestMergedOnBranchRegexes)
+                                .tagRegex(tagRegex)
+                                .excludeBranchRegexes(excludeBranchRegexes)
                                 .build()
                 )
                 .build();
@@ -114,10 +127,10 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
 
     private Job buildCollectVcsDataForTeamIdJob(final UUID organizationId, final UUID teamId,
                                                 final List<Repository> allRepositoriesByIds,
-                                                String deployDetectionType,
-                                                String pullRequestMergedOnBranchRegexes,
-                                                String tagRegex,
-                                                List<String> excludeBranchRegexes) {
+                                                final String deployDetectionType,
+                                                final String pullRequestMergedOnBranchRegexes,
+                                                final String tagRegex,
+                                                final List<String> excludeBranchRegexes) {
         return Job.builder()
                 .organizationId(organizationId)
                 .teamId(teamId)

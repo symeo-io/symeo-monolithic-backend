@@ -43,9 +43,9 @@ public class PullRequest {
     String head;
     String base;
     @Builder.Default
-    List<Commit> commits = List.of();
+    List<Commit> commits = new ArrayList<>();
     @Builder.Default
-    List<Comment> comments = List.of();
+    List<Comment> comments = new ArrayList<>();
     @Builder.Default
     List<String> commitShaList = new ArrayList<>();
 

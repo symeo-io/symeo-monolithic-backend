@@ -80,11 +80,4 @@ public interface PullRequestFullViewRepository extends JpaRepository<PullRequest
     )
     List<PullRequestFullViewDTO> findAllMergedPullRequestsForTeamIdUntilEndDate(@Param("teamId") UUID teamId,
                                                                          @Param("endDate") Date endDate);
-    @Query(nativeQuery = true, value = "select * " +
-            " from exposition_storage.pull_request pr" +
-            " where pr.state = 'merge' " +
-            " and pr.merge_date <= :endDate " +
-            " and pr.vcs_repository_id = :repositoryId")
-    List<PullRequestEntity> findAllMergedPullRequestsForRepositoryIdUntilEndDate(@Param("repositoryId") String repositoryId,
-                                                                                 @Param("endDate") Date endDate);
 }

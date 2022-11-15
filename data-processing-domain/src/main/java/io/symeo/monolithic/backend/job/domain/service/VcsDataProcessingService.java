@@ -40,6 +40,9 @@ public class VcsDataProcessingService {
                 dateToString(startDate), dateToString(endDate));
         final List<PullRequest> pullRequests = dataProcessingExpositionStorageAdapter.savePullRequestDetailsWithLinkedComments(
                 githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate, endDate)
+                        .stream()
+                        .filter(pullRequest -> pullRequest.getLastUpdateDate().after(startDate) && pullRequest.getLastUpdateDate().before(endDate))
+                        .toList()
         );
         LOGGER.info("Starting to collect cycle times for repository {} between {} and {}", repository,
                 dateToString(startDate), dateToString(endDate));

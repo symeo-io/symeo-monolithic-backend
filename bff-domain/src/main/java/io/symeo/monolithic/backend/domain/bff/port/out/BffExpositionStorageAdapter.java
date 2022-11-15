@@ -57,7 +57,7 @@ public interface BffExpositionStorageAdapter {
                                                                                                   String sortingDirection)
             throws SymeoException;
 
-    List<CycleTimePiece> findCycleTimePiecesForTeamIdBetweenStartDateAndEndDat(UUID teamId, Date startDate, Date endDate)
+    List<CycleTimePiece> findCycleTimePiecesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 
 

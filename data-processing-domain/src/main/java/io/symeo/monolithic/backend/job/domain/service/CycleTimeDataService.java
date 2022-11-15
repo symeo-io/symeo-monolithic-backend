@@ -47,7 +47,7 @@ public class CycleTimeDataService {
         final Pattern branchPattern = Pattern.compile(pullRequestMergedOnBranchRegex);
 
         final List<PullRequest> pullRequestsMergedOnMatchedBranches =
-                dataProcessingExpositionStorageAdapter.readMergedPullRequestsForRepositoryIdUntilEndDate(repository.getId(), endDate)
+                dataProcessingExpositionStorageAdapter.readMergedPullRequestsForRepositoryIdUntilEndDate(repository.getId(), new Date())
                         .stream().filter(pullRequest -> branchPattern.matcher(pullRequest.getBase()).find()).toList();
 
         return pullRequestsToComputeCycleTimeUntilEndDate

@@ -21,13 +21,13 @@ public class CycleTimeEntity {
     @Column(name = "id", nullable = false)
     String id;
     @Column(name = "value")
-    long value;
+    Long value;
     @Column(name = "coding_time")
-    long codingTime;
+    Long codingTime;
     @Column(name = "review_time")
-    long reviewTime;
+    Long reviewTime;
     @Column(name = "time_to_deploy")
-    long timeToDeploy;
+    Long timeToDeploy;
     @Column(name = "deploy_date")
     Date deployDate;
     @Column(name = "pull_request_id", nullable = false, updatable = false)
