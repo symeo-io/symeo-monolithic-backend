@@ -45,6 +45,8 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnableTest {
                         .repositories(repositories)
                         .vcsDataProcessingService(vcsDataProcessingService)
                         .dataProcessingJobStorage(dataProcessingJobStorage)
+                        .deployDetectionType(faker.name().name())
+                        .excludeBranchRegexes(List.of())
                         .build();
 
         // When

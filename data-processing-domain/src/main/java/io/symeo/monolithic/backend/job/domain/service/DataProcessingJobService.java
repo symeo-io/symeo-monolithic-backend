@@ -12,6 +12,7 @@ import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingJobStorage;
+import io.symeo.monolithic.backend.job.domain.port.out.VcsOrganizationStorageAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +31,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     private final VcsDataProcessingService vcsDataProcessingService;
     private final JobManager jobManager;
     private final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter;
+    private final VcsOrganizationStorageAdapter vcsOrganizationStorageAdapter;
 
     @Override
     public void startToCollectRepositoriesForOrganizationIdAndVcsOrganizationId(UUID organizationId,
@@ -44,7 +46,8 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
     }
 
     @Override
-    public void startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(final UUID organizationId, final UUID teamId,
+    public void startToCollectVcsDataForOrganizationIdAndTeamIdAndRepositoryIds(final UUID organizationId,
+                                                                                final UUID teamId,
                                                                                 final List<String> repositoryIds,
                                                                                 final String deployDetectionType,
                                                                                 final String pullRequestMergedOnBranchRegexes,
@@ -54,7 +57,8 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                 dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds);
         validateRepositories(organizationId, repositoryIds, allRepositoriesByIds);
         jobManager.start(buildCollectVcsDataForTeamIdJob(
-                organizationId, teamId, allRepositoriesByIds, deployDetectionType, pullRequestMergedOnBranchRegexes, tagRegex, excludeBranchRegexes)
+                organizationId, teamId, allRepositoriesByIds, deployDetectionType, pullRequestMergedOnBranchRegexes,
+                tagRegex, excludeBranchRegexes)
         );
     }
 
@@ -68,7 +72,8 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
         final List<Repository> allRepositoriesByIds =
                 dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds);
         validateRepositories(organizationId, repositoryIds, allRepositoriesByIds);
-        jobManager.start(buildCollectVcsDataJob(organizationId, allRepositoriesByIds, deployDetectionType, pullRequestMergedOnBranchRegexes,
+        jobManager.start(buildCollectVcsDataJob(organizationId, allRepositoriesByIds, deployDetectionType,
+                pullRequestMergedOnBranchRegexes,
                 tagRegex, excludeBranchRegexes));
     }
 
@@ -159,6 +164,7 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .vcsDataProcessingService(vcsDataProcessingService)
                                 .dataProcessingExpositionStorageAdapter(dataProcessingExpositionStorageAdapter)
                                 .autoSymeoDataProcessingJobApiAdapter(autoSymeoDataProcessingJobApiAdapter)
+                                .vcsOrganizationStorageAdapter(vcsOrganizationStorageAdapter)
                                 .build()
                 )
                 .build();

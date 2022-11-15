@@ -34,9 +34,7 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
     private final DataProcessingJobStorage dataProcessingJobStorage;
     @NonNull
     private final String deployDetectionType;
-    @NonNull
     private final String pullRequestMergedOnBranchRegexes;
-    @NonNull
     private final String tagRegex;
     @NonNull
     private final List<String> excludeBranchRegexes;
