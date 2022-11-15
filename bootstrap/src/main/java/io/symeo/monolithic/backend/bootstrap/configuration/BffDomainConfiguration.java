@@ -1,8 +1,6 @@
 package io.symeo.monolithic.backend.bootstrap.configuration;
 
 import io.symeo.monolithic.backend.domain.bff.model.metric.AverageCycleTimeFactory;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeFactory;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePieceFactory;
 import io.symeo.monolithic.backend.domain.bff.port.in.*;
 import io.symeo.monolithic.backend.domain.bff.port.out.*;
 import io.symeo.monolithic.backend.domain.bff.query.CurveQuery;
@@ -110,24 +108,8 @@ public class BffDomainConfiguration {
     }
 
     @Bean
-    public CycleTimeService cycleTimeService(final AverageCycleTimeFactory averageCycleTimeFactory,
-                                             final CycleTimePieceFactory cycleTimePieceFactory) {
-        return new CycleTimeService(averageCycleTimeFactory, cycleTimePieceFactory);
-    }
-
-    @Bean
-    public AverageCycleTimeFactory averageCycleTimeFactory(final CycleTimeFactory cycleTimeFactory) {
-        return new AverageCycleTimeFactory(cycleTimeFactory);
-    }
-
-    @Bean
-    public CycleTimePieceFactory cycleTimePieceFactory(final CycleTimeFactory cycleTimeFactory) {
-        return new CycleTimePieceFactory(cycleTimeFactory);
-    }
-
-    @Bean
-    public CycleTimeFactory cycleTimeFactory() {
-        return new CycleTimeFactory();
+    public AverageCycleTimeFactory averageCycleTimeFactory() {
+        return new AverageCycleTimeFactory();
     }
 
     @Bean

@@ -29,8 +29,7 @@ public class CycleTimeMetricsServiceTest {
     void should_get_cycle_time_metrics_given_previous_and_current_cycle_times() throws SymeoException {
         // Given
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final CycleTimeFactory cycleTimeFactory = mock(CycleTimeFactory.class);
-        final AverageCycleTimeFactory averageCycleTimeFactory = new AverageCycleTimeFactory(cycleTimeFactory);
+        final AverageCycleTimeFactory averageCycleTimeFactory = new AverageCycleTimeFactory();
         final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 averageCycleTimeFactory
@@ -144,8 +143,7 @@ public class CycleTimeMetricsServiceTest {
     void should_get_cycle_time_metrics_without_previous_cycle_times() throws SymeoException {
         // Given
         final BffExpositionStorageAdapter bffExpositionStorageAdapter = mock(BffExpositionStorageAdapter.class);
-        final CycleTimeFactory cycleTimeFactory = mock(CycleTimeFactory.class);
-        final AverageCycleTimeFactory averageCycleTimeFactory = new AverageCycleTimeFactory(cycleTimeFactory);
+        final AverageCycleTimeFactory averageCycleTimeFactory = new AverageCycleTimeFactory();
         final CycleTimeMetricsService cycleTimeMetricsService = new CycleTimeMetricsService(
                 bffExpositionStorageAdapter,
                 averageCycleTimeFactory
