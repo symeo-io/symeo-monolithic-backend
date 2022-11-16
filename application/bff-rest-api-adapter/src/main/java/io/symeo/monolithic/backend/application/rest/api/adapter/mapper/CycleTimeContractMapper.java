@@ -1,13 +1,13 @@
 package io.symeo.monolithic.backend.application.rest.api.adapter.mapper;
 
+import io.symeo.monolithic.backend.bff.contract.api.model.*;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetrics;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiecePage;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.Curve;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurve;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurveWithAverage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetrics;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiecePage;
-import io.symeo.monolithic.backend.bff.contract.api.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,7 @@ import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.Co
 import static io.symeo.monolithic.backend.application.rest.api.adapter.mapper.ContractMapperHelper.longToBigDecimal;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateTimeToString;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.dateToString;
+import static java.util.Objects.isNull;
 
 public interface CycleTimeContractMapper {
 
@@ -111,7 +112,8 @@ public interface CycleTimeContractMapper {
             cycleTimePieceContract.setVcsUrl(cycleTimePiece.getVcsUrl());
             cycleTimePieceContract.setTitle(cycleTimePiece.getTitle());
             cycleTimePieceContract.setCreationDate(dateTimeToString(cycleTimePiece.getCreationDate()));
-            cycleTimePieceContract.setMergeDate(dateTimeToString(cycleTimePiece.getMergeDate()));
+            cycleTimePieceContract.setMergeDate(isNull(cycleTimePiece.getMergeDate()) ? null :
+                    dateTimeToString(cycleTimePiece.getMergeDate()));
             list.add(cycleTimePieceContract);
         }
         return list;
@@ -122,8 +124,10 @@ public interface CycleTimeContractMapper {
         final CycleTimeCurveContract curves = new CycleTimeCurveContract();
         final List<CurveDataResponseContract> averageCurve = new ArrayList<>();
         final List<CycleTimePieceCurveDataResponseContract> pieceCurve = new ArrayList<>();
-        for (CycleTimePieceCurve.CyclePieceCurvePoint cycleTimePieceCurvePoint : cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData()) {
-            final CycleTimePieceCurveDataResponseContract cycleTimePieceCurveDataResponseContract = new CycleTimePieceCurveDataResponseContract();
+        for (CycleTimePieceCurve.CyclePieceCurvePoint cycleTimePieceCurvePoint :
+                cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData()) {
+            final CycleTimePieceCurveDataResponseContract cycleTimePieceCurveDataResponseContract =
+                    new CycleTimePieceCurveDataResponseContract();
             cycleTimePieceCurveDataResponseContract.setDate(cycleTimePieceCurvePoint.getDate());
             cycleTimePieceCurveDataResponseContract.setValue(longToBigDecimal(cycleTimePieceCurvePoint.getValue()));
             cycleTimePieceCurveDataResponseContract.setCodingTime(longToBigDecimal(cycleTimePieceCurvePoint.getCodingTime()));
