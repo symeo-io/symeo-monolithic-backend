@@ -44,7 +44,12 @@ public class CycleTimeMetrics {
             return getCycleTimeMetricsWithNoPreviousCycleTime(currentAverageCycleTime, previousStartDate,
                     currentStartDate, currentEndDate);
         } else {
-            return empty();
+            return of(CycleTimeMetrics.builder()
+                    .previousStartDate(previousStartDate)
+                    .previousEndDate(currentStartDate)
+                    .currentStartDate(currentStartDate)
+                    .currentEndDate(currentEndDate)
+                    .build());
         }
     }
 
