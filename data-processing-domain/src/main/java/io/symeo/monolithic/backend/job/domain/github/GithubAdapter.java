@@ -181,46 +181,10 @@ public class GithubAdapter {
         return getGithubPullRequestDTOs(repository, githubPullRequestDTOList);
     }
 
-    public List<Commit> getCommitsForBranchesInDateRange(final Repository repository,
-                                                         final List<String> branchNames,
-                                                         final Date startDate,
-                                                         final Date endDate)
-            throws SymeoException {
+    public List<Commit> getCommitsForBranches(final Repository repository, final List<String> branchNames) throws SymeoException {
         final Set<GithubCommitsDTO> deduplicatedGithubCommitsDTOs = new HashSet<>();
         for (String branchName : branchNames) {
-            int page = 1;
-            GithubCommitsDTO[] githubCommitsDTOS =
-                    githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(
-                            repository.getVcsOrganizationName(), repository.getName(), branchName, startDate, endDate
-                            , page,
-                            properties.getSize()
-                    );
-
-            if (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length > 0) {
-                deduplicatedGithubCommitsDTOs.addAll(Arrays.stream(githubCommitsDTOS).toList());
-            }
-
-            while (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length == properties.getSize()) {
-                page += 1;
-                githubCommitsDTOS =
-                        githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranchInDateRange(
-                                repository.getVcsOrganizationName(), repository.getName(), branchName, startDate,
-                                endDate
-                                , page,
-                                properties.getSize()
-                        );
-                if (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length > 0) {
-                    deduplicatedGithubCommitsDTOs.addAll(Arrays.stream(githubCommitsDTOS).toList());
-                }
-            }
-        }
-        if (rawStorageAdapter.exists(repository.getOrganizationId(), this.getName(),
-                Commit.getNameForRepository(repository))) {
-            final GithubCommitsDTO[] githubCommitsDTOS =
-                    bytesToDto(rawStorageAdapter.read(repository.getOrganizationId(), this.getName(),
-                                    Commit.getNameForRepository(repository)),
-                            GithubCommitsDTO[].class);
-            deduplicatedGithubCommitsDTOs.addAll(Arrays.stream(githubCommitsDTOS).toList());
+            collectCommitsComparedToCollectedHistory(repository, deduplicatedGithubCommitsDTOs, branchName);
         }
         rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Commit.getNameForRepository(repository),
                 dtoToBytes(deduplicatedGithubCommitsDTOs.toArray()));
@@ -229,31 +193,44 @@ public class GithubAdapter {
                 .toList();
     }
 
-    public List<Commit> getCommitsForBranches(final Repository repository, final List<String> branchNames) throws SymeoException {
-        final Set<GithubCommitsDTO> deduplicatedGithubCommitsDTOs = new HashSet<>();
-        try {
-            new ForkJoinPool(2).submit(() -> {
-                branchNames.parallelStream()
-                        .map(branchName -> {
-                            try {
-                                return getCommitsForBranch(repository, branchName);
-                            } catch (SymeoException e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
-                        .forEach(deduplicatedGithubCommitsDTOs::addAll);
-            }).get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+    private void collectCommitsComparedToCollectedHistory(final Repository repository,
+                                                          final Set<GithubCommitsDTO> deduplicatedGithubCommitsDTOs,
+                                                          final String branchName) throws SymeoException {
+        int page = 1;
+        GithubCommitsDTO[] githubCommitsDTOS =
+                githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranch(
+                        repository.getVcsOrganizationName(), repository.getName(), branchName, page,
+                        properties.getSize()
+                );
 
-        rawStorageAdapter.save(repository.getOrganizationId(), this.getName(), Commit.getNameForRepository(repository),
-                dtoToBytes(deduplicatedGithubCommitsDTOs.toArray()));
-        return deduplicatedGithubCommitsDTOs.stream()
-                .map(githubCommitsDTO -> mapCommitToDomain(githubCommitsDTO, repository))
-                .toList();
+        if (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length > 0) {
+            final List<GithubCommitsDTO> commitsDTOS = Arrays.stream(githubCommitsDTOS).toList();
+            if (deduplicatedGithubCommitsDTOs.stream().noneMatch(commitsDTOS::contains)) {
+                deduplicatedGithubCommitsDTOs.addAll(commitsDTOS);
+
+                while (githubCommitsDTOS.length == properties.getSize()) {
+                    page += 1;
+                    githubCommitsDTOS =
+                            githubApiClientAdapter.getCommitsForVcsOrganizationAndRepositoryAndBranch(
+                                    repository.getVcsOrganizationName(), repository.getName(), branchName, page,
+                                    properties.getSize()
+                            );
+                    if (nonNull(githubCommitsDTOS) && githubCommitsDTOS.length > 0) {
+                        final List<GithubCommitsDTO> githubCommitsDTOList =
+                                Arrays.stream(githubCommitsDTOS).toList();
+                        if (deduplicatedGithubCommitsDTOs.stream().anyMatch(githubCommitsDTOList::contains)) {
+                            deduplicatedGithubCommitsDTOs.addAll(githubCommitsDTOList);
+                            break;
+                        } else {
+                            deduplicatedGithubCommitsDTOs.addAll(githubCommitsDTOList);
+                        }
+                    }
+                }
+
+            } else {
+                deduplicatedGithubCommitsDTOs.addAll(commitsDTOS);
+            }
+        }
     }
 
     private List<GithubCommitsDTO> getCommitsForBranch(Repository repository, final String branchName) throws SymeoException {
