@@ -35,7 +35,6 @@ public class CustomCycleTimeRepository {
                     "       ct.pull_request_creation_date, " +
                     "       ct.pull_request_merge_date, " +
                     "       ct.pull_request_head " +
-
                     " from exposition_storage.cycle_time ct " +
                     " where ct.deploy_date > ':startDate' and ct.deploy_date <= ':endDate' " +
                     " and ct.pull_request_vcs_repository_id in (select ttr.repository_id " +

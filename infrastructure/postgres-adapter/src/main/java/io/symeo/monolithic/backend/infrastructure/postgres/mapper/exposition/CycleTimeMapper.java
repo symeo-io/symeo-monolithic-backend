@@ -24,6 +24,7 @@ public interface CycleTimeMapper {
                 .pullRequestCreationDate(cycleTime.getPullRequest().getCreationDate())
                 .pullRequestMergeDate(cycleTime.getPullRequest().getMergeDate())
                 .pullRequestHead(cycleTime.getPullRequest().getHead())
+                .pullRequestUpdateDate(cycleTime.getPullRequest().getLastUpdateDate())
                 .build();
     }
 }

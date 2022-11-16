@@ -46,6 +46,8 @@ public class CycleTimeEntity {
     String pullRequestTitle;
     @Column(name = "pull_request_creation_date")
     Date pullRequestCreationDate;
+    @Column(name = "pull_request_update_date")
+    Date pullRequestUpdateDate;
     @Column(name = "pull_request_merge_date")
     Date pullRequestMergeDate;
     @Column(name = "pull_request_head")

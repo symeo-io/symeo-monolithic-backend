@@ -1,6 +1,7 @@
 create table exposition_storage.cycle_time
 (
-    id                             varchar(100)                not null     constraint cycle_time_id primary key,
+    id                             varchar(100)                not null
+        constraint cycle_time_id primary key,
     value                          bigint,
     coding_time                    bigint,
     review_time                    bigint,
@@ -14,6 +15,7 @@ create table exposition_storage.cycle_time
     pull_request_vcs_url           varchar(100)                not null,
     pull_request_title             varchar(100)                not null,
     pull_request_creation_date     timestamp(6) with time zone not null,
+    pull_request_update_date       timestamp(6) with time zone not null,
     pull_request_merge_date        timestamp(6) with time zone,
     pull_request_head              varchar(100)                not null
 );
