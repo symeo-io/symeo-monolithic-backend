@@ -3,6 +3,9 @@ package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CycleTimeEntity;
 import io.symeo.monolithic.backend.job.domain.model.vcs.CycleTime;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static java.util.Objects.isNull;
 
 public interface CycleTimeMapper {
@@ -27,4 +30,15 @@ public interface CycleTimeMapper {
                 .pullRequestUpdateDate(cycleTime.getPullRequest().getLastUpdateDate())
                 .build();
     }
+
+    static String cycleTimePieceSortingParameterToDataBaseAttribute(final String sortingParameter) {
+        return CYCLE_TIME_PIECE_SORTING_PARAMETER_MAPPING.getOrDefault(sortingParameter, sortingParameter);
+    }
+
+    Map<String, String> CYCLE_TIME_PIECE_SORTING_PARAMETER_MAPPING = Map.of(
+            "vcs_repository", "pull_request_vcs_repository",
+            "title", "pull_request_title",
+            "author", "pull_request_author_login",
+            "cycle_time", "value"
+    );
 }

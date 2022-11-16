@@ -28,7 +28,8 @@ import java.util.stream.Collectors;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.POSTGRES_EXCEPTION;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.buildPagination;
 import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.SortingMapper.directionToPostgresSortingValue;
-import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper.sortingParameterToDatabaseAttribute;
+import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.CycleTimeMapper.*;
+import static io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition.PullRequestMapper.pullRequestSortingParameterToDatabaseAttribute;
 
 @AllArgsConstructor
 @Slf4j
@@ -124,7 +125,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
             final Pagination pagination = buildPagination(pageIndex, pageSize);
             return customPullRequestViewRepository.findAllByTeamIdAndStartEndAndEndDateAndPagination(
                     teamId, startDate, endDate, pagination.getStart(), pagination.getEnd(),
-                    sortingParameterToDatabaseAttribute(sortingParameter),
+                    pullRequestSortingParameterToDatabaseAttribute(sortingParameter),
                     directionToPostgresSortingValue(sortingDirection)
             ).stream().map(
                     PullRequestMapper::fullViewToDomain
@@ -153,7 +154,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
             final Pagination pagination = buildPagination(pageIndex, pageSize);
             return customPullRequestViewRepository.findAllPullRequestViewByTeamIdUntilEndDatePaginatedAndSorted(
                     teamId, startDate, endDate, pagination.getStart(), pagination.getEnd(),
-                    sortingParameterToDatabaseAttribute(sortingParameter),
+                    pullRequestSortingParameterToDatabaseAttribute(sortingParameter),
                     directionToPostgresSortingValue(sortingDirection));
         } catch (Exception e) {
             final String message = String.format("Failed to find all PR details paginated and sorted with %s for " +
@@ -174,7 +175,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
             final Pagination pagination = buildPagination(pageIndex, pageSize);
             return customCycleTimeRepository.findAllCycleTimePiecesForTeamIdBetweenStartDateAndEndDatePaginatedAndSorted(
                     teamId, startDate, endDate, pagination.getStart(), pagination.getEnd(),
-                    sortingParameterToDatabaseAttribute(sortingParameter),
+                    cycleTimePieceSortingParameterToDataBaseAttribute(sortingParameter),
                     directionToPostgresSortingValue(sortingDirection)
             );
         } catch (Exception e) {

@@ -168,7 +168,7 @@ public class CustomCycleTimeRepository {
                 .replace(":teamId", teamId.toString())
                 .replace(":startDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startDate))
                 .replace(":endDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endDate))
-                .replace(":sortingParameter", mapSortingParameter(sortingDatabaseParameter))
+                .replace(":sortingParameter", sortingDatabaseParameter)
                 .replace(":sortingDirection", sortingDatabaseDirection)
                 .replace(":endRange", Integer.toString(end))
                 .replace(":startRange", Integer.toString(start));
@@ -215,20 +215,5 @@ public class CustomCycleTimeRepository {
                 .reviewTime(reviewTime)
                 .timeToDeploy(timeToDeploy)
                 .build();
-    }
-
-    private static final Map<String, String> MAP_SORTING_PARAMETER_TO_ALIAS = Map.of(
-            "creation_date", "pull_request_creation_date",
-            "state", "pull_request_state",
-            "merge_date", "pull_request_merge_date",
-            "id", "pull_request_id",
-            "vcs_url", "pull_request_vcs_url",
-            "title", "pull_request_title",
-            "author_login", "pull_request_author_login",
-            "vcs_repository", "pull_request_vcs_repository"
-    );
-
-    private String mapSortingParameter(String sortingDatabaseParameter) {
-        return MAP_SORTING_PARAMETER_TO_ALIAS.getOrDefault(sortingDatabaseParameter, sortingDatabaseParameter);
     }
 }

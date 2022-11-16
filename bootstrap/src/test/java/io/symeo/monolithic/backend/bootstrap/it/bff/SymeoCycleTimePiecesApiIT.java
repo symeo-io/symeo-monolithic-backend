@@ -62,8 +62,8 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
     private static final String deployCommitSha = faker.rickAndMorty().character() + "-2";
     private static final Integer pageIndex = 0;
     private static final Integer pageSize = 5;
-    private static final String sortBy = "creation_date";
-    private static final String sortDir = "desc";
+    private static final String sortBy = "cycle_time";
+    private static final String sortDir = "asc";
 
     @Order(1)
     @Test
