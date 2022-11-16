@@ -55,15 +55,13 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
 
     private static final UUID organizationId = UUID.randomUUID();
     private static final UUID activeUserId = UUID.randomUUID();
-    private static final UUID organizationSettingsId = UUID.randomUUID();
     private static final String repositoryId = faker.gameOfThrones().character();
     private static final String repositoryName = faker.name().lastName();
     private static final UUID teamId = UUID.randomUUID();
-    private static final String deployCommitSha = faker.rickAndMorty().character() + "-2";
     private static final Integer pageIndex = 0;
     private static final Integer pageSize = 5;
-    private static final String sortBy = "creation_date";
-    private static final String sortDir = "desc";
+    private static final String sortBy = "cycle_time";
+    private static final String sortDir = "asc";
 
     @Order(1)
     @Test
@@ -155,6 +153,7 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .pullRequestAuthorLogin(faker.name().firstName())
                 .pullRequestMergeDate(stringToDate("2022-02-13"))
                 .pullRequestCreationDate(stringToDate("2022-02-10"))
+                .pullRequestUpdateDate(stringToDate("2022-02-13"))
                 .pullRequestVcsRepositoryId(repositoryId)
                 .pullRequestVcsRepository(faker.howIMetYourMother().character())
                 .pullRequestVcsUrl(faker.backToTheFuture().character())
@@ -172,6 +171,7 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .pullRequestId(faker.rickAndMorty().character() + "-current-2")
                 .pullRequestAuthorLogin(faker.name().firstName())
                 .pullRequestMergeDate(stringToDate("2022-02-17"))
+                .pullRequestUpdateDate(stringToDate("2022-02-17"))
                 .pullRequestCreationDate(stringToDate("2022-02-09"))
                 .pullRequestVcsRepositoryId(repositoryId)
                 .pullRequestVcsRepository(faker.howIMetYourMother().character())
@@ -191,6 +191,7 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .pullRequestId(faker.rickAndMorty().character() + "-previous-1")
                 .pullRequestAuthorLogin(faker.name().firstName())
                 .pullRequestMergeDate(stringToDate("2022-01-13"))
+                .pullRequestUpdateDate(stringToDate("2022-01-13"))
                 .pullRequestCreationDate(stringToDate("2022-01-10"))
                 .pullRequestVcsRepositoryId(repositoryId)
                 .pullRequestVcsRepository(faker.howIMetYourMother().character())
@@ -209,6 +210,7 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .pullRequestId(faker.rickAndMorty().character() + "-previous-2")
                 .pullRequestAuthorLogin(faker.name().firstName())
                 .pullRequestMergeDate(stringToDate("2022-01-17"))
+                .pullRequestUpdateDate(stringToDate("2022-01-17"))
                 .pullRequestCreationDate(stringToDate("2022-01-09"))
                 .pullRequestVcsRepositoryId(repositoryId)
                 .pullRequestVcsRepository(faker.howIMetYourMother().character())
@@ -263,8 +265,6 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .jsonPath("$.pieces_page.pieces[1].time_to_deploy").isEqualTo(String.valueOf(inRangeCycleTimeEntity2.getTimeToDeploy()))
                 .jsonPath("$.pieces_page.pieces[1].cycle_time").isEqualTo(String.valueOf(inRangeCycleTimeEntity2.getValue()));
     }
-
-    // TODO : ITs Cycle Time Curve
 
     @Order(4)
     @Test

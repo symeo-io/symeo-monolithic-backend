@@ -1475,7 +1475,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: [ "id", "status", "creation_date", "merge_date", "vcs_url", "title", "author", "vcs_repository", "value", "coding_time", "review_time", "time_to_deploy" ]
+            enum: [ "vcs_repository", "title", "author", "cycle_time", "coding_time", "review_time", "time_to_deploy" ]
         - in: query
           name: sort_dir
           required: true

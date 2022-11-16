@@ -66,7 +66,7 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
                         teamId, startDate, endDate
                 );
         validatePagination(pageIndex, pageSize);
-        validateSortingInputs(sortDir, sortBy, PullRequestView.AVAILABLE_SORTING_PARAMETERS);
+        validateSortingInputs(sortDir, sortBy, CycleTimePiece.AVAILABLE_CYCLE_TIME_PIECE_SORTING_PARAMETERS);
         final List<CycleTimePiece> cycleTimePiecesForTeamIdBetweenStartDateAndEndDatePaginatedAndSorted =
                 bffExpositionStorageAdapter.findCycleTimePiecesForTeamIdBetweenStartDateAndEndDatePaginatedAndSorted(
                         teamId, startDate, endDate, pageIndex, pageSize, sortBy, sortDir
