@@ -13,7 +13,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.getRangeDatesBetweenStartDateAndEndDateForRange;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @AllArgsConstructor
@@ -30,9 +32,13 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
         final List<Date> rangeDates = getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
                 range, organization.getTimeZone());
         final List<CycleTime> cycleTimesForTeamIdBetweenStartDateAndEndDate =
-                bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate)
+                bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate,
+                                endDate)
                         .stream()
-                        .map(cycleTime -> cycleTime.mapDeployDateToClosestRangeDate(rangeDates, cycleTime.getDeployDate()))
+                        .filter(cycleTime -> nonNull(cycleTime.getValue()))
+                        .map(cycleTime -> cycleTime.mapDeployDateToClosestRangeDate(rangeDates,
+                                isNull(cycleTime.getDeployDate()) ? cycleTime.getUpdateDate() :
+                                        cycleTime.getDeployDate()))
                         .toList();
         return CycleTimePieceCurveWithAverage.buildPullRequestCurve(cycleTimesForTeamIdBetweenStartDateAndEndDate);
     }

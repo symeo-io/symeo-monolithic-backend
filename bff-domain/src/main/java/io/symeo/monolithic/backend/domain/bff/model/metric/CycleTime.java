@@ -27,6 +27,7 @@ public class CycleTime {
     Long reviewTime;
     Long timeToDeploy;
     Date deployDate;
+    Date updateDate;
     // To display PR data on graphs
     PullRequestView pullRequestView;
     String startDateRange;

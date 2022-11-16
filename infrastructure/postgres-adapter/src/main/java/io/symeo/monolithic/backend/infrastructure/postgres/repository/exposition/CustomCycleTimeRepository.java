@@ -34,15 +34,23 @@ public class CustomCycleTimeRepository {
                     "       ct.pull_request_title, " +
                     "       ct.pull_request_creation_date, " +
                     "       ct.pull_request_merge_date, " +
-                    "       ct.pull_request_head " +
+                    "       ct.pull_request_head," +
+                    "       ct.pull_request_update_date " +
                     " from exposition_storage.cycle_time ct " +
-                    " where ct.deploy_date > ':startDate' and ct.deploy_date <= ':endDate' " +
+                    " where (" +
+                    "    (ct.deploy_date is not null and (ct.deploy_date > ':startDate' " +
+                    "    and ct.deploy_date <= ':endDate' ))" +
+                    "    or" +
+                    "    (ct.deploy_date is null and (ct.pull_request_update_date > ':startDate' " +
+                    "        and ct.pull_request_update_date <= ':endDate' ))" +
+                    "    )" +
                     " and ct.pull_request_vcs_repository_id in (select ttr.repository_id " +
                     "                               from exposition_storage.team_to_repository ttr " +
                     "                               where ttr.team_id = ':teamId') " +
                     " order by ct.id";
 
-    public List<CycleTime> findAllCycleTimeByTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate) {
+    public List<CycleTime> findAllCycleTimeByTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate,
+                                                                              Date endDate) {
         final String query = FIND_ALL_BY_TEAM_ID_BETWEEN_START_DATE_AND_END_DATE
                 .replace(":teamId", teamId.toString())
                 .replace(":startDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startDate))
@@ -65,6 +73,7 @@ public class CustomCycleTimeRepository {
         final Long reviewTime = isNull(object[3]) ? null : ((BigInteger) object[3]).longValue();
         final Long timeToDeploy = isNull(object[4]) ? null : ((BigInteger) object[4]).longValue();
         final Date deployDate = (Timestamp) object[5];
+        final Date updateDate = (Timestamp) object[16];
         return CycleTime.builder()
                 .id(cycleTimeId)
                 .value(cycleTimeValue)
@@ -73,6 +82,7 @@ public class CustomCycleTimeRepository {
                 .timeToDeploy(timeToDeploy)
                 .deployDate(deployDate)
                 .pullRequestView(pullRequestView)
+                .updateDate(updateDate)
                 .build();
     }
 
@@ -97,7 +107,8 @@ public class CustomCycleTimeRepository {
                 .build();
     }
 
-    public List<CycleTimePiece> findAllCycleTimePiecesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate) {
+    public List<CycleTimePiece> findAllCycleTimePiecesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate
+            , Date endDate) {
         final String query = FIND_ALL_BY_TEAM_ID_BETWEEN_START_DATE_AND_END_DATE
                 .replace(":teamId", teamId.toString())
                 .replace(":startDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startDate))
@@ -129,10 +140,16 @@ public class CustomCycleTimeRepository {
                     "       ct.pull_request_title, " +
                     "       ct.pull_request_creation_date, " +
                     "       ct.pull_request_merge_date, " +
-                    "       ct.pull_request_head " +
-
+                    "       ct.pull_request_head," +
+                    "       ct.pull_request_update_date " +
                     " from exposition_storage.cycle_time ct " +
-                    " where ct.deploy_date > ':startDate' and ct.deploy_date <= ':endDate' " +
+                    " where (" +
+                    "    (ct.deploy_date is not null and (ct.deploy_date > ':startDate' " +
+                    "    and ct.deploy_date <= ':endDate' ))" +
+                    "    or" +
+                    "    (ct.deploy_date is null and (ct.pull_request_update_date > ':startDate' " +
+                    "        and ct.pull_request_update_date <= ':endDate' ))" +
+                    "    )" +
                     " and ct.pull_request_vcs_repository_id in (select ttr.repository_id " +
                     "                               from exposition_storage.team_to_repository ttr " +
                     "                               where ttr.team_id = ':teamId') " +
