@@ -1,9 +1,6 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
-import io.symeo.monolithic.backend.domain.job.Job;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationAndTeamJobRunnable;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationJobRunnable;
-import io.symeo.monolithic.backend.domain.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OnboardingEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
@@ -17,10 +14,15 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Te
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
+import io.symeo.monolithic.backend.job.domain.model.job.Job;
+import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectVcsDataForRepositoriesAndDatesJobRunnable;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -46,7 +48,7 @@ public class SymeoJobApiIT extends AbstractSymeoBackForFrontendApiIT {
 
     @Order(1)
     @Test
-    void should_get_last_two_vcs_data_collection_job_status() throws InterruptedException {
+    void should_get_last_two_vcs_data_collection_job_status() throws InterruptedException, IOException {
         // Given
         final OrganizationEntity organizationEntity = OrganizationEntity.builder()
                 .id(organizationId)
@@ -81,24 +83,19 @@ public class SymeoJobApiIT extends AbstractSymeoBackForFrontendApiIT {
                         .repositoryIds(List.of(repositoryEntity.getId()))
                         .build()
         );
-        final String tasks = "[{\"input\": {\"id\": \"github-512630813\", \"name\": \"symeo-webapp\", " +
-                "\"defaultBranch\": \"staging\", \"organizationId\": null, \"vcsOrganizationId\": " +
-                "\"github-105865802\", \"vcsOrganizationName\": \"symeo-io\"}, \"status\": \"DONE\"}, {\"input\": " +
-                "{\"id\": \"github-495382833\", \"name\": \"symeo-monolithic-backend\", \"defaultBranch\": " +
-                "\"staging\", \"organizationId\": null, \"vcsOrganizationId\": \"github-105865802\", " +
-                "\"vcsOrganizationName\": \"symeo-io\"}, \"status\": \"DONE\"}]";
+        final String tasks = Files.readString(Paths.get("target/test-classes/job/tasks_stub.json"));
         final JobEntity expectedJob1 = JobEntity
                 .builder()
                 .organizationId(organizationId)
                 .teamId(teamId)
-                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
+                .code(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE)
                 .tasks(tasks)
                 .status(Job.STARTED)
                 .build();
         final JobEntity expectedJob2 = JobEntity
                 .builder()
                 .organizationId(organizationId)
-                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                .code(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE)
                 .tasks(tasks)
                 .status(Job.FINISHED)
                 .build();
@@ -108,7 +105,7 @@ public class SymeoJobApiIT extends AbstractSymeoBackForFrontendApiIT {
                                 .builder()
                                 .organizationId(organizationId)
                                 .teamId(teamId)
-                                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
+                                .code(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE)
                                 .tasks(tasks)
                                 .status(Job.STARTED)
                                 .build(),
@@ -116,7 +113,7 @@ public class SymeoJobApiIT extends AbstractSymeoBackForFrontendApiIT {
                                 .builder()
                                 .organizationId(organizationId)
                                 .teamId(teamId)
-                                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
+                                .code(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE)
                                 .tasks(tasks)
                                 .status(Job.FAILED)
                                 .build(),
@@ -124,35 +121,35 @@ public class SymeoJobApiIT extends AbstractSymeoBackForFrontendApiIT {
                                 .builder()
                                 .organizationId(organizationId)
                                 .teamId(teamId)
-                                .code(CollectVcsDataForOrganizationAndTeamJobRunnable.JOB_CODE)
+                                .code(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE)
                                 .tasks(tasks)
                                 .status(Job.RESTARTED)
                                 .build(),
                         JobEntity
                                 .builder()
                                 .organizationId(organizationId)
-                                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                                .code(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE)
                                 .tasks(tasks)
                                 .status(Job.CREATED)
                                 .build(),
                         JobEntity
                                 .builder()
                                 .organizationId(organizationId)
-                                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                                .code(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE)
                                 .tasks(tasks)
                                 .status(Job.FAILED)
                                 .build(),
                         JobEntity
                                 .builder()
                                 .organizationId(organizationId)
-                                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                                .code(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE)
                                 .tasks(tasks)
                                 .status(Job.RESTARTED)
                                 .build(),
                         JobEntity
                                 .builder()
                                 .organizationId(organizationId)
-                                .code(CollectVcsDataForOrganizationJobRunnable.JOB_CODE)
+                                .code(CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE)
                                 .tasks(tasks)
                                 .status(Job.STARTED)
                                 .build()

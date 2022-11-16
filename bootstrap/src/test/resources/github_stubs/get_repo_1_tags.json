@@ -1,0 +1,802 @@
+[
+  {
+    "ref": "refs/tags/infrastructure-08-08-2022-3",
+    "node_id": "REF_kwDOHYbxMdoAJXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS0wOC0wOC0yMDIyLTM",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-08-08-2022-3",
+    "object": {
+      "sha": "817245d0b26d7a252327c60da4eff4469ab0d9ab",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/817245d0b26d7a252327c60da4eff4469ab0d9ab"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-08-08-2022",
+    "node_id": "REF_kwDOHYbxMdoAI3JlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS0wOC0wOC0yMDIy",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-08-08-2022",
+    "object": {
+      "sha": "c690fa6d589a1414b0f3fd2b980e07c57dc4dd15",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/c690fa6d589a1414b0f3fd2b980e07c57dc4dd15"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-demo-06-09-2022-1",
+    "node_id": "REF_kwDOHYbxMdoAKnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1kZW1vLTA2LTA5LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-demo-06-09-2022-1",
+    "object": {
+      "sha": "32228d8700be8974161d0541ad04d0ea1932ddc2",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/32228d8700be8974161d0541ad04d0ea1932ddc2"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-demo-12-09-2022-1",
+    "node_id": "REF_kwDOHYbxMdoAKnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1kZW1vLTEyLTA5LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-demo-12-09-2022-1",
+    "object": {
+      "sha": "f71fdca9c9d0b712eba0742a0bc1e35e05f379af",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/f71fdca9c9d0b712eba0742a0bc1e35e05f379af"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-demo-14-09-2022-1",
+    "node_id": "REF_kwDOHYbxMdoAKnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1kZW1vLTE0LTA5LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-demo-14-09-2022-1",
+    "object": {
+      "sha": "f71fdca9c9d0b712eba0742a0bc1e35e05f379af",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/f71fdca9c9d0b712eba0742a0bc1e35e05f379af"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-demo-17-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoAKnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1kZW1vLTE3LTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-demo-17-08-2022-2",
+    "object": {
+      "sha": "fcf94ebbe7003dec46e864f2ded3385c50325376",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/fcf94ebbe7003dec46e864f2ded3385c50325376"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-demo-17-08-2022",
+    "node_id": "REF_kwDOHYbxMdoAKHJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1kZW1vLTE3LTA4LTIwMjI",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-demo-17-08-2022",
+    "object": {
+      "sha": "fb747cce13ff86ac14b20a82cb37772ad6f88f65",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/fb747cce13ff86ac14b20a82cb37772ad6f88f65"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-demo-18-08-2022-1",
+    "node_id": "REF_kwDOHYbxMdoAKnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1kZW1vLTE4LTA4LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-demo-18-08-2022-1",
+    "object": {
+      "sha": "fcf94ebbe7003dec46e864f2ded3385c50325376",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/fcf94ebbe7003dec46e864f2ded3385c50325376"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-demo-18-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoAKnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1kZW1vLTE4LTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-demo-18-08-2022-2",
+    "object": {
+      "sha": "0fb79cb5e85846c19ff34302f36a8526165c7846",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/0fb79cb5e85846c19ff34302f36a8526165c7846"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-demo-18-08-2022",
+    "node_id": "REF_kwDOHYbxMdoAKHJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1kZW1vLTE4LTA4LTIwMjI",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-demo-18-08-2022",
+    "object": {
+      "sha": "b6822f067ab3b60b9845a1769d474b1a44c340af",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/b6822f067ab3b60b9845a1769d474b1a44c340af"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-production-19-09-2022-1",
+    "node_id": "REF_kwDOHYbxMdoAMHJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1wcm9kdWN0aW9uLTE5LTA5LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-production-19-09-2022-1",
+    "object": {
+      "sha": "bd7e23a50df72df731218633866e5af2c89c6a73",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/bd7e23a50df72df731218633866e5af2c89c6a73"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-production-19-09-2022-2",
+    "node_id": "REF_kwDOHYbxMdoAMHJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1wcm9kdWN0aW9uLTE5LTA5LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-production-19-09-2022-2",
+    "object": {
+      "sha": "bd7e23a50df72df731218633866e5af2c89c6a73",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/bd7e23a50df72df731218633866e5af2c89c6a73"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-production-19-09-2022-3",
+    "node_id": "REF_kwDOHYbxMdoAMHJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1wcm9kdWN0aW9uLTE5LTA5LTIwMjItMw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-production-19-09-2022-3",
+    "object": {
+      "sha": "bbeec30e12ea0d6eb49cd30b338aa8ba988e2abf",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/bbeec30e12ea0d6eb49cd30b338aa8ba988e2abf"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-production-19-09-2022-4",
+    "node_id": "REF_kwDOHYbxMdoAMHJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1wcm9kdWN0aW9uLTE5LTA5LTIwMjItNA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-production-19-09-2022-4",
+    "object": {
+      "sha": "bbeec30e12ea0d6eb49cd30b338aa8ba988e2abf",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/bbeec30e12ea0d6eb49cd30b338aa8ba988e2abf"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-08-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA4LTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-08-08-2022-2",
+    "object": {
+      "sha": "e574544ecdc1327866e7ae795f65c76486c8d6ea",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/e574544ecdc1327866e7ae795f65c76486c8d6ea"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-08-08-2022-3",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA4LTA4LTIwMjItMw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-08-08-2022-3",
+    "object": {
+      "sha": "9d7b714a30ad75dd2df381266aa291220d9a83b6",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/9d7b714a30ad75dd2df381266aa291220d9a83b6"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-08-08-2022-4",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA4LTA4LTIwMjItNA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-08-08-2022-4",
+    "object": {
+      "sha": "4d9260d255a1ab686543174ab2c5ba1f71b1ae7a",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/4d9260d255a1ab686543174ab2c5ba1f71b1ae7a"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-08-08-2022-5",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA4LTA4LTIwMjItNQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-08-08-2022-5",
+    "object": {
+      "sha": "96a9c71d324ad4cfd51e6fff866f7891442e2116",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/96a9c71d324ad4cfd51e6fff866f7891442e2116"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-08-08-2022-6",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA4LTA4LTIwMjItNg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-08-08-2022-6",
+    "object": {
+      "sha": "2a0046b5bf8f22de920c17d05a214f8057c0448a",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/2a0046b5bf8f22de920c17d05a214f8057c0448a"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-08-08-2022-7",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA4LTA4LTIwMjItNw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-08-08-2022-7",
+    "object": {
+      "sha": "91283f010832466685637f1b7792ac125aeb4c34",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/91283f010832466685637f1b7792ac125aeb4c34"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-08-08-2022-8",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA4LTA4LTIwMjItOA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-08-08-2022-8",
+    "object": {
+      "sha": "58dbfd5977ee91c6a64a8831395ec3dc9235124f",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/58dbfd5977ee91c6a64a8831395ec3dc9235124f"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-08-08-2022-9",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA4LTA4LTIwMjItOQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-08-08-2022-9",
+    "object": {
+      "sha": "4487749997f15a052cc9954e1fa7dda64457d5ed",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/4487749997f15a052cc9954e1fa7dda64457d5ed"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-08-08-2022",
+    "node_id": "REF_kwDOHYbxMdoAK3JlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA4LTA4LTIwMjI",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-08-08-2022",
+    "object": {
+      "sha": "2d20e44f3ea37e350988f9fbbaf88eec1aa370a7",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/2d20e44f3ea37e350988f9fbbaf88eec1aa370a7"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-09-08-2022-1",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA5LTA4LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-09-08-2022-1",
+    "object": {
+      "sha": "4e40168e0302539f4d1ab3c1ca88d3cfec38f800",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/4e40168e0302539f4d1ab3c1ca88d3cfec38f800"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-09-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA5LTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-09-08-2022-2",
+    "object": {
+      "sha": "9be0101a050f8a95533a12e93687f5a18a364e12",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/9be0101a050f8a95533a12e93687f5a18a364e12"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-09-08-2022-3",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA5LTA4LTIwMjItMw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-09-08-2022-3",
+    "object": {
+      "sha": "0be368844f7a264981ab45dc3b5317fff1600c92",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/0be368844f7a264981ab45dc3b5317fff1600c92"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-09-08-2022-4",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA5LTA4LTIwMjItNA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-09-08-2022-4",
+    "object": {
+      "sha": "f7e70f1c11aca9f1ad47d40ebeb9a65cd4f00a8d",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/f7e70f1c11aca9f1ad47d40ebeb9a65cd4f00a8d"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-09-08-2022-5",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA5LTA4LTIwMjItNQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-09-08-2022-5",
+    "object": {
+      "sha": "cc7092187a4a9ab928c9d0644f5d74ad3ee06f5a",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/cc7092187a4a9ab928c9d0644f5d74ad3ee06f5a"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-09-08-2022-6",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA5LTA4LTIwMjItNg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-09-08-2022-6",
+    "object": {
+      "sha": "cc7092187a4a9ab928c9d0644f5d74ad3ee06f5a",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/cc7092187a4a9ab928c9d0644f5d74ad3ee06f5a"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-09-08-2022-7",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA5LTA4LTIwMjItNw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-09-08-2022-7",
+    "object": {
+      "sha": "312a9178b69d794561d99d57791cfaebb0958ef2",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/312a9178b69d794561d99d57791cfaebb0958ef2"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-09-08-2022",
+    "node_id": "REF_kwDOHYbxMdoAK3JlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTA5LTA4LTIwMjI",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-09-08-2022",
+    "object": {
+      "sha": "ab419104a0374eb11ca261e135e1e7a66307b2a1",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/ab419104a0374eb11ca261e135e1e7a66307b2a1"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-1",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-1",
+    "object": {
+      "sha": "312a9178b69d794561d99d57791cfaebb0958ef2",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/312a9178b69d794561d99d57791cfaebb0958ef2"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-2",
+    "object": {
+      "sha": "f07a020164fc3bc995ebbcbc21fee7972a4ecc9c",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/f07a020164fc3bc995ebbcbc21fee7972a4ecc9c"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-3",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItMw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-3",
+    "object": {
+      "sha": "93168f39ab08861f301390607071ec16ffd69bd0",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/93168f39ab08861f301390607071ec16ffd69bd0"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-4",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItNA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-4",
+    "object": {
+      "sha": "15aba0a308e15c8e30412e83bf63a7ea33c12c20",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/15aba0a308e15c8e30412e83bf63a7ea33c12c20"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-5",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItNQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-5",
+    "object": {
+      "sha": "25933936e84467598780a2c000668974136260d6",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/25933936e84467598780a2c000668974136260d6"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-6",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItNg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-6",
+    "object": {
+      "sha": "75da1742da265a08b52222f883dcdc2ea7b96fe5",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/75da1742da265a08b52222f883dcdc2ea7b96fe5"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-7",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItNw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-7",
+    "object": {
+      "sha": "a8fa6f2f9dc90cf9316067a0d70c82dda236e7de",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/a8fa6f2f9dc90cf9316067a0d70c82dda236e7de"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-8",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItOA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-8",
+    "object": {
+      "sha": "45f6389af59f3b6b04cd153f13cd20312207b022",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/45f6389af59f3b6b04cd153f13cd20312207b022"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-9",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItOQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-9",
+    "object": {
+      "sha": "9d252fff1a1add8291e8a7dd5c9bff9324c55ee6",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/9d252fff1a1add8291e8a7dd5c9bff9324c55ee6"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-10",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItMTA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-10",
+    "object": {
+      "sha": "52710d1b3bf7fe59c34ea2cc0e0d4f3622408881",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/52710d1b3bf7fe59c34ea2cc0e0d4f3622408881"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-11",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItMTE",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-11",
+    "object": {
+      "sha": "eb7671d1651b40e3cd5cd76a3510543cc1fe635d",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/eb7671d1651b40e3cd5cd76a3510543cc1fe635d"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-12",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItMTI",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-12",
+    "object": {
+      "sha": "69c8555b059acca76a764adf443828ac85fead91",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/69c8555b059acca76a764adf443828ac85fead91"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-13",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItMTM",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-13",
+    "object": {
+      "sha": "e63ddf90acfad69696815a4751aa62c485f9657f",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/e63ddf90acfad69696815a4751aa62c485f9657f"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-10-08-2022-14",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTEwLTA4LTIwMjItMTQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-10-08-2022-14",
+    "object": {
+      "sha": "9099b6cacdaacf26f505817b458efa8e75cd6abd",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/9099b6cacdaacf26f505817b458efa8e75cd6abd"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-11-08-2022-1",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTExLTA4LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-11-08-2022-1",
+    "object": {
+      "sha": "9099b6cacdaacf26f505817b458efa8e75cd6abd",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/9099b6cacdaacf26f505817b458efa8e75cd6abd"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-11-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTExLTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-11-08-2022-2",
+    "object": {
+      "sha": "336299364254ca2cefb0f41f0ef01a9545632b9f",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/336299364254ca2cefb0f41f0ef01a9545632b9f"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-11-08-2022-3",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTExLTA4LTIwMjItMw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-11-08-2022-3",
+    "object": {
+      "sha": "b5d6f3da14da9761c3cdf5adf6222a9503d03f02",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/b5d6f3da14da9761c3cdf5adf6222a9503d03f02"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-11-08-2022-4",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTExLTA4LTIwMjItNA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-11-08-2022-4",
+    "object": {
+      "sha": "36825c2fd70909114dc3e1d751345c0fbcc9cd7a",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/36825c2fd70909114dc3e1d751345c0fbcc9cd7a"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-14-09-2022-1",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTE0LTA5LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-14-09-2022-1",
+    "object": {
+      "sha": "474403e3f8f2e7f590989e0fe128dd3024b43ce2",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/474403e3f8f2e7f590989e0fe128dd3024b43ce2"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-17-08-2022-1",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTE3LTA4LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-17-08-2022-1",
+    "object": {
+      "sha": "fcf94ebbe7003dec46e864f2ded3385c50325376",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/fcf94ebbe7003dec46e864f2ded3385c50325376"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-17-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTE3LTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-17-08-2022-2",
+    "object": {
+      "sha": "fcf94ebbe7003dec46e864f2ded3385c50325376",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/fcf94ebbe7003dec46e864f2ded3385c50325376"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-18-08-2022-1",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTE4LTA4LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-18-08-2022-1",
+    "object": {
+      "sha": "0fb79cb5e85846c19ff34302f36a8526165c7846",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/0fb79cb5e85846c19ff34302f36a8526165c7846"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-18-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTE4LTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-18-08-2022-2",
+    "object": {
+      "sha": "bedc3052f3fb15ffb1059132fdd9e1deeee92d44",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/bedc3052f3fb15ffb1059132fdd9e1deeee92d44"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-18-08-2022-3",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTE4LTA4LTIwMjItMw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-18-08-2022-3",
+    "object": {
+      "sha": "d49c41fa923ad505a5ec92db782e9e8d22b2e4f3",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/d49c41fa923ad505a5ec92db782e9e8d22b2e4f3"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-18-08-2022-4",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTE4LTA4LTIwMjItNA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-18-08-2022-4",
+    "object": {
+      "sha": "b6822f067ab3b60b9845a1769d474b1a44c340af",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/b6822f067ab3b60b9845a1769d474b1a44c340af"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-18-08-2022",
+    "node_id": "REF_kwDOHYbxMdoAK3JlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTE4LTA4LTIwMjI",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-18-08-2022",
+    "object": {
+      "sha": "b5ae2c0f347724861fa6cb80e51229c4b61d0510",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/b5ae2c0f347724861fa6cb80e51229c4b61d0510"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-1",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-1",
+    "object": {
+      "sha": "2406fff270558d5c0caec8898abbd2e6b7d4213d",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/2406fff270558d5c0caec8898abbd2e6b7d4213d"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-2",
+    "object": {
+      "sha": "3397e6f30921d9ca6745983043493fe1f5596f1e",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/3397e6f30921d9ca6745983043493fe1f5596f1e"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-3",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItMw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-3",
+    "object": {
+      "sha": "cfd1ffbb5a70ce0add58614f4e0b545e1ca23939",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/cfd1ffbb5a70ce0add58614f4e0b545e1ca23939"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-4",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItNA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-4",
+    "object": {
+      "sha": "254b3efa7ac930c41da3ee454ed620a6db3f5e55",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/254b3efa7ac930c41da3ee454ed620a6db3f5e55"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-5",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItNQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-5",
+    "object": {
+      "sha": "3d4e00e26991a433365f00b09fa07c8987b15eec",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/3d4e00e26991a433365f00b09fa07c8987b15eec"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-6",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItNg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-6",
+    "object": {
+      "sha": "22a2a3a08ff62366aa63107de013211451b5f2bb",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/22a2a3a08ff62366aa63107de013211451b5f2bb"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-7",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItNw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-7",
+    "object": {
+      "sha": "37249f636a9728fbbdf1dd864ff1686cad925033",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/37249f636a9728fbbdf1dd864ff1686cad925033"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-8",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItOA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-8",
+    "object": {
+      "sha": "59d7688265f53565bc760b263d476cbee61924e7",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/59d7688265f53565bc760b263d476cbee61924e7"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-9",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItOQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-9",
+    "object": {
+      "sha": "11304ae4b4c8a985a147ad9ab8d7677b62636b2e",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/11304ae4b4c8a985a147ad9ab8d7677b62636b2e"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-10",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItMTA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-10",
+    "object": {
+      "sha": "98c53a4c1b92407dd4a2778a0b992e7199b17625",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/98c53a4c1b92407dd4a2778a0b992e7199b17625"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-11",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItMTE",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-11",
+    "object": {
+      "sha": "eefe533afc01a1607c8afb0737ea3b5f4d8b4389",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/eefe533afc01a1607c8afb0737ea3b5f4d8b4389"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-12",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItMTI",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-12",
+    "object": {
+      "sha": "cb143e0e293db57d3e0a45ed659fe77ea0f51497",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/cb143e0e293db57d3e0a45ed659fe77ea0f51497"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-13",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItMTM",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-13",
+    "object": {
+      "sha": "e34d64129839c7655920688ddb7d74ff9cf44096",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/e34d64129839c7655920688ddb7d74ff9cf44096"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022-14",
+    "node_id": "REF_kwDOHYbxMdoALnJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjItMTQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022-14",
+    "object": {
+      "sha": "9e379eceee1d7fdc88026fcabe27d86dca7fc28f",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/9e379eceee1d7fdc88026fcabe27d86dca7fc28f"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-24-08-2022",
+    "node_id": "REF_kwDOHYbxMdoAK3JlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI0LTA4LTIwMjI",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-24-08-2022",
+    "object": {
+      "sha": "9f75b2251c2e1b70cfd6b2b7dbc68132cfeeed11",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/9f75b2251c2e1b70cfd6b2b7dbc68132cfeeed11"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-25-08-2022-1",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI1LTA4LTIwMjItMQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-25-08-2022-1",
+    "object": {
+      "sha": "791a2cb344db55a83ff01f3ece060e5cbed670f4",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/791a2cb344db55a83ff01f3ece060e5cbed670f4"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-25-08-2022-2",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI1LTA4LTIwMjItMg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-25-08-2022-2",
+    "object": {
+      "sha": "2f4c5512cced9f454e070d4f5b0e205345f95d5c",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/2f4c5512cced9f454e070d4f5b0e205345f95d5c"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-25-08-2022-3",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI1LTA4LTIwMjItMw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-25-08-2022-3",
+    "object": {
+      "sha": "d4079b44ce4a09af8f1ec821717203a36f93e88b",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/d4079b44ce4a09af8f1ec821717203a36f93e88b"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-25-08-2022-4",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI1LTA4LTIwMjItNA",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-25-08-2022-4",
+    "object": {
+      "sha": "1cbf446ca98e48ffe2028568596d48c084369388",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/1cbf446ca98e48ffe2028568596d48c084369388"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-25-08-2022-5",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI1LTA4LTIwMjItNQ",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-25-08-2022-5",
+    "object": {
+      "sha": "1838889e82d2fbf56c58901be38c7452bd03d690",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/1838889e82d2fbf56c58901be38c7452bd03d690"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-25-08-2022-6",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI1LTA4LTIwMjItNg",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-25-08-2022-6",
+    "object": {
+      "sha": "3dc2de4ec6ca81161c428e5a4f601f72a7f86fb2",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/3dc2de4ec6ca81161c428e5a4f601f72a7f86fb2"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-25-08-2022-7",
+    "node_id": "REF_kwDOHYbxMdoALXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI1LTA4LTIwMjItNw",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-25-08-2022-7",
+    "object": {
+      "sha": "57350abfd1a1205973f371dcaea66694dce53879",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/57350abfd1a1205973f371dcaea66694dce53879"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-staging-25-08-2022",
+    "node_id": "REF_kwDOHYbxMdoAK3JlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS1zdGFnaW5nLTI1LTA4LTIwMjI",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-staging-25-08-2022",
+    "object": {
+      "sha": "6c8af1e7867f9efc54d709c5e25a71bfcd9da1bf",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/6c8af1e7867f9efc54d709c5e25a71bfcd9da1bf"
+    }
+  }
+]

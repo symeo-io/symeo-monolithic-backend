@@ -1,10 +1,9 @@
 package io.symeo.monolithic.backend.infrastructure.sendgrid.adapter;
 
 import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.sendgrid.adapter.client.SendgridApiClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -28,7 +27,7 @@ public class SendgridAdapterTest {
         final SendgridAdapter sendgridAdapter = new SendgridAdapter(sendgridApiClient);
         final Organization organization = Organization.builder().name(faker.ancient().god())
                 .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().build())
+                .vcsOrganization(Organization.VcsOrganization.builder().build().builder().build())
                 .build();
         final User fromUser = User.builder()
                 .email(faker.harryPotter().character())
@@ -70,7 +69,7 @@ public class SendgridAdapterTest {
         );
         final Organization organization = Organization.builder().name(faker.ancient().god())
                 .id(UUID.randomUUID())
-                .vcsOrganization(VcsOrganization.builder().build())
+                .vcsOrganization(Organization.VcsOrganization.builder().build())
                 .build();
         final User fromUser = User.builder()
                 .email(faker.harryPotter().character())

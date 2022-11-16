@@ -1,9 +1,9 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.bff.model.account.TeamGoal;
+import io.symeo.monolithic.backend.domain.bff.model.account.TeamStandard;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.TeamGoal;
-import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamGoalEntity;
@@ -12,11 +12,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Te
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.account;
 
-import io.symeo.monolithic.backend.domain.model.account.Onboarding;
+import io.symeo.monolithic.backend.domain.bff.model.account.Onboarding;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OnboardingEntity;
 
 import java.util.UUID;

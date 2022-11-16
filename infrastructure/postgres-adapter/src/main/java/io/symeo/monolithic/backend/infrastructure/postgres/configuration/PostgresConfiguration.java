@@ -36,11 +36,14 @@ public class PostgresConfiguration {
                                                      final CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository,
                                                      final CommitRepository commitRepository,
                                                      final TagRepository tagRepository,
-                                                     final CustomCommitRepository customCommitRepository) {
+                                                     final CustomCommitRepository customCommitRepository,
+                                                     final VcsOrganizationRepository vcsOrganizationRepository,
+                                                     final CustomCycleTimeRepository customCycleTimeRepository,
+                                                     final CycleTimeRepository cycleTimeRepository) {
         return new PostgresExpositionAdapter(pullRequestRepository, repositoryRepository,
                 pullRequestTimeToMergeRepository, pullRequestSizeRepository, pullRequestFullViewRepository,
                 customPullRequestViewRepository, customPullRequestWithCommitsAndCommentsRepository, commitRepository,
-                tagRepository, customCommitRepository);
+                tagRepository, customCommitRepository, vcsOrganizationRepository, customCycleTimeRepository, cycleTimeRepository);
     }
 
     @Bean
@@ -81,6 +84,16 @@ public class PostgresConfiguration {
     }
 
     @Bean
+    public PostgresCommitTestingDataAdapter postgresCommitTestingDataAdapter(final CommitTestingDataRepository commitTestingDataRepository) {
+        return new PostgresCommitTestingDataAdapter(commitTestingDataRepository);
+    }
+
+    @Bean
+    public PostgresOrganizationApiKeyAdapter postgresOrganizationApiKeyAdapter(final OrganizationApiKeyRepository organizationApiKeyRepository) {
+        return new PostgresOrganizationApiKeyAdapter(organizationApiKeyRepository);
+    }
+
+    @Bean
     public CustomPullRequestViewRepository customPullRequestViewRepository(final EntityManager entityManager) {
         return new CustomPullRequestViewRepository(entityManager);
     }
@@ -93,5 +106,9 @@ public class PostgresConfiguration {
     @Bean
     public CustomPullRequestWithCommitsAndCommentsRepository customPullRequestWithCommitsAndCommentsRepository(final EntityManager entityManager) {
         return new CustomPullRequestWithCommitsAndCommentsRepository(entityManager);
+    }
+    @Bean
+    public CustomCycleTimeRepository customCycleTimeRepository(final EntityManager entityManager) {
+        return new CustomCycleTimeRepository(entityManager);
     }
 }

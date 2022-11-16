@@ -10,16 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>rest-api-adapter</module>
+        <module>bff-rest-api-adapter</module>
         <module>github-webhook-api-adapter</module>
+        <module>data-processing-rest-api-adapter</module>
     </modules>
     <artifactId>application</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.symeo.monolithic.backend</groupId>
-            <artifactId>domain</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
 </project>

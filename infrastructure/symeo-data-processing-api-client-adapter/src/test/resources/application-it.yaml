@@ -1,0 +1,5 @@
+application:
+  job-api:
+    api-key: faker-api-key
+    url: faker-url/
+    header-key: X-SYMEO-JOB-KEY-X

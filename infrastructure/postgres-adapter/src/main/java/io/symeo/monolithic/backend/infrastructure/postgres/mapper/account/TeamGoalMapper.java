@@ -1,6 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.account;
 
-import io.symeo.monolithic.backend.domain.model.account.TeamGoal;
+import io.symeo.monolithic.backend.domain.bff.model.account.TeamGoal;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamGoalEntity;
 
 import java.util.UUID;

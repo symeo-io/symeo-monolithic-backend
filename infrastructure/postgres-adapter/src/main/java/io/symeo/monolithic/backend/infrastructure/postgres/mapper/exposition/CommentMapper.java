@@ -1,7 +1,8 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Comment;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.CommentView;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Comment;
 
 import java.sql.Date;
 import java.time.ZoneId;
@@ -16,6 +17,12 @@ public interface CommentMapper {
                 .build();
     }
 
+    static CommentView entityToDomainView(final CommentEntity commentEntity) {
+        return CommentView.builder()
+                .id(commentEntity.getId())
+                .creationDate(Date.from(commentEntity.getCreationDate().toInstant()))
+                .build();
+    }
     static Comment entityToDomain(final CommentEntity commentEntity) {
         return Comment.builder()
                 .id(commentEntity.getId())

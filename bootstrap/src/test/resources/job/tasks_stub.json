@@ -1,0 +1,121 @@
+[
+  {
+    "input": {
+      "endDate": 1668421703090,
+      "startDate": 1663192800000,
+      "repositories": [
+        {
+          "id": "github-495382833",
+          "name": "symeo-monolithic-backend",
+          "defaultBranch": "staging",
+          "organizationId": "0b9b6cc8-a5da-411f-8b9f-2d6cf715fae2",
+          "vcsOrganizationId": "github-105865802",
+          "vcsOrganizationName": "symeo-io"
+        }
+      ]
+    },
+    "status": "TO_DO"
+  },
+  {
+    "input": {
+      "endDate": 1663192800000,
+      "startDate": 1658008800000,
+      "repositories": [
+        {
+          "id": "github-495382833",
+          "name": "symeo-monolithic-backend",
+          "defaultBranch": "staging",
+          "organizationId": "0b9b6cc8-a5da-411f-8b9f-2d6cf715fae2",
+          "vcsOrganizationId": "github-105865802",
+          "vcsOrganizationName": "symeo-io"
+        }
+      ]
+    },
+    "status": "TO_DO"
+  },
+  {
+    "input": {
+      "endDate": 1658008800000,
+      "startDate": 1652824800000,
+      "repositories": [
+        {
+          "id": "github-495382833",
+          "name": "symeo-monolithic-backend",
+          "defaultBranch": "staging",
+          "organizationId": "0b9b6cc8-a5da-411f-8b9f-2d6cf715fae2",
+          "vcsOrganizationId": "github-105865802",
+          "vcsOrganizationName": "symeo-io"
+        }
+      ]
+    },
+    "status": "TO_DO"
+  },
+  {
+    "input": {
+      "endDate": 1652824800000,
+      "startDate": 1647644400000,
+      "repositories": [
+        {
+          "id": "github-495382833",
+          "name": "symeo-monolithic-backend",
+          "defaultBranch": "staging",
+          "organizationId": "0b9b6cc8-a5da-411f-8b9f-2d6cf715fae2",
+          "vcsOrganizationId": "github-105865802",
+          "vcsOrganizationName": "symeo-io"
+        }
+      ]
+    },
+    "status": "TO_DO"
+  },
+  {
+    "input": {
+      "endDate": 1647644400000,
+      "startDate": 1642460400000,
+      "repositories": [
+        {
+          "id": "github-495382833",
+          "name": "symeo-monolithic-backend",
+          "defaultBranch": "staging",
+          "organizationId": "0b9b6cc8-a5da-411f-8b9f-2d6cf715fae2",
+          "vcsOrganizationId": "github-105865802",
+          "vcsOrganizationName": "symeo-io"
+        }
+      ]
+    },
+    "status": "TO_DO"
+  },
+  {
+    "input": {
+      "endDate": 1642460400000,
+      "startDate": 1637276400000,
+      "repositories": [
+        {
+          "id": "github-495382833",
+          "name": "symeo-monolithic-backend",
+          "defaultBranch": "staging",
+          "organizationId": "0b9b6cc8-a5da-411f-8b9f-2d6cf715fae2",
+          "vcsOrganizationId": "github-105865802",
+          "vcsOrganizationName": "symeo-io"
+        }
+      ]
+    },
+    "status": "TO_DO"
+  },
+  {
+    "input": {
+      "endDate": 1637276400000,
+      "startDate": 1632088800000,
+      "repositories": [
+        {
+          "id": "github-495382833",
+          "name": "symeo-monolithic-backend",
+          "defaultBranch": "staging",
+          "organizationId": "0b9b6cc8-a5da-411f-8b9f-2d6cf715fae2",
+          "vcsOrganizationId": "github-105865802",
+          "vcsOrganizationName": "symeo-io"
+        }
+      ]
+    },
+    "status": "TO_DO"
+  }
+]

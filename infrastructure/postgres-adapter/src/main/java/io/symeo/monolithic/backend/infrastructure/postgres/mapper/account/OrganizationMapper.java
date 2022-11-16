@@ -1,13 +1,16 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.account;
 
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
+import io.symeo.monolithic.backend.job.domain.model.organization.OrganizationSettingsView;
+import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 
 import java.util.UUID;
 
@@ -41,7 +44,7 @@ public interface OrganizationMapper {
     }
 
     static VcsOrganizationEntity vcsDomainToEntity(final Organization organization) {
-        final VcsOrganization vcsOrganization = organization.getVcsOrganization();
+        final Organization.VcsOrganization vcsOrganization = organization.getVcsOrganization();
         return VcsOrganizationEntity.builder()
                 .organizationEntity(domainToEntity(organization))
                 .vcsId(vcsOrganization.getVcsId())
@@ -50,12 +53,33 @@ public interface OrganizationMapper {
                 .build();
     }
 
-    static VcsOrganization vcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
-        return VcsOrganization.builder()
+    static Organization.VcsOrganization vcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+        return Organization.VcsOrganization.builder()
                 .vcsId(vcsOrganizationEntity.getVcsId())
-                .id(vcsOrganizationEntity.getId().toString())
+                .id(vcsOrganizationEntity.getId())
                 .name(vcsOrganizationEntity.getName())
                 .externalId(vcsOrganizationEntity.getExternalId())
+                .build();
+    }
+
+    static VcsOrganization vcsEntityToDataProcessingDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+        return VcsOrganization.builder()
+                .vcsId(vcsOrganizationEntity.getVcsId())
+                .id(vcsOrganizationEntity.getId())
+                .name(vcsOrganizationEntity.getName())
+                .externalId(vcsOrganizationEntity.getExternalId())
+                .organizationId(vcsOrganizationEntity.getOrganizationId())
+                .build();
+    }
+
+    static VcsOrganization dataProcessingVcsEntityToDomain(final VcsOrganizationEntity vcsOrganizationEntity) {
+        return VcsOrganization.builder()
+                .vcsId(vcsOrganizationEntity.getVcsId())
+                .id(vcsOrganizationEntity.getId())
+                .organizationId(vcsOrganizationEntity.getOrganizationId())
+                .name(vcsOrganizationEntity.getName())
+                .externalId(vcsOrganizationEntity.getExternalId())
+                .organizationId(vcsOrganizationEntity.getOrganizationId())
                 .build();
     }
 
@@ -68,10 +92,11 @@ public interface OrganizationMapper {
                 .tagRegex(deployDetectionSettings.getTagRegex())
                 .pullRequestMergedOnBranchRegex(deployDetectionSettings.getPullRequestMergedOnBranchRegex())
                 .excludeBranchRegexes(deployDetectionSettings.getExcludeBranchRegexes())
+                .deployDetectionType(deployDetectionSettings.getDeployDetectionType().getValue())
                 .build();
     }
 
-    static OrganizationSettings settingsToDomain(final OrganizationSettingsEntity organizationSettingsEntity) {
+    static OrganizationSettings settingsToDomain(final OrganizationSettingsEntity organizationSettingsEntity) throws SymeoException {
         return OrganizationSettings.builder()
                 .id(organizationSettingsEntity.getId())
                 .organizationId(organizationSettingsEntity.getOrganizationId())
@@ -82,10 +107,20 @@ public interface OrganizationMapper {
                                                 .tagRegex(organizationSettingsEntity.getTagRegex())
                                                 .pullRequestMergedOnBranchRegex(organizationSettingsEntity.getPullRequestMergedOnBranchRegex())
                                                 .excludeBranchRegexes(organizationSettingsEntity.getExcludeBranchRegexes())
+                                                .deployDetectionType(DeployDetectionTypeDomainEnum.fromString(organizationSettingsEntity.getDeployDetectionType()))
                                                 .build()
                                 )
                                 .build()
                 )
+                .build();
+    }
+
+    static OrganizationSettingsView settingsToView(OrganizationSettingsEntity organizationSettingsEntity) {
+        return OrganizationSettingsView.builder()
+                .tagRegex(organizationSettingsEntity.getTagRegex())
+                .pullRequestMergedOnBranchRegex(organizationSettingsEntity.getPullRequestMergedOnBranchRegex())
+                .excludeBranchRegexes(organizationSettingsEntity.getExcludeBranchRegexes())
+                .deployDetectionType(organizationSettingsEntity.getDeployDetectionType())
                 .build();
     }
 }

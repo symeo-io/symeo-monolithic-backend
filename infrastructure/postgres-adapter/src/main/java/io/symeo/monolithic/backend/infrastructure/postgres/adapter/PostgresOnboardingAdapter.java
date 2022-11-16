@@ -1,10 +1,10 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.Onboarding;
+import io.symeo.monolithic.backend.domain.bff.port.out.OnboardingStorage;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Onboarding;
-import io.symeo.monolithic.backend.domain.port.out.OnboardingStorage;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

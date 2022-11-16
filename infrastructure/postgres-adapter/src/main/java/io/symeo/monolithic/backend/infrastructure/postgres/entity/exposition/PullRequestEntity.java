@@ -2,6 +2,8 @@ package io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -80,7 +82,8 @@ public class PullRequestEntity {
     @Builder.Default
     List<String> commitShaList = new ArrayList<>();
     @Builder.Default
-    @OneToMany(mappedBy = "pullRequest", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pullRequest", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     List<CommentEntity> comments = new ArrayList<>();
     @Column(name = "technical_creation_date", updatable = false)
     @CreationTimestamp

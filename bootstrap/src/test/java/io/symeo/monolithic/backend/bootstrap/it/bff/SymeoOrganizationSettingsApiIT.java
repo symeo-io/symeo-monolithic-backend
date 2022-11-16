@@ -1,9 +1,11 @@
 package io.symeo.monolithic.backend.bootstrap.it.bff;
 
-import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.frontend.contract.api.model.DeliverySettingsContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.DeployDetectionSettingsContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.OrganizationSettingsContract;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.bff.contract.api.model.DeliverySettingsContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.DeployDetectionSettingsContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.OrganizationSettingsContract;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OnboardingEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationSettingsEntity;
@@ -59,6 +61,7 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                 .organizationId(organizationEntity.getId())
                 .tagRegex(faker.name().firstName())
                 .pullRequestMergedOnBranchRegex(faker.name().lastName())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue())
                 .build();
         organizationSettingsRepository.save(organizationSettingsEntity);
 
@@ -73,7 +76,8 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                 .jsonPath("$.errors").isEmpty()
                 .jsonPath("$.settings.id").isEqualTo(organizationSettingsEntity.getId().toString())
                 .jsonPath("$.settings.delivery.deploy_detection.tag_regex").isEqualTo(organizationSettingsEntity.getTagRegex())
-                .jsonPath("$.settings.delivery.deploy_detection.pull_request_merged_on_branch_regex").isEqualTo(organizationSettingsEntity.getPullRequestMergedOnBranchRegex());
+                .jsonPath("$.settings.delivery.deploy_detection.pull_request_merged_on_branch_regex").isEqualTo(organizationSettingsEntity.getPullRequestMergedOnBranchRegex())
+                .jsonPath("$.settings.delivery.deploy_detection.deploy_detection_type").isEqualTo("pull_request");
     }
 
     @Test
@@ -92,6 +96,7 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                 .organizationId(organizationEntity.getId())
                 .tagRegex(faker.name().firstName())
                 .pullRequestMergedOnBranchRegex(faker.name().lastName())
+                .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue())
                 .build();
 
         organizationSettingsRepository.save(organizationSettingsEntityToUpdate);
@@ -101,6 +106,7 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
         final DeployDetectionSettingsContract deployDetectionSettingsContract = new DeployDetectionSettingsContract();
         deployDetectionSettingsContract.setTagRegex(faker.gameOfThrones().character());
         deployDetectionSettingsContract.setPullRequestMergedOnBranchRegex(faker.gameOfThrones().dragon());
+        deployDetectionSettingsContract.setDeployDetectionType(DeployDetectionSettingsContract.DeployDetectionTypeEnum.TAG);
         deliverySettingsContract.setDeployDetection(deployDetectionSettingsContract);
         updateOrganizationSettingsContract.setDelivery(deliverySettingsContract);
         updateOrganizationSettingsContract.setId(organizationSettingsId);
@@ -114,9 +120,11 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                 // Then
                 .expectStatus()
                 .is2xxSuccessful();
-        final OrganizationSettingsEntity updatedOrganizationSettings = organizationSettingsRepository.findById(organizationSettingsId).get();
+        final OrganizationSettingsEntity updatedOrganizationSettings =
+                organizationSettingsRepository.findById(organizationSettingsId).get();
         assertThat(updatedOrganizationSettings.getTagRegex()).isEqualTo(updateOrganizationSettingsContract.getDelivery().getDeployDetection().getTagRegex());
         assertThat(updatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(updateOrganizationSettingsContract.getDelivery().getDeployDetection().getPullRequestMergedOnBranchRegex());
+        assertThat(updatedOrganizationSettings.getDeployDetectionType()).isEqualTo(DeployDetectionTypeDomainEnum.TAG.getValue());
     }
 
     @Test
@@ -142,15 +150,19 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                     .organizationId(invalidOrganizationId)
                     .tagRegex(faker.name().firstName())
                     .pullRequestMergedOnBranchRegex(faker.name().lastName())
+                    .deployDetectionType(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue())
                     .build();
 
             organizationSettingsRepository.save(organizationSettingsEntityToUpdate);
 
-            final OrganizationSettingsContract unauthorizedUpdateOrganizationSettingsContract = new OrganizationSettingsContract();
+            final OrganizationSettingsContract unauthorizedUpdateOrganizationSettingsContract =
+                    new OrganizationSettingsContract();
             final DeliverySettingsContract deliverySettingsContract = new DeliverySettingsContract();
-            final DeployDetectionSettingsContract deployDetectionSettingsContract = new DeployDetectionSettingsContract();
+            final DeployDetectionSettingsContract deployDetectionSettingsContract =
+                    new DeployDetectionSettingsContract();
             deployDetectionSettingsContract.setTagRegex(faker.gameOfThrones().character());
             deployDetectionSettingsContract.setPullRequestMergedOnBranchRegex(faker.gameOfThrones().dragon());
+            deployDetectionSettingsContract.setDeployDetectionType(DeployDetectionSettingsContract.DeployDetectionTypeEnum.TAG);
             deliverySettingsContract.setDeployDetection(deployDetectionSettingsContract);
             unauthorizedUpdateOrganizationSettingsContract.setDelivery(deliverySettingsContract);
             unauthorizedUpdateOrganizationSettingsContract.setId(organizationSettingsId);
@@ -164,9 +176,11 @@ public class SymeoOrganizationSettingsApiIT extends AbstractSymeoBackForFrontend
                     // Then
                     .expectStatus()
                     .is4xxClientError();
-            final OrganizationSettingsEntity notUpdatedOrganizationSettings = organizationSettingsRepository.findById(organizationSettingsId).get();
+            final OrganizationSettingsEntity notUpdatedOrganizationSettings =
+                    organizationSettingsRepository.findById(organizationSettingsId).get();
             assertThat(notUpdatedOrganizationSettings.getTagRegex()).isEqualTo(organizationSettingsEntityToUpdate.getTagRegex());
             assertThat(notUpdatedOrganizationSettings.getPullRequestMergedOnBranchRegex()).isEqualTo(organizationSettingsEntityToUpdate.getPullRequestMergedOnBranchRegex());
+            assertThat(notUpdatedOrganizationSettings.getDeployDetectionType()).isEqualTo(DeployDetectionTypeDomainEnum.PULL_REQUEST.getValue());
         }
     }
 

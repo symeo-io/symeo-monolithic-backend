@@ -10,7 +10,7 @@ public interface VcsOrganizationRepository extends JpaRepository<VcsOrganization
 
     Optional<VcsOrganizationEntity> findByExternalId(String externalId);
 
-    Optional<VcsOrganizationEntity> findByName(String name);
-
     Optional<VcsOrganizationEntity> findByOrganizationId(UUID organizationId);
+
+    Optional<VcsOrganizationEntity> findByIdAndOrganizationId(Long id, UUID organizationId);
 }

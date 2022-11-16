@@ -9,10 +9,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @ActiveProfiles({"it"})
 @AutoConfigureWebTestClient(timeout = "36000")
-@SpringBootTest(webEnvironment = DEFINED_PORT, classes = GithubWebhookAdapterITApplication.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = GithubWebhookAdapterITApplication.class)
 @EnableConfigurationProperties
 public class AbstractGithubWebhookAdapterIT {
 

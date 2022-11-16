@@ -1,0 +1,22 @@
+{
+  "token": "ghs_Dw6pbGxXgTFMmUrOr1tMxg9uo5UDA72Hw8Oh",
+  "expires_at": "2022-07-17T19:17:58Z",
+  "permissions": {
+    "members": "read",
+    "organization_administration": "read",
+    "organization_projects": "read",
+    "team_discussions": "read",
+    "actions": "read",
+    "administration": "read",
+    "checks": "read",
+    "contents": "read",
+    "deployments": "read",
+    "discussions": "read",
+    "merge_queues": "read",
+    "metadata": "read",
+    "pull_requests": "read",
+    "repository_projects": "read",
+    "statuses": "read"
+  },
+  "repository_selection": "all"
+}

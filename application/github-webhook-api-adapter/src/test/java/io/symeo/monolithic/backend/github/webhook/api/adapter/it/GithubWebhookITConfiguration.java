@@ -1,11 +1,11 @@
 package io.symeo.monolithic.backend.github.webhook.api.adapter.it;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationFacadeAdapter;
+import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.GithubWebhookApiAdapter;
 import io.symeo.monolithic.backend.github.webhook.api.adapter.properties.GithubWebhookProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.port.in.OrganizationFacadeAdapter;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Configuration
 public class GithubWebhookITConfiguration {
@@ -45,6 +46,10 @@ public class GithubWebhookITConfiguration {
         public Organization createOrganization(final Organization organization) throws SymeoException {
             organizations.add(organization);
             return organization;
+        }
+        @Override
+        public Optional<Organization> getOrganizationForApiKey(String key) throws SymeoException {
+            return Optional.of(Organization.builder().build());
         }
     }
 }

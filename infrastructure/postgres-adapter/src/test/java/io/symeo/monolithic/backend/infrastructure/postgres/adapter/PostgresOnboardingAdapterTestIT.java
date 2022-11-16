@@ -1,18 +1,14 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.bff.model.account.Onboarding;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Onboarding;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OnboardingMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OnboardingRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.util.UUID;
 

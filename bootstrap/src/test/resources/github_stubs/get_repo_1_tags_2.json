@@ -1,0 +1,22 @@
+[
+  {
+    "ref": "refs/tags/infrastructure-08-08-2022-3",
+    "node_id": "REF_kwDOHYbxMdoAJXJlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS0wOC0wOC0yMDIyLTM",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-08-08-2022-3",
+    "object": {
+      "sha": "817245d0b26d7a252327c60da4eff4469ab0d9ab",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/817245d0b26d7a252327c60da4eff4469ab0d9ab"
+    }
+  },
+  {
+    "ref": "refs/tags/infrastructure-08-08-2022",
+    "node_id": "REF_kwDOHYbxMdoAI3JlZnMvdGFncy9pbmZyYXN0cnVjdHVyZS0wOC0wOC0yMDIy",
+    "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/refs/tags/infrastructure-08-08-2022",
+    "object": {
+      "sha": "c690fa6d589a1414b0f3fd2b980e07c57dc4dd15",
+      "type": "commit",
+      "url": "https://api.github.com/repos/symeo-io/symeo-monolithic-backend/git/commits/c690fa6d589a1414b0f3fd2b980e07c57dc4dd15"
+    }
+  }
+]

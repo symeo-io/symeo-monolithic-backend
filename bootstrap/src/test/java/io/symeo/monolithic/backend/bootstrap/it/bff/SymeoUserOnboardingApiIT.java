@@ -2,25 +2,23 @@ package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import io.symeo.monolithic.backend.bff.contract.api.model.CreateTeamRequestContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.UpdateOnboardingRequestContract;
+import io.symeo.monolithic.backend.bff.contract.api.model.UpdateTeamRequestContract;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.service.organization.OrganizationService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.job.Job;
-import io.symeo.monolithic.backend.domain.job.runnable.CollectVcsDataForOrganizationAndTeamJobRunnable;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
-import io.symeo.monolithic.backend.domain.service.account.OrganizationService;
-import io.symeo.monolithic.backend.frontend.contract.api.model.CreateTeamRequestContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.LinkOrganizationToCurrentUserRequestContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.UpdateOnboardingRequestContract;
-import io.symeo.monolithic.backend.frontend.contract.api.model.UpdateTeamRequestContract;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.VcsOrganizationEntity;
-import io.symeo.monolithic.backend.infrastructure.postgres.entity.job.JobEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.VcsOrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.job.JobRepository;
-import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoJobApiProperties;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.SymeoDataProcessingJobApiProperties;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode.ORGANISATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,10 +48,15 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
     @Autowired
     public OrganizationService organizationService;
     @Autowired
-    public SymeoJobApiProperties symeoJobApiProperties;
+    public SymeoDataProcessingJobApiProperties symeoDataProcessingJobApiProperties;
     private static final UUID organizationId = UUID.randomUUID();
 
     private static final String mail = faker.name().firstName() + "@" + faker.name().firstName() + ".fr";
+
+    @AfterEach
+    public void tearDown() {
+        this.bffWireMockServer.resetAll();
+    }
 
     @Order(1)
     @Test
@@ -85,7 +89,10 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                 Organization.builder()
                         .id(organizationId)
                         .name(organizationName)
-                        .vcsOrganization(VcsOrganization.builder().vcsId(faker.rickAndMorty().character()).name(organizationName).build())
+                        .vcsOrganization(
+                                Organization.VcsOrganization.builder()
+                                        .vcsId(faker.rickAndMorty().character())
+                                        .name(organizationName).build())
                         .build()
         );
         final LinkOrganizationToCurrentUserRequestContract requestContract =
@@ -208,14 +215,34 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
                 .jsonPath("$.teams[1].name").isNotEmpty();
         Thread.sleep(2000);
 
-        wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
-                                "?organization_id=%s&team_id=%s", organizationId, teams.get(0).getId()))
-                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
-        wireMockServer.verify(1,
-                RequestPatternBuilder.newRequestPattern().withUrl(String.format(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM +
-                                "?organization_id=%s&team_id=%s", organizationId, teams.get(1).getId()))
-                        .withHeader(symeoJobApiProperties.getHeaderKey(), equalTo(symeoJobApiProperties.getApiKey())));
+        final DeployDetectionSettings defaultDeployDetectionSettings = DeployDetectionSettings.builder().build();
+
+        bffWireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
+                                equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
+                        .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
+                                "\"team_id\":\"" + teams.get(0).getId() + "\",\"repository_ids\":[\"" + teams.get(0).getRepositoryIds().get(0) + "\"," +
+                                "\"" + teams.get(0).getRepositoryIds().get(1) + "\"]," +
+                                "\"deploy_detection_type\":" + "\"" + defaultDeployDetectionSettings.getDeployDetectionType().value + "\"," +
+                                "\"tag_regex\": null," +
+                                "\"exclude_branch_regexes\": [\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(0) + "\",\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(1) + "\"]," +
+                                "\"pull_request_merged_on_branch_regex\":" + "\"" + defaultDeployDetectionSettings.getPullRequestMergedOnBranchRegex() + "\"" +
+                                "}"))
+        );
+        bffWireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
+                                equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
+                        .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
+                                "\"team_id\":\"" + teams.get(1).getId() + "\",\"repository_ids\":[\"" + teams.get(1).getRepositoryIds().get(0) + "\"," +
+                                "\"" + teams.get(1).getRepositoryIds().get(1) + "\"]," +
+                                "\"deploy_detection_type\":" + "\"" + defaultDeployDetectionSettings.getDeployDetectionType().value + "\"," +
+                                "\"tag_regex\": null," +
+                                "\"exclude_branch_regexes\": [\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(0) + "\",\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(1) + "\"]," +
+                                "\"pull_request_merged_on_branch_regex\":" + "\"" + defaultDeployDetectionSettings.getPullRequestMergedOnBranchRegex() + "\"" +
+                                "}"))
+        );
     }
 
     @Order(8)
@@ -319,7 +346,7 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
 
     @Order(12)
     @Test
-    void should_update_team() {
+    void should_update_team_and_launch_job_on_updated_team() {
         // Given
         final List<TeamEntity> teams = teamRepository.findAll();
         final TeamEntity teamEntity = teams.get(0);
@@ -346,6 +373,19 @@ public class SymeoUserOnboardingApiIT extends AbstractSymeoBackForFrontendApiIT 
         assertThat(teamsAfterUpdate.get(0).getName()).isEqualTo(newName);
         assertThat(teamsAfterUpdate.get(0).getRepositoryIds()).hasSize(newRepositoryIds.size());
         teamsAfterUpdate.get(0).getRepositoryIds().forEach(repositoryId -> assertThat(newRepositoryIds.contains(repositoryId)).isTrue());
+        final DeployDetectionSettings defaultDeployDetectionSettings = DeployDetectionSettings.builder().build();
+        bffWireMockServer.verify(1,
+                RequestPatternBuilder.newRequestPattern().withUrl(DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM)
+                        .withHeader(symeoDataProcessingJobApiProperties.getHeaderKey(),
+                                equalTo(symeoDataProcessingJobApiProperties.getApiKey()))
+                        .withRequestBody(equalToJson("{\"organization_id\":\"" + organizationId + "\"," +
+                                "\"team_id\":\"" + teamsAfterUpdate.get(0).getId() + "\",\"repository_ids\":[\"" + teamsAfterUpdate.get(0).getRepositoryIds().get(0) + "\"]," +
+                                "\"deploy_detection_type\":" + "\"" + defaultDeployDetectionSettings.getDeployDetectionType().value + "\"," +
+                                "\"tag_regex\": null," +
+                                "\"exclude_branch_regexes\": [\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(0) + "\",\"" + defaultDeployDetectionSettings.getExcludeBranchRegexes().get(1) + "\"]," +
+                                "\"pull_request_merged_on_branch_regex\":" + "\"" + defaultDeployDetectionSettings.getPullRequestMergedOnBranchRegex() + "\"" +
+                                "}"))
+        );
     }
 
     @Order(13)

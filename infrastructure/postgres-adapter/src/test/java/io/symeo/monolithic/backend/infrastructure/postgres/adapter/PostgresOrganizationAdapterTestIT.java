@@ -1,12 +1,11 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Organization;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeliverySettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.DeployDetectionSettings;
-import io.symeo.monolithic.backend.domain.model.account.settings.OrganizationSettings;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationSettingsRepository;
@@ -14,11 +13,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -56,7 +51,7 @@ public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
         final String name = faker.pokemon().name();
         final Organization organization = Organization.builder()
                 .name(name)
-                .vcsOrganization(VcsOrganization.builder()
+                .vcsOrganization(Organization.VcsOrganization.builder()
                         .name(faker.name().bloodGroup())
                         .vcsId(faker.dragonBall().character())
                         .externalId(externalId).build())
@@ -80,7 +75,7 @@ public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
         final Organization organization = Organization.builder()
                 .name(name)
                 .id(organizationId)
-                .vcsOrganization(VcsOrganization.builder()
+                .vcsOrganization(Organization.VcsOrganization.builder()
                         .name(vcsOrganizationName)
                         .vcsId(faker.dragonBall().character())
                         .externalId(externalId).build())
@@ -88,32 +83,12 @@ public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
 
         // When
         postgresOrganizationAdapter.createOrganization(organization);
-        final Organization result = postgresOrganizationAdapter.findOrganizationById(organizationId);
+        final Optional<Organization> result = postgresOrganizationAdapter.findOrganizationById(organizationId);
 
         // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo(name);
-        assertThat(result.getId()).isEqualTo(organization.getId());
-    }
-
-    @Test
-    void should_raise_an_exception_for_an_organization_not_existing() {
-        // Given
-        final UUID organizationId = UUID.randomUUID();
-
-        // When
-        SymeoException symeoException = null;
-        try {
-            postgresOrganizationAdapter.findOrganizationById(organizationId);
-        } catch (SymeoException e) {
-            symeoException = e;
-        }
-
-        // Then
-        assertThat(symeoException).isNotNull();
-        assertThat(symeoException.getMessage()).isEqualTo(String.format("Organization not found for id %s",
-                organizationId));
-        assertThat(symeoException.getCode()).isEqualTo("F.ORGANIZATION_NAME_NOT_FOUND");
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get().getName()).isEqualTo(name);
+        assertThat(result.get().getId()).isEqualTo(organization.getId());
     }
 
     @Test
@@ -125,8 +100,7 @@ public class PostgresOrganizationAdapterTestIT extends AbstractPostgresIT {
                 .build();
         organizationRepository.save(organizationEntity);
         final OrganizationSettings organizationSettings =
-                OrganizationSettings.initializeFromOrganizationIdAndDefaultBranch(organizationEntity.getId(),
-                        faker.rickAndMorty().location());
+                OrganizationSettings.initializeFromOrganizationId(organizationEntity.getId());
 
         // When
         postgresOrganizationAdapter.saveOrganizationSettings(organizationSettings);

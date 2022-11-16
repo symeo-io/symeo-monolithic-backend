@@ -1,12 +1,12 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.mapper.exposition;
 
-import io.symeo.monolithic.backend.domain.model.insight.view.PullRequestView;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Commit;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.PullRequest;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.CommentEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.PullRequestEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestFullViewDTO;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.dto.PullRequestWithCommentsDTO;
+import io.symeo.monolithic.backend.job.domain.model.vcs.Commit;
+import io.symeo.monolithic.backend.job.domain.model.vcs.PullRequest;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -20,7 +20,7 @@ import static java.util.Objects.isNull;
 public interface PullRequestMapper {
 
     static PullRequestEntity domainToEntity(final PullRequest pullRequest) {
-        final PullRequestView pullRequestView = pullRequest.toView();
+        final PullRequestView pullRequestView = pullRequestToView(pullRequest);
         final PullRequestEntity pullRequestEntity = PullRequestEntity.builder()
                 .id(pullRequest.getId())
                 .code(pullRequest.getNumber().toString())
@@ -82,6 +82,25 @@ public interface PullRequestMapper {
                 .base(pullRequestEntity.getBase())
                 .number(Integer.valueOf(pullRequestEntity.getCode()))
                 .mergeCommitSha(pullRequestEntity.getMergeCommitSha())
+                .commitShaList(pullRequestEntity.getCommitShaList())
+                .comments(pullRequestEntity.getComments()
+                        .stream()
+                        .map(CommentMapper::entityToDomain)
+                        .toList())
+                .build();
+    }
+
+    static PullRequestView entityToDomainView(final PullRequestEntity pullRequestEntity) {
+        return PullRequestView.builder()
+                .id(pullRequestEntity.getId())
+                .creationDate(Date.from(pullRequestEntity.getCreationDate().toInstant()))
+                .mergeDate(isNull(pullRequestEntity.getMergeDate()) ? null :
+                        Date.from(pullRequestEntity.getMergeDate().toInstant()))
+                .status(pullRequestEntity.getState())
+                .vcsUrl(pullRequestEntity.getVcsUrl())
+                .title(pullRequestEntity.getTitle())
+                .authorLogin(pullRequestEntity.getAuthorLogin())
+                .repository(pullRequestEntity.getVcsRepository())
                 .build();
     }
 
@@ -115,7 +134,7 @@ public interface PullRequestMapper {
                 .mergeDate(isNull(pullRequestWithCommentsDTO.getMergeDate()) ? null :
                         Date.from(pullRequestWithCommentsDTO.getMergeDate().toInstant()))
                 .creationDate(Date.from(pullRequestWithCommentsDTO.getCreationDate().toInstant()))
-                .comments(pullRequestWithCommentsDTO.getComments().stream().map(CommentMapper::entityToDomain).toList())
+                .comments(pullRequestWithCommentsDTO.getComments().stream().map(CommentMapper::entityToDomainView).toList())
                 .vcsUrl(pullRequestWithCommentsDTO.getVcsUrl())
                 .head(pullRequestWithCommentsDTO.getHead())
                 .base(pullRequestWithCommentsDTO.getBase())
@@ -135,5 +154,15 @@ public interface PullRequestMapper {
         return pullRequest.getComments().stream()
                 .map(CommentMapper::domainToEntity)
                 .collect(Collectors.toList());
+    }
+
+    private static PullRequestView pullRequestToView(PullRequest pullRequest) {
+        return PullRequestView.builder()
+                .addedLineNumber(pullRequest.getAddedLineNumber())
+                .deletedLineNumber(pullRequest.getDeletedLineNumber())
+                .creationDate(pullRequest.getCreationDate())
+                .closeDate(pullRequest.getCloseDate())
+                .mergeDate(pullRequest.getMergeDate())
+                .build();
     }
 }

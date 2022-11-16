@@ -1,12 +1,12 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import com.github.javafaker.Faker;
+import io.symeo.monolithic.backend.domain.bff.model.account.Onboarding;
+import io.symeo.monolithic.backend.domain.bff.model.account.Team;
+import io.symeo.monolithic.backend.domain.bff.model.account.TeamStandard;
+import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
-import io.symeo.monolithic.backend.domain.model.account.Onboarding;
-import io.symeo.monolithic.backend.domain.model.account.Team;
-import io.symeo.monolithic.backend.domain.model.account.TeamStandard;
-import io.symeo.monolithic.backend.domain.model.account.User;
-import io.symeo.monolithic.backend.domain.model.platform.vcs.Repository;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.OrganizationEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.TeamGoalEntity;
@@ -22,11 +22,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.Us
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.util.List;
 import java.util.UUID;
@@ -71,7 +67,7 @@ public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
         user = UserMapper.entityToDomain(userRepository.save(UserMapper.domainToEntity(user)));
         user.hasConfiguredTeam();
         organizationRepository.save(organizationEntity);
-        final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
+        final List<RepositoryView> repositories1 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
@@ -80,7 +76,7 @@ public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
                 .name(faker.harryPotter().book())
                 .organizationId(organizationEntity.getId())
                 .build();
-        final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
+        final List<RepositoryView> repositories2 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
                 RepositoryEntity.builder().name(faker.name().firstName()).id(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
@@ -117,7 +113,7 @@ public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
                 .id(UUID.randomUUID())
                 .build();
         organizationRepository.save(organizationEntity);
-        final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
+        final List<RepositoryView> repositories1 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
@@ -126,7 +122,7 @@ public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
                 .name(faker.harryPotter().book())
                 .organizationId(organizationEntity.getId())
                 .build();
-        final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
+        final List<RepositoryView> repositories2 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
                 RepositoryEntity.builder().name(faker.name().firstName()).id(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
@@ -165,7 +161,7 @@ public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
                 .id(UUID.randomUUID())
                 .build();
         organizationRepository.save(organizationEntity);
-        final List<Repository> repositories = repositoryRepository.saveAll(List.of(
+        final List<RepositoryView> repositories = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
@@ -202,7 +198,7 @@ public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
                 .id(UUID.randomUUID())
                 .build();
         organizationRepository.save(organizationEntity);
-        final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
+        final List<RepositoryView> repositories1 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
@@ -242,7 +238,7 @@ public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
         user = UserMapper.entityToDomain(userRepository.save(UserMapper.domainToEntity(user)));
         user.hasConfiguredTeam();
         organizationRepository.save(organizationEntity);
-        final List<Repository> repositories1 = repositoryRepository.saveAll(List.of(
+        final List<RepositoryView> repositories1 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().firstName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build(),
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.rickAndMorty().character()).vcsOrganizationName(faker.gameOfThrones().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
@@ -253,7 +249,7 @@ public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
                 .organizationId(organizationEntity.getId())
                 .build();
         teamRepository.save(TeamMapper.domainToEntity(team1));
-        final List<Repository> repositories2 = repositoryRepository.saveAll(List.of(
+        final List<RepositoryView> repositories2 = repositoryRepository.saveAll(List.of(
                 RepositoryEntity.builder().name(faker.name().lastName()).id(faker.dragonBall().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build(),
                 RepositoryEntity.builder().name(faker.name().firstName()).id(faker.gameOfThrones().character()).vcsOrganizationName(faker.dragonBall().character()).organizationId(organizationEntity.getId()).build()
         )).stream().map(RepositoryMapper::entityToDomain).toList();
@@ -269,7 +265,8 @@ public class PostgresTeamAdapterTestIT extends AbstractPostgresIT {
         assertThat(teamEntity.getName()).isEqualTo(teamUpdate.getName());
         assertThat(teamEntity.getOrganizationId()).isEqualTo(teamUpdate.getOrganizationId());
         assertThat(teamEntity.getRepositoryIds()).hasSize(teamUpdate.getRepositories().size());
-        teamEntity.getRepositoryIds().forEach(repositoryId -> assertThat(teamUpdate.getRepositories().stream().map(Repository::getId).toList().contains(repositoryId)).isTrue());
+        teamEntity.getRepositoryIds().forEach(repositoryId -> assertThat(teamUpdate.getRepositories().stream().map(RepositoryView::getId).toList()
+                .contains(repositoryId)).isTrue());
     }
 }
 
