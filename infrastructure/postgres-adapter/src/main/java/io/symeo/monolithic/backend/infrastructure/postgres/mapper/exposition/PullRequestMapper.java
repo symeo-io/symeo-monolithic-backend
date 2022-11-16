@@ -143,11 +143,11 @@ public interface PullRequestMapper {
                 .build();
     }
 
-    Map<String, String> SORTING_PARAMETERS_MAPPING = Map.of(
+    Map<String, String> PULL_REQUEST_SORTING_PARAMETERS_MAPPING = Map.of(
             "status", "state", "author", "author_login");
 
-    static String sortingParameterToDatabaseAttribute(final String sortingParameter) {
-        return SORTING_PARAMETERS_MAPPING.getOrDefault(sortingParameter, sortingParameter);
+    static String pullRequestSortingParameterToDatabaseAttribute(final String sortingParameter) {
+        return PULL_REQUEST_SORTING_PARAMETERS_MAPPING.getOrDefault(sortingParameter, sortingParameter);
     }
 
     static List<CommentEntity> pullRequestToCommentEntities(PullRequest pullRequest) {
