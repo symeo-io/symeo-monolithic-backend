@@ -38,16 +38,17 @@ public class VcsDataProcessingService {
                 dateToString(startDate), dateToString(endDate));
         LOGGER.info("Starting to collect pullRequests for repository {} between {} and {}", repository,
                 dateToString(startDate), dateToString(endDate));
-        final List<PullRequest> pullRequests = dataProcessingExpositionStorageAdapter.savePullRequestDetailsWithLinkedComments(
+        final List<PullRequest> pullRequestsToComputeCycleTimes = dataProcessingExpositionStorageAdapter.savePullRequestDetailsWithLinkedComments(
                 githubAdapter.getPullRequestsWithLinkedCommentsForRepositoryAndDateRange(repository, startDate, endDate)
                         .stream()
                         .filter(pullRequest -> pullRequest.getLastUpdateDate().after(startDate) && pullRequest.getLastUpdateDate().before(endDate))
+                        .filter(pullRequest -> pullRequest.getStatus().equals("merge") || pullRequest.getStatus().equals("open"))
                         .toList()
         );
         LOGGER.info("Starting to collect cycle times for repository {} between {} and {}", repository,
                 dateToString(startDate), dateToString(endDate));
         dataProcessingExpositionStorageAdapter.saveCycleTimes(
-                cycleTimeDataService.computeCycleTimesForRepository(repository, pullRequests, deployDetectionType, pullRequestMergedOnBranchRegex,
+                cycleTimeDataService.computeCycleTimesForRepository(repository, pullRequestsToComputeCycleTimes, deployDetectionType, pullRequestMergedOnBranchRegex,
                         tagRegex, excludedBranchRegexes, endDate)
         );
     }
