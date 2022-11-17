@@ -184,7 +184,6 @@ workflows:
       - build-and-test:
           context:
             - slack-notifications
-            - symeo-plugin
           filters:
             branches:
               ignore: /.*/
