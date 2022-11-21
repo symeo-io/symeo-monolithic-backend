@@ -103,8 +103,9 @@ public class BffDomainConfiguration {
 
     @Bean
     public OrganizationSettingsService organizationSettingsService(final BffExpositionStorageAdapter expositionStorageAdapter,
-                                                                   final OrganizationStorageAdapter organizationStorageAdapter) {
-        return new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter);
+                                                                   final OrganizationStorageAdapter organizationStorageAdapter,
+                                                                   final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter) {
+        return new OrganizationSettingsService(expositionStorageAdapter, organizationStorageAdapter, bffSymeoDataProcessingJobApiAdapter);
     }
 
     @Bean

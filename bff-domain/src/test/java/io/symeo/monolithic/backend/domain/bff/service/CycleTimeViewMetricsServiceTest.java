@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CycleTimeMetricsServiceTest {
+public class CycleTimeViewMetricsServiceTest {
 
 
     private static final Faker faker = new Faker();
@@ -50,9 +50,9 @@ public class CycleTimeMetricsServiceTest {
                         PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("head-2").build()
                 );
 
-        final List<CycleTime> currentCycleTimes =
+        final List<CycleTimeView> currentCycleTimeViews =
                 List.of(
-                        CycleTime.builder()
+                        CycleTimeView.builder()
                                 .value(190L)
                                 .codingTime(100L)
                                 .reviewTime(40L)
@@ -60,7 +60,7 @@ public class CycleTimeMetricsServiceTest {
                                 .deployDate(stringToDate("2022-01-04 10:00:00"))
                                 .pullRequestView(currentPullRequests.get(0))
                                 .build(),
-                        CycleTime.builder()
+                        CycleTimeView.builder()
                                 .value(440L)
                                 .codingTime(100L)
                                 .reviewTime(300L)
@@ -68,7 +68,7 @@ public class CycleTimeMetricsServiceTest {
                                 .deployDate(stringToDate("2022-01-10 10:00:00"))
                                 .pullRequestView(currentPullRequests.get(0))
                                 .build(),
-                        CycleTime.builder()
+                        CycleTimeView.builder()
                                 .value(200L)
                                 .codingTime(50L)
                                 .reviewTime(50L)
@@ -78,9 +78,9 @@ public class CycleTimeMetricsServiceTest {
                                 .build()
                 );
 
-        final List<CycleTime> previousCycleTimes =
+        final List<CycleTimeView> previousCycleTimeViews =
                 List.of(
-                        CycleTime.builder()
+                        CycleTimeView.builder()
                                 .value(170L)
                                 .codingTime(100L)
                                 .reviewTime(40L)
@@ -88,7 +88,7 @@ public class CycleTimeMetricsServiceTest {
                                 .deployDate(stringToDate("2021-12-10 10:00:00"))
                                 .pullRequestView(currentPullRequests.get(0))
                                 .build(),
-                        CycleTime.builder()
+                        CycleTimeView.builder()
                                 .value(510L)
                                 .codingTime(200L)
                                 .reviewTime(300L)
@@ -96,7 +96,7 @@ public class CycleTimeMetricsServiceTest {
                                 .deployDate(stringToDate("2021-12-16 10:00:00"))
                                 .pullRequestView(currentPullRequests.get(0))
                                 .build(),
-                        CycleTime.builder()
+                        CycleTimeView.builder()
                                 .value(510L)
                                 .codingTime(100L)
                                 .reviewTime(400L)
@@ -109,11 +109,11 @@ public class CycleTimeMetricsServiceTest {
         // When
         when(bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate))
                 .thenReturn(
-                        currentCycleTimes
+                        currentCycleTimeViews
                 );
         when(bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, previousStartDate, startDate))
                 .thenReturn(
-                        previousCycleTimes
+                        previousCycleTimeViews
                 );
         final Optional<CycleTimeMetrics> optionalCycleTimeMetrics =
                 cycleTimeMetricsService.computeCycleTimeMetricsForTeamIdFromStartDateToEndDate(organization, teamId, startDate, endDate);
@@ -164,9 +164,9 @@ public class CycleTimeMetricsServiceTest {
                         PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("head-2").build()
                 );
 
-        final List<CycleTime> currentCycleTimes =
+        final List<CycleTimeView> currentCycleTimeViews =
                 List.of(
-                        CycleTime.builder()
+                        CycleTimeView.builder()
                                 .value(190L)
                                 .codingTime(100L)
                                 .reviewTime(40L)
@@ -174,7 +174,7 @@ public class CycleTimeMetricsServiceTest {
                                 .deployDate(stringToDate("2022-01-04 10:00:00"))
                                 .pullRequestView(currentPullRequests.get(0))
                                 .build(),
-                        CycleTime.builder()
+                        CycleTimeView.builder()
                                 .value(440L)
                                 .codingTime(100L)
                                 .reviewTime(300L)
@@ -182,7 +182,7 @@ public class CycleTimeMetricsServiceTest {
                                 .deployDate(stringToDate("2022-01-10 10:00:00"))
                                 .pullRequestView(currentPullRequests.get(0))
                                 .build(),
-                        CycleTime.builder()
+                        CycleTimeView.builder()
                                 .value(200L)
                                 .codingTime(50L)
                                 .reviewTime(50L)
@@ -192,16 +192,16 @@ public class CycleTimeMetricsServiceTest {
                                 .build()
                 );
 
-        final List<CycleTime> previousCycleTimes = List.of();
+        final List<CycleTimeView> previousCycleTimeViews = List.of();
 
         // When
         when(bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate))
                 .thenReturn(
-                        currentCycleTimes
+                        currentCycleTimeViews
                 );
         when(bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, previousStartDate, startDate))
                 .thenReturn(
-                        previousCycleTimes
+                        previousCycleTimeViews
                 );
         final Optional<CycleTimeMetrics> optionalCycleTimeMetrics =
                 cycleTimeMetricsService.computeCycleTimeMetricsForTeamIdFromStartDateToEndDate(organization, teamId, startDate, endDate);

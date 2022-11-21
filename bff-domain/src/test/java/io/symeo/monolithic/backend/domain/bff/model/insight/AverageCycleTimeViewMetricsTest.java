@@ -12,7 +12,7 @@ import static io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeMetri
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AverageCycleTimeMetricsTest {
+public class AverageCycleTimeViewMetricsTest {
 
     @Test
     void should_compute_cycle_time_metrics_given_current_and_previous_average_cycle_time() throws SymeoException {

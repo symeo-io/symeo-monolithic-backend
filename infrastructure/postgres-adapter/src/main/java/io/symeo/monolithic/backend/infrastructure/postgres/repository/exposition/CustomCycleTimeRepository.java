@@ -1,7 +1,7 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition;
 
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import lombok.AllArgsConstructor;
 
@@ -49,24 +49,24 @@ public class CustomCycleTimeRepository {
                     "                               where ttr.team_id = ':teamId') " +
                     " order by ct.id";
 
-    public List<CycleTime> findAllCycleTimeByTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate,
-                                                                              Date endDate) {
+    public List<CycleTimeView> findAllCycleTimeByTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate,
+                                                                                  Date endDate) {
         final String query = FIND_ALL_BY_TEAM_ID_BETWEEN_START_DATE_AND_END_DATE
                 .replace(":teamId", teamId.toString())
                 .replace(":startDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startDate))
                 .replace(":endDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endDate));
         final List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
 
-        final List<CycleTime> cycleTimes = new ArrayList<>();
+        final List<CycleTimeView> cycleTimes = new ArrayList<>();
         for (Object[] object : resultList) {
             PullRequestView pullRequestView = mapResultToPullRequestView(object);
-            CycleTime cycleTime = mapResultToCycleTime(object, pullRequestView);
-            cycleTimes.add(cycleTime);
+            CycleTimeView cycleTimeView = mapResultToCycleTime(object, pullRequestView);
+            cycleTimes.add(cycleTimeView);
         }
         return cycleTimes;
     }
 
-    private CycleTime mapResultToCycleTime(Object[] object, PullRequestView pullRequestView) {
+    private CycleTimeView mapResultToCycleTime(Object[] object, PullRequestView pullRequestView) {
         final String cycleTimeId = (String) object[0];
         final Long cycleTimeValue = isNull(object[1]) ? null : ((BigInteger) object[1]).longValue();
         final Long codingTime = isNull(object[2]) ? null : ((BigInteger) object[2]).longValue();
@@ -74,7 +74,7 @@ public class CustomCycleTimeRepository {
         final Long timeToDeploy = isNull(object[4]) ? null : ((BigInteger) object[4]).longValue();
         final Date deployDate = (Timestamp) object[5];
         final Date updateDate = (Timestamp) object[16];
-        return CycleTime.builder()
+        return CycleTimeView.builder()
                 .id(cycleTimeId)
                 .value(cycleTimeValue)
                 .codingTime(codingTime)

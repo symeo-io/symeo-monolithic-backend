@@ -21,4 +21,11 @@ public interface DataProcessingJobAdapter {
                                                                          String pullRequestMergedOnBranchRegexes,
                                                                          String tagRegex,
                                                                          List<String> excludeBranchRegexes) throws SymeoException;
+
+    void startToUpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettings(UUID organizationId,
+                                                                                            List<String> repositoryIds,
+                                                                                            String deployDetectionType,
+                                                                                            String pullRequestMergedOnBranchRegex,
+                                                                                            String tagRegex,
+                                                                                            List<String> excludeBranchRegexes) throws SymeoException;
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.dto.PostStartDataProcessingJobForOrganizationDTO;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.dto.PostStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsDTO;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.dto.PostStartDataProcessingJobForRepositoriesDTO;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.dto.PostStartDataProcessingJobForTeamDTO;
 import lombok.AllArgsConstructor;
@@ -104,6 +105,36 @@ public class SymeoHttpClient {
         } catch (IOException | InterruptedException e) {
             final String message = String.format("Failed to send http request to start job for dto %s",
                     postStartDataProcessingJobForOrganizationDTO);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(SymeoExceptionCode.SYMEO_HTTP_CLIENT_ERROR)
+                    .message(message)
+                    .rootException(e)
+                    .build();
+        }
+    }
+
+    public void startUpdateCycleTimesDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettings(PostStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsDTO postStartDataProcessingJobForOrganizationSettingsDTO) throws SymeoException {
+        try {
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(
+                    URI.create(symeoDataProcessingJobApiProperties.getUrl() + "job/v1/data-processing" +
+                            "/organization-settings"
+                    ))
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(dtoToBytes(postStartDataProcessingJobForOrganizationSettingsDTO)))
+                    .headers(
+                            symeoDataProcessingJobApiProperties.getHeaderKey(),
+                            symeoDataProcessingJobApiProperties.getApiKey(),
+                            CONTENT_TYPE, APPLICATION_JSON
+                    );
+            final HttpResponse<byte[]> httpResponse;
+            httpResponse = this.httpClient.send(requestBuilder.build(),
+                    HttpResponse.BodyHandlers.ofByteArray());
+            final int statusCode = httpResponse.statusCode();
+            LOGGER.info("Start job for dto {} respond http status {}", postStartDataProcessingJobForOrganizationSettingsDTO,
+                    statusCode);
+        } catch (IOException | InterruptedException e) {
+            final String message = String.format("Failed to send http request to start job for dto %s",
+                    postStartDataProcessingJobForOrganizationSettingsDTO);
             LOGGER.error(message, e);
             throw SymeoException.builder()
                     .code(SymeoExceptionCode.SYMEO_HTTP_CLIENT_ERROR)

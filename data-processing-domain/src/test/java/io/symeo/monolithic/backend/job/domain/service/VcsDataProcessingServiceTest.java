@@ -65,7 +65,7 @@ public class VcsDataProcessingServiceTest {
         when(dataProcessingExpositionStorageAdapter.savePullRequestDetailsWithLinkedComments(pullRequests.subList(0, 1)))
                 .thenReturn(pullRequests.subList(0, 1));
         when(cycleTimeDataService.computeCycleTimesForRepository(repository, pullRequests.subList(0, 1), deployDetectionType,
-                pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex, endDate))
+                pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex))
                 .thenReturn(cycleTimes);
         vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(repository, startDate, endDate,
                 deployDetectionType, pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex);
@@ -112,7 +112,7 @@ public class VcsDataProcessingServiceTest {
         vcsDataProcessingService.collectNonPartialData(repository);
 
         // Then
-        verify(dataProcessingExpositionStorageAdapter, times(1)).saveCommits(commits);
+        verify(dataProcessingExpositionStorageAdapter, times(1)).saveCommits(repository.getVcsOrganizationName(), commits);
         verify(dataProcessingExpositionStorageAdapter, times(1)).saveTags(tags);
     }
 
@@ -153,4 +153,51 @@ public class VcsDataProcessingServiceTest {
         verify(dataProcessingExpositionStorageAdapter, times(1)).saveRepositories(repositories);
     }
 
+    @Test
+    void should_update_cycle_time_data_given_a_repository_and_organization_settings() throws SymeoException {
+        // Given
+        final GithubAdapter githubAdapter = mock(GithubAdapter.class);
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter = mock(DataProcessingExpositionStorageAdapter.class);
+        final CycleTimeDataService cycleTimeDataService = mock(CycleTimeDataService.class);
+        final VcsDataProcessingService vcsDataProcessingService =
+                new VcsDataProcessingService(githubAdapter, dataProcessingExpositionStorageAdapter, cycleTimeDataService);
+
+        final String repositoryId = faker.ancient().god();
+        final UUID organizationId = UUID.randomUUID();
+        final Repository repository = Repository.builder()
+                .id(repositoryId)
+                .name(faker.name().name())
+                .organizationId(organizationId)
+                .vcsOrganizationId(organizationId.toString())
+                .vcsOrganizationName(faker.name().name())
+                .build();
+        final String deployDetectionType = faker.rickAndMorty().character();
+        final String pullRequestMergedOnBranchRegexes = faker.gameOfThrones().character();
+        final String tagRegex = faker.backToTheFuture().character();
+        final List<String> excludeBranchRegexes = List.of(faker.ancient().hero());
+
+        final List<PullRequest> pullRequests = List.of(
+                PullRequest.builder().id(faker.dog().name() + "-1").number(faker.number().numberBetween(1,10)).build(),
+                PullRequest.builder().id(faker.dog().name() + "-2").number(faker.number().numberBetween(1,10)).build(),
+                PullRequest.builder().id(faker.dog().name() + "-3").number(faker.number().numberBetween(1,10)).build()
+        );
+        final List<CycleTime> cycleTimes = List.of(
+                CycleTime.builder().id(faker.cat().name() + "-1").build(),
+                CycleTime.builder().id(faker.cat().name() + "-2").build(),
+                CycleTime.builder().id(faker.cat().name() + "-3").build()
+        );
+
+        // When
+        when(dataProcessingExpositionStorageAdapter.findAllPullRequestsForRepositoryId(repository.getId()))
+                .thenReturn(pullRequests);
+        when(cycleTimeDataService.computeCycleTimesForRepository(repository, pullRequests, deployDetectionType,
+                pullRequestMergedOnBranchRegexes, tagRegex, excludeBranchRegexes))
+                .thenReturn(cycleTimes);
+        vcsDataProcessingService.updateCycleTimeDataForRepositoryAndDateRange(repository, deployDetectionType, pullRequestMergedOnBranchRegexes,
+                tagRegex, excludeBranchRegexes);
+
+        // Then
+        verify(dataProcessingExpositionStorageAdapter, times(1))
+                .replaceCycleTimesForRepositoryId(repositoryId, cycleTimes);
+    }
 }

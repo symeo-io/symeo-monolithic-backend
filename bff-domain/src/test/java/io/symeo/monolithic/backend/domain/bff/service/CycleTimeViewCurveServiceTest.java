@@ -2,7 +2,7 @@ package io.symeo.monolithic.backend.domain.bff.service;
 
 import com.github.javafaker.Faker;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeView;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurve;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurveWithAverage;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
@@ -19,7 +19,7 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class CycleTimeCurveServiceTest {
+public class CycleTimeViewCurveServiceTest {
     private static final Faker faker = new Faker();
 
     @Test
@@ -64,8 +64,8 @@ public class CycleTimeCurveServiceTest {
                 List.of(PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("head-1").build(),
                         PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("head-2").build());
 
-        final CycleTime cycleTime1 =
-                CycleTime.builder()
+        final CycleTimeView cycleTimeView1 =
+                CycleTimeView.builder()
                         .value(faker.number().randomNumber())
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
@@ -73,8 +73,8 @@ public class CycleTimeCurveServiceTest {
                         .deployDate(stringToDate("2022-01-04 10:00:00"))
                         .pullRequestView(currentPullRequests.get(0))
                         .build();
-        final CycleTime cycleTime2 =
-                CycleTime.builder()
+        final CycleTimeView cycleTimeView2 =
+                CycleTimeView.builder()
                         .value(faker.number().randomNumber())
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
@@ -87,8 +87,8 @@ public class CycleTimeCurveServiceTest {
         // When
         when(bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate))
                 .thenReturn(List.of(
-                        cycleTime1,
-                        cycleTime2
+                        cycleTimeView1,
+                        cycleTimeView2
                 ));
         final CycleTimePieceCurveWithAverage cycleTimePieceCurveWithAverage =
                 cycleTimeCurveService.computeCycleTimePieceCurveWithAverage(organization, teamId, startDate, endDate);
@@ -99,23 +99,23 @@ public class CycleTimeCurveServiceTest {
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(0)).isEqualTo(
                 CycleTimePieceCurve.CyclePieceCurvePoint.builder()
                         .date("2022-01-04")
-                        .value(cycleTime1.getValue())
-                        .codingTime(cycleTime1.getCodingTime())
-                        .reviewTime(cycleTime1.getReviewTime())
-                        .timeToDeploy(cycleTime1.getTimeToDeploy())
-                        .label(cycleTime1.getPullRequestView().getHead())
-                        .link(cycleTime1.getPullRequestView().getVcsUrl())
+                        .value(cycleTimeView1.getValue())
+                        .codingTime(cycleTimeView1.getCodingTime())
+                        .reviewTime(cycleTimeView1.getReviewTime())
+                        .timeToDeploy(cycleTimeView1.getTimeToDeploy())
+                        .label(cycleTimeView1.getPullRequestView().getHead())
+                        .link(cycleTimeView1.getPullRequestView().getVcsUrl())
                         .build()
         );
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(1)).isEqualTo(
                 CycleTimePieceCurve.CyclePieceCurvePoint.builder()
                         .date("2022-01-06")
-                        .value(cycleTime2.getValue())
-                        .codingTime(cycleTime2.getCodingTime())
-                        .reviewTime(cycleTime2.getReviewTime())
-                        .timeToDeploy(cycleTime2.getTimeToDeploy())
-                        .label(cycleTime2.getPullRequestView().getHead())
-                        .link(cycleTime2.getPullRequestView().getVcsUrl())
+                        .value(cycleTimeView2.getValue())
+                        .codingTime(cycleTimeView2.getCodingTime())
+                        .reviewTime(cycleTimeView2.getReviewTime())
+                        .timeToDeploy(cycleTimeView2.getTimeToDeploy())
+                        .label(cycleTimeView2.getPullRequestView().getHead())
+                        .link(cycleTimeView2.getPullRequestView().getVcsUrl())
                         .build()
         );
     }

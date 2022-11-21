@@ -45,9 +45,7 @@ public class CollectRepositoriesJobRunnable extends AbstractTasksRunnable<VcsOrg
     }
 
     private void collectRepositoriesForVcsOrganization(VcsOrganization vcsOrganization) throws SymeoException {
-        LOGGER.info("Starting to collect repositories for vcsOrganization {}", vcsOrganization);
         vcsDataProcessingService.collectRepositoriesForVcsOrganization(vcsOrganization);
-        LOGGER.info("Repositories Collection finished for vcsOrganization {}", vcsOrganization);
         final OrganizationSettingsView organizationSettingsView =
                 vcsOrganizationStorageAdapter.findOrganizationSettingsViewForOrganizationId(vcsOrganization.getOrganizationId());
         final List<Repository> repositoriesLinkedToATeam =

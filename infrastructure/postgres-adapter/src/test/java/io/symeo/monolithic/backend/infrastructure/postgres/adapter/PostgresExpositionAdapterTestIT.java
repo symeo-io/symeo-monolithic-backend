@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -82,6 +83,7 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         tagRepository.deleteAll();
         repositoryRepository.deleteAll();
         organizationRepository.deleteAll();
+        cycleTimeRepository.deleteAll();
     }
 
     @BeforeEach
@@ -229,8 +231,8 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
     @Test
     void should_read_pr_time_and_pr_size_to_merge_view_given_a_team_id() throws SymeoException {
         // Given
-        final Date startDate = DateHelper.stringToDate("2022-08-15");
-        final Date endDate = DateHelper.stringToDate("2022-08-25");
+        final Date startDate = stringToDate("2022-08-15");
+        final Date endDate = stringToDate("2022-08-25");
         final Organization organization = Organization.builder()
                 .id(UUID.randomUUID())
                 .name(faker.name().firstName())
@@ -990,17 +992,17 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         tagRepository.saveAll(
                 List.of(
                         TagEntity.builder()
-                                .sha(faker.rickAndMorty().location())
+                                .sha(faker.rickAndMorty().location() + "-1")
                                 .repositoryId(repositoryId)
                                 .name(faker.funnyName().name())
                                 .build(),
                         TagEntity.builder()
-                                .sha(faker.rickAndMorty().character())
+                                .sha(faker.rickAndMorty().character() + "-2")
                                 .repositoryId(repositoryId)
                                 .name(faker.funnyName().name())
                                 .build(),
                         TagEntity.builder()
-                                .sha(faker.rickAndMorty().character())
+                                .sha(faker.rickAndMorty().character() + "-3")
                                 .repositoryId("2")
                                 .name(faker.funnyName().name())
                                 .build()
@@ -1158,5 +1160,248 @@ public class PostgresExpositionAdapterTestIT extends AbstractPostgresIT {
         // Then
         assertThat(allRepositoriesByIds).hasSize(repositoryIds.size());
         assertThat(allRepositoriesByIds).contains(repo1, repo3);
+    }
+
+    @Test
+    void should_find_all_pull_requests_given_an_repository_id() throws SymeoException {
+        // Given
+        final String repositoryId = faker.rickAndMorty().character();
+        final UUID organizationId = UUID.randomUUID();
+        final Date startDate = stringToDate("2022-01-01");
+        final Date endDate = stringToDate("2022-01-15");
+
+        final PullRequestEntity pr1 = PullRequestEntity.builder()
+                .code(String.valueOf(faker.number().numberBetween(1, 100)))
+                .id(faker.rickAndMorty().character() + "-1")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).minusDays(2))
+                .mergeDate(null)
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr2 = PullRequestEntity.builder()
+                .code(String.valueOf(faker.number().numberBetween(1, 100)))
+                .id(faker.rickAndMorty().character() + "-2")
+                .organizationId(organizationId)
+                .creationDate(startDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(1))
+                .mergeDate(null)
+                .closeDate(null)
+                .vcsRepositoryId(faker.dragonBall().character())
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+        final PullRequestEntity pr3 = PullRequestEntity.builder()
+                .code(String.valueOf(faker.number().numberBetween(1, 100)))
+                .id(faker.rickAndMorty().character() + "-3")
+                .organizationId(organizationId)
+                .creationDate(endDate.toInstant().atZone(ZoneId.systemDefault()).plusDays(2))
+                .mergeDate(null)
+                .closeDate(null)
+                .vcsRepositoryId(repositoryId)
+                .authorLogin(faker.dragonBall().character())
+                .title(faker.gameOfThrones().character())
+                .lastUpdateDate(ZonedDateTime.now())
+                .isDraft(false)
+                .build();
+
+        pullRequestRepository.saveAll(List.of(pr1, pr2, pr3));
+
+        // When
+        final List<PullRequest> pullRequests = postgresExpositionAdapter.findAllPullRequestsForRepositoryId(repositoryId);
+
+        // Then
+        assertThat(pullRequests).hasSize(2);
+        assertThat(pullRequests.get(0).getId()).isEqualTo(pr1.getId());
+        assertThat(pullRequests.get(1).getId()).isEqualTo(pr3.getId());
+    }
+
+    @Test
+    void should_replace_cycle_times_for_repository_id() throws SymeoException, InterruptedException {
+        // Given
+        final String repositoryId = faker.rickAndMorty().character();
+        final String repositoryName = faker.gameOfThrones().character();
+        final UUID vcsOrganizationId = UUID.randomUUID();
+        final CycleTimeEntity cycleTime1 = CycleTimeEntity.builder()
+                .id(faker.dog().name() + "-1")
+                .value(100L)
+                .codingTime(100L)
+                .reviewTime(100L)
+                .timeToDeploy(100L)
+                .deployDate(stringToDate("2022-01-10"))
+                .pullRequestId(faker.dog().name() + "-1")
+                .pullRequestState("merge")
+                .pullRequestAuthorLogin(faker.harryPotter().character() + "-1")
+                .pullRequestVcsRepositoryId(repositoryId)
+                .pullRequestVcsRepository(repositoryName)
+                .pullRequestVcsUrl(faker.pokemon().location())
+                .pullRequestTitle(faker.animal().name())
+                .pullRequestCreationDate(stringToDate("2022-01-01"))
+                .pullRequestMergeDate(stringToDate("2022-01-10"))
+                .pullRequestHead(faker.ancient().god())
+                .pullRequestUpdateDate(stringToDate("2022-01-10"))
+                .build();
+        final CycleTimeEntity cycleTime2 = CycleTimeEntity.builder()
+                .id(faker.dog().name() + "-2")
+                .value(200L)
+                .codingTime(200L)
+                .reviewTime(200L)
+                .timeToDeploy(200L)
+                .deployDate(stringToDate("2022-01-15"))
+                .pullRequestId(faker.dog().name() + "-2")
+                .pullRequestState("merge")
+                .pullRequestAuthorLogin(faker.harryPotter().character() + "-2")
+                .pullRequestVcsRepositoryId(repositoryId)
+                .pullRequestVcsRepository(repositoryName)
+                .pullRequestVcsUrl(faker.pokemon().location())
+                .pullRequestTitle(faker.animal().name())
+                .pullRequestCreationDate(stringToDate("2022-01-05"))
+                .pullRequestMergeDate(stringToDate("2022-01-15"))
+                .pullRequestHead(faker.ancient().god())
+                .pullRequestUpdateDate(stringToDate("2022-01-15"))
+                .build();
+        final CycleTimeEntity cycleTime3 = CycleTimeEntity.builder()
+                .id(faker.dog().name() + "-3")
+                .value(300L)
+                .codingTime(300L)
+                .reviewTime(300L)
+                .timeToDeploy(300L)
+                .deployDate(stringToDate("2022-01-20"))
+                .pullRequestId(faker.dog().name() + "-3")
+                .pullRequestState("merge")
+                .pullRequestAuthorLogin(faker.harryPotter().character() + "-3")
+                .pullRequestVcsRepositoryId(repositoryId)
+                .pullRequestVcsRepository(repositoryName)
+                .pullRequestVcsUrl(faker.pokemon().location())
+                .pullRequestTitle(faker.animal().name())
+                .pullRequestCreationDate(stringToDate("2022-01-10"))
+                .pullRequestMergeDate(stringToDate("2022-01-20"))
+                .pullRequestHead(faker.ancient().god())
+                .pullRequestUpdateDate(stringToDate("2022-01-20"))
+                .build();
+        cycleTimeRepository.saveAll(List.of(cycleTime1, cycleTime2, cycleTime3));
+
+        final String updatedCycleTimeId1 = faker.dog().name() + "-4";
+        final String updatedCycleTimeId2 = faker.dog().name() + "-5";
+        final String updatedCycleTimeId3 = faker.dog().name() + "-6";
+        final CycleTime updatedCycleTime1 = CycleTime.builder()
+                .id(updatedCycleTimeId1)
+                .value(400L)
+                .codingTime(400L)
+                .reviewTime(400L)
+                .timeToDeploy(400L)
+                .deployDate(stringToDate("2022-01-10 10:00:00"))
+                .pullRequest(
+                        PullRequest.builder()
+                                .id(updatedCycleTimeId1)
+                                .isDraft(false)
+                                .commitNumber(faker.number().numberBetween(1, 10))
+                                .addedLineNumber(faker.number().numberBetween(1, 10))
+                                .deletedLineNumber(faker.number().numberBetween(1, 10))
+                                .vcsOrganizationId(vcsOrganizationId.toString())
+                                .organizationId(vcsOrganizationId)
+                                .base(faker.ancient().god())
+                                .authorLogin(faker.harryPotter().character() + "-4")
+                                .number(faker.number().numberBetween(1, 100))
+                                .mergeCommitSha(faker.ancient().primordial())
+                                .commitShaList(List.of())
+                                .comments(List.of())
+                                .repositoryId(repositoryId)
+                                .repository(repositoryName)
+                                .vcsUrl(faker.pokemon().location())
+                                .title(faker.animal().name())
+                                .creationDate(stringToDate("2022-01-01"))
+                                .mergeDate(stringToDate("2022-01-10"))
+                                .head(faker.ancient().god())
+                                .lastUpdateDate(stringToDate("2022-01-10"))
+                                .build()
+                )
+                .build();
+        final CycleTime updatedCycleTime2 = CycleTime.builder()
+                .id(updatedCycleTimeId2)
+                .value(500L)
+                .codingTime(500L)
+                .reviewTime(500L)
+                .timeToDeploy(500L)
+                .deployDate(stringToDate("2022-01-15 10:00:00"))
+                .pullRequest(
+                        PullRequest.builder()
+                                .id(updatedCycleTimeId2)
+                                .isDraft(false)
+                                .commitNumber(faker.number().numberBetween(1, 10))
+                                .addedLineNumber(faker.number().numberBetween(1, 10))
+                                .deletedLineNumber(faker.number().numberBetween(1, 10))
+                                .vcsOrganizationId(vcsOrganizationId.toString())
+                                .organizationId(vcsOrganizationId)
+                                .base(faker.ancient().god())
+                                .authorLogin(faker.harryPotter().character() + "-5")
+                                .number(faker.number().numberBetween(1, 100))
+                                .mergeCommitSha(faker.ancient().primordial())
+                                .commitShaList(List.of())
+                                .comments(List.of())
+                                .repositoryId(repositoryId)
+                                .repository(repositoryName)
+                                .vcsUrl(faker.pokemon().location())
+                                .title(faker.animal().name())
+                                .creationDate(stringToDate("2022-01-05"))
+                                .mergeDate(stringToDate("2022-01-15"))
+                                .head(faker.ancient().god())
+                                .lastUpdateDate(stringToDate("2022-01-15"))
+                                .build()
+                )
+                .build();
+        final CycleTime updatedCycleTime3 = CycleTime.builder()
+                .id(updatedCycleTimeId3)
+                .value(600L)
+                .codingTime(600L)
+                .reviewTime(600L)
+                .timeToDeploy(600L)
+                .deployDate(stringToDate("2022-01-20 10:00:00"))
+                .pullRequest(
+                        PullRequest.builder()
+                                .id(updatedCycleTimeId3)
+                                .isDraft(false)
+                                .commitNumber(faker.number().numberBetween(1, 10))
+                                .addedLineNumber(faker.number().numberBetween(1, 10))
+                                .deletedLineNumber(faker.number().numberBetween(1, 10))
+                                .vcsOrganizationId(vcsOrganizationId.toString())
+                                .organizationId(vcsOrganizationId)
+                                .base(faker.ancient().god())
+                                .authorLogin(faker.harryPotter().character() + "-6")
+                                .number(faker.number().numberBetween(1, 100))
+                                .mergeCommitSha(faker.ancient().primordial())
+                                .commitShaList(List.of())
+                                .comments(List.of())
+                                .repositoryId(repositoryId)
+                                .repository(repositoryName)
+                                .vcsUrl(faker.pokemon().location())
+                                .title(faker.animal().name())
+                                .creationDate(stringToDate("2022-01-10"))
+                                .mergeDate(stringToDate("2022-01-20"))
+                                .head(faker.ancient().god())
+                                .lastUpdateDate(stringToDate("2022-01-20"))
+                                .build()
+                )
+                .build();
+
+        // When
+        postgresExpositionAdapter.replaceCycleTimesForRepositoryId(
+                repositoryId,
+                List.of(updatedCycleTime1, updatedCycleTime2, updatedCycleTime3)
+        );
+        List<CycleTimeEntity> updatedCycleTimeEntities = cycleTimeRepository.findAll();
+        // Then
+        assertThat(updatedCycleTimeEntities).hasSize(3);
+        assertThat(updatedCycleTimeEntities.stream().map(CycleTimeEntity::getId))
+                .contains(
+                        updatedCycleTime1.getPullRequest().getId(),
+                        updatedCycleTime2.getPullRequest().getId(),
+                        updatedCycleTime3.getPullRequest().getId()
+                );
     }
 }

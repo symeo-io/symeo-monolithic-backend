@@ -77,6 +77,30 @@ public class DataProcessingRestApiAdapter implements DataProcessingJobApi {
     }
 
     @Override
+    public ResponseEntity<DataProcessingSymeoErrorsContract> startUpdateCycleTimesDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettings(String X_SYMEO_JOB_KEY_X, PostStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract postStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract) {
+
+        final UUID organizationId = postStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract.getOrganizationId();
+        final List<String> repositoryIds = postStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract.getRepositoryIds();
+        final String deployDetectionType = postStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract.getDeployDetectionType();
+        final String pullRequestMergedOnBranchRegex = postStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract.getPullRequestMergedOnBranchRegex();
+        final String tagRegex = postStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract.getTagRegex();
+        final List<String> excludeBranchRegexes = postStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract.getExcludeBranchRegexes();
+        SymeoRunnable jobToStart =
+                () -> dataProcessingJobAdapter.startToUpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettings(
+                        organizationId,
+                        repositoryIds,
+                        deployDetectionType,
+                        pullRequestMergedOnBranchRegex,
+                        tagRegex,
+                        excludeBranchRegexes
+                );
+        final String errorMessage = String.format("Error while starting cycle times update jobs for organizationId %s " +
+                "and repositoryIds %s and deployDetectionType %s and pullRequestMergedOnBranchRegex %s and tagRegex %s and excludeBranchRegexes %s",
+                organizationId, repositoryIds, deployDetectionType, pullRequestMergedOnBranchRegex, tagRegex, excludeBranchRegexes);
+        return runJobAndReturnResponseEntity(X_SYMEO_JOB_KEY_X, jobToStart, errorMessage);
+    }
+
+    @Override
     public ResponseEntity<DataProcessingSymeoErrorsContract> startDataProcessingJobForOrganizationIdAndVcsOrganizationId(final String X_SYMEO_JOB_KEY_X,
                                                                                                                          final PostStartDataProcessingJobForVcsOrganizationContract postStartDataProcessingJobForVcsOrganizationContract) {
         final UUID organizationId = postStartDataProcessingJobForVcsOrganizationContract.getOrganizationId();

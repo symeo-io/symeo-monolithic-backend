@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
@@ -19,7 +18,7 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 @Builder(toBuilder = true)
 @Data
 @Slf4j
-public class CycleTime {
+public class CycleTimeView {
 
     String id;
     Long value;
@@ -32,7 +31,7 @@ public class CycleTime {
     PullRequestView pullRequestView;
     String startDateRange;
 
-    public CycleTime mapDeployDateToClosestRangeDate(List<Date> rangeDates, Date deployDate) {
+    public CycleTimeView mapDeployDateToClosestRangeDate(List<Date> rangeDates, Date deployDate) {
         String startDateRange;
         if (ChronoUnit.MINUTES.between(deployDate.toInstant(), rangeDates.get(rangeDates.size() - 1).toInstant()) < 0) {
             startDateRange = dateToString(rangeDates.get(rangeDates.size() - 1));

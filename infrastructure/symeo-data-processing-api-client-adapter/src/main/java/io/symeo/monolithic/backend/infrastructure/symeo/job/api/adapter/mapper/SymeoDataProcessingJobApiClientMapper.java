@@ -1,6 +1,8 @@
 package io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.mapper;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.dto.PostStartDataProcessingJobForOrganizationDTO;
+import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.dto.PostStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsDTO;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.dto.PostStartDataProcessingJobForRepositoriesDTO;
 import io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter.dto.PostStartDataProcessingJobForTeamDTO;
 
@@ -52,4 +54,16 @@ public interface SymeoDataProcessingJobApiClientMapper {
     }
 
 
+    static PostStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsDTO domainToOrganizationSettingsDTO(List<String> repositoryIds,
+                                                                                                                                 final OrganizationSettings organizationSettings) {
+
+        return PostStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsDTO.builder()
+                .organizationId(organizationSettings.getOrganizationId())
+                .repositoryIds(repositoryIds)
+                .deployDetectionType(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getDeployDetectionType().getValue())
+                .pullRequestMergedOnBranchRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getPullRequestMergedOnBranchRegex())
+                .tagRegex(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getTagRegex())
+                .excludeBranchRegexes(organizationSettings.getDeliverySettings().getDeployDetectionSettings().getExcludeBranchRegexes())
+                .build();
+    }
 }

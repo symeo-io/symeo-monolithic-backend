@@ -149,6 +149,53 @@ paths:
                 errors:
                   - code: "T.POSTGRES_TIMEOUT"
                     message: "Failed to open connection with database"
+  /job/v1/data-processing/organization-settings:
+    post:
+      tags:
+        - DataProcessingJob
+      summary: Start to update cycle times data for organizationId and repositoryIds and organizationSettings
+      operationId: startUpdateCycleTimesDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettings
+      description: |
+        Start to update cycle times data for organizationId and repositoryIds and organizationSettings
+      parameters:
+        - in: header
+          name: X-SYMEO-JOB-KEY-X
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: organizationId and repositoryIds and organizationSettings
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract'
+      responses:
+        "200":
+          description: 'Job started successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  [ ]
+        404:
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+        500:
+          description: An internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataProcessingSymeoErrorsContract'
+              example:
+                errors:
+                  - code: "T.POSTGRES_TIMEOUT"
+                    message: "Failed to open connection with database"
   /job/v1/data-processing/all:
     get:
       tags:
@@ -338,6 +385,33 @@ components:
         vcs_organization_id:
           type: integer
           format: int64
+    PostStartDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettingsContract:
+      type: object
+      required:
+        - organization_id
+        - repository_ids
+        - deploy_detection_type
+        - pull_request_merged_on_branch_regex
+        - tag_regex
+        - exclude_branch_regexes
+      properties:
+        organization_id:
+          type: string
+          format: uuid
+        repository_ids:
+          type: array
+          items:
+            type: string
+        deploy_detection_type:
+          type: string
+        pull_request_merged_on_branch_regex:
+          type: string
+        tag_regex:
+          type: string
+        exclude_branch_regexes:
+          type: array
+          items:
+            type: string
     CollectTestingDataRequestContract:
       type: object
       properties:
