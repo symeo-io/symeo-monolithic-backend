@@ -2,6 +2,7 @@ package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.*;
@@ -152,8 +153,8 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .pullRequestId(faker.rickAndMorty().character() + "-current-1")
                 .pullRequestAuthorLogin(faker.name().firstName())
                 .pullRequestMergeDate(stringToDate("2022-02-13"))
-                .pullRequestCreationDate(stringToDate("2022-02-10"))
                 .pullRequestUpdateDate(stringToDate("2022-02-13"))
+                .pullRequestCreationDate(stringToDate("2022-02-10"))
                 .pullRequestVcsRepositoryId(repositoryId)
                 .pullRequestVcsRepository(faker.howIMetYourMother().character())
                 .pullRequestVcsUrl(faker.backToTheFuture().character())
@@ -179,6 +180,25 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .pullRequestState("merge")
                 .pullRequestTitle(faker.harryPotter().character())
                 .pullRequestHead("feature/test-current-2")
+                .build();
+        final CycleTimeEntity inRangeCycleTimeEntity3 = CycleTimeEntity.builder()
+                .id(faker.dragonBall().character() + "-current-3")
+                .value(300L)
+                .codingTime(200L)
+                .reviewTime(300L)
+                .timeToDeploy(null)
+                .deployDate(null)
+                .pullRequestId(faker.rickAndMorty().character() + "-current-3")
+                .pullRequestAuthorLogin(faker.name().firstName())
+                .pullRequestMergeDate(null)
+                .pullRequestUpdateDate(stringToDate("2022-02-22"))
+                .pullRequestCreationDate(stringToDate("2022-02-20"))
+                .pullRequestVcsRepositoryId(repositoryId)
+                .pullRequestVcsRepository(faker.howIMetYourMother().character())
+                .pullRequestVcsUrl(faker.backToTheFuture().character())
+                .pullRequestState("open")
+                .pullRequestTitle(faker.harryPotter().character())
+                .pullRequestHead("feature/test-current-3")
                 .build();
 
         final CycleTimeEntity outRangeCycleTimeEntity1 = CycleTimeEntity.builder()
@@ -219,9 +239,29 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .pullRequestTitle(faker.harryPotter().character())
                 .pullRequestHead("feature/test-previous-2")
                 .build();
+        final CycleTimeEntity outRangeCycleTimeEntity3 = CycleTimeEntity.builder()
+                .id(faker.dragonBall().character() + "-previous-3")
+                .value(100L)
+                .codingTime(200L)
+                .reviewTime(300L)
+                .timeToDeploy(null)
+                .deployDate(null)
+                .pullRequestId(faker.rickAndMorty().character() + "-previous-3")
+                .pullRequestAuthorLogin(faker.name().firstName())
+                .pullRequestMergeDate(null)
+                .pullRequestUpdateDate(stringToDate("2022-01-22"))
+                .pullRequestCreationDate(stringToDate("2022-01-15"))
+                .pullRequestVcsRepositoryId(repositoryId)
+                .pullRequestVcsRepository(faker.howIMetYourMother().character())
+                .pullRequestVcsUrl(faker.backToTheFuture().character())
+                .pullRequestState("open")
+                .pullRequestTitle(faker.harryPotter().character())
+                .pullRequestHead("feature/test-previous-3")
+                .build();
 
         cycleTimeRepository.saveAll(List.of(
-                inRangeCycleTimeEntity1, inRangeCycleTimeEntity2, outRangeCycleTimeEntity1, outRangeCycleTimeEntity2
+                inRangeCycleTimeEntity1, inRangeCycleTimeEntity2, inRangeCycleTimeEntity3,
+                outRangeCycleTimeEntity1, outRangeCycleTimeEntity2, outRangeCycleTimeEntity3
         ));
 
         final String startDate = "2022-02-01";
@@ -238,7 +278,7 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.pieces_page.total_item_number").isEqualTo(2)
+                .jsonPath("$.pieces_page.total_item_number").isEqualTo(3)
                 .jsonPath("$.pieces_page.total_page_number").isEqualTo(Math.ceil(1.0f * 2 / pageSize))
                 .jsonPath("$.pieces_page.pieces[0].id").isEqualTo(inRangeCycleTimeEntity1.getPullRequestId())
                 .jsonPath("$.pieces_page.pieces[0].status").isEqualTo("merge")
@@ -263,7 +303,19 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .jsonPath("$.pieces_page.pieces[1].coding_time").isEqualTo(String.valueOf(inRangeCycleTimeEntity2.getCodingTime()))
                 .jsonPath("$.pieces_page.pieces[1].review_time").isEqualTo(String.valueOf(inRangeCycleTimeEntity2.getReviewTime()))
                 .jsonPath("$.pieces_page.pieces[1].time_to_deploy").isEqualTo(String.valueOf(inRangeCycleTimeEntity2.getTimeToDeploy()))
-                .jsonPath("$.pieces_page.pieces[1].cycle_time").isEqualTo(String.valueOf(inRangeCycleTimeEntity2.getValue()));
+                .jsonPath("$.pieces_page.pieces[1].cycle_time").isEqualTo(String.valueOf(inRangeCycleTimeEntity2.getValue()))
+                .jsonPath("$.pieces_page.pieces[2].id").isEqualTo(inRangeCycleTimeEntity3.getPullRequestId())
+                .jsonPath("$.pieces_page.pieces[2].status").isEqualTo("open")
+                .jsonPath("$.pieces_page.pieces[2].title").isEqualTo(inRangeCycleTimeEntity3.getPullRequestTitle())
+                .jsonPath("$.pieces_page.pieces[2].vcs_url").isEqualTo(inRangeCycleTimeEntity3.getPullRequestVcsUrl())
+                .jsonPath("$.pieces_page.pieces[2].author").isEqualTo(inRangeCycleTimeEntity3.getPullRequestAuthorLogin())
+                .jsonPath("$.pieces_page.pieces[2].vcs_repository").isEqualTo(inRangeCycleTimeEntity3.getPullRequestVcsRepository())
+                .jsonPath("$.pieces_page.pieces[2].creation_date").isEqualTo("2022-02-20 00:00:00")
+                .jsonPath("$.pieces_page.pieces[2].merge_date").isEqualTo(null)
+                .jsonPath("$.pieces_page.pieces[2].coding_time").isEqualTo(String.valueOf(inRangeCycleTimeEntity3.getCodingTime()))
+                .jsonPath("$.pieces_page.pieces[2].review_time").isEqualTo(String.valueOf(inRangeCycleTimeEntity3.getReviewTime()))
+                .jsonPath("$.pieces_page.pieces[2].time_to_deploy").isEqualTo(null)
+                .jsonPath("$.pieces_page.pieces[2].cycle_time").isEqualTo(String.valueOf(inRangeCycleTimeEntity3.getValue()));
     }
 
     @Order(4)
@@ -282,11 +334,15 @@ public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT
                 .is2xxSuccessful()
                 .expectBody()
                 .jsonPath("$.errors").isEmpty()
-                .jsonPath("$.curves.piece_curve[0]").exists()
+                .jsonPath("$.curves.piece_curve[0]").isNotEmpty()
+                .jsonPath("$.curves.piece_curve[1]").isNotEmpty()
+                .jsonPath("$.curves.piece_curve[2]").isNotEmpty()
                 .jsonPath("$.curves.average_curve[0].value").isEqualTo(100.0f)
                 .jsonPath("$.curves.average_curve[0].date").isEqualTo("2022-02-15")
-                .jsonPath("$.curves.average_curve[1].value").isEqualTo(200.0f)
-                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-02-20");
+                .jsonPath("$.curves.average_curve[1].value").isEqualTo(300.0f)
+                .jsonPath("$.curves.average_curve[1].date").isEqualTo("2022-02-22")
+                .jsonPath("$.curves.average_curve[2].value").isEqualTo(200.0f)
+                .jsonPath("$.curves.average_curve[2].date").isEqualTo("2022-02-20");
     }
 }
 

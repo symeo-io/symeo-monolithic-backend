@@ -160,6 +160,25 @@ public class SymeoCycleTimeApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .pullRequestTitle(faker.harryPotter().character())
                 .pullRequestHead("feature/test-current-2")
                 .build();
+        final CycleTimeEntity currentCycleTimeEntity3 = CycleTimeEntity.builder()
+                .id(faker.dragonBall().character() + "-current-3")
+                .value(100L)
+                .codingTime(200L)
+                .reviewTime(300L)
+                .timeToDeploy(null)
+                .deployDate(null)
+                .pullRequestId(faker.rickAndMorty().character() + "-current-3")
+                .pullRequestAuthorLogin(faker.name().firstName())
+                .pullRequestMergeDate(null)
+                .pullRequestUpdateDate(stringToDate("2022-03-22"))
+                .pullRequestCreationDate(stringToDate("2022-02-29"))
+                .pullRequestVcsRepositoryId(repositoryId)
+                .pullRequestVcsRepository(faker.howIMetYourMother().character())
+                .pullRequestVcsUrl(faker.backToTheFuture().character())
+                .pullRequestState("open")
+                .pullRequestTitle(faker.harryPotter().character())
+                .pullRequestHead("feature/test-current-3")
+                .build();
 
         final CycleTimeEntity previousCycleTimeEntity1 = CycleTimeEntity.builder()
                 .id(faker.dragonBall().character() + "-previous-1")
@@ -201,7 +220,7 @@ public class SymeoCycleTimeApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .build();
 
         cycleTimeRepository.saveAll(List.of(
-                currentCycleTimeEntity1, currentCycleTimeEntity2, previousCycleTimeEntity1, previousCycleTimeEntity2
+                currentCycleTimeEntity1, currentCycleTimeEntity2, currentCycleTimeEntity3, previousCycleTimeEntity1, previousCycleTimeEntity2
         ));
 
         // When
@@ -218,12 +237,12 @@ public class SymeoCycleTimeApiIT extends AbstractSymeoBackForFrontendApiIT {
                 .jsonPath("$.cycle_time.current_end_date").isEqualTo("2022-04-01")
                 .jsonPath("$.cycle_time.previous_start_date").isEqualTo("2021-12-05")
                 .jsonPath("$.cycle_time.previous_end_date").isEqualTo("2022-02-01")
-                .jsonPath("$.cycle_time.average.value").isEqualTo("150.0")
-                .jsonPath("$.cycle_time.average.tendency_percentage").isEqualTo("50.0")
-                .jsonPath("$.cycle_time.coding_time.value").isEqualTo("250.0")
-                .jsonPath("$.cycle_time.coding_time.tendency_percentage").isEqualTo("25.0")
-                .jsonPath("$.cycle_time.review_time.value").isEqualTo("350.0")
-                .jsonPath("$.cycle_time.review_time.tendency_percentage").isEqualTo("-41.7")
+                .jsonPath("$.cycle_time.average.value").isEqualTo("133.3")
+                .jsonPath("$.cycle_time.average.tendency_percentage").isEqualTo("33.3")
+                .jsonPath("$.cycle_time.coding_time.value").isEqualTo("233.3")
+                .jsonPath("$.cycle_time.coding_time.tendency_percentage").isEqualTo("16.7")
+                .jsonPath("$.cycle_time.review_time.value").isEqualTo("333.3")
+                .jsonPath("$.cycle_time.review_time.tendency_percentage").isEqualTo("-44.4")
                 .jsonPath("$.cycle_time.time_to_deploy.value").isEqualTo("450.0")
                 .jsonPath("$.cycle_time.time_to_deploy.tendency_percentage").isEqualTo("328.6");
     }

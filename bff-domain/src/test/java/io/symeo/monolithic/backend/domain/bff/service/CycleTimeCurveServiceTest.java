@@ -61,8 +61,11 @@ public class CycleTimeCurveServiceTest {
         final String pullRequestViewId2 = faker.harryPotter().character() + "-2";
 
         final List<PullRequestView> currentPullRequests =
-                List.of(PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("head-1").build(),
-                        PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("head-2").build());
+                List.of(
+                        PullRequestView.builder().id(pullRequestViewId1).mergeDate(stringToDate("2022-01-03")).head("head-1").build(),
+                        PullRequestView.builder().id(pullRequestViewId2).mergeDate(stringToDate("2022-01-05")).head("head-2").build(),
+                        PullRequestView.builder().id(pullRequestViewId2).mergeDate(null).head("head-3").build()
+                );
 
         final CycleTime cycleTime1 =
                 CycleTime.builder()
@@ -79,8 +82,18 @@ public class CycleTimeCurveServiceTest {
                         .codingTime(faker.number().randomNumber())
                         .reviewTime(faker.number().randomNumber())
                         .timeToDeploy(faker.number().randomNumber())
-                        .deployDate(stringToDate("2022-01-06 15:00:00"))
+                        .deployDate(stringToDate("2022-01-05 15:00:00"))
                         .pullRequestView(currentPullRequests.get(1))
+                        .build();
+        final CycleTime cycleTime3 =
+                CycleTime.builder()
+                        .value(faker.number().randomNumber())
+                        .codingTime(faker.number().randomNumber())
+                        .reviewTime(faker.number().randomNumber())
+                        .timeToDeploy(faker.number().randomNumber())
+                        .updateDate(stringToDate("2022-01-06 08:00:00"))
+                        .deployDate(null)
+                        .pullRequestView(currentPullRequests.get(2))
                         .build();
 
 
@@ -88,14 +101,15 @@ public class CycleTimeCurveServiceTest {
         when(bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate))
                 .thenReturn(List.of(
                         cycleTime1,
-                        cycleTime2
+                        cycleTime2,
+                        cycleTime3
                 ));
         final CycleTimePieceCurveWithAverage cycleTimePieceCurveWithAverage =
                 cycleTimeCurveService.computeCycleTimePieceCurveWithAverage(organization, teamId, startDate, endDate);
 
         // Then
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData()).isNotEmpty();
-        assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().size()).isEqualTo(2);
+        assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().size()).isEqualTo(3);
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(0)).isEqualTo(
                 CycleTimePieceCurve.CyclePieceCurvePoint.builder()
                         .date("2022-01-04")
@@ -109,13 +123,24 @@ public class CycleTimeCurveServiceTest {
         );
         assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(1)).isEqualTo(
                 CycleTimePieceCurve.CyclePieceCurvePoint.builder()
-                        .date("2022-01-06")
+                        .date("2022-01-05")
                         .value(cycleTime2.getValue())
                         .codingTime(cycleTime2.getCodingTime())
                         .reviewTime(cycleTime2.getReviewTime())
                         .timeToDeploy(cycleTime2.getTimeToDeploy())
                         .label(cycleTime2.getPullRequestView().getHead())
                         .link(cycleTime2.getPullRequestView().getVcsUrl())
+                        .build()
+        );
+        assertThat(cycleTimePieceCurveWithAverage.getCycleTimePieceCurve().getData().get(2)).isEqualTo(
+                CycleTimePieceCurve.CyclePieceCurvePoint.builder()
+                        .date("2022-01-06")
+                        .value(cycleTime3.getValue())
+                        .codingTime(cycleTime3.getCodingTime())
+                        .reviewTime(cycleTime3.getReviewTime())
+                        .timeToDeploy(cycleTime3.getTimeToDeploy())
+                        .label(cycleTime3.getPullRequestView().getHead())
+                        .link(cycleTime3.getPullRequestView().getVcsUrl())
                         .build()
         );
     }
