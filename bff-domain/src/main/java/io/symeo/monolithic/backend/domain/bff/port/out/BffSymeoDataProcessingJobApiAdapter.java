@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.domain.bff.port.out;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface BffSymeoDataProcessingJobApiAdapter {
 
     void startDataProcessingJobForOrganizationIdAndVcsOrganizationId(UUID organizationId, Long vcsOrganizationId) throws SymeoException;
 
+    void startUpdateCycleTimesDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettings(List<String> repositoryIds,
+                                                                                                        OrganizationSettings organizationSettings) throws SymeoException;
 }

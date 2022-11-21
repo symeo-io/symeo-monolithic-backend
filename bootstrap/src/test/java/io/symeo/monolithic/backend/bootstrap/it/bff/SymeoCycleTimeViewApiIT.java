@@ -26,7 +26,7 @@ import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDate;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.stringToDateTime;
 import static java.time.ZonedDateTime.ofInstant;
 
-public class SymeoCycleTimeApiIT extends AbstractSymeoBackForFrontendApiIT {
+public class SymeoCycleTimeViewApiIT extends AbstractSymeoBackForFrontendApiIT {
 
     @Autowired
     public UserRepository userRepository;

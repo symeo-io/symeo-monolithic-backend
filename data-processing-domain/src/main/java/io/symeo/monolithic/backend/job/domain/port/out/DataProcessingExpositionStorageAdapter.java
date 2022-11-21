@@ -15,7 +15,7 @@ public interface DataProcessingExpositionStorageAdapter {
 
     void saveRepositories(List<Repository> repositories) throws SymeoException;
 
-    void saveCommits(List<Commit> commits) throws SymeoException;
+    void saveCommits(String vcsOrganizationName, List<Commit> commits) throws SymeoException;
 
     void saveTags(List<Tag> tags) throws SymeoException;
 
@@ -30,4 +30,7 @@ public interface DataProcessingExpositionStorageAdapter {
     List<Tag> readTagsForRepositoryId(String repositoryId) throws SymeoException;
 
     void saveCycleTimes(List<CycleTime> cycleTimes) throws SymeoException;
+    List<PullRequest> findAllPullRequestsForRepositoryId(String repositoryId) throws SymeoException;
+
+    void replaceCycleTimesForRepositoryId(String repositoryId, List<CycleTime> updatedCycleTimes) throws SymeoException;
 }

@@ -7,6 +7,7 @@ import io.symeo.monolithic.backend.job.domain.model.job.Job;
 import io.symeo.monolithic.backend.job.domain.model.job.JobManager;
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectVcsDataForRepositoriesAndDatesJobRunnable;
+import io.symeo.monolithic.backend.job.domain.model.job.runnable.UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
@@ -343,5 +344,66 @@ public class DataProcessingJobServiceTest {
         assertThat(symeoException.getCode()).isEqualTo(SymeoExceptionCode.REPOSITORIES_NOT_FOUND);
         assertThat(symeoException.getMessage()).isEqualTo(String.format("Repositories %s not found for " +
                 "organizationId %s", List.of(repositoryIds.get(1)), organizationId));
+    }
+
+    @Test
+    void should_start_to_update_cycle_times_given_an_organization_id_and_a_list_of_repositories_id_and_organization_settings() throws SymeoException {
+        // Given
+        final DataProcessingExpositionStorageAdapter dataProcessingExpositionStorageAdapter =
+                mock(DataProcessingExpositionStorageAdapter.class);
+        final VcsDataProcessingService vcsDataProcessingService = mock(VcsDataProcessingService.class);
+        final JobManager jobManager = mock(JobManager.class);
+        final DataProcessingJobStorage dataProcessingJobStorage = mock(DataProcessingJobStorage.class);
+        final AutoSymeoDataProcessingJobApiAdapter autoSymeoDataProcessingJobApiAdapter =
+                mock(AutoSymeoDataProcessingJobApiAdapter.class);
+        final VcsOrganizationStorageAdapter vcsOrganizationStorageAdapter = mock(VcsOrganizationStorageAdapter.class);
+        final DataProcessingJobService dataProcessingJobService = new DataProcessingJobService(
+                dataProcessingExpositionStorageAdapter,
+                dataProcessingJobStorage,
+                vcsDataProcessingService,
+                jobManager,
+                autoSymeoDataProcessingJobApiAdapter,
+                vcsOrganizationStorageAdapter
+        );
+        final UUID organizationId = randomUUID();
+        final UUID teamId = randomUUID();
+        final List<String> repositoryIds = List.of(faker.ancient().god(), faker.ancient().hero());
+        final List<Repository> repositories = List.of(
+                Repository.builder()
+                        .name(faker.name().firstName() + "-1")
+                        .vcsOrganizationName(faker.rickAndMorty().location() + "-1")
+                        .organizationId(randomUUID())
+                        .vcsOrganizationId(faker.rickAndMorty().character() + "-1")
+                        .id(faker.idNumber().invalid() + "-1")
+                        .build(),
+                Repository.builder()
+                        .name(faker.name().firstName() + "-2")
+                        .vcsOrganizationName(faker.rickAndMorty().location() + "-2")
+                        .organizationId(randomUUID())
+                        .vcsOrganizationId(faker.rickAndMorty().character() + "-2")
+                        .id(faker.idNumber().invalid() + "-2")
+                        .build()
+        );
+
+        final String deployDetectionType = faker.rickAndMorty().character();
+        final String pullRequestMergedOnBranchRegex = faker.name().name();
+        final String tagRegex = faker.gameOfThrones().character();
+        final List<String> excludedBranchRegex = List.of("main", "staging");
+
+        // When
+        when(dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds))
+                .thenReturn(repositories);
+        dataProcessingJobService.startToUpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettings(organizationId,
+                repositoryIds, deployDetectionType, pullRequestMergedOnBranchRegex, tagRegex, excludedBranchRegex);
+
+        // Then
+        final ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+        verify(jobManager, times(1))
+                .start(jobArgumentCaptor.capture());
+        final Job job = jobArgumentCaptor.getValue();
+        assertThat(job.getCode()).isEqualTo(UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettingsJobRunnable.JOB_CODE);
+        assertThat(job.getStatus()).isEqualTo(Job.CREATED);
+        assertThat(job.getOrganizationId()).isEqualTo(organizationId);
+        assertThat(job.getJobRunnable()).isInstanceOf(UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettingsJobRunnable.class);
     }
 }

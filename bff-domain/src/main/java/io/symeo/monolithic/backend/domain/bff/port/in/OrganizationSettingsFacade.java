@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface OrganizationSettingsFacade {
     OrganizationSettings getOrganizationSettingsForOrganization(Organization organization) throws SymeoException;
 
-    void updateOrganizationSettings(OrganizationSettings organizationSettings) throws SymeoException;
+    void updateOrganizationSettings(Organization organization, OrganizationSettings organizationSettings) throws SymeoException;
 
     Optional<OrganizationSettings> getOrganizationSettingsForIdAndOrganizationId(UUID organizationSettingsId, UUID organizationId) throws SymeoException;
 }

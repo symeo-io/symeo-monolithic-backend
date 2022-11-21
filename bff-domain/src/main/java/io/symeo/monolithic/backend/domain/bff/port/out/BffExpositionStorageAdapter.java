@@ -1,7 +1,7 @@
 package io.symeo.monolithic.backend.domain.bff.port.out;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeView;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
@@ -68,7 +68,7 @@ public interface BffExpositionStorageAdapter {
                                                                            Date endDate)
             throws SymeoException;
 
-    List<CycleTime> findCycleTimesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate)
+    List<CycleTimeView> findCycleTimesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate)
             throws SymeoException;
 
     String findDefaultMostUsedBranchForOrganizationId(UUID organizationId) throws SymeoException;

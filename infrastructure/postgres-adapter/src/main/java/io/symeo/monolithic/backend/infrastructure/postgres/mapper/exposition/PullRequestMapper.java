@@ -120,7 +120,6 @@ public interface PullRequestMapper {
                 .title(pullRequestFullViewDTO.getTitle())
                 .authorLogin(pullRequestFullViewDTO.getAuthorLogin())
                 .commitNumber(pullRequestFullViewDTO.getCommitNumber())
-                .status(pullRequestFullViewDTO.getState())
                 .mergeCommitSha(pullRequestFullViewDTO.getMergeCommitSha())
                 .head(pullRequestFullViewDTO.getHead())
                 .base(pullRequestFullViewDTO.getBase())

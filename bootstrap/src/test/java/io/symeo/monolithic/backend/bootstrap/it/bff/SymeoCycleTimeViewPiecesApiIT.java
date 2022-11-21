@@ -2,7 +2,6 @@ package io.symeo.monolithic.backend.bootstrap.it.bff;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionTypeDomainEnum;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.*;
@@ -27,7 +26,7 @@ import java.util.UUID;
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static java.time.ZonedDateTime.ofInstant;
 
-public class SymeoCycleTimePiecesApiIT extends AbstractSymeoBackForFrontendApiIT {
+public class SymeoCycleTimeViewPiecesApiIT extends AbstractSymeoBackForFrontendApiIT {
 
     @Autowired
     public UserRepository userRepository;

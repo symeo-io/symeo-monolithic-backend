@@ -12,6 +12,7 @@ import io.symeo.monolithic.backend.job.domain.model.job.Job;
 import io.symeo.monolithic.backend.job.domain.model.job.Task;
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectVcsDataForRepositoriesAndDatesJobRunnable;
+import io.symeo.monolithic.backend.job.domain.model.job.runnable.UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 
 import java.time.ZoneId;
@@ -88,6 +89,7 @@ public interface JobMapper {
             case CollectRepositoriesJobRunnable.JOB_CODE:
                 return mapTasksInputToDataProcessingVcsOrganization(jobEntity);
             case CollectVcsDataForRepositoriesAndDatesJobRunnable.JOB_CODE:
+            case UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettingsJobRunnable.JOB_CODE:
                 return mapTasksInputToDataProcessingRepositoriesDateRangeTaskView(jobEntity);
             default:
                 throw SymeoException.builder()
