@@ -132,6 +132,8 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
     protected static final String API_KEYS_REST_API_TESTING = "/api/v1/organization/api-keys";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_TEAM = "/job/v1/data-processing" +
             "/organization/team/repositories";
+    protected static final String DATA_PROCESSING_JOB_REST_API_POST_START_JOB_CYCLE_TIME = "/job/v1/data-processing" +
+            "/organization-settings";
 
     @Autowired
     ITAuthenticationContextProvider authenticationContextProvider;
@@ -153,7 +155,7 @@ public abstract class AbstractSymeoBackForFrontendApiIT {
 
             configurableApplicationContext
                     .getBeanFactory()
-                    .registerSingleton("bffbffWireMockServer", bffWireMockServer);
+                    .registerSingleton("bffWireMockServer", bffWireMockServer);
 
             configurableApplicationContext.addApplicationListener(
                     applicationEvent -> {

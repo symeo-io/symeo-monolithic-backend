@@ -1,7 +1,7 @@
 package io.symeo.monolithic.backend.domain.bff.model.metric.curve;
 
 
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeView;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,18 +16,18 @@ public class CycleTimePieceCurveWithAverage {
     Curve averageCurve = Curve.builder().build();
 
 
-    private void addPoint(final CycleTime cycleTime) {
-        this.cycleTimePieceCurve.addPoint(cycleTime.getStartDateRange(),
-                cycleTime.getValue(), cycleTime.getCodingTime(), cycleTime.getReviewTime(), cycleTime.getTimeToDeploy(),
-                cycleTime.getPullRequestView().getVcsUrl(), cycleTime.getPullRequestView().getHead());
-        this.averageCurve.addPoint(cycleTime.getStartDateRange(),
-                cycleTime.getValue().floatValue());
+    private void addPoint(final CycleTimeView cycleTimeView) {
+        this.cycleTimePieceCurve.addPoint(cycleTimeView.getStartDateRange(),
+                cycleTimeView.getValue(), cycleTimeView.getCodingTime(), cycleTimeView.getReviewTime(), cycleTimeView.getTimeToDeploy(),
+                cycleTimeView.getPullRequestView().getVcsUrl(), cycleTimeView.getPullRequestView().getHead());
+        this.averageCurve.addPoint(cycleTimeView.getStartDateRange(),
+                cycleTimeView.getValue().floatValue());
     }
 
-    public static CycleTimePieceCurveWithAverage buildPullRequestCurve(final List<CycleTime> cycleTimes) {
+    public static CycleTimePieceCurveWithAverage buildPullRequestCurve(final List<CycleTimeView> cycleTimeViews) {
         final CycleTimePieceCurveWithAverage cycleTimePieceCurveWithAverage =
                 CycleTimePieceCurveWithAverage.builder().build();
-        cycleTimes.forEach(cycleTimePieceCurveWithAverage::addPoint);
+        cycleTimeViews.forEach(cycleTimePieceCurveWithAverage::addPoint);
         return cycleTimePieceCurveWithAverage;
     }
 }

@@ -19,6 +19,7 @@ public class CycleTimeDataFactory {
 
         return computeCycleTimeWithTimeToDeploySupplier(
                 pullRequest,
+                commitHistory,
                 deployDate,
                 computeTimeToDeployGivenDeployDate(
                         pullRequest,
@@ -37,6 +38,7 @@ public class CycleTimeDataFactory {
 
         return computeCycleTimeWithTimeToDeploySupplier(
                 pullRequest,
+                commitHistory,
                 deployDate,
                 computeTimeToDeployGivenDeployDate(
                         pullRequest,
@@ -48,9 +50,13 @@ public class CycleTimeDataFactory {
 
 
     private CycleTime computeCycleTimeWithTimeToDeploySupplier(PullRequest pullRequest,
+                                                               final CommitHistory commitHistory,
                                                                final Date deployDate,
                                                                final Supplier<Long> timeToDeploySupplier) {
 
+        pullRequest = pullRequest.toBuilder()
+                .commits(pullRequest.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
+                .build();
         final List<Comment> commentsOrderByDate = pullRequest.getCommentsOrderByDate();
         final List<Commit> commitsOrderByDate = pullRequest.getCommitsOrderByDate();
         if (commitsOrderByDate.size() == 0) {

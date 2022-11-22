@@ -119,6 +119,8 @@ public abstract class AbstractSymeoDataCollectionAndApiIT {
             "/organization/team/repositories";
     protected static final String DATA_PROCESSING_JOB_REST_API_POST_START_JOB_REPOSITORIES = "/job/v1/data-processing" +
             "/organization/repositories";
+    protected static final String DATA_PROCESSING_JOB_REST_API_POST_START_JOB_CYCLE_TIMES = "/job/v1/data-processing" +
+            "/organization-settings";
     protected static final String DATA_PROCESSING_JOB_REST_API_GET_START_JOB_ALL = "/job/v1/data-processing/all";
     protected static final String DATA_PROCESSING_TESTING_REST_API = "/sh/v1/testing";
 

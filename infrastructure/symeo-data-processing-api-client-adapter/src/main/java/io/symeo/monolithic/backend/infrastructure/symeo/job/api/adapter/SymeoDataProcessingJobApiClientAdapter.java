@@ -1,5 +1,6 @@
 package io.symeo.monolithic.backend.infrastructure.symeo.job.api.adapter;
 
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.job.domain.port.out.AutoSymeoDataProcessingJobApiAdapter;
@@ -42,6 +43,14 @@ public class SymeoDataProcessingJobApiClientAdapter implements BffSymeoDataProce
     public void startDataProcessingJobForOrganizationIdAndVcsOrganizationId(UUID organizationId,
                                                                             Long vcsOrganizationId) throws SymeoException {
         symeoHttpClient.startDataProcessingJobForOrganizationIdAndVcsOrganizationId(domainToVcsOrganizationDTO(organizationId, vcsOrganizationId));
+    }
+
+    @Override
+    public void startUpdateCycleTimesDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettings(List<String> repositoryIds,
+                                                                                                               OrganizationSettings organizationSettings)
+            throws SymeoException {
+        symeoHttpClient.startUpdateCycleTimesDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettings(
+                domainToOrganizationSettingsDTO(repositoryIds, organizationSettings));
     }
 
     @Override

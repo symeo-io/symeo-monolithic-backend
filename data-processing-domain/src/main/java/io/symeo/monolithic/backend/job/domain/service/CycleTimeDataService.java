@@ -5,10 +5,16 @@ import io.symeo.monolithic.backend.job.domain.model.vcs.*;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
+import org.assertj.core.util.DateUtil;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static org.apache.commons.lang3.time.DateUtils.*;
+
 @AllArgsConstructor
 @Slf4j
 public class CycleTimeDataService {
@@ -19,12 +25,11 @@ public class CycleTimeDataService {
                                                                  String deployDetectionType,
                                                                  String pullRequestMergedOnBranchRegex,
                                                                  String tagRegex,
-                                                                 List<String> excludedBranchRegexes,
-                                                                 Date endDate) throws SymeoException {
+                                                                 List<String> excludedBranchRegexes) throws SymeoException {
 
         if (deployDetectionType.equals("pull_request")) {
             return computeCycleTimesForPullRequestsMergedOnBranchRegex(
-                    repository, pullRequests, pullRequestMergedOnBranchRegex, excludedBranchRegexes, endDate);
+                    repository, pullRequests, pullRequestMergedOnBranchRegex, excludedBranchRegexes);
         } else if (deployDetectionType.equals("tag")) {
             return computeCycleTimesForTagRegexToDeploySettings(
                     repository, pullRequests, tagRegex, excludedBranchRegexes);
@@ -36,9 +41,8 @@ public class CycleTimeDataService {
     private List<CycleTime> computeCycleTimesForPullRequestsMergedOnBranchRegex(Repository repository,
                                                                                        List<PullRequest> pullRequests,
                                                                                        String pullRequestMergedOnBranchRegex,
-                                                                                       List<String> excludedBranchRegexes,
-                                                                                       Date endDate) throws SymeoException {
-        final List<PullRequest> pullRequestsToComputeCycleTimeUntilEndDate =
+                                                                                       List<String> excludedBranchRegexes) throws SymeoException {
+        final List<PullRequest> pullRequestsToComputeCycleTime =
                 pullRequests
                         .stream()
                         .filter(pullRequest -> excludePullRequest(pullRequest, excludedBranchRegexes))
@@ -47,10 +51,10 @@ public class CycleTimeDataService {
         final Pattern branchPattern = Pattern.compile(pullRequestMergedOnBranchRegex);
 
         final List<PullRequest> pullRequestsMergedOnMatchedBranches =
-                dataProcessingExpositionStorageAdapter.readMergedPullRequestsForRepositoryIdUntilEndDate(repository.getId(), new Date())
+                dataProcessingExpositionStorageAdapter.readMergedPullRequestsForRepositoryIdUntilEndDate(repository.getId(), round(new Date(), Calendar.MINUTE))
                         .stream().filter(pullRequest -> branchPattern.matcher(pullRequest.getBase()).find()).toList();
 
-        return pullRequestsToComputeCycleTimeUntilEndDate
+        return pullRequestsToComputeCycleTime
                 .stream()
                 .map(pullRequest -> cycleTimeFactory.computeCycleTimeForMergeOnPullRequestMatchingDeliverySettings(
                         pullRequest,
@@ -63,7 +67,7 @@ public class CycleTimeDataService {
                                                                                 List<PullRequest> pullRequests,
                                                                                 String tagRegex,
                                                                                 List<String> excludedBranchRegexes) throws SymeoException {
-        final List<PullRequest> pullRequestsToComputeCycleTimeUntilEndDate =
+        final List<PullRequest> pullRequestsToComputeCycleTime =
                 pullRequests
                         .stream()
                         .filter(pullRequest -> excludePullRequest(pullRequest, excludedBranchRegexes))
@@ -75,7 +79,7 @@ public class CycleTimeDataService {
                 dataProcessingExpositionStorageAdapter.readTagsForRepositoryId(repository.getId())
                         .stream().filter(tag -> tagPattern.matcher(tag.getName()).find()).toList();
 
-        return pullRequestsToComputeCycleTimeUntilEndDate
+        return pullRequestsToComputeCycleTime
                 .stream()
                 .map(pullRequest -> cycleTimeFactory.computeCycleTimeForTagRegexToDeploySettings(
                         pullRequest,

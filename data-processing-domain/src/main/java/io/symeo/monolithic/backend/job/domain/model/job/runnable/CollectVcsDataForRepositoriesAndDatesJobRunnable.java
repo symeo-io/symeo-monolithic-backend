@@ -51,7 +51,6 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
             if (!hasCollectedNotPartialData) {
                 vcsDataProcessingService.collectNonPartialData(repository);
             }
-            LOGGER.info("Starting to collect vcs data for repositories and date range {}", repository);
             vcsDataProcessingService.collectVcsDataForRepositoryAndDateRange(
                     repository,
                     repositoriesDateRangeTask.getStartDate(),
@@ -61,7 +60,6 @@ public class CollectVcsDataForRepositoriesAndDatesJobRunnable extends AbstractTa
                     tagRegex,
                     excludeBranchRegexes
             );
-            LOGGER.info("Vcs data collection finished for repositories and date range {}", repositoriesDateRangeTask);
         }
         hasCollectedNotPartialData = true;
     }

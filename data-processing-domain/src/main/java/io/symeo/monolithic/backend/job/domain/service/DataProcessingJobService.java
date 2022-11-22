@@ -6,6 +6,7 @@ import io.symeo.monolithic.backend.job.domain.model.job.Job;
 import io.symeo.monolithic.backend.job.domain.model.job.JobManager;
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectRepositoriesJobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.job.runnable.CollectVcsDataForRepositoriesAndDatesJobRunnable;
+import io.symeo.monolithic.backend.job.domain.model.job.runnable.UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettingsJobRunnable;
 import io.symeo.monolithic.backend.job.domain.model.vcs.Repository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.VcsOrganization;
 import io.symeo.monolithic.backend.job.domain.port.in.DataProcessingJobAdapter;
@@ -60,6 +61,22 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                 organizationId, teamId, allRepositoriesByIds, deployDetectionType, pullRequestMergedOnBranchRegexes,
                 tagRegex, excludeBranchRegexes)
         );
+    }
+
+    @Override
+    public void startToUpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettings(UUID organizationId,
+                                                                                                   List<String> repositoryIds,
+                                                                                                   String deployDetectionType,
+                                                                                                   String pullRequestMergedOnBranchRegex,
+                                                                                                   String tagRegex,
+                                                                                                   List<String> excludeBranchRegexes) throws SymeoException {
+        final List<Repository> allRepositoriesByIds =
+                dataProcessingExpositionStorageAdapter.findAllRepositoriesByIds(repositoryIds);
+        validateRepositories(organizationId, repositoryIds, allRepositoriesByIds);
+        jobManager.start(buildUpdateCycleTimeDataForOrganizationSettingsJob(
+                organizationId, allRepositoriesByIds, deployDetectionType, pullRequestMergedOnBranchRegex,
+                tagRegex, excludeBranchRegexes
+        ));
     }
 
     @Override
@@ -144,6 +161,28 @@ public class DataProcessingJobService implements DataProcessingJobAdapter {
                                 .repositories(allRepositoriesByIds)
                                 .deployDetectionType(deployDetectionType)
                                 .pullRequestMergedOnBranchRegexes(pullRequestMergedOnBranchRegexes)
+                                .tagRegex(tagRegex)
+                                .excludeBranchRegexes(excludeBranchRegexes)
+                                .dataProcessingJobStorage(dataProcessingJobStorage)
+                                .vcsDataProcessingService(vcsDataProcessingService)
+                                .build()
+                )
+                .build();
+    }
+
+    private Job buildUpdateCycleTimeDataForOrganizationSettingsJob(UUID organizationId,
+                                                                   List<Repository> allRepositoriesByIds,
+                                                                   String deployDetectionType,
+                                                                   String pullRequestMergedOnBranchRegex,
+                                                                   String tagRegex,
+                                                                   List<String> excludeBranchRegexes) {
+        return Job.builder()
+                .organizationId(organizationId)
+                .jobRunnable(
+                        UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettingsJobRunnable.builder()
+                                .repositories(allRepositoriesByIds)
+                                .deployDetectionType(deployDetectionType)
+                                .pullRequestMergedOnBranchRegexes(pullRequestMergedOnBranchRegex)
                                 .tagRegex(tagRegex)
                                 .excludeBranchRegexes(excludeBranchRegexes)
                                 .dataProcessingJobStorage(dataProcessingJobStorage)

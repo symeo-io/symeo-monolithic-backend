@@ -1,8 +1,8 @@
 package io.symeo.monolithic.backend.infrastructure.postgres.adapter;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
 import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimePiece;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
 import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
@@ -17,6 +17,7 @@ import io.symeo.monolithic.backend.job.domain.model.vcs.*;
 import io.symeo.monolithic.backend.job.domain.port.out.DataProcessingExpositionStorageAdapter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -244,7 +245,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
 
     @Override
     @Transactional(readOnly = true)
-    public List<CycleTime> findCycleTimesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate) throws SymeoException {
+    public List<CycleTimeView> findCycleTimesForTeamIdBetweenStartDateAndEndDate(UUID teamId, Date startDate, Date endDate) throws SymeoException {
         try {
             return customCycleTimeRepository.findAllCycleTimeByTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate);
 
@@ -277,9 +278,9 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
     }
 
     @Override
-    public void saveCommits(List<Commit> commits) throws SymeoException {
+    public void saveCommits(String vcsOrganizationName, List<Commit> commits) throws SymeoException {
         try {
-            LOGGER.info("Saving {} commit(s) to database", commits.size());
+            LOGGER.info("Saving {} commit(s) to database for organization {}", commits.size(), vcsOrganizationName);
             commitRepository.saveAll(commits.stream().map(CommitMapper::domainToEntity).toList());
         } catch (Exception e) {
             final String message = "Failed to save commits";
@@ -333,7 +334,7 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
     }
 
     @Override
-    public void saveCycleTimes(List<io.symeo.monolithic.backend.job.domain.model.vcs.CycleTime> cycleTimes) throws SymeoException {
+    public void saveCycleTimes(List<CycleTime> cycleTimes) throws SymeoException {
         try {
             LOGGER.info("Saving {} cycle times to database", cycleTimes.size());
             cycleTimeRepository.saveAll(cycleTimes.stream().map(CycleTimeMapper::domainToEntity).toList());
@@ -344,6 +345,42 @@ public class PostgresExpositionAdapter implements DataProcessingExpositionStorag
                     .code(POSTGRES_EXCEPTION)
                     .rootException(e)
                     .message(message)
+                    .build();
+        }
+    }
+
+    @Override
+    public List<PullRequest> findAllPullRequestsForRepositoryId(String repositoryId) throws SymeoException {
+        try {
+            return pullRequestRepository.findAllForRepositoryId(repositoryId)
+                            .stream()
+                            .map(PullRequestMapper::entityToDomain)
+                            .toList();
+        } catch (Exception e) {
+            final String message = String.format("Failed to read pull requests for repositoryId %s", repositoryId);
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .rootException(e)
+                    .build();
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = SymeoException.class)
+    public void replaceCycleTimesForRepositoryId(String repositoryId, List<CycleTime> updatedCycleTimes) throws SymeoException {
+        try {
+            cycleTimeRepository.deleteAllCycleTimesForRepositoryId(repositoryId);
+            LOGGER.info("Saving {} cycle times to database", updatedCycleTimes.size());
+            cycleTimeRepository.saveAll(updatedCycleTimes.stream().map(CycleTimeMapper::domainToEntity).toList());
+        } catch (Exception e) {
+            final String message = "Failed to save cycle times";
+            LOGGER.error(message, e);
+            throw SymeoException.builder()
+                    .code(POSTGRES_EXCEPTION)
+                    .message(message)
+                    .rootException(e)
                     .build();
         }
     }

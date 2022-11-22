@@ -1,7 +1,7 @@
 package io.symeo.monolithic.backend.domain.bff.service.insights;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
-import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTime;
+import io.symeo.monolithic.backend.domain.bff.model.metric.CycleTimeView;
 import io.symeo.monolithic.backend.domain.bff.model.metric.curve.CycleTimePieceCurveWithAverage;
 import io.symeo.monolithic.backend.domain.bff.port.in.CycleTimeCurveFacadeAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
@@ -31,7 +31,7 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
         final int range = 1;
         final List<Date> rangeDates = getRangeDatesBetweenStartDateAndEndDateForRange(startDate, endDate,
                 range, organization.getTimeZone());
-        final List<CycleTime> cycleTimesForTeamIdBetweenStartDateAndEndDate =
+        final List<CycleTimeView> cycleTimesForTeamIdBetweenStartDateAndEndDateView =
                 bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate,
                                 endDate)
                         .stream()
@@ -40,6 +40,6 @@ public class CycleTimeCurveService implements CycleTimeCurveFacadeAdapter {
                                 isNull(cycleTime.getDeployDate()) ? cycleTime.getUpdateDate() :
                                         cycleTime.getDeployDate()))
                         .toList();
-        return CycleTimePieceCurveWithAverage.buildPullRequestCurve(cycleTimesForTeamIdBetweenStartDateAndEndDate);
+        return CycleTimePieceCurveWithAverage.buildPullRequestCurve(cycleTimesForTeamIdBetweenStartDateAndEndDateView);
     }
 }

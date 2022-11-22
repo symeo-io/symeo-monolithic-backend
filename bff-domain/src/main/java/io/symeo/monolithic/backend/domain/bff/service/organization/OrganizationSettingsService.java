@@ -2,13 +2,16 @@ package io.symeo.monolithic.backend.domain.bff.service.organization;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
+import io.symeo.monolithic.backend.domain.bff.model.vcs.RepositoryView;
 import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
+import io.symeo.monolithic.backend.domain.bff.port.out.BffSymeoDataProcessingJobApiAdapter;
 import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +20,7 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
 
     private final BffExpositionStorageAdapter bffExpositionStorageAdapter;
     private final OrganizationStorageAdapter organizationStorageAdapter;
+    private final BffSymeoDataProcessingJobApiAdapter bffSymeoDataProcessingJobApiAdapter;
 
     public void initializeOrganizationSettingsForOrganization(final Organization organization) throws SymeoException {
         final Optional<OrganizationSettings> optionalOrganizationSettings =
@@ -41,12 +45,22 @@ public class OrganizationSettingsService implements OrganizationSettingsFacade {
     }
 
     @Override
-    public void updateOrganizationSettings(final OrganizationSettings organizationSettings) throws SymeoException {
+    public void updateOrganizationSettings(final Organization organization,
+                                           final OrganizationSettings organizationSettings) throws SymeoException {
         final Optional<OrganizationSettings> organizationSettingsToUpdate =
                 getOrganizationSettingsForIdAndOrganizationId(organizationSettings.getId(),
                         organizationSettings.getOrganizationId());
         if (organizationSettingsToUpdate.isPresent()) {
             organizationStorageAdapter.saveOrganizationSettings(organizationSettings);
+            final List<String> repositoryIds =
+                    bffExpositionStorageAdapter.readRepositoriesForOrganization(organization)
+                            .stream()
+                            .map(RepositoryView::getId)
+                            .toList();
+            bffSymeoDataProcessingJobApiAdapter.startUpdateCycleTimesDataProcessingJobForOrganizationIdAndRepositoryIdsAndOrganizationSettings(
+                    repositoryIds,
+                    organizationSettings
+            );
         } else {
             throw SymeoException.builder()
                     .code(SymeoExceptionCode.ORGANIZATION_SETTINGS_NOT_FOUND)

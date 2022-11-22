@@ -13,9 +13,9 @@ import static java.util.Optional.*;
 @AllArgsConstructor
 public class AverageCycleTimeFactory {
 
-    public Optional<AverageCycleTime> computeAverageCycleTimeMetricsFromCycleTimeList(List<CycleTime> cycleTimes) {
+    public Optional<AverageCycleTime> computeAverageCycleTimeMetricsFromCycleTimeList(List<CycleTimeView> cycleTimeViews) {
 
-        if (cycleTimes.isEmpty()) {
+        if (cycleTimeViews.isEmpty()) {
             return empty();
         }
 
@@ -28,36 +28,36 @@ public class AverageCycleTimeFactory {
         int numberOfReviewTime = 0;
         int numberOfTimeToDeploy = 0;
 
-        for (CycleTime cycleTime : cycleTimes) {
-            if (nonNull(cycleTime.getCodingTime())) {
+        for (CycleTimeView cycleTimeView : cycleTimeViews) {
+            if (nonNull(cycleTimeView.getCodingTime())) {
                 if (isNull(cumulatedCodingTime)) {
-                    cumulatedCodingTime = cycleTime.getCodingTime();
+                    cumulatedCodingTime = cycleTimeView.getCodingTime();
                 } else {
-                    cumulatedCodingTime += cycleTime.getCodingTime();
+                    cumulatedCodingTime += cycleTimeView.getCodingTime();
                 }
                 numberOfCodingTime++;
             }
-            if (nonNull(cycleTime.getReviewTime())) {
+            if (nonNull(cycleTimeView.getReviewTime())) {
                 if (isNull(cumulatedReviewTime)) {
-                    cumulatedReviewTime = cycleTime.getReviewTime();
+                    cumulatedReviewTime = cycleTimeView.getReviewTime();
                 } else {
-                    cumulatedReviewTime += cycleTime.getReviewTime();
+                    cumulatedReviewTime += cycleTimeView.getReviewTime();
                 }
                 numberOfReviewTime++;
             }
-            if (nonNull(cycleTime.getTimeToDeploy())) {
+            if (nonNull(cycleTimeView.getTimeToDeploy())) {
                 if (isNull(cumulatedTimeToDeploy)) {
-                    cumulatedTimeToDeploy = cycleTime.getTimeToDeploy();
+                    cumulatedTimeToDeploy = cycleTimeView.getTimeToDeploy();
                 } else {
-                    cumulatedTimeToDeploy += cycleTime.getTimeToDeploy();
+                    cumulatedTimeToDeploy += cycleTimeView.getTimeToDeploy();
                 }
                 numberOfTimeToDeploy++;
             }
-            if (nonNull(cycleTime.getValue())) {
+            if (nonNull(cycleTimeView.getValue())) {
                 if (isNull(cumulatedCycleTimeValue)) {
-                    cumulatedCycleTimeValue = cycleTime.getValue();
+                    cumulatedCycleTimeValue = cycleTimeView.getValue();
                 } else {
-                    cumulatedCycleTimeValue += cycleTime.getValue();
+                    cumulatedCycleTimeValue += cycleTimeView.getValue();
                 }
                 numberOfCycleTime++;
             }

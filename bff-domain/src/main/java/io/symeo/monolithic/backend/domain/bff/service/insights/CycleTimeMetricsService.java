@@ -2,11 +2,7 @@ package io.symeo.monolithic.backend.domain.bff.service.insights;
 
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.metric.*;
-import io.symeo.monolithic.backend.domain.bff.model.vcs.CommitView;
-import io.symeo.monolithic.backend.domain.bff.model.vcs.PullRequestView;
-import io.symeo.monolithic.backend.domain.bff.model.vcs.TagView;
 import io.symeo.monolithic.backend.domain.bff.port.in.CycleTimeMetricsFacadeAdapter;
-import io.symeo.monolithic.backend.domain.bff.port.in.OrganizationSettingsFacade;
 import io.symeo.monolithic.backend.domain.bff.port.out.BffExpositionStorageAdapter;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import lombok.AllArgsConstructor;
@@ -16,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static io.symeo.monolithic.backend.domain.helper.DateHelper.*;
 import static io.symeo.monolithic.backend.domain.helper.pagination.PaginationHelper.*;
@@ -37,15 +31,15 @@ public class CycleTimeMetricsService implements CycleTimeMetricsFacadeAdapter {
 
         final Date previousStartDate = getPreviousStartDateFromStartDateAndEndDate(startDate, endDate, organization.getTimeZone());
 
-        final List<CycleTime> currentCycleTimesForTeamId =
+        final List<CycleTimeView> currentViewCycleTimesForTeamId =
                 bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, startDate, endDate);
         final Optional<AverageCycleTime> currentAverageCycleTimeMetrics =
-                averageCycleTimeFactory.computeAverageCycleTimeMetricsFromCycleTimeList(currentCycleTimesForTeamId);
+                averageCycleTimeFactory.computeAverageCycleTimeMetricsFromCycleTimeList(currentViewCycleTimesForTeamId);
 
-        final List<CycleTime> previousCycleTimesForTeamId =
+        final List<CycleTimeView> previousViewCycleTimesForTeamId =
                 bffExpositionStorageAdapter.findCycleTimesForTeamIdBetweenStartDateAndEndDate(teamId, previousStartDate, startDate);
         final Optional<AverageCycleTime> previousAverageCycleTimeMetrics =
-                averageCycleTimeFactory.computeAverageCycleTimeMetricsFromCycleTimeList(previousCycleTimesForTeamId);
+                averageCycleTimeFactory.computeAverageCycleTimeMetricsFromCycleTimeList(previousViewCycleTimesForTeamId);
 
         return CycleTimeMetrics.buildFromCurrentAndPreviousCycleTimes(currentAverageCycleTimeMetrics, previousAverageCycleTimeMetrics,
                 previousStartDate, startDate,

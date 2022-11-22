@@ -78,7 +78,9 @@ public class OrganizationRestApiAdapter implements OrganizationApi {
     public ResponseEntity<SymeoErrorsContract> updateOrganizationSettings(OrganizationSettingsContract organizationSettingsContract) {
         try {
             final User authenticatedUser = authenticationService.getAuthenticatedUser();
-            organizationSettingsFacade.updateOrganizationSettings(contractToDomain(organizationSettingsContract, authenticatedUser.getOrganization().getId()));
+            organizationSettingsFacade.updateOrganizationSettings(authenticatedUser.getOrganization(),
+                    contractToDomain(organizationSettingsContract, authenticatedUser.getOrganization().getId())
+            );
             return ok().build();
         } catch (SymeoException e) {
             return mapSymeoExceptionToContract(() -> SymeoErrorContractMapper.exceptionToContracts(e), e);
