@@ -43,6 +43,9 @@ jobs:
           name: Integration Tests
           command: ./mvnw integration-test -T 12
       - run:
+          name: Run Sonarcloud analysis
+          command: ./mvnw org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report sonar:sonar -Dsonar.projectKey=symeo-io_symeo-monolithic-backend -Dsonar.coverage.jacoco.xmlReportPaths=coverage/target/site/jacoco/jacoco.xml
+      - run:
           name: Send tests data to Symeo
           command: |
             curl -o- ${SYMEO_TESTING_SCRIPT_URL} | bash -s -- \

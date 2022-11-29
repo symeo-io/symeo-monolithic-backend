@@ -48,6 +48,8 @@
         <logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
         <hibernate-types.version>2.19.2</hibernate-types.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        <sonar.organization>symeo-io</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencyManagement>
