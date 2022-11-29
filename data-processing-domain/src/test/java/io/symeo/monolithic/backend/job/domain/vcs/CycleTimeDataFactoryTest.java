@@ -30,7 +30,7 @@ public class CycleTimeDataFactoryTest {
                     .build();
             final PullRequest pullRequestCycleTimeToCompute =
                     PullRequest.builder()
-                            .commitShaList(List.of(onlyCommit.getSha()))
+                            .commits(List.of(onlyCommit))
                             .number(faker.number().numberBetween(1,100))
                             .build();
             final List<PullRequest> pullRequestsMatchingDeliverySettings = List.of();
@@ -69,7 +69,7 @@ public class CycleTimeDataFactoryTest {
                     .build();
             final PullRequest pullRequestCycleTimeToCompute =
                     PullRequest.builder()
-                            .commitShaList(List.of(commit1.getSha(), commit2.getSha()))
+                            .commits(List.of(commit1, commit2))
                             .number(faker.number().numberBetween(1,100))
                             .build();
             final List<PullRequest> pullRequestsMatchingDeliverySettings = List.of();
@@ -110,7 +110,7 @@ public class CycleTimeDataFactoryTest {
                     .creationDate(stringToDateTime("2022-01-01 13:00:00"))
                     .number(faker.number().numberBetween(1,100))
                     .mergeDate(mergeDate)
-                    .commitShaList(List.of(commit1.getSha(), commit2.getSha()))
+                    .commits(List.of(commit1, commit2))
                     .comments(List.of(
                             Comment.builder().creationDate(stringToDateTime("2022-01-04 07:58:00")).build(),
                             Comment.builder().creationDate(stringToDateTime("2022-01-04 08:14:00")).build()
@@ -142,7 +142,7 @@ public class CycleTimeDataFactoryTest {
                     .creationDate(stringToDateTime("2022-01-01 13:00:00"))
                     .number(faker.number().numberBetween(1,100))
                     .mergeDate(null)
-                    .commitShaList(List.of(commit1.getSha(), commit2.getSha()))
+                    .commits(List.of(commit1, commit2))
                     .comments(List.of(
                             Comment.builder().creationDate(stringToDateTime("2022-01-04 07:58:00")).build(),
                             Comment.builder().creationDate(stringToDateTime("2022-01-05 08:14:00")).build()
@@ -177,7 +177,7 @@ public class CycleTimeDataFactoryTest {
                     .creationDate(stringToDateTime("2022-01-01 13:00:00"))
                     .number(faker.number().numberBetween(1,100))
                     .mergeDate(stringToDateTime("2022-01-03 15:55:00"))
-                    .commitShaList(List.of(commit.getSha()))
+                    .commits(List.of(commit))
                     .build();
 
             // When
@@ -200,7 +200,7 @@ public class CycleTimeDataFactoryTest {
                     .creationDate(stringToDateTime("2022-01-01 13:00:00"))
                     .number(faker.number().numberBetween(1,100))
                     .mergeDate(stringToDateTime("2022-01-03 17:30:00"))
-                    .commitShaList(List.of(commit.getSha()))
+                    .commits(List.of(commit))
                     .build();
 
             // When
@@ -267,7 +267,7 @@ public class CycleTimeDataFactoryTest {
                     .number(faker.number().numberBetween(1,100))
                     .mergeDate(mergeCommit.getDate())
                     .mergeCommitSha(mergeCommit.getSha())
-                    .commitShaList(List.of(mergeCommit.getSha()))
+                    .commits(List.of(mergeCommit))
                     .build();
 
             final List<PullRequest> pullRequestsMatchingDeliverySettings = List.of(
@@ -276,14 +276,14 @@ public class CycleTimeDataFactoryTest {
                             .number(faker.number().numberBetween(1,100))
                             .mergeDate(mergeCommit2.getDate())
                             .mergeCommitSha(mergeCommit2.getSha())
-                            .commitShaList(List.of(mergeCommit2.getSha()))
+                            .commits(List.of(mergeCommit2))
                             .build(),
                     PullRequest.builder()
                             .creationDate(stringToDateTime("2022-01-01 13:00:00"))
                             .number(faker.number().numberBetween(1,100))
                             .mergeDate(commit3Merge.getDate())
                             .mergeCommitSha(commit3Merge.getSha())
-                            .commitShaList(List.of(commit3Merge.getSha()))
+                            .commits(List.of(commit3Merge))
                             .build()
             );
 
@@ -398,7 +398,8 @@ public class CycleTimeDataFactoryTest {
                     .number(faker.number().numberBetween(1,100))
                     .mergeDate(mergeCommit.getDate())
                     .mergeCommitSha(mergeCommit.getSha())
-                    .commitShaList(List.of(mergeCommit.getSha()))
+                    .commits(List.of(mergeCommit))
+                    .commitShaList(List.of())
                     .build();
 
             final List<Tag> tags = List.of(

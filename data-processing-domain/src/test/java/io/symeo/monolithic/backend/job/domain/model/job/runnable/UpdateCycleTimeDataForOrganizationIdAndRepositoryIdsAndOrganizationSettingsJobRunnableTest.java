@@ -127,6 +127,6 @@ public class UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganization
     void should_return_job_code() {
         // Then
         assertThat(UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettingsJobRunnable.JOB_CODE)
-                .isEqualTo("UPDATE_CYCLE_TIME__DATA_FOR_REPOSITORY_IDS_AND_DATE_RANGES_JOB");
+                .isEqualTo("UPDATE_CYCLE_TIME_DATA_FOR_REPOSITORY_IDS_AND_DATE_RANGES_JOB");
     }
 }
