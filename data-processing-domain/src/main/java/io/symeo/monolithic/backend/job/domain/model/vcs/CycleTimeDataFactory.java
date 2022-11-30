@@ -54,12 +54,9 @@ public class CycleTimeDataFactory {
                                                                final Date deployDate,
                                                                final Supplier<Long> timeToDeploySupplier) {
 
-        pullRequest = pullRequest.toBuilder()
-                .commits(pullRequest.getCommitShaList().stream().map(commitHistory::getCommitFromSha).toList())
-                .build();
         final List<Comment> commentsOrderByDate = pullRequest.getCommentsOrderByDate();
         final List<Commit> commitsOrderByDate = pullRequest.getCommitsOrderByDate();
-        if (commitsOrderByDate.size() == 0) {
+        if (commitsOrderByDate.isEmpty()) {
             return CycleTime.builder()
                     .pullRequest(pullRequest)
                     .build();

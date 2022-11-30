@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 public class UpdateCycleTimeDataForOrganizationIdAndRepositoryIdsAndOrganizationSettingsJobRunnable extends AbstractTasksRunnable<RepositoriesDateRangeTask> implements JobRunnable {
 
-    public static final String JOB_CODE = "UPDATE_CYCLE_TIME__DATA_FOR_REPOSITORY_IDS_AND_DATE_RANGES_JOB";
+    public static final String JOB_CODE = "UPDATE_CYCLE_TIME_DATA_FOR_REPOSITORY_IDS_AND_DATE_RANGES_JOB";
 
     @NonNull
     private final List<Repository> repositories;
