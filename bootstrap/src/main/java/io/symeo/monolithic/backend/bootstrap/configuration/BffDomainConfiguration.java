@@ -29,8 +29,9 @@ public class BffDomainConfiguration {
     @Bean
     public HistogramQuery histogramQuery(final BffExpositionStorageAdapter expositionStorageAdapter,
                                          final TeamGoalFacadeAdapter teamGoalFacadeAdapter,
-                                         final PullRequestHistogramService pullRequestHistogramService) {
-        return new HistogramQuery(expositionStorageAdapter, teamGoalFacadeAdapter, pullRequestHistogramService);
+                                         final PullRequestHistogramService pullRequestHistogramService,
+                                         final OrganizationStorageAdapter organizationStorageAdapter) {
+        return new HistogramQuery(expositionStorageAdapter, teamGoalFacadeAdapter, pullRequestHistogramService, organizationStorageAdapter);
     }
 
     @Bean
@@ -65,8 +66,9 @@ public class BffDomainConfiguration {
 
     @Bean
     public CurveQuery curveQuery(final BffExpositionStorageAdapter expositionStorageAdapter,
-                                 final TeamGoalFacadeAdapter teamGoalFacadeAdapter) {
-        return new CurveQuery(expositionStorageAdapter, teamGoalFacadeAdapter);
+                                 final TeamGoalFacadeAdapter teamGoalFacadeAdapter,
+                                 final OrganizationStorageAdapter organizationStorageAdapter) {
+        return new CurveQuery(expositionStorageAdapter, teamGoalFacadeAdapter, organizationStorageAdapter);
     }
 
     @Bean
