@@ -51,25 +51,25 @@ public class PullRequestHistogramServiceTest {
 
         final List<PullRequestView> pullRequestViews = List.of(
                 CurveQueryTest.buildPullRequestPullRequestLimitView(2000, stringToDate("2022-01-01"), null, null,
-                        PullRequestView.OPEN),
+                        PullRequestView.OPEN, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(400, stringToDate("2021-01-01"), null, null,
-                        PullRequestView.OPEN),
+                        PullRequestView.OPEN, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(200, stringToDate("2022-05-01"), null, null,
-                        PullRequestView.OPEN),
+                        PullRequestView.OPEN, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(1000, stringToDate("2022-01-01"), null, null,
-                        PullRequestView.OPEN),
+                        PullRequestView.OPEN, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(1000, stringToDate("2022-01-01"), stringToDate(
                                 "2022-01-15"),
-                        null, PullRequestView.MERGE),
+                        null, PullRequestView.MERGE, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(2000, stringToDate("2022-01-11"), stringToDate(
                                 "2022-03-01"),
-                        null, PullRequestView.MERGE),
+                        null, PullRequestView.MERGE, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(100, stringToDate("2022-01-21"), stringToDate(
                                 "2022-01-30"),
-                        null, PullRequestView.MERGE),
+                        null, PullRequestView.MERGE, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(100, stringToDate("2022-01-21"), stringToDate(
                                 "2022-04-01"),
-                        null, PullRequestView.MERGE)
+                        null, PullRequestView.MERGE, faker.pokemon().name())
         );
 
         final PullRequestHistogram pullRequestHistogram =
@@ -128,27 +128,27 @@ public class PullRequestHistogramServiceTest {
 
         final List<PullRequestView> pullRequestViews = List.of(
                 CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2021-01-01"), null, null,
-                        PullRequestView.OPEN),
+                        PullRequestView.OPEN, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), null, null,
-                        PullRequestView.OPEN),
+                        PullRequestView.OPEN, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), stringToDate("2022" +
-                        "-01-03"), null, PullRequestView.MERGE),
+                        "-01-03"), null, PullRequestView.MERGE, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), null, null,
-                        PullRequestView.OPEN),
+                        PullRequestView.OPEN, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-01"), stringToDate("2022" +
                                 "-01-15"),
-                        null, PullRequestView.MERGE),
+                        null, PullRequestView.MERGE, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-05-01"), null, null,
-                        PullRequestView.OPEN),
+                        PullRequestView.OPEN, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-11"), stringToDate("2022" +
                                 "-03-01"),
-                        null, PullRequestView.MERGE),
+                        null, PullRequestView.MERGE, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-21"), stringToDate("2022" +
                                 "-01-30"),
-                        null, PullRequestView.MERGE),
+                        null, PullRequestView.MERGE, faker.pokemon().name()),
                 CurveQueryTest.buildPullRequestPullRequestLimitView(0, stringToDate("2022-01-21"), stringToDate("2022" +
                                 "-04-01"),
-                        null, PullRequestView.MERGE)
+                        null, PullRequestView.MERGE, faker.pokemon().name())
         );
 
         final PullRequestHistogram pullRequestHistogram =
