@@ -3,6 +3,10 @@ package io.symeo.monolithic.backend.bootstrap.it.bff;
 import io.symeo.monolithic.backend.domain.bff.model.account.Organization;
 import io.symeo.monolithic.backend.domain.bff.model.account.TeamStandard;
 import io.symeo.monolithic.backend.domain.bff.model.account.User;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeliverySettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.DeployDetectionSettings;
+import io.symeo.monolithic.backend.domain.bff.model.account.settings.OrganizationSettings;
+import io.symeo.monolithic.backend.domain.bff.port.out.OrganizationStorageAdapter;
 import io.symeo.monolithic.backend.domain.bff.service.insights.PullRequestHistogramService;
 import io.symeo.monolithic.backend.domain.exception.SymeoException;
 import io.symeo.monolithic.backend.domain.exception.SymeoExceptionCode;
@@ -11,10 +15,7 @@ import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.Pul
 import io.symeo.monolithic.backend.infrastructure.postgres.entity.exposition.RepositoryEntity;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.OrganizationMapper;
 import io.symeo.monolithic.backend.infrastructure.postgres.mapper.account.UserMapper;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.OrganizationRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamGoalRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.TeamRepository;
-import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.UserRepository;
+import io.symeo.monolithic.backend.infrastructure.postgres.repository.account.*;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.PullRequestRepository;
 import io.symeo.monolithic.backend.infrastructure.postgres.repository.exposition.RepositoryRepository;
 import io.symeo.monolithic.backend.job.domain.model.vcs.PullRequest;
@@ -50,6 +51,8 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
     public RepositoryRepository repositoryRepository;
     @Autowired
     public TeamGoalRepository teamGoalRepository;
+    @Autowired
+    public OrganizationSettingsRepository organizationSettingsRepository;
     private static final UUID organizationId = UUID.randomUUID();
     private static final UUID activeUserId = UUID.randomUUID();
     private final static UUID currentTeamId = UUID.randomUUID();
@@ -65,6 +68,16 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                         .id(organizationId)
                         .name(faker.rickAndMorty().character())
                         .build()
+        );
+        organizationSettingsRepository.save(
+                OrganizationMapper.settingsToEntity(OrganizationSettings.builder()
+                        .organizationId(organizationId)
+                        .deliverySettings(DeliverySettings.builder()
+                                .deployDetectionSettings(DeployDetectionSettings.builder()
+                                        .build())
+                                .build())
+                        .build()
+                )
         );
         final String email = faker.gameOfThrones().character();
         UserMapper.entityToDomain(userRepository.save(
@@ -550,6 +563,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-2")
@@ -577,6 +591,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-3")
@@ -604,6 +619,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-4")
@@ -640,6 +656,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-5")
@@ -676,6 +693,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-6")
@@ -712,6 +730,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-7")
@@ -748,6 +767,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-8")
@@ -784,6 +804,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-9")
@@ -820,6 +841,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-10")
@@ -856,6 +878,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-11")
@@ -892,6 +915,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-12")
@@ -928,6 +952,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-13")
@@ -964,6 +989,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-14")
@@ -1000,6 +1026,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-15")
@@ -1036,6 +1063,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-16")
@@ -1072,6 +1100,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-17")
@@ -1108,6 +1137,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         pullRequestEntities.add(PullRequestEntity.builder()
                 .id("pr-1-18")
@@ -1144,6 +1174,7 @@ public class SymeoPullRequestStandardsApiIT extends AbstractSymeoBackForFrontend
                 .authorLogin(faker.dragonBall().character())
                 .vcsRepositoryId("repository-1")
                 .lastUpdateDate(ZonedDateTime.now())
+                .head(faker.gameOfThrones().character())
                 .build());
         return pullRequestEntities;
 
